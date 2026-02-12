@@ -1,24 +1,16 @@
-import { supabase } from "@/integrations/supabase/client";
-
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const FUNCTION_NAME = "printcom-proxy";
 
 async function callProxy(action: string, params: Record<string, string> = {}, body?: unknown) {
   const searchParams = new URLSearchParams({ action, ...params });
-  
-  const { data, error } = await supabase.functions.invoke(FUNCTION_NAME, {
-    body: body ? JSON.stringify(body) : undefined,
-    headers: body ? { "Content-Type": "application/json" } : undefined,
-  });
-
-  // supabase.functions.invoke doesn't support query params directly, so we use fetch
-  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${FUNCTION_NAME}?${searchParams.toString()}`;
-  const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const url = `${SUPABASE_URL}/functions/v1/${FUNCTION_NAME}?${searchParams.toString()}`;
 
   const res = await fetch(url, {
     method: body ? "POST" : "GET",
     headers: {
-      "apikey": anonKey,
-      "Authorization": `Bearer ${anonKey}`,
+      "apikey": ANON_KEY,
+      "Authorization": `Bearer ${ANON_KEY}`,
       "Content-Type": "application/json",
     },
     body: body ? JSON.stringify(body) : undefined,
