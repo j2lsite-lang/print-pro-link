@@ -14,7 +14,319 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      addresses: {
+        Row: {
+          city: string
+          company: string | null
+          country: string
+          created_at: string
+          email: string | null
+          first_name: string
+          house_number: string | null
+          id: string
+          is_default: boolean | null
+          label: string | null
+          last_name: string
+          phone: string | null
+          postal_code: string
+          street: string
+          user_id: string | null
+        }
+        Insert: {
+          city: string
+          company?: string | null
+          country?: string
+          created_at?: string
+          email?: string | null
+          first_name: string
+          house_number?: string | null
+          id?: string
+          is_default?: boolean | null
+          label?: string | null
+          last_name: string
+          phone?: string | null
+          postal_code: string
+          street: string
+          user_id?: string | null
+        }
+        Update: {
+          city?: string
+          company?: string | null
+          country?: string
+          created_at?: string
+          email?: string | null
+          first_name?: string
+          house_number?: string | null
+          id?: string
+          is_default?: boolean | null
+          label?: string | null
+          last_name?: string
+          phone?: string | null
+          postal_code?: string
+          street?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      cart_items: {
+        Row: {
+          cart_id: string
+          copies: number
+          created_at: string
+          currency: string | null
+          file_url: string | null
+          id: string
+          options: Json
+          original_file_name: string | null
+          product_name: string
+          quantity: number
+          sku: string
+          unit_price: number | null
+        }
+        Insert: {
+          cart_id: string
+          copies?: number
+          created_at?: string
+          currency?: string | null
+          file_url?: string | null
+          id?: string
+          options?: Json
+          original_file_name?: string | null
+          product_name: string
+          quantity?: number
+          sku: string
+          unit_price?: number | null
+        }
+        Update: {
+          cart_id?: string
+          copies?: number
+          created_at?: string
+          currency?: string | null
+          file_url?: string | null
+          id?: string
+          options?: Json
+          original_file_name?: string | null
+          product_name?: string
+          quantity?: number
+          sku?: string
+          unit_price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_cart_id_fkey"
+            columns: ["cart_id"]
+            isOneToOne: false
+            referencedRelation: "carts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      carts: {
+        Row: {
+          created_at: string
+          id: string
+          session_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      order_items: {
+        Row: {
+          copies: number
+          created_at: string
+          file_url: string | null
+          id: string
+          options: Json
+          order_id: string
+          price_breakdown: Json | null
+          product_name: string
+          quantity: number
+          sku: string
+        }
+        Insert: {
+          copies?: number
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          options?: Json
+          order_id: string
+          price_breakdown?: Json | null
+          product_name: string
+          quantity?: number
+          sku: string
+        }
+        Update: {
+          copies?: number
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          options?: Json
+          order_id?: string
+          price_breakdown?: Json | null
+          product_name?: string
+          quantity?: number
+          sku?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          billing_address_id: string | null
+          created_at: string
+          currency: string | null
+          customer_reference: string | null
+          deduplication_id: string
+          id: string
+          po_number: string | null
+          printcom_order_number: string | null
+          shipping_address_id: string | null
+          shipping_cost: number | null
+          shipping_method: Json | null
+          status: string
+          total: number | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          billing_address_id?: string | null
+          created_at?: string
+          currency?: string | null
+          customer_reference?: string | null
+          deduplication_id?: string
+          id?: string
+          po_number?: string | null
+          printcom_order_number?: string | null
+          shipping_address_id?: string | null
+          shipping_cost?: number | null
+          shipping_method?: Json | null
+          status?: string
+          total?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          billing_address_id?: string | null
+          created_at?: string
+          currency?: string | null
+          customer_reference?: string | null
+          deduplication_id?: string
+          id?: string
+          po_number?: string | null
+          printcom_order_number?: string | null
+          shipping_address_id?: string | null
+          shipping_cost?: number | null
+          shipping_method?: Json | null
+          status?: string
+          total?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_billing_address_id_fkey"
+            columns: ["billing_address_id"]
+            isOneToOne: false
+            referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_shipping_address_id_fkey"
+            columns: ["shipping_address_id"]
+            isOneToOne: false
+            referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          company: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      uploads: {
+        Row: {
+          created_at: string
+          file_url: string
+          id: string
+          mime_type: string | null
+          original_name: string
+          preflight_result: Json | null
+          preflight_status: string | null
+          size_bytes: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_url: string
+          id?: string
+          mime_type?: string | null
+          original_name: string
+          preflight_result?: Json | null
+          preflight_status?: string | null
+          size_bytes?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_url?: string
+          id?: string
+          mime_type?: string | null
+          original_name?: string
+          preflight_result?: Json | null
+          preflight_status?: string | null
+          size_bytes?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
