@@ -1,1 +1,4 @@
 project_id = "kpoobquswpjorhhmfcrd"
+
+[functions.printcom-proxy]
+verify_jwt = false
