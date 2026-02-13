@@ -1,73 +1,322 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Printer, Truck, Shield, Palette } from "lucide-react";
+import { useState } from "react";
+import {
+  ArrowRight, Printer, FileText, Image, Layers, Truck,
+  CheckCircle, ChevronDown, ChevronUp, Phone, Mail, MapPin,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-const features = [
-  { icon: Printer, title: "Impression pro", desc: "Qualité offset & numérique sur tous supports" },
-  { icon: Palette, title: "Sur mesure", desc: "Configurez vos produits selon vos besoins exacts" },
-  { icon: Truck, title: "Livraison rapide", desc: "Expédition optimisée dans toute l'Europe" },
-  { icon: Shield, title: "Vérification PDF", desc: "Contrôle automatique de vos fichiers avant impression" },
+/* ─── Data ─── */
+const services = [
+  { icon: FileText, title: "Impression numérique", desc: "Cartes de visite, flyers, dépliants, affiches en petite et grande série." },
+  { icon: Image, title: "Grand format", desc: "Bâches, banderoles, adhésifs, kakémonos et enseignes." },
+  { icon: Layers, title: "Supports publicitaires", desc: "Roll-ups, totems, PLV et signalétique complète." },
+  { icon: Printer, title: "Personnalisation", desc: "Marquage textile, objets publicitaires et goodies." },
+  { icon: Truck, title: "Livraison express", desc: "Expédition rapide en France et en Europe." },
+  { icon: CheckCircle, title: "Vérification PDF", desc: "Contrôle automatique de vos fichiers avant impression." },
 ];
 
+const realisations = [
+  "Cartes de visite premium",
+  "Bâche événementielle 3×5 m",
+  "Roll-up salon professionnel",
+  "Flyers A5 recto/verso",
+  "Adhésif vitrine magasin",
+  "Kakémono stand expo",
+];
+
+const faqItems = [
+  { q: "Quels formats de fichiers acceptez-vous ?", a: "Nous acceptons les fichiers PDF, AI, PSD, EPS et images haute résolution (300 dpi min.)." },
+  { q: "Quels sont les délais de livraison ?", a: "En général 3 à 5 jours ouvrés. Options express disponibles." },
+  { q: "Faites-vous des devis personnalisés ?", a: "Oui, remplissez le formulaire de devis ou appelez-nous directement." },
+  { q: "Livrez-vous hors de France ?", a: "Oui, nous livrons dans toute l'Europe." },
+];
+
+/* ─── Component ─── */
 export default function Index() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [callbackOpen, setCallbackOpen] = useState(false);
+  const [callbackSent, setCallbackSent] = useState(false);
+
+  const handleCallbackSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCallbackSent(true);
+    setTimeout(() => {
+      setCallbackOpen(false);
+      setCallbackSent(false);
+    }, 2500);
+  };
+
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-hero px-4 py-24 md:py-32">
-        <div className="container relative z-10 text-center">
-          <h1 className="mx-auto max-w-3xl font-display text-4xl font-bold leading-tight text-primary-foreground md:text-6xl">
-            Vos supports publicitaires, imprimés avec excellence
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-primary-foreground/80">
-            Cartes de visite, flyers, bâches, kakémonos… Configurez, commandez et recevez vos impressions en quelques clics.
-          </p>
-          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
-              <Link to="/products">
-                Voir le catalogue
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+      {/* ─── HERO ─── */}
+      <section className="py-10 md:py-16">
+        <div className="container grid gap-5 md:grid-cols-[1.2fr_.8fr] items-stretch">
+          {/* Left card */}
+          <div className="glass-card p-6 md:p-8 flex flex-col justify-center">
+            <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight text-foreground">
+              J2L Print — <span className="text-primary">marque J2L Publicité</span>
+            </h1>
+            <p className="mt-4 text-muted-foreground leading-relaxed max-w-lg">
+              Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs.
+              Devis rapide à Uxegney (88).
+            </p>
+            <div className="flex flex-wrap gap-2 mt-6">
+              <span className="tag">🖨️ Offset & numérique</span>
+              <span className="tag">🚚 Livraison France</span>
+              <span className="tag">📐 Sur mesure</span>
+              <span className="tag">✅ Vérif. PDF</span>
+            </div>
+            <div className="flex flex-wrap gap-3 mt-8">
+              <Button asChild className="rounded-full bg-primary text-primary-foreground font-bold hover:brightness-95">
+                <Link to="/products">
+                  Voir le catalogue <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <button
+                onClick={() => setCallbackOpen(true)}
+                className="pill font-semibold"
+              >
+                <Phone className="h-4 w-4 mr-1" /> Rappelez-moi
+              </button>
+            </div>
+          </div>
+
+          {/* Right card */}
+          <div className="glass-card p-6 flex flex-col justify-center">
+            <h3 className="font-display text-primary text-lg font-semibold mb-2">Contact rapide</h3>
+            <p className="text-muted-foreground text-sm mb-4">
+              22 B rue Robert Barret, 88390 Uxegney
+            </p>
+            <div className="space-y-3 text-sm">
+              <a href="tel:+33329304479" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+                <Phone className="h-4 w-4 text-primary" /> 03 29 30 44 79
+              </a>
+              <a href="mailto:contact@j2l-print.fr" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+                <Mail className="h-4 w-4 text-primary" /> contact@j2l-print.fr
+              </a>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <MapPin className="h-4 w-4 text-primary" /> Uxegney, Vosges (88)
+              </div>
+            </div>
           </div>
         </div>
-        {/* Decorative circles */}
-        <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-primary-foreground/5 blur-3xl" />
       </section>
 
-      {/* Features */}
-      <section className="py-20">
+      {/* ─── SERVICES ─── */}
+      <section id="services" className="py-12">
         <div className="container">
-          <h2 className="text-center font-display text-3xl font-bold text-foreground">
-            Pourquoi choisir J2L Publicité ?
+          <h2 className="font-display text-2xl font-bold text-foreground text-center mb-8">
+            Nos services
           </h2>
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((f) => (
-              <div
-                key={f.title}
-                className="group rounded-xl border border-border bg-card p-6 shadow-card transition-all hover:shadow-elevated"
-              >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <f.icon className="h-6 w-6 text-primary" />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((s) => (
+              <div key={s.title} className="glass-card p-5 group hover:shadow-elevated transition-all">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 mb-3">
+                  <s.icon className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="font-display text-lg font-semibold text-card-foreground">{f.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{f.desc}</p>
+                <h3 className="font-display text-base font-semibold text-foreground">{s.title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="bg-muted py-16">
-        <div className="container text-center">
-          <h2 className="font-display text-2xl font-bold text-foreground">Prêt à lancer votre projet ?</h2>
-          <p className="mt-3 text-muted-foreground">Parcourez notre catalogue et configurez vos produits en ligne.</p>
-          <Button asChild size="lg" className="mt-8">
-            <Link to="/products">Explorer les produits</Link>
-          </Button>
+      {/* ─── RÉALISATIONS ─── */}
+      <section id="realisations" className="py-12">
+        <div className="container">
+          <h2 className="font-display text-2xl font-bold text-foreground text-center mb-8">
+            Réalisations récentes
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {realisations.map((r) => (
+              <div key={r} className="glass-card p-5 flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                <span className="text-sm text-foreground">{r}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
+
+      {/* ─── DEVIS ─── */}
+      <section id="devis" className="py-12">
+        <div className="container max-w-2xl">
+          <div className="glass-card p-6 md:p-8">
+            <h2 className="font-display text-2xl font-bold text-foreground mb-2">Demande de devis</h2>
+            <p className="text-muted-foreground text-sm mb-6">
+              Décrivez votre projet, nous vous répondons sous 24h.
+            </p>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                alert("Merci ! Votre demande a été envoyée. (Démo)");
+              }}
+              className="space-y-4"
+            >
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label>Nom</Label>
+                  <Input placeholder="Votre nom" required />
+                </div>
+                <div>
+                  <Label>Email</Label>
+                  <Input type="email" placeholder="votre@email.com" required />
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label>Téléphone</Label>
+                  <Input type="tel" placeholder="06 12 34 56 78" />
+                </div>
+                <div>
+                  <Label>Produit souhaité</Label>
+                  <Input placeholder="Ex : 500 flyers A5" />
+                </div>
+              </div>
+              <div>
+                <Label>Message</Label>
+                <textarea
+                  className="flex w-full rounded-xl border border-border bg-background/25 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/55 min-h-[100px]"
+                  placeholder="Détails du projet..."
+                  rows={4}
+                />
+              </div>
+              <Button type="submit" className="rounded-xl bg-primary text-primary-foreground font-bold hover:brightness-95 w-full sm:w-auto">
+                Envoyer la demande
+              </Button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── FAQ ─── */}
+      <section id="faq" className="py-12">
+        <div className="container max-w-2xl">
+          <h2 className="font-display text-2xl font-bold text-foreground text-center mb-8">
+            Questions fréquentes
+          </h2>
+          <div className="space-y-3">
+            {faqItems.map((item, i) => (
+              <div key={i} className="glass-card overflow-hidden">
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full flex items-center justify-between p-4 text-left text-sm font-medium text-foreground"
+                >
+                  {item.q}
+                  {openFaq === i ? (
+                    <ChevronUp className="h-4 w-4 text-primary flex-shrink-0" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  )}
+                </button>
+                {openFaq === i && (
+                  <div className="px-4 pb-4 text-sm text-muted-foreground">
+                    {item.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CONTACT ─── */}
+      <section id="contact" className="py-12">
+        <div className="container max-w-2xl">
+          <div className="glass-card p-6 md:p-8 text-center">
+            <h2 className="font-display text-2xl font-bold text-foreground mb-2">Contactez-nous</h2>
+            <p className="text-muted-foreground text-sm mb-6">
+              Par téléphone, email ou en passant nous voir à Uxegney.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <a href="tel:+33329304479" className="pill font-semibold">
+                <Phone className="h-4 w-4 mr-1.5" /> 03 29 30 44 79
+              </a>
+              <a href="mailto:contact@j2l-print.fr" className="pill font-semibold">
+                <Mail className="h-4 w-4 mr-1.5" /> Email
+              </a>
+              <button onClick={() => setCallbackOpen(true)} className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-95 transition">
+                Rappelez-moi
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CALLBACK MODAL ─── */}
+      {callbackOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4">
+          <div className="w-full max-w-lg glass-card p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-display text-lg font-bold text-foreground">Rappelez-moi</h3>
+                <p className="text-xs text-muted-foreground">Laissez vos infos, on vous recontacte rapidement.</p>
+              </div>
+              <button onClick={() => setCallbackOpen(false)} className="pill px-2 py-1">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {callbackSent ? (
+              <div className="text-center py-8">
+                <CheckCircle className="h-10 w-10 text-primary mx-auto mb-3" />
+                <p className="text-foreground font-semibold">Merci ! Nous vous rappelons bientôt.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleCallbackSubmit} className="space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <Label>Nom</Label>
+                    <Input placeholder="Votre nom" required />
+                  </div>
+                  <div>
+                    <Label>Téléphone</Label>
+                    <Input type="tel" placeholder="06 12 34 56 78" required />
+                  </div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <Label>Créneau souhaité</Label>
+                    <select className="flex w-full rounded-xl border border-border bg-background/25 px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary/55">
+                      <option>Matin</option>
+                      <option>Après-midi</option>
+                      <option>Soir</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label>Sujet</Label>
+                    <Input placeholder="Ex : devis bâche" />
+                  </div>
+                </div>
+                <div>
+                  <Label>Message</Label>
+                  <textarea
+                    className="flex w-full rounded-xl border border-border bg-background/25 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/55"
+                    placeholder="Détails..."
+                    rows={3}
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button type="submit" className="rounded-xl bg-primary text-primary-foreground font-bold hover:brightness-95">
+                    Envoyer
+                  </Button>
+                  <button type="button" onClick={() => setCallbackOpen(false)} className="pill font-semibold">
+                    Annuler
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground border-l-2 border-primary pl-3">
+                  Démo : le formulaire affiche un message de confirmation. Reliez-le à un email ou un CRM pour le rendre fonctionnel.
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }
