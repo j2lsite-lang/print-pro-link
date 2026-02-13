@@ -43,7 +43,7 @@ async function proxyRequest(
   const res = await fetch(url, fetchOptions);
   const responseBody = await res.text();
   
-  console.log(`[PrintCom Proxy] Response: ${res.status}`);
+  console.log(`[PrintCom Proxy] Response: ${res.status} - ${responseBody.substring(0, 200)}`);
 
   return new Response(responseBody, {
     status: res.status,
