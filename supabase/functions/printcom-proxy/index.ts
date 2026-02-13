@@ -5,50 +5,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// In-memory token cache
-let cachedToken: { token: string; expiresAt: number } | null = null;
-
-async function getAuthToken(): Promise<string> {
-  const now = Date.now();
-  if (cachedToken && cachedToken.expiresAt > now + 60000) {
-    return cachedToken.token;
-  }
-
-  const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
+function getApiKey(): string {
   const apiKey = Deno.env.get("PRINTCOM_API_KEY");
-
   if (!apiKey) {
     throw new Error("PRINTCOM_API_KEY not configured");
   }
-
-  // Try login with API key as apiKey credential
-  const res = await fetch(`${apiBase}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ credentials: { apiKey } }),
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    console.error(`[PrintCom] Login failed [${res.status}]: ${body}`);
-    
-    // If login fails, try using the API key directly as bearer token
-    console.log("[PrintCom] Trying API key directly as bearer token");
-    cachedToken = { token: apiKey, expiresAt: now + 55 * 60 * 1000 };
-    return apiKey;
-  }
-
-  const data = await res.json();
-  const token = data.token || data.access_token || data.jwt;
-  if (!token) {
-    console.error("[PrintCom] No token in login response, using API key directly");
-    cachedToken = { token: apiKey, expiresAt: now + 55 * 60 * 1000 };
-    return apiKey;
-  }
-
-  console.log("[PrintCom] Login successful, token obtained");
-  cachedToken = { token, expiresAt: now + 55 * 60 * 1000 };
-  return token;
+  return apiKey;
 }
 
 async function proxyRequest(
@@ -57,7 +19,7 @@ async function proxyRequest(
   body: unknown | null,
   lang: string
 ): Promise<Response> {
-  const token = await getAuthToken();
+  const apiKey = getApiKey();
   
   const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
   const platformBase = Deno.env.get("PRINTCOM_PLATFORM_BASE") || "https://platform.print.com";
@@ -67,7 +29,7 @@ async function proxyRequest(
   const url = `${baseUrl}${path}`;
 
   const headers: Record<string, string> = {
-    "Authorization": `Bearer ${token}`,
+    "Authorization": `PrintApiKey ${apiKey}`,
     "Accept-Language": lang,
     "Content-Type": "application/json",
   };
