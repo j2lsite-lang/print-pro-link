@@ -2,15 +2,53 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-function getApiKey(): string {
+// In-memory token cache
+let cachedToken: { token: string; expiresAt: number } | null = null;
+
+async function getAuthToken(): Promise<string> {
+  const now = Date.now();
+  if (cachedToken && cachedToken.expiresAt > now + 60000) {
+    return cachedToken.token;
+  }
+
+  const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
   const apiKey = Deno.env.get("PRINTCOM_API_KEY");
+
   if (!apiKey) {
     throw new Error("PRINTCOM_API_KEY not configured");
   }
-  return apiKey;
+
+  // Try login with API key as apiKey credential
+  const res = await fetch(`${apiBase}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ credentials: { apiKey } }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    console.error(`[PrintCom] Login failed [${res.status}]: ${body}`);
+    
+    // If login fails, try using the API key directly as bearer token
+    console.log("[PrintCom] Trying API key directly as bearer token");
+    cachedToken = { token: apiKey, expiresAt: now + 55 * 60 * 1000 };
+    return apiKey;
+  }
+
+  const data = await res.json();
+  const token = data.token || data.access_token || data.jwt;
+  if (!token) {
+    console.error("[PrintCom] No token in login response, using API key directly");
+    cachedToken = { token: apiKey, expiresAt: now + 55 * 60 * 1000 };
+    return apiKey;
+  }
+
+  console.log("[PrintCom] Login successful, token obtained");
+  cachedToken = { token, expiresAt: now + 55 * 60 * 1000 };
+  return token;
 }
 
 async function proxyRequest(
@@ -19,9 +57,8 @@ async function proxyRequest(
   body: unknown | null,
   lang: string
 ): Promise<Response> {
-  const apiKey = getApiKey();
+  const token = await getAuthToken();
   
-  // Determine base URL
   const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
   const platformBase = Deno.env.get("PRINTCOM_PLATFORM_BASE") || "https://platform.print.com";
   
@@ -30,7 +67,7 @@ async function proxyRequest(
   const url = `${baseUrl}${path}`;
 
   const headers: Record<string, string> = {
-    "Authorization": `Bearer ${apiKey}`,
+    "Authorization": `Bearer ${token}`,
     "Accept-Language": lang,
     "Content-Type": "application/json",
   };
@@ -43,6 +80,8 @@ async function proxyRequest(
   console.log(`[PrintCom Proxy] ${method} ${url}`);
   const res = await fetch(url, fetchOptions);
   const responseBody = await res.text();
+  
+  console.log(`[PrintCom Proxy] Response: ${res.status}`);
 
   return new Response(responseBody, {
     status: res.status,
@@ -65,9 +104,7 @@ serve(async (req) => {
       try { body = await req.json(); } catch { body = null; }
     }
 
-    // Route based on action parameter
     switch (action) {
-      // Products
       case "list-products":
         return proxyRequest("GET", "/products", null, lang);
       
@@ -92,7 +129,6 @@ serve(async (req) => {
       case "batch-specs":
         return proxyRequest("POST", "/products/batch/specs", body, lang);
 
-      // Shipping
       case "shippable-countries":
         return proxyRequest("GET", "/shipping/shippable-countries", null, lang);
       
@@ -102,7 +138,6 @@ serve(async (req) => {
       case "combined-shipment":
         return proxyRequest("POST", "/shipping/combined-shipment", body, lang);
 
-      // Orders
       case "create-order":
         return proxyRequest("POST", "/orders", body, lang);
       
@@ -121,7 +156,6 @@ serve(async (req) => {
         return proxyRequest("PUT", `/orders/${orderNumber}`, body, lang);
       }
 
-      // PDF Preflight
       case "pdf-preflight":
         return proxyRequest("POST", "/pdf/preflight", body, lang);
       
