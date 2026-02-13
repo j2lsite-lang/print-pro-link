@@ -5,41 +5,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// In-memory token cache
-let cachedToken: { token: string; expiresAt: number } | null = null;
-
-async function getAuthToken(): Promise<string> {
-  const now = Date.now();
-  if (cachedToken && cachedToken.expiresAt > now + 60000) {
-    return cachedToken.token;
+function getApiKey(): string {
+  const apiKey = Deno.env.get("PRINTCOM_API_KEY");
+  if (!apiKey) {
+    throw new Error("PRINTCOM_API_KEY not configured");
   }
-
-  const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
-  const username = Deno.env.get("PRINTCOM_USERNAME");
-  const password = Deno.env.get("PRINTCOM_PASSWORD");
-
-  if (!username || !password) {
-    throw new Error("PRINTCOM_USERNAME or PRINTCOM_PASSWORD not configured");
-  }
-
-  const res = await fetch(`${apiBase}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ credentials: { username, password } }),
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Print.com login failed [${res.status}]: ${body}`);
-  }
-
-  const data = await res.json();
-  const token = data.token || data.access_token || data.jwt;
-  if (!token) throw new Error("No token in login response");
-
-  // Cache for 55 minutes (assuming 1h expiry)
-  cachedToken = { token, expiresAt: now + 55 * 60 * 1000 };
-  return token;
+  return apiKey;
 }
 
 async function proxyRequest(
@@ -48,7 +19,7 @@ async function proxyRequest(
   body: unknown | null,
   lang: string
 ): Promise<Response> {
-  const token = await getAuthToken();
+  const apiKey = getApiKey();
   
   // Determine base URL
   const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
@@ -59,7 +30,7 @@ async function proxyRequest(
   const url = `${baseUrl}${path}`;
 
   const headers: Record<string, string> = {
-    "Authorization": `Bearer ${token}`,
+    "Authorization": `Bearer ${apiKey}`,
     "Accept-Language": lang,
     "Content-Type": "application/json",
   };
