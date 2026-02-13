@@ -25,7 +25,7 @@ async function getAuthToken(): Promise<string> {
   const res = await fetch(`${apiBase}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ credentials: { username, password } }),
   });
 
   if (!res.ok) {
