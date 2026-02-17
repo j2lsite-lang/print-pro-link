@@ -16,6 +16,7 @@ import Auth from "./pages/Auth";
 import Orders from "./pages/Orders";
 import OrderDetail from "./pages/OrderDetail";
 import NotFound from "./pages/NotFound";
+import AdminCategories from "./pages/AdminCategories";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/account/orders" element={<Orders />} />
                 <Route path="/account/orders/:orderNumber" element={<OrderDetail />} />
+                <Route path="/admin/categories" element={<AdminCategories />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
