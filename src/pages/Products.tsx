@@ -6,9 +6,9 @@ import { listProducts } from "@/lib/printcom";
 
 interface Product {
   sku: string;
-  name: string;
-  category?: string;
-  description?: string;
+  titleSingle?: string;
+  titlePlural?: string;
+  active?: boolean;
   thumbnailUrl?: string;
 }
 
@@ -17,24 +17,23 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
 
   useEffect(() => {
     listProducts()
       .then((data) => {
-        const items = Array.isArray(data) ? data : data?.products || data?.items || [];
-        setProducts(items);
+        const items: Product[] = Array.isArray(data) ? data : data?.products || data?.items || [];
+        // Only show active products
+        setProducts(items.filter((p) => p.active !== false));
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
-  const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
-
-  const filtered = products.filter(p => {
-    const matchSearch = !search || p.name?.toLowerCase().includes(search.toLowerCase()) || p.sku?.toLowerCase().includes(search.toLowerCase());
-    const matchCat = !categoryFilter || p.category === categoryFilter;
-    return matchSearch && matchCat;
+  const filtered = products.filter((p) => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    const title = (p.titleSingle || p.titlePlural || "").toLowerCase();
+    return title.includes(q) || p.sku.toLowerCase().includes(q);
   });
 
   return (
@@ -42,9 +41,9 @@ export default function Products() {
       <h1 className="font-display text-3xl font-bold text-foreground">Catalogue</h1>
       <p className="mt-2 text-muted-foreground">Découvrez tous nos produits d'impression et supports publicitaires.</p>
 
-      {/* Filters */}
-      <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-        <div className="relative flex-1">
+      {/* Search */}
+      <div className="mt-8">
+        <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Rechercher un produit..."
@@ -53,16 +52,6 @@ export default function Products() {
             className="pl-9"
           />
         </div>
-        {categories.length > 0 && (
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
-          >
-            <option value="">Toutes catégories</option>
-            {categories.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        )}
       </div>
 
       {/* Content */}
@@ -90,7 +79,7 @@ export default function Products() {
             >
               <div className="aspect-[4/3] bg-muted">
                 {product.thumbnailUrl ? (
-                  <img src={product.thumbnailUrl} alt={product.name} className="h-full w-full object-cover" />
+                  <img src={product.thumbnailUrl} alt={product.titleSingle || product.sku} className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full items-center justify-center">
                     <span className="text-4xl font-bold text-muted-foreground/20">{product.sku}</span>
@@ -99,13 +88,8 @@ export default function Products() {
               </div>
               <div className="p-4">
                 <h3 className="font-display font-semibold text-card-foreground group-hover:text-primary transition-colors">
-                  {product.name || product.sku}
+                  {product.titleSingle || product.sku}
                 </h3>
-                {product.category && (
-                  <span className="mt-1 inline-block rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
-                    {product.category}
-                  </span>
-                )}
               </div>
             </Link>
           ))}
@@ -114,6 +98,10 @@ export default function Products() {
           )}
         </div>
       )}
+
+      <p className="mt-6 text-sm text-muted-foreground">
+        {filtered.length} produit{filtered.length > 1 ? "s" : ""} trouvé{filtered.length > 1 ? "s" : ""}
+      </p>
     </div>
   );
 }

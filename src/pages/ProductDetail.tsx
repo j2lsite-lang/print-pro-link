@@ -7,11 +7,29 @@ import { getProduct, getPrice, getAccessories } from "@/lib/printcom";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
 
+interface ProductProperty {
+  slug: string;
+  title: string;
+  required: boolean;
+  locked: boolean;
+  options: { slug: string | number | null; name?: string; nullable?: boolean; eco?: boolean }[];
+}
+
+interface PrintComProduct {
+  sku: string;
+  titleSingle?: string;
+  titlePlural?: string;
+  active?: boolean;
+  properties?: ProductProperty[];
+  thumbnailUrl?: string;
+  imageUrl?: string;
+}
+
 export default function ProductDetail() {
   const { sku } = useParams<{ sku: string }>();
   const { addItem } = useCart();
 
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<PrintComProduct | null>(null);
   const [accessories, setAccessories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,12 +53,14 @@ export default function ProductDetail() {
       .then(([prod, accs]) => {
         setProduct(prod);
         setAccessories(Array.isArray(accs) ? accs : accs?.accessories || []);
-        // Initialize default options
-        if (prod?.options) {
+        // Initialize default options from properties
+        if (prod?.properties) {
           const defaults: Record<string, string> = {};
-          for (const opt of prod.options) {
-            if (opt.values?.length > 0) {
-              defaults[opt.key || opt.name] = opt.values[0].key || opt.values[0].value || opt.values[0];
+          for (const prop of prod.properties) {
+            if (prop.slug === "summary_image" || prop.slug === "copies" || prop.slug === "sample") continue;
+            const firstNonNull = prop.options?.find((o) => !o.nullable && o.slug != null);
+            if (firstNonNull) {
+              defaults[prop.slug] = String(firstNonNull.slug);
             }
           }
           setSelectedOptions(defaults);
@@ -50,13 +70,17 @@ export default function ProductDetail() {
       .finally(() => setLoading(false));
   }, [sku]);
 
+  // Filter configurable properties (exclude metadata-like ones)
+  const configurableProps = (product?.properties || []).filter(
+    (p) => p.slug !== "summary_image" && p.slug !== "copies" && p.slug !== "sample" && p.options?.length > 0
+  );
+
   const handleCalcPrice = async () => {
     if (!sku) return;
     setPriceLoading(true);
     try {
       const result = await getPrice(sku, {
-        options: selectedOptions,
-        quantity,
+        ...selectedOptions,
         copies,
       });
       setPriceResult(result);
@@ -67,11 +91,13 @@ export default function ProductDetail() {
     }
   };
 
+  const productName = product?.titleSingle || sku || "";
+
   const handleAddToCart = () => {
     if (!product || !sku) return;
     addItem({
       sku,
-      productName: product.name || sku,
+      productName,
       options: selectedOptions,
       quantity,
       copies,
@@ -99,15 +125,13 @@ export default function ProductDetail() {
     );
   }
 
-  const options = product.options || product.configurableOptions || [];
-
   return (
     <div className="container py-10">
       <div className="grid gap-10 lg:grid-cols-2">
         {/* Left: image */}
         <div className="aspect-square overflow-hidden rounded-xl bg-muted">
           {product.thumbnailUrl || product.imageUrl ? (
-            <img src={product.thumbnailUrl || product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
+            <img src={product.thumbnailUrl || product.imageUrl} alt={productName} className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full items-center justify-center">
               <Package className="h-20 w-20 text-muted-foreground/20" />
@@ -117,35 +141,34 @@ export default function ProductDetail() {
 
         {/* Right: configurator */}
         <div>
-          <h1 className="font-display text-3xl font-bold text-foreground">{product.name || sku}</h1>
-          {product.description && (
-            <p className="mt-3 text-muted-foreground">{product.description}</p>
-          )}
+          <h1 className="font-display text-3xl font-bold text-foreground">{productName}</h1>
 
-          {/* Options */}
+          {/* Options configurator */}
           <div className="mt-8 space-y-5">
-            {options.map((opt: any) => {
-              const key = opt.key || opt.name || opt.id;
-              const values = opt.values || opt.choices || [];
-              return (
-                <div key={key}>
-                  <label className="mb-1.5 block text-sm font-medium text-foreground">
-                    {opt.name || opt.label || key}
-                  </label>
-                  <select
-                    value={selectedOptions[key] || ""}
-                    onChange={(e) => setSelectedOptions(prev => ({ ...prev, [key]: e.target.value }))}
-                    className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    {values.map((v: any) => {
-                      const val = v.key || v.value || v;
-                      const label = v.name || v.label || val;
-                      return <option key={val} value={val}>{label}</option>;
-                    })}
-                  </select>
-                </div>
-              );
-            })}
+            {configurableProps.map((prop) => (
+              <div key={prop.slug}>
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
+                  {prop.title}
+                  {prop.required && <span className="ml-1 text-destructive">*</span>}
+                </label>
+                <select
+                  value={selectedOptions[prop.slug] || ""}
+                  onChange={(e) =>
+                    setSelectedOptions((prev) => ({ ...prev, [prop.slug]: e.target.value }))
+                  }
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                >
+                  {prop.options
+                    .filter((o) => o.slug != null)
+                    .map((o) => (
+                      <option key={String(o.slug)} value={String(o.slug)}>
+                        {o.name || String(o.slug)}
+                        {o.eco ? " 🌿" : ""}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            ))}
 
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -192,7 +215,7 @@ export default function ProductDetail() {
                 {accessories.map((acc: any) => (
                   <div key={acc.sku} className="flex items-center justify-between rounded-lg border border-border bg-card p-3">
                     <div>
-                      <p className="text-sm font-medium text-card-foreground">{acc.name || acc.sku}</p>
+                      <p className="text-sm font-medium text-card-foreground">{acc.titleSingle || acc.name || acc.sku}</p>
                     </div>
                     <Button
                       size="sm"
@@ -200,7 +223,7 @@ export default function ProductDetail() {
                       onClick={() => {
                         addItem({
                           sku: acc.sku,
-                          productName: acc.name || acc.sku,
+                          productName: acc.titleSingle || acc.name || acc.sku,
                           options: {},
                           quantity: 1,
                           copies: 1,
