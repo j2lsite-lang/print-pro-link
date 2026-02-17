@@ -1,5 +1,3 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -22,13 +20,10 @@ async function proxyRequest(
 ): Promise<Response> {
   const apiKey = getApiKey();
 
-  const apiBase =
-    Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
-  const platformBase =
-    Deno.env.get("PRINTCOM_PLATFORM_BASE") || "https://platform.print.com";
+  const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
+  const platformBase = Deno.env.get("PRINTCOM_PLATFORM_BASE") || "https://platform.print.com";
 
-  const isPlatform =
-    path.startsWith("/pdf/") || path.startsWith("/products/batch/");
+  const isPlatform = path.startsWith("/pdf/") || path.startsWith("/products/batch/");
   const baseUrl = isPlatform ? platformBase : apiBase;
   const url = `${baseUrl}${path}`;
 
@@ -54,7 +49,7 @@ async function proxyRequest(
   });
 }
 
-serve(async (req: Request) => {
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -68,7 +63,7 @@ serve(async (req: Request) => {
     if (req.method === "POST" || req.method === "PUT") {
       try {
         body = await req.json();
-      } catch (_e) {
+      } catch {
         body = null;
       }
     }
@@ -114,20 +109,10 @@ serve(async (req: Request) => {
         return proxyRequest("GET", "/shipping/shippable-countries", null, lang);
 
       case "shipping-possibilities":
-        return proxyRequest(
-          "POST",
-          "/shipping/shipping-possibilities",
-          body,
-          lang,
-        );
+        return proxyRequest("POST", "/shipping/shipping-possibilities", body, lang);
 
       case "combined-shipment":
-        return proxyRequest(
-          "POST",
-          "/shipping/combined-shipment",
-          body,
-          lang,
-        );
+        return proxyRequest("POST", "/shipping/combined-shipment", body, lang);
 
       case "create-order":
         return proxyRequest("POST", "/orders", body, lang);
@@ -138,20 +123,20 @@ serve(async (req: Request) => {
       case "get-order": {
         const orderNumber = url.searchParams.get("orderNumber");
         if (!orderNumber)
-          return new Response(
-            JSON.stringify({ error: "orderNumber required" }),
-            { status: 400, headers: corsHeaders },
-          );
+          return new Response(JSON.stringify({ error: "orderNumber required" }), {
+            status: 400,
+            headers: corsHeaders,
+          });
         return proxyRequest("GET", `/orders/${orderNumber}`, null, lang);
       }
 
       case "update-order": {
         const orderNumber = url.searchParams.get("orderNumber");
         if (!orderNumber)
-          return new Response(
-            JSON.stringify({ error: "orderNumber required" }),
-            { status: 400, headers: corsHeaders },
-          );
+          return new Response(JSON.stringify({ error: "orderNumber required" }), {
+            status: 400,
+            headers: corsHeaders,
+          });
         return proxyRequest("PUT", `/orders/${orderNumber}`, body, lang);
       }
 
@@ -171,16 +156,11 @@ serve(async (req: Request) => {
       case "pdf-links": {
         const platformUrl = url.searchParams.get("platformUrl");
         if (!platformUrl)
-          return new Response(
-            JSON.stringify({ error: "platformUrl required" }),
-            { status: 400, headers: corsHeaders },
-          );
-        return proxyRequest(
-          "GET",
-          `/pdf/links/${encodeURIComponent(platformUrl)}`,
-          null,
-          lang,
-        );
+          return new Response(JSON.stringify({ error: "platformUrl required" }), {
+            status: 400,
+            headers: corsHeaders,
+          });
+        return proxyRequest("GET", `/pdf/links/${encodeURIComponent(platformUrl)}`, null, lang);
       }
 
       default:
@@ -188,27 +168,13 @@ serve(async (req: Request) => {
           JSON.stringify({
             error: "Unknown action",
             availableActions: [
-              "list-products",
-              "get-product",
-              "get-price",
-              "get-accessories",
-              "batch-specs",
-              "shippable-countries",
-              "shipping-possibilities",
-              "combined-shipment",
-              "create-order",
-              "list-orders",
-              "get-order",
-              "update-order",
-              "pdf-preflight",
-              "pdf-preview",
-              "pdf-links",
+              "list-products", "get-product", "get-price", "get-accessories",
+              "batch-specs", "shippable-countries", "shipping-possibilities",
+              "combined-shipment", "create-order", "list-orders", "get-order",
+              "update-order", "pdf-preflight", "pdf-preview", "pdf-links",
             ],
           }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          },
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
     }
   } catch (error) {
