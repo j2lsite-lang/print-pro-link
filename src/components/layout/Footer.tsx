@@ -7,25 +7,19 @@ export default function Footer() {
       <div className="container py-10">
         <div className="grid gap-8 md:grid-cols-[1.2fr_.8fr] items-start">
           {/* Left */}
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-card">
-                <Printer className="h-4 w-4 text-primary-foreground" />
-              </div>
-              <div>
-                <span className="font-display text-base font-bold text-foreground">J2L Print</span>
-                <span className="block text-xs text-muted-foreground">Marque J2L Publicité</span>
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
-              22 B rue Robert Barret, 88390 Uxegney, France
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Téléphone : <a href="tel:+33329304479" className="text-foreground hover:text-primary transition-colors">03 29 30 44 79</a>
-            </p>
-            <p className="text-xs text-muted-foreground mt-4">
-              © {new Date().getFullYear()} J2L Print — Marque J2L Publicité.
-            </p>
+           <div>
+             <div className="flex items-center gap-3 mb-4">
+               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-card">
+                 <Printer className="h-4 w-4 text-primary-foreground" />
+               </div>
+               <span className="font-display text-base font-bold text-foreground">J2L Print</span>
+             </div>
+             <p className="text-sm text-muted-foreground">
+               Téléphone : <a href="tel:+33329304479" className="text-foreground hover:text-primary transition-colors">03 29 30 44 79</a>
+             </p>
+             <p className="text-xs text-muted-foreground mt-4">
+               © {new Date().getFullYear()} J2L Print. Tous droits réservés.
+             </p>
           </div>
 
           {/* Right */}
