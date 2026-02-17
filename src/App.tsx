@@ -17,6 +17,10 @@ import Orders from "./pages/Orders";
 import OrderDetail from "./pages/OrderDetail";
 import NotFound from "./pages/NotFound";
 import AdminCategories from "./pages/AdminCategories";
+import MentionsLegales from "./pages/MentionsLegales";
+import CGV from "./pages/CGV";
+import PolitiqueRetours from "./pages/PolitiqueRetours";
+import PolitiqueConfidentialite from "./pages/PolitiqueConfidentialite";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +44,10 @@ const App = () => (
                 <Route path="/account/orders" element={<Orders />} />
                 <Route path="/account/orders/:orderNumber" element={<OrderDetail />} />
                 <Route path="/admin/categories" element={<AdminCategories />} />
+                <Route path="/mentions-legales" element={<MentionsLegales />} />
+                <Route path="/cgv" element={<CGV />} />
+                <Route path="/politique-retours" element={<PolitiqueRetours />} />
+                <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
