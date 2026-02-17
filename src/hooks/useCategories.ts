@@ -22,7 +22,7 @@ export function useCategories(parentId?: string | null) {
       .order("sort_order");
 
     if (parentId === undefined) {
-      // Top-level categories
+      // Top-level categories only
       query.is("parent_id", null);
     } else if (parentId) {
       query.eq("parent_id", parentId);
@@ -63,14 +63,30 @@ export function useSkusForCategory(categoryId: string | undefined) {
 
   useEffect(() => {
     if (!categoryId) { setLoading(false); return; }
-    supabase
-      .from("product_category_mappings")
-      .select("sku")
-      .eq("category_id", categoryId)
-      .then(({ data }) => {
-        setSkus(data?.map((d) => d.sku) || []);
-        setLoading(false);
-      });
+
+    // Get SKUs from this category AND all its subcategories
+    async function fetchSkus() {
+      // First get subcategory IDs
+      const { data: subCats } = await supabase
+        .from("product_categories")
+        .select("id")
+        .eq("parent_id", categoryId!);
+
+      const categoryIds = [categoryId!, ...(subCats?.map(s => s.id) || [])];
+
+      // Get all SKUs from these categories
+      const { data } = await supabase
+        .from("product_category_mappings")
+        .select("sku")
+        .in("category_id", categoryIds);
+
+      // Deduplicate
+      const uniqueSkus = [...new Set(data?.map(d => d.sku) || [])];
+      setSkus(uniqueSkus);
+      setLoading(false);
+    }
+
+    fetchSkus();
   }, [categoryId]);
 
   return { skus, loading };

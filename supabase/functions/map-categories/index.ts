@@ -23,12 +23,40 @@ serve(async (req: Request) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // 1. Fetch categories from DB
+    // Parse optional parameters
+    let body: any = {};
+    try { body = await req.json(); } catch { body = {}; }
+    const subcategoriesOnly = body.subcategoriesOnly === true;
+    const startFrom = body.startFrom || 0;
+
+    // 1. Fetch ALL categories (parents + subcategories) from DB
     const { data: categories, error: catErr } = await supabase
       .from("product_categories")
-      .select("id, name, slug, description")
+      .select("id, name, slug, description, parent_id")
       .order("sort_order");
     if (catErr) throw new Error("Failed to fetch categories: " + catErr.message);
+
+    // Build category info for AI prompt
+    const categoryList = categories!.map((c: any) => {
+      const parentName = c.parent_id
+        ? categories!.find((p: any) => p.id === c.parent_id)?.name || ""
+        : "";
+      const label = parentName ? `${parentName} > ${c.name}` : c.name;
+      return `- ${c.id}: ${label} (${c.description || ""})`;
+    }).join("\n");
+
+    // Filter which categories to map to
+    const targetCategories = subcategoriesOnly
+      ? categories!.filter((c: any) => c.parent_id !== null)
+      : categories!;
+
+    const targetCategoryList = targetCategories.map((c: any) => {
+      const parentName = c.parent_id
+        ? categories!.find((p: any) => p.id === c.parent_id)?.name || ""
+        : "";
+      const label = parentName ? `${parentName} > ${c.name}` : c.name;
+      return `- ${c.id}: ${label} (${c.description || ""})`;
+    }).join("\n");
 
     // 2. Fetch products from Print.com API
     const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
@@ -45,35 +73,33 @@ serve(async (req: Request) => {
       .filter((p: any) => p.active !== false)
       .map((p: any) => ({ sku: p.sku, title: p.titleSingle || p.titlePlural || p.sku }));
 
-    console.log(`[map-categories] ${activeProducts.length} products, ${categories!.length} categories`);
+    console.log(`[map-categories] ${activeProducts.length} products, ${targetCategories.length} target categories, startFrom=${startFrom}`);
 
-    // 3. Clear existing mappings first
-    await supabase.from("product_category_mappings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-
-    // 4. Process in batches of 50 products and insert immediately
+    // 3. Process in batches
     const batchSize = 50;
     let totalMapped = 0;
 
-    for (let i = 0; i < activeProducts.length; i += batchSize) {
+    for (let i = startFrom; i < activeProducts.length; i += batchSize) {
       const batch = activeProducts.slice(i, i + batchSize);
       const productList = batch.map((p: any) => `- ${p.sku}: ${p.title}`).join("\n");
-      const categoryList = categories!.map((c: any) => `- ${c.id}: ${c.name} (${c.description || ""})`).join("\n");
 
       const prompt = `Tu es un expert en classification de produits d'impression et publicitaires.
 
-Voici les catégories disponibles :
-${categoryList}
+Voici les catégories et sous-catégories disponibles (format: UUID: Nom (description)) :
+${targetCategoryList}
 
 Voici une liste de produits avec leur SKU et nom :
 ${productList}
 
-Pour chaque produit, associe-le à UNE ou PLUSIEURS catégories pertinentes.
+Pour chaque produit, associe-le aux catégories ET sous-catégories les plus pertinentes.
 Réponds UNIQUEMENT avec un JSON array, sans markdown, sans explication.
 Format: [{"sku": "xxx", "category_ids": ["uuid1", "uuid2"]}]
 
 Règles :
-- Un produit peut appartenir à plusieurs catégories
-- Utilise les UUIDs exacts des catégories
+- Un produit peut appartenir à plusieurs catégories et sous-catégories
+- Utilise les UUIDs exacts
+- Sois précis : associe aux sous-catégories quand elles existent
+- Si un produit a une sous-catégorie pertinente, associe-le aussi à sa catégorie parente
 - Si un produit ne correspond à aucune catégorie, ne l'inclus pas`;
 
       const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -93,7 +119,7 @@ Règles :
         if (status === 429) {
           console.warn("[map-categories] Rate limited, waiting 10s...");
           await new Promise((r) => setTimeout(r, 10000));
-          i -= batchSize; // retry this batch
+          i -= batchSize;
           continue;
         }
         if (status === 402) throw new Error("Lovable AI credits exhausted");
@@ -102,21 +128,21 @@ Règles :
 
       const aiData = await aiRes.json();
       const content = aiData.choices?.[0]?.message?.content || "";
-      
+
       const jsonStr = content.replace(/```json?\n?/g, "").replace(/```/g, "").trim();
       let mappings: { sku: string; category_ids: string[] }[];
       try {
         mappings = JSON.parse(jsonStr);
       } catch {
-        console.error("[map-categories] Failed to parse AI response for batch", i, content.substring(0, 200));
+        console.error("[map-categories] Failed to parse batch", i / batchSize + 1, content.substring(0, 200));
         continue;
       }
 
-      // Insert immediately after each batch
       const batchMappings: { sku: string; category_id: string }[] = [];
+      const validIds = new Set(categories!.map((c: any) => c.id));
       for (const m of mappings) {
         for (const cid of m.category_ids) {
-          if (categories!.some((c: any) => c.id === cid)) {
+          if (validIds.has(cid)) {
             batchMappings.push({ sku: m.sku, category_id: cid });
           }
         }
@@ -130,7 +156,7 @@ Règles :
         else totalMapped += batchMappings.length;
       }
 
-      console.log(`[map-categories] Batch ${i / batchSize + 1}: ${mappings.length} products mapped, ${totalMapped} total`);
+      console.log(`[map-categories] Batch ${i / batchSize + 1}: ${mappings.length} products, ${totalMapped} total mappings`);
     }
 
     return new Response(
