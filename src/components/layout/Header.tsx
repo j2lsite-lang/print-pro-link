@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, User, Menu, X, Printer } from "lucide-react";
+import { ShoppingCart, User, Menu, X, Printer, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,17 +23,14 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-border bg-background/82 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-3 min-w-[200px]">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-card">
-            <Printer className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <div>
-            <span className="font-display text-base font-bold tracking-wide text-foreground">
-              J2L Print
-            </span>
-            <span className="block text-xs text-muted-foreground">Marque J2L Publicité</span>
-          </div>
-        </Link>
+         <Link to="/" className="flex items-center gap-3 min-w-[160px]">
+           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-card">
+             <Printer className="h-5 w-5 text-primary-foreground" />
+           </div>
+           <span className="font-display text-base font-bold tracking-wide text-foreground">
+             J2L Print
+           </span>
+         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-2 md:flex flex-wrap justify-end">
@@ -50,20 +47,30 @@ export default function Header() {
               </span>
             )}
           </Link>
-          {user ? (
-            <>
-              <Link to="/account/orders" className="pill text-sm">Mes commandes</Link>
-              <button onClick={signOut} className="pill text-sm">Déconnexion</button>
-            </>
-          ) : (
-            <button
-              onClick={() => navigate("/auth")}
-              className="inline-flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:brightness-95"
-            >
-              <User className="h-4 w-4" />
-              Connexion
-            </button>
-          )}
+          <button
+             onClick={() => {
+               const event = new CustomEvent('open-callback');
+               window.dispatchEvent(event);
+             }}
+             className="inline-flex items-center gap-1 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition hover:brightness-95"
+           >
+             <Phone className="h-4 w-4" />
+             Rappelez-moi
+           </button>
+           {user ? (
+             <>
+               <Link to="/account/orders" className="pill text-sm">Mes commandes</Link>
+               <button onClick={signOut} className="pill text-sm">Déconnexion</button>
+             </>
+           ) : (
+             <button
+               onClick={() => navigate("/auth")}
+               className="inline-flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:brightness-95"
+             >
+               <User className="h-4 w-4" />
+               Connexion
+             </button>
+           )}
         </nav>
 
         {/* Mobile toggle */}
@@ -84,6 +91,16 @@ export default function Header() {
             <Link to="/cart" onClick={() => setMobileOpen(false)} className="pill text-sm">
               Panier ({itemCount})
             </Link>
+            <button
+              onClick={() => {
+                setMobileOpen(false);
+                const event = new CustomEvent('open-callback');
+                window.dispatchEvent(event);
+              }}
+              className="pill text-sm text-left font-semibold"
+            >
+              <Phone className="h-4 w-4 mr-1" /> Rappelez-moi
+            </button>
             {user ? (
               <>
                 <Link to="/account/orders" onClick={() => setMobileOpen(false)} className="pill text-sm">Mes commandes</Link>

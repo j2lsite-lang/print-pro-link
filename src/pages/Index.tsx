@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ArrowRight, Printer, FileText, Image, Layers, Truck,
-  CheckCircle, ChevronDown, ChevronUp, Phone, Mail, MapPin,
+  CheckCircle, ChevronDown, ChevronUp, Phone, Mail,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,15 +19,6 @@ const services = [
   { icon: CheckCircle, title: "Vérification PDF", desc: "Contrôle automatique de vos fichiers avant impression." },
 ];
 
-const realisations = [
-  "Cartes de visite premium",
-  "Bâche événementielle 3×5 m",
-  "Roll-up salon professionnel",
-  "Flyers A5 recto/verso",
-  "Adhésif vitrine magasin",
-  "Kakémono stand expo",
-];
-
 const faqItems = [
   { q: "Quels formats de fichiers acceptez-vous ?", a: "Nous acceptons les fichiers PDF, AI, PSD, EPS et images haute résolution (300 dpi min.)." },
   { q: "Quels sont les délais de livraison ?", a: "En général 3 à 5 jours ouvrés. Options express disponibles." },
@@ -40,6 +31,12 @@ export default function Index() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [callbackOpen, setCallbackOpen] = useState(false);
   const [callbackSent, setCallbackSent] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setCallbackOpen(true);
+    window.addEventListener('open-callback', handler);
+    return () => window.removeEventListener('open-callback', handler);
+  }, []);
 
   const handleCallbackSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,11 +55,11 @@ export default function Index() {
           {/* Left card */}
           <div className="glass-card p-6 md:p-8 flex flex-col justify-center">
             <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight text-foreground">
-              J2L Print — <span className="text-primary">marque J2L Publicité</span>
+              <span className="text-primary">J2L Print</span> — Votre imprimeur en ligne
             </h1>
             <p className="mt-4 text-muted-foreground leading-relaxed max-w-lg">
               Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs.
-              Devis rapide à Uxegney (88).
+              Commandez en ligne, livraison partout en France.
             </p>
             <div className="flex flex-wrap gap-2 mt-6">
               <span className="tag">🖨️ Offset & numérique</span>
@@ -76,21 +73,12 @@ export default function Index() {
                   Voir le catalogue <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <button
-                onClick={() => setCallbackOpen(true)}
-                className="pill font-semibold"
-              >
-                <Phone className="h-4 w-4 mr-1" /> Rappelez-moi
-              </button>
             </div>
           </div>
 
-          {/* Right card */}
+          {/* Right card - Contact */}
           <div className="glass-card p-6 flex flex-col justify-center">
-            <h3 className="font-display text-primary text-lg font-semibold mb-2">Contact rapide</h3>
-            <p className="text-muted-foreground text-sm mb-4">
-              22 B rue Robert Barret, 88390 Uxegney
-            </p>
+            <h3 className="font-display text-primary text-lg font-semibold mb-4">Contactez-nous</h3>
             <div className="space-y-3 text-sm">
               <a href="tel:+33329304479" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
                 <Phone className="h-4 w-4 text-primary" /> 03 29 30 44 79
@@ -98,9 +86,6 @@ export default function Index() {
               <a href="mailto:contact@j2l-print.fr" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
                 <Mail className="h-4 w-4 text-primary" /> contact@j2l-print.fr
               </a>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-4 w-4 text-primary" /> Uxegney, Vosges (88)
-              </div>
             </div>
           </div>
         </div>
@@ -120,23 +105,6 @@ export default function Index() {
                 </div>
                 <h3 className="font-display text-base font-semibold text-foreground">{s.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── RÉALISATIONS ─── */}
-      <section id="realisations" className="py-12">
-        <div className="container">
-          <h2 className="font-display text-2xl font-bold text-foreground text-center mb-8">
-            Réalisations récentes
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {realisations.map((r) => (
-              <div key={r} className="glass-card p-5 flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                <span className="text-sm text-foreground">{r}</span>
               </div>
             ))}
           </div>
@@ -194,6 +162,29 @@ export default function Index() {
         </div>
       </section>
 
+      {/* ─── CONTACT ─── */}
+      <section id="contact" className="py-12">
+        <div className="container max-w-2xl">
+          <div className="glass-card p-6 md:p-8 text-center">
+            <h2 className="font-display text-2xl font-bold text-foreground mb-2">Contactez-nous</h2>
+            <p className="text-muted-foreground text-sm mb-6">
+              Par téléphone ou email, nous sommes à votre écoute.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <a href="tel:+33329304479" className="pill font-semibold">
+                <Phone className="h-4 w-4 mr-1.5" /> 03 29 30 44 79
+              </a>
+              <a href="mailto:contact@j2l-print.fr" className="pill font-semibold">
+                <Mail className="h-4 w-4 mr-1.5" /> Email
+              </a>
+              <button onClick={() => setCallbackOpen(true)} className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-95 transition">
+                Rappelez-moi
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── FAQ ─── */}
       <section id="faq" className="py-12">
         <div className="container max-w-2xl">
@@ -221,29 +212,6 @@ export default function Index() {
                 )}
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── CONTACT ─── */}
-      <section id="contact" className="py-12">
-        <div className="container max-w-2xl">
-          <div className="glass-card p-6 md:p-8 text-center">
-            <h2 className="font-display text-2xl font-bold text-foreground mb-2">Contactez-nous</h2>
-            <p className="text-muted-foreground text-sm mb-6">
-              Par téléphone, email ou en passant nous voir à Uxegney.
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <a href="tel:+33329304479" className="pill font-semibold">
-                <Phone className="h-4 w-4 mr-1.5" /> 03 29 30 44 79
-              </a>
-              <a href="mailto:contact@j2l-print.fr" className="pill font-semibold">
-                <Mail className="h-4 w-4 mr-1.5" /> Email
-              </a>
-              <button onClick={() => setCallbackOpen(true)} className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-95 transition">
-                Rappelez-moi
-              </button>
-            </div>
           </div>
         </div>
       </section>
@@ -309,9 +277,6 @@ export default function Index() {
                     Annuler
                   </button>
                 </div>
-                <p className="text-xs text-muted-foreground border-l-2 border-primary pl-3">
-                  Démo : le formulaire affiche un message de confirmation. Reliez-le à un email ou un CRM pour le rendre fonctionnel.
-                </p>
               </form>
             )}
           </div>
