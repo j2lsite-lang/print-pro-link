@@ -12,6 +12,7 @@ interface Product {
   titlePlural?: string;
   active?: boolean;
   thumbnailUrl?: string;
+  cmsImageUrl?: string;
 }
 
 export default function CategoryProducts() {
@@ -38,13 +39,22 @@ export default function CategoryProducts() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    listProducts()
-      .then((data) => {
-        const items: Product[] = Array.isArray(data) ? data : data?.products || data?.items || [];
-        setAllProducts(items.filter((p) => p.active !== false));
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setProductsLoading(false));
+    Promise.all([
+      listProducts().catch(() => ({ products: [] })),
+      supabase.from("product_images").select("sku, image_url, thumbnail_url"),
+    ]).then(([data, { data: imgData }]) => {
+      const items: Product[] = Array.isArray(data) ? data : data?.products || data?.items || [];
+      const imgMap: Record<string, string> = {};
+      for (const row of imgData || []) imgMap[row.sku] = row.thumbnail_url || row.image_url;
+      setAllProducts(
+        items.filter((p) => p.active !== false).map((p) => ({
+          ...p,
+          cmsImageUrl: imgMap[p.sku] || undefined,
+        }))
+      );
+    })
+    .catch((err) => setError(err.message))
+    .finally(() => setProductsLoading(false));
   }, []);
 
   const loading = catLoading || skusLoading || productsLoading;
@@ -149,9 +159,9 @@ export default function CategoryProducts() {
                 className="group overflow-hidden rounded-xl border border-border bg-card shadow-card transition-all hover:shadow-elevated"
               >
                 <div className="aspect-[4/3] bg-muted overflow-hidden">
-                  {product.thumbnailUrl || category.image_url || parentImageUrl ? (
+                  {product.cmsImageUrl || product.thumbnailUrl || category.image_url || parentImageUrl ? (
                     <img
-                      src={product.thumbnailUrl || category.image_url || parentImageUrl!}
+                      src={product.cmsImageUrl || product.thumbnailUrl || category.image_url || parentImageUrl!}
                       alt={product.titleSingle || product.sku}
                       className="h-full w-full object-cover transition-transform group-hover:scale-105"
                     />
