@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { getProduct, getPrice, getAccessories } from "@/lib/printcom";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
 
 interface ProductProperty {
   slug: string;
@@ -33,6 +35,8 @@ export default function ProductDetail() {
   const [accessories, setAccessories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [categoryImageUrl, setCategoryImageUrl] = useState<string | null>(null);
+
 
   // Configurator state
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
@@ -53,7 +57,6 @@ export default function ProductDetail() {
       .then(([prod, accs]) => {
         setProduct(prod);
         setAccessories(Array.isArray(accs) ? accs : accs?.accessories || []);
-        // Initialize default options from properties
         if (prod?.properties) {
           const defaults: Record<string, string> = {};
           for (const prop of prod.properties) {
@@ -68,7 +71,27 @@ export default function ProductDetail() {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+
+    // Fetch category image as fallback
+    supabase
+      .from("product_category_mappings")
+      .select("category_id")
+      .eq("sku", sku)
+      .limit(1)
+      .maybeSingle()
+      .then(({ data: mapping }) => {
+        if (!mapping?.category_id) return;
+        return supabase
+          .from("product_categories")
+          .select("image_url")
+          .eq("id", mapping.category_id)
+          .maybeSingle();
+      })
+      .then((res: any) => {
+        if (res?.data?.image_url) setCategoryImageUrl(res.data.image_url);
+      });
   }, [sku]);
+
 
   // Filter configurable properties (exclude metadata-like ones)
   const configurableProps = (product?.properties || []).filter(
@@ -130,14 +153,20 @@ export default function ProductDetail() {
       <div className="grid gap-10 lg:grid-cols-2">
         {/* Left: image */}
         <div className="aspect-square overflow-hidden rounded-xl bg-muted">
-          {product.thumbnailUrl || product.imageUrl ? (
-            <img src={product.thumbnailUrl || product.imageUrl} alt={productName} className="h-full w-full object-cover" />
+          {product.thumbnailUrl || product.imageUrl || categoryImageUrl ? (
+            <img
+              src={product.thumbnailUrl || product.imageUrl || categoryImageUrl!}
+              alt={productName}
+              className="h-full w-full object-cover"
+            />
           ) : (
-            <div className="flex h-full items-center justify-center">
+            <div className="flex h-full flex-col items-center justify-center gap-3">
               <Package className="h-20 w-20 text-muted-foreground/20" />
+              <span className="text-sm text-muted-foreground">{productName}</span>
             </div>
           )}
         </div>
+
 
         {/* Right: configurator */}
         <div>

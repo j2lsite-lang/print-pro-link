@@ -135,12 +135,16 @@ export default function CategoryProducts() {
                 to={`/products/${product.sku}`}
                 className="group overflow-hidden rounded-xl border border-border bg-card shadow-card transition-all hover:shadow-elevated"
               >
-                <div className="aspect-[4/3] bg-muted">
-                  {product.thumbnailUrl ? (
-                    <img src={product.thumbnailUrl} alt={product.titleSingle || product.sku} className="h-full w-full object-cover" />
+                <div className="aspect-[4/3] bg-muted overflow-hidden">
+                  {product.thumbnailUrl || category.image_url ? (
+                    <img
+                      src={product.thumbnailUrl || category.image_url!}
+                      alt={product.titleSingle || product.sku}
+                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                    />
                   ) : (
                     <div className="flex h-full items-center justify-center">
-                      <span className="text-4xl font-bold text-muted-foreground/20">{product.sku}</span>
+                      <span className="text-2xl font-bold text-muted-foreground/20">{product.titleSingle || product.sku}</span>
                     </div>
                   )}
                 </div>
