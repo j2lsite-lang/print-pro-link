@@ -72,23 +72,35 @@ export default function ProductDetail() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 
-    // Fetch category image as fallback
+    // Fetch CMS image first, then fallback to category image
     supabase
-      .from("product_category_mappings")
-      .select("category_id")
+      .from("product_images")
+      .select("image_url, thumbnail_url")
       .eq("sku", sku)
-      .limit(1)
       .maybeSingle()
-      .then(({ data: mapping }) => {
-        if (!mapping?.category_id) return;
+      .then(({ data: imgData }) => {
+        if (imgData?.image_url) {
+          setCategoryImageUrl(imgData.thumbnail_url || imgData.image_url);
+          return; // CMS image found, no need to fetch category image
+        }
+        // Fallback: fetch category image
         return supabase
-          .from("product_categories")
-          .select("image_url")
-          .eq("id", mapping.category_id)
-          .maybeSingle();
-      })
-      .then((res: any) => {
-        if (res?.data?.image_url) setCategoryImageUrl(res.data.image_url);
+          .from("product_category_mappings")
+          .select("category_id")
+          .eq("sku", sku)
+          .limit(1)
+          .maybeSingle()
+          .then(({ data: mapping }) => {
+            if (!mapping?.category_id) return;
+            return supabase
+              .from("product_categories")
+              .select("image_url")
+              .eq("id", mapping.category_id)
+              .maybeSingle();
+          })
+          .then((res: any) => {
+            if (res?.data?.image_url) setCategoryImageUrl(res.data.image_url);
+          });
       });
   }, [sku]);
 
