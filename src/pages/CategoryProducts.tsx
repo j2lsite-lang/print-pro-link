@@ -4,6 +4,7 @@ import { Search, Loader2, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { listProducts } from "@/lib/printcom";
 import { useCategoryBySlug, useCategories, useSkusForCategory } from "@/hooks/useCategories";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Product {
   sku: string;
@@ -18,6 +19,18 @@ export default function CategoryProducts() {
   const { category, loading: catLoading } = useCategoryBySlug(slug);
   const { categories: subCategories } = useCategories(category?.id || null);
   const { skus, loading: skusLoading } = useSkusForCategory(category?.id);
+
+  // Fetch parent category image as fallback when current category has no image
+  const [parentImageUrl, setParentImageUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (!category?.parent_id || category?.image_url) { setParentImageUrl(null); return; }
+    supabase
+      .from("product_categories")
+      .select("image_url")
+      .eq("id", category.parent_id)
+      .maybeSingle()
+      .then(({ data }) => setParentImageUrl(data?.image_url || null));
+  }, [category?.parent_id, category?.image_url]);
 
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
@@ -136,9 +149,9 @@ export default function CategoryProducts() {
                 className="group overflow-hidden rounded-xl border border-border bg-card shadow-card transition-all hover:shadow-elevated"
               >
                 <div className="aspect-[4/3] bg-muted overflow-hidden">
-                  {product.thumbnailUrl || category.image_url ? (
+                  {product.thumbnailUrl || category.image_url || parentImageUrl ? (
                     <img
-                      src={product.thumbnailUrl || category.image_url!}
+                      src={product.thumbnailUrl || category.image_url || parentImageUrl!}
                       alt={product.titleSingle || product.sku}
                       className="h-full w-full object-cover transition-transform group-hover:scale-105"
                     />
