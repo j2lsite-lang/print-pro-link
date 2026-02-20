@@ -41,6 +41,7 @@ export default function ProductDetail() {
 
   const [priceResult, setPriceResult] = useState<any>(null);
   const [priceLoading, setPriceLoading] = useState(false);
+  const [priceError, setPriceError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!sku) return;
@@ -101,35 +102,51 @@ export default function ProductDetail() {
     (p) => p.slug !== "summary_image" && p.slug !== "sample" && p.options?.length > 0
   );
 
-  // Auto-calculate price when options change
-  useEffect(() => {
-    if (!sku || !product || configurableProps.length === 0) return;
-    const allSet = configurableProps
-      .filter((p) => p.required)
-      .every((p) => selectedOptions[p.slug] && selectedOptions[p.slug] !== "");
-    if (!allSet) return;
-
+  // Build price payload from selected options
+  const buildPricePayload = () => {
     const cleanOptions: Record<string, unknown> = { deliveryPromise: 0 };
     for (const [k, v] of Object.entries(selectedOptions)) {
       if (v == null || v === "") continue;
-      // copies must be a number for the API
       if (k === "copies") {
         cleanOptions[k] = Number(v);
       } else {
         cleanOptions[k] = v;
       }
     }
+    return cleanOptions;
+  };
 
-    const timer = setTimeout(() => {
-      setPriceLoading(true);
-      getPrice(sku, cleanOptions)
-        .then(setPriceResult)
-        .catch((err) => {
-          console.warn("Price calculation failed:", err.message);
-          setPriceResult(null);
-        })
-        .finally(() => setPriceLoading(false));
-    }, 600);
+  const fetchPrice = () => {
+    if (!sku) return;
+    const payload = buildPricePayload();
+    console.log("[DEBUG] Price request payload:", JSON.stringify(payload, null, 2));
+    setPriceLoading(true);
+    setPriceError(null);
+    getPrice(sku, payload)
+      .then((result) => {
+        console.log("[DEBUG] Price response:", JSON.stringify(result, null, 2));
+        setPriceResult(result);
+      })
+      .catch((err) => {
+        console.error("[DEBUG] Price error:", err.message);
+        setPriceResult(null);
+        setPriceError(err.message);
+      })
+      .finally(() => setPriceLoading(false));
+  };
+
+  // Auto-calculate price when options change
+  useEffect(() => {
+    if (!sku || !product || configurableProps.length === 0) return;
+    const allSet = configurableProps
+      .filter((p) => p.required)
+      .every((p) => selectedOptions[p.slug] && selectedOptions[p.slug] !== "");
+    if (!allSet) {
+      setPriceError(null);
+      return;
+    }
+
+    const timer = setTimeout(fetchPrice, 500);
     return () => clearTimeout(timer);
   }, [sku, selectedOptions, product]);
 
@@ -218,7 +235,9 @@ export default function ProductDetail() {
           <PriceSummary
             priceResult={priceResult}
             priceLoading={priceLoading}
+            priceError={priceError}
             onAddToCart={handleAddToCart}
+            onRetryPrice={fetchPrice}
             disabled={!priceResult}
             selectedOptions={selectedOptions}
             configurableProps={configurableProps}
@@ -235,6 +254,8 @@ export default function ProductDetail() {
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span className="text-sm">Calcul…</span>
               </div>
+            ) : priceError ? (
+              <p className="text-sm text-destructive">Erreur prix</p>
             ) : priceResult ? (
               <p className="text-xl font-bold text-foreground font-display">
                 {(priceResult.price || priceResult.totalPrice || 0).toFixed(2)} €

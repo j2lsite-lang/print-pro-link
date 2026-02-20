@@ -12,7 +12,7 @@ function getApiKey(): string {
   return apiKey;
 }
 
-// In-memory JWT cache (v3 - production)
+// In-memory JWT cache (v4 - credentials updated)
 let cachedJwt: { token: string; expiresAt: number } | null = null;
 
 async function getJwtToken(): Promise<string> {
