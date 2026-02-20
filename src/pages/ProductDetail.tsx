@@ -127,18 +127,34 @@ export default function ProductDetail() {
   const fetchPrice = () => {
     if (!sku) return;
     const payload = buildPricePayload();
-    console.log("[DEBUG] Price request payload:", JSON.stringify(payload, null, 2));
+    console.log("[price] Requesting price for", sku, "with", Object.keys(payload).length, "options");
     setPriceLoading(true);
     setPriceError(null);
     getPrice(sku, payload)
       .then((result) => {
-        console.log("[DEBUG] Price response:", JSON.stringify(result, null, 2));
-        setPriceResult(result);
+        // Print.com may return an error object inside a 200 response
+        if (result?.errorMessage) {
+          console.warn("[price] Print.com error:", result.errorMessage);
+          setPriceResult(null);
+          setPriceError(`Erreur Print.com : ${result.errorMessage}`);
+        } else {
+          console.log("[price] Got price:", result?.price || result?.totalPrice);
+          setPriceResult(result);
+        }
       })
       .catch((err) => {
-        console.error("[DEBUG] Price error:", err.message);
+        console.error("[price] Request failed:", err.message);
         setPriceResult(null);
-        setPriceError(err.message);
+        // Parse the error message for a better user-facing message
+        const match = err.message?.match(/\[(\d+)\]/);
+        const status = match ? parseInt(match[1]) : 0;
+        if (status === 400) {
+          setPriceError("Options incomplètes — veuillez configurer toutes les options requises.");
+        } else if (status === 500) {
+          setPriceError("Le service Print.com est temporairement indisponible. Réessayez.");
+        } else {
+          setPriceError("Impossible de calculer le prix. Vérifiez vos options.");
+        }
       })
       .finally(() => setPriceLoading(false));
   };
