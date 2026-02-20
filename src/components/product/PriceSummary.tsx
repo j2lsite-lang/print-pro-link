@@ -1,6 +1,6 @@
 import { Loader2, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { humanizeSlug } from "@/lib/slug-translations";
+import { humanizeSlug, translatePropertyTitle } from "@/lib/slug-translations";
 
 interface OptionItem {
   slug: string | number | null;
@@ -51,7 +51,7 @@ export default function PriceSummary({
       <div className="space-y-2 text-sm">
         {summaryItems.map((prop) => (
           <div key={prop.slug} className="flex justify-between gap-4">
-            <span className="text-muted-foreground truncate">{prop.title}</span>
+            <span className="text-muted-foreground truncate">{translatePropertyTitle(prop.slug, prop.title)}</span>
             <span className="text-primary font-medium text-right truncate max-w-[55%]">
               {getOptionLabel(prop, selectedOptions[prop.slug])}
             </span>
