@@ -109,7 +109,7 @@ export default function ProductDetail() {
       .every((p) => selectedOptions[p.slug] && selectedOptions[p.slug] !== "");
     if (!allSet) return;
 
-    const cleanOptions: Record<string, unknown> = {};
+    const cleanOptions: Record<string, unknown> = { deliveryPromise: 0 };
     for (const [k, v] of Object.entries(selectedOptions)) {
       if (v == null || v === "") continue;
       // copies must be a number for the API
