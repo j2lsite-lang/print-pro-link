@@ -38,7 +38,7 @@ export default function Cart() {
                 </p>
                 {Object.keys(item.options).length > 0 && (
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {Object.entries(item.options).map(([k, v]) => `${k}: ${v}`).join(" · ")}
+                    {Object.entries(item.options).map(([k, v]) => `${k}: ${typeof v === 'object' && v !== null ? (v as any).slug || (v as any).name || JSON.stringify(v) : v}`).join(" · ")}
                   </p>
                 )}
               </div>
