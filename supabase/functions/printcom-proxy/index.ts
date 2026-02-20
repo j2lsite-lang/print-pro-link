@@ -66,10 +66,14 @@ async function proxyRequest(
 }
 
 /** Safely parse JSON body; returns null on failure */
-async function safeParseBody(req: Request): Promise<unknown | null> {
+async function safeParseBody(req: Request): Promise<Record<string, unknown> | null> {
   if (req.method !== "POST" && req.method !== "PUT") return null;
   try {
-    return await req.json();
+    const parsed = await req.json();
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as Record<string, unknown>;
+    }
+    return null;
   } catch {
     return null;
   }
@@ -108,8 +112,39 @@ Deno.serve(async (req: Request) => {
         if (!body || typeof body !== "object") {
           return jsonResponse({ error: "Missing or invalid JSON body for get-price" }, 400);
         }
-        console.log(`[proxy] get-price sku=${sku} body=${JSON.stringify(body).substring(0, 300)}`);
-        return proxyRequest("POST", `/products/${sku}/price`, body, lang);
+
+        // Support two payload formats:
+        // A) { options: { ... } }  B) flat object with option keys
+        const NON_OPTION_KEYS = new Set(["copies", "designs", "deliveryPromise", "options"]);
+        let options: Record<string, unknown>;
+        if (body.options && typeof body.options === "object" && !Array.isArray(body.options)) {
+          options = body.options as Record<string, unknown>;
+        } else {
+          // Flat format: treat entire body as options
+          options = {};
+          for (const [k, v] of Object.entries(body)) {
+            if (!NON_OPTION_KEYS.has(k)) {
+              options[k] = v;
+            }
+          }
+        }
+
+        // Ensure required numeric fields
+        const pricePayload: Record<string, unknown> = {
+          ...options,
+          copies: Number(body.copies) || 1,
+          designs: Number(body.designs) || 1,
+          deliveryPromise: Number(body.deliveryPromise) || 0,
+        };
+
+        const optionKeys = Object.keys(options);
+        console.log(`[proxy] get-price sku=${sku} optionKeys=${optionKeys.length} keys=[${optionKeys.slice(0, 10).join(",")}]`);
+
+        if (optionKeys.length === 0) {
+          return jsonResponse({ error: "Missing options for pricing — configure at least one product option" }, 400);
+        }
+
+        return proxyRequest("POST", `/products/${sku}/price`, pricePayload, lang);
       }
 
       case "get-accessories": {
