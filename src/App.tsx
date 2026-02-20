@@ -21,6 +21,7 @@ import MentionsLegales from "./pages/MentionsLegales";
 import CGV from "./pages/CGV";
 import PolitiqueRetours from "./pages/PolitiqueRetours";
 import PolitiqueConfidentialite from "./pages/PolitiqueConfidentialite";
+import Livraison from "./pages/Livraison";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
                 <Route path="/cgv" element={<CGV />} />
                 <Route path="/politique-retours" element={<PolitiqueRetours />} />
                 <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
+                <Route path="/livraison" element={<Livraison />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
