@@ -4,56 +4,19 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function jsonResponse(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 function getApiKey(): string {
   const apiKey = Deno.env.get("PRINTCOM_API_KEY");
   if (!apiKey) {
     throw new Error("PRINTCOM_API_KEY not configured");
   }
   return apiKey;
-}
-
-// In-memory JWT cache (v5 - credentials refresh)
-let cachedJwt: { token: string; expiresAt: number } | null = null;
-
-async function getJwtToken(): Promise<string> {
-  // Return cached token if still valid (with 60s margin)
-  if (cachedJwt && cachedJwt.expiresAt > Date.now() + 60_000) {
-    return cachedJwt.token;
-  }
-
-  const username = Deno.env.get("PRINTCOM_USERNAME");
-  const password = Deno.env.get("PRINTCOM_PASSWORD");
-
-  if (!username || !password) {
-    throw new Error("PRINTCOM_USERNAME or PRINTCOM_PASSWORD not configured");
-  }
-
-  const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
-  const loginUrl = `${apiBase}/login`;
-
-  console.log(`[proxy] Logging in to ${loginUrl} with user: ${username}`);
-  const res = await fetch(loginUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({ credentials: { username, password } }),
-  });
-
-  const text = await res.text();
-  console.log(`[proxy] Login response ${res.status}: ${text.substring(0, 300)}`);
-
-  if (!res.ok) {
-    throw new Error(`Login failed [${res.status}]: ${text}`);
-  }
-
-  const data = JSON.parse(text);
-  const token = data.token || data.jwt || data.accessToken;
-  if (!token) {
-    throw new Error(`Login response missing token: ${text.substring(0, 200)}`);
-  }
-
-  // Cache for 23 hours (tokens usually last 24h)
-  cachedJwt = { token, expiresAt: Date.now() + 23 * 60 * 60 * 1000 };
-  return token;
 }
 
 async function proxyRequest(
@@ -69,7 +32,6 @@ async function proxyRequest(
   const baseUrl = isPlatform ? platformBase : apiBase;
   const url = `${baseUrl}${path}`;
 
-  // Use PrintApiKey for all requests (v6 - simpler auth)
   const apiKey = getApiKey();
   const authHeader = `PrintApiKey ${apiKey}`;
 
@@ -86,15 +48,31 @@ async function proxyRequest(
   }
 
   console.log(`[proxy] ${method} ${url}`);
-  if (body) console.log(`[proxy] body: ${JSON.stringify(body).substring(0, 500)}`);
+  if (body) console.log(`[proxy] body keys: ${Object.keys(body as Record<string, unknown>).join(", ")}`);
+
   const res = await fetch(url, fetchOptions);
   const text = await res.text();
-  console.log(`[proxy] response ${res.status}: ${text.substring(0, 500)}`);
+  console.log(`[proxy] response ${res.status} (${text.length} bytes)`);
+
+  // If Print.com returned an error, log it and forward with their status
+  if (!res.ok) {
+    console.warn(`[proxy] Print.com error ${res.status}: ${text.substring(0, 500)}`);
+  }
 
   return new Response(text, {
     status: res.status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+/** Safely parse JSON body; returns null on failure */
+async function safeParseBody(req: Request): Promise<unknown | null> {
+  if (req.method !== "POST" && req.method !== "PUT") return null;
+  try {
+    return await req.json();
+  } catch {
+    return null;
+  }
 }
 
 Deno.serve(async (req: Request) => {
@@ -107,14 +85,9 @@ Deno.serve(async (req: Request) => {
     const action = url.searchParams.get("action");
     const lang = url.searchParams.get("lang") || "fr-FR";
 
-    let body: unknown = null;
-    if (req.method === "POST" || req.method === "PUT") {
-      try {
-        body = await req.json();
-      } catch {
-        body = null;
-      }
-    }
+    console.log(`[proxy] action=${action} method=${req.method}`);
+
+    const body = await safeParseBody(req);
 
     switch (action) {
       case "list-products":
@@ -122,31 +95,26 @@ Deno.serve(async (req: Request) => {
 
       case "get-product": {
         const sku = url.searchParams.get("sku");
-        if (!sku)
-          return new Response(JSON.stringify({ error: "sku required" }), {
-            status: 400,
-            headers: corsHeaders,
-          });
+        if (!sku) return jsonResponse({ error: "sku required" }, 400);
         return proxyRequest("GET", `/products/${sku}`, null, lang);
       }
 
       case "get-price": {
         const sku = url.searchParams.get("sku");
-        if (!sku)
-          return new Response(JSON.stringify({ error: "sku required" }), {
-            status: 400,
-            headers: corsHeaders,
-          });
+        if (!sku) return jsonResponse({ error: "sku required" }, 400);
+        if (req.method !== "POST") {
+          return jsonResponse({ error: "get-price requires POST method" }, 405);
+        }
+        if (!body || typeof body !== "object") {
+          return jsonResponse({ error: "Missing or invalid JSON body for get-price" }, 400);
+        }
+        console.log(`[proxy] get-price sku=${sku} body=${JSON.stringify(body).substring(0, 300)}`);
         return proxyRequest("POST", `/products/${sku}/price`, body, lang);
       }
 
       case "get-accessories": {
         const sku = url.searchParams.get("sku");
-        if (!sku)
-          return new Response(JSON.stringify({ error: "sku required" }), {
-            status: 400,
-            headers: corsHeaders,
-          });
+        if (!sku) return jsonResponse({ error: "sku required" }, 400);
         return proxyRequest("GET", `/accessories/${sku}`, null, lang);
       }
 
@@ -170,21 +138,13 @@ Deno.serve(async (req: Request) => {
 
       case "get-order": {
         const orderNumber = url.searchParams.get("orderNumber");
-        if (!orderNumber)
-          return new Response(JSON.stringify({ error: "orderNumber required" }), {
-            status: 400,
-            headers: corsHeaders,
-          });
+        if (!orderNumber) return jsonResponse({ error: "orderNumber required" }, 400);
         return proxyRequest("GET", `/orders/${orderNumber}`, null, lang);
       }
 
       case "update-order": {
         const orderNumber = url.searchParams.get("orderNumber");
-        if (!orderNumber)
-          return new Response(JSON.stringify({ error: "orderNumber required" }), {
-            status: 400,
-            headers: corsHeaders,
-          });
+        if (!orderNumber) return jsonResponse({ error: "orderNumber required" }, 400);
         return proxyRequest("PUT", `/orders/${orderNumber}`, body, lang);
       }
 
@@ -193,44 +153,30 @@ Deno.serve(async (req: Request) => {
 
       case "pdf-preview": {
         const file = url.searchParams.get("file");
-        if (!file)
-          return new Response(JSON.stringify({ error: "file required" }), {
-            status: 400,
-            headers: corsHeaders,
-          });
+        if (!file) return jsonResponse({ error: "file required" }, 400);
         return proxyRequest("GET", `/pdf/preview/${file}`, null, lang);
       }
 
       case "pdf-links": {
         const platformUrl = url.searchParams.get("platformUrl");
-        if (!platformUrl)
-          return new Response(JSON.stringify({ error: "platformUrl required" }), {
-            status: 400,
-            headers: corsHeaders,
-          });
+        if (!platformUrl) return jsonResponse({ error: "platformUrl required" }, 400);
         return proxyRequest("GET", `/pdf/links/${encodeURIComponent(platformUrl)}`, null, lang);
       }
 
       default:
-        return new Response(
-          JSON.stringify({
-            error: "Unknown action",
-            availableActions: [
-              "list-products", "get-product", "get-price", "get-accessories",
-              "batch-specs", "shippable-countries", "shipping-possibilities",
-              "combined-shipment", "create-order", "list-orders", "get-order",
-              "update-order", "pdf-preflight", "pdf-preview", "pdf-links",
-            ],
-          }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
+        return jsonResponse({
+          error: "Unknown action",
+          availableActions: [
+            "list-products", "get-product", "get-price", "get-accessories",
+            "batch-specs", "shippable-countries", "shipping-possibilities",
+            "combined-shipment", "create-order", "list-orders", "get-order",
+            "update-order", "pdf-preflight", "pdf-preview", "pdf-links",
+          ],
+        }, 400);
     }
   } catch (error) {
-    console.error("[proxy] Error:", error);
+    console.error("[proxy] Unhandled error:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: message }, 500);
   }
 });
