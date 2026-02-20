@@ -12,7 +12,7 @@ function getApiKey(): string {
   return apiKey;
 }
 
-// In-memory JWT cache (v4 - credentials updated)
+// In-memory JWT cache (v5 - credentials refresh)
 let cachedJwt: { token: string; expiresAt: number } | null = null;
 
 async function getJwtToken(): Promise<string> {
@@ -69,15 +69,19 @@ async function proxyRequest(
   const baseUrl = isPlatform ? platformBase : apiBase;
   const url = `${baseUrl}${path}`;
 
-  // Use JWT Bearer for POST/PUT (required for price, orders etc.)
-  // Use PrintApiKey for GET requests
-  let authHeader: string;
+  // Try API key first for all requests; fall back to JWT for POST/PUT if needed
+  const apiKey = getApiKey();
+  let authHeader = `PrintApiKey ${apiKey}`;
+
+  // If JWT credentials are configured, use Bearer for POST/PUT (some endpoints require it)
   if (method !== "GET") {
-    const jwt = await getJwtToken();
-    authHeader = `Bearer ${jwt}`;
-  } else {
-    const apiKey = getApiKey();
-    authHeader = `PrintApiKey ${apiKey}`;
+    try {
+      const jwt = await getJwtToken();
+      authHeader = `Bearer ${jwt}`;
+    } catch (jwtErr) {
+      console.warn(`[proxy] JWT login failed, falling back to API key for ${method} ${path}`);
+      // Keep using PrintApiKey
+    }
   }
 
   const headers: Record<string, string> = {
