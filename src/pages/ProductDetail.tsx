@@ -113,16 +113,25 @@ export default function ProductDetail() {
   // Auto-calculate price when options change
   useEffect(() => {
     if (!sku || !product || configurableProps.length === 0) return;
-    // Only calc if all required options are set
-    const allSet = configurableProps.filter(p => p.required).every(p => selectedOptions[p.slug]);
+    // Only calc if all required options are set and non-empty
+    const allSet = configurableProps.filter(p => p.required).every(p => selectedOptions[p.slug] && selectedOptions[p.slug] !== "");
     if (!allSet) return;
+    // Filter out empty values
+    const cleanOptions: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(selectedOptions)) {
+      if (v != null && v !== "") cleanOptions[k] = v;
+    }
+    cleanOptions.copies = copies;
     const timer = setTimeout(() => {
       setPriceLoading(true);
-      getPrice(sku, { ...selectedOptions, copies })
+      getPrice(sku, cleanOptions)
         .then(setPriceResult)
-        .catch(() => {})
+        .catch((err) => {
+          console.warn("Price calculation failed:", err.message);
+          setPriceResult(null);
+        })
         .finally(() => setPriceLoading(false));
-    }, 400);
+    }, 600);
     return () => clearTimeout(timer);
   }, [sku, selectedOptions, copies, product]);
 
@@ -130,10 +139,12 @@ export default function ProductDetail() {
     if (!sku) return;
     setPriceLoading(true);
     try {
-      const result = await getPrice(sku, {
-        ...selectedOptions,
-        copies,
-      });
+      const cleanOptions: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(selectedOptions)) {
+        if (v != null && v !== "") cleanOptions[k] = v;
+      }
+      cleanOptions.copies = copies;
+      const result = await getPrice(sku, cleanOptions);
       setPriceResult(result);
     } catch (err: any) {
       toast.error("Erreur calcul prix: " + err.message);
