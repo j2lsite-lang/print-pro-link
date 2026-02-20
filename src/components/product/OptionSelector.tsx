@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, ChevronDown, ChevronUp, Leaf, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { humanizeSlug } from "@/lib/slug-translations";
 
 interface OptionItem {
   slug: string | number | null;
@@ -98,7 +99,7 @@ export default function OptionSelector({
                 )}
               >
                 <span className="flex items-center gap-2">
-                  {opt.name || String(opt.slug)}
+                  {opt.name || humanizeSlug(String(opt.slug))}
                   {opt.eco && <Leaf className="h-3.5 w-3.5 text-success" />}
                 </span>
                 {isSelected && <Check className="h-4 w-4 shrink-0" />}

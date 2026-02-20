@@ -1,5 +1,6 @@
 import { Loader2, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { humanizeSlug } from "@/lib/slug-translations";
 
 interface OptionItem {
   slug: string | number | null;
@@ -28,7 +29,7 @@ function getOptionLabel(prop: ConfigurableProp, selectedSlug: string): string {
   // For copies/quantities, format as number
   const num = Number(selectedSlug);
   if (!isNaN(num) && prop.slug === "copies") return num.toLocaleString("fr-FR");
-  return selectedSlug;
+  return humanizeSlug(selectedSlug);
 }
 
 export default function PriceSummary({
