@@ -12,14 +12,56 @@ function getApiKey(): string {
   return apiKey;
 }
 
+// In-memory JWT cache
+let cachedJwt: { token: string; expiresAt: number } | null = null;
+
+async function getJwtToken(): Promise<string> {
+  // Return cached token if still valid (with 60s margin)
+  if (cachedJwt && cachedJwt.expiresAt > Date.now() + 60_000) {
+    return cachedJwt.token;
+  }
+
+  const username = Deno.env.get("PRINTCOM_USERNAME");
+  const password = Deno.env.get("PRINTCOM_PASSWORD");
+
+  if (!username || !password) {
+    throw new Error("PRINTCOM_USERNAME or PRINTCOM_PASSWORD not configured");
+  }
+
+  const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
+  const loginUrl = `${apiBase}/login`;
+
+  console.log(`[proxy] Logging in to ${loginUrl}`);
+  const res = await fetch(loginUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ credentials: { username, password } }),
+  });
+
+  const text = await res.text();
+  console.log(`[proxy] Login response ${res.status}: ${text.substring(0, 300)}`);
+
+  if (!res.ok) {
+    throw new Error(`Login failed [${res.status}]: ${text}`);
+  }
+
+  const data = JSON.parse(text);
+  const token = data.token || data.jwt || data.accessToken;
+  if (!token) {
+    throw new Error(`Login response missing token: ${text.substring(0, 200)}`);
+  }
+
+  // Cache for 23 hours (tokens usually last 24h)
+  cachedJwt = { token, expiresAt: Date.now() + 23 * 60 * 60 * 1000 };
+  return token;
+}
+
 async function proxyRequest(
   method: string,
   path: string,
   body: unknown | null,
   lang: string,
 ): Promise<Response> {
-  const apiKey = getApiKey();
-
   const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
   const platformBase = Deno.env.get("PRINTCOM_PLATFORM_BASE") || "https://platform.print.com";
 
@@ -27,10 +69,14 @@ async function proxyRequest(
   const baseUrl = isPlatform ? platformBase : apiBase;
   const url = `${baseUrl}${path}`;
 
+  const apiKey = getApiKey();
+  const authHeader = `PrintApiKey ${apiKey}`;
+
   const headers: Record<string, string> = {
-    Authorization: `PrintApiKey ${apiKey}`,
+    Authorization: authHeader,
     "Accept-Language": lang,
     "Content-Type": "application/json",
+    Accept: "application/json",
   };
 
   const fetchOptions: RequestInit = { method, headers };
@@ -39,9 +85,10 @@ async function proxyRequest(
   }
 
   console.log(`[proxy] ${method} ${url}`);
+  if (body) console.log(`[proxy] body: ${JSON.stringify(body).substring(0, 500)}`);
   const res = await fetch(url, fetchOptions);
   const text = await res.text();
-  console.log(`[proxy] ${res.status} ${text.substring(0, 200)}`);
+  console.log(`[proxy] response ${res.status}: ${text.substring(0, 500)}`);
 
   return new Response(text, {
     status: res.status,
