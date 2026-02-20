@@ -31,6 +31,7 @@ const SLUG_TRANSLATIONS: Record<string, string> = {
   lfp_latex: "Grand format Latex",
   lfp_solvent: "Grand format Solvant",
   screen: "Sérigraphie",
+  raw_material: "Matière brute",
 
   // Custom shape / cut
   clean_cut: "Coupe au format",
@@ -66,10 +67,57 @@ const SLUG_TRANSLATIONS: Record<string, string> = {
 
   // Finishing
   no_finishing: "Sans finition",
-  
+
   // Common boolean-like
   true: "Oui",
   false: "Non",
+
+  // Materials
+  polypropylene: "Polypropylène",
+  polyester: "Polyester",
+  pvc: "PVC",
+  dibond: "Dibond",
+  forex: "Forex",
+  mesh: "Mesh",
+  canvas: "Toile canvas",
+
+  // Orientation
+  landscape: "Paysage",
+  portrait: "Portrait",
+
+  // Sides
+  single_sided: "Recto seul",
+  double_sided: "Recto/verso",
+};
+
+/**
+ * Property slug → French label mapping for titles
+ * that come untranslated from the API.
+ */
+const PROPERTY_TITLE_TRANSLATIONS: Record<string, string> = {
+  printingmethod: "Méthode d'impression",
+  copies: "Quantité",
+  urgency: "Urgence",
+  packaging: "Emballage",
+  customformat_width: "Largeur (mm)",
+  customformat_height: "Hauteur (mm)",
+  material: "Matériau",
+  printtype: "Type d'impression",
+  finishing: "Finition",
+  lamination: "Pelliculage",
+  drillholes: "Trous de fixation",
+  customshape: "Forme / découpe",
+  score: "Rainage",
+  folded: "Pliage",
+  sealed: "Conditionnement",
+  orientation: "Orientation",
+  sides: "Faces",
+  size: "Format",
+  color: "Couleur",
+  weight: "Grammage",
+  quantity: "Quantité",
+  sample: "Échantillon",
+  summary_image: "Image récapitulatif",
 };
 
 /**
@@ -85,4 +133,19 @@ export function humanizeSlug(slug: string): string {
   return slug
     .replace(/_/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/**
+ * Translate a property title (slug) to French.
+ * Falls back to the provided title or humanized slug.
+ */
+export function translatePropertyTitle(slug: string, apiTitle?: string): string {
+  if (PROPERTY_TITLE_TRANSLATIONS[slug]) {
+    return PROPERTY_TITLE_TRANSLATIONS[slug];
+  }
+  // If the API title looks like a slug (no spaces, has underscores), humanize it
+  if (apiTitle && /^[a-z0-9_]+$/i.test(apiTitle)) {
+    return humanizeSlug(apiTitle);
+  }
+  return apiTitle || humanizeSlug(slug);
 }

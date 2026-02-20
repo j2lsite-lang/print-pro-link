@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Check, ChevronDown, ChevronUp, Leaf, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { humanizeSlug } from "@/lib/slug-translations";
+import { humanizeSlug, translatePropertyTitle } from "@/lib/slug-translations";
 
 interface OptionItem {
   slug: string | number | null;
@@ -48,7 +48,7 @@ export default function OptionSelector({
     <div className="space-y-2">
       <div className="flex items-center gap-2">
         <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
-          {title}
+          {translatePropertyTitle(slug, title)}
           {required && <span className="ml-1 text-destructive text-xs">*</span>}
         </h3>
         <Info className="h-3.5 w-3.5 text-muted-foreground/50" />

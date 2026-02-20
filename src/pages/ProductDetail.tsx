@@ -111,7 +111,13 @@ export default function ProductDetail() {
 
     const cleanOptions: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(selectedOptions)) {
-      if (v != null && v !== "") cleanOptions[k] = v;
+      if (v == null || v === "") continue;
+      // copies must be a number for the API
+      if (k === "copies") {
+        cleanOptions[k] = Number(v);
+      } else {
+        cleanOptions[k] = v;
+      }
     }
 
     const timer = setTimeout(() => {
