@@ -31,10 +31,10 @@ async function getJwtToken(): Promise<string> {
   const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
   const loginUrl = `${apiBase}/login`;
 
-  console.log(`[proxy] Logging in to ${loginUrl}`);
+  console.log(`[proxy] Logging in to ${loginUrl} with user: ${username}`);
   const res = await fetch(loginUrl, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ credentials: { username, password } }),
   });
 
@@ -69,8 +69,16 @@ async function proxyRequest(
   const baseUrl = isPlatform ? platformBase : apiBase;
   const url = `${baseUrl}${path}`;
 
-  const apiKey = getApiKey();
-  const authHeader = `PrintApiKey ${apiKey}`;
+  // Use JWT Bearer for POST/PUT (required for price, orders etc.)
+  // Use PrintApiKey for GET requests
+  let authHeader: string;
+  if (method !== "GET") {
+    const jwt = await getJwtToken();
+    authHeader = `Bearer ${jwt}`;
+  } else {
+    const apiKey = getApiKey();
+    authHeader = `PrintApiKey ${apiKey}`;
+  }
 
   const headers: Record<string, string> = {
     Authorization: authHeader,
