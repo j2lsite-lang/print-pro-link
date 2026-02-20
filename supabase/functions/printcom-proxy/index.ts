@@ -51,15 +51,19 @@ async function getJwtToken(): Promise<string> {
     const text = await res.text();
     if (res.ok) {
       const data = JSON.parse(text);
-      const token = data.token || data.access_token || data.jwt;
+      console.log(`[auth] Login 200 response preview: ${text.substring(0, 500)}`);
+      // Handle array response (some endpoints return [token_string])
+      const resolved = Array.isArray(data) ? data[0] : data;
+      const token = typeof resolved === "string" ? resolved
+        : (resolved?.token || resolved?.access_token || resolved?.jwt || resolved?.id_token);
       if (token) {
-        const expiresIn = data.expires_in || data.expiresIn || 3600;
+        const expiresIn = resolved?.expires_in || resolved?.expiresIn || 3600;
         cachedToken = token;
         tokenExpiresAt = Date.now() + expiresIn * 1000;
         console.log(`[auth] Login successful, token expires in ${expiresIn}s`);
         return token;
       }
-      console.warn(`[auth] Login 200 but no token. Keys: ${Object.keys(data).join(", ")}`);
+      console.warn(`[auth] Login 200 but no token found. Type=${typeof resolved}, keys=${resolved && typeof resolved === 'object' ? Object.keys(resolved).join(',') : 'n/a'}`);
     } else {
       console.warn(`[auth] Login attempt failed ${res.status}: ${text.substring(0, 200)}`);
     }
