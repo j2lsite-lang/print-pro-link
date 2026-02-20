@@ -173,9 +173,11 @@ export default function Checkout() {
             className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
           >
             <option value="FR">France</option>
-            {countries.map((c: any) => (
-              <option key={c.code || c} value={c.code || c}>{c.name || c}</option>
-            ))}
+            {countries.map((c: any) => {
+              const code = c.slug || c.code || c;
+              const name = c.name || code;
+              return <option key={code} value={code}>{name}</option>;
+            })}
           </select>
           <Input placeholder="Téléphone" value={address.phone} onChange={e => setAddress(p => ({ ...p, phone: e.target.value }))} />
           <Input placeholder="Email" value={address.email} onChange={e => setAddress(p => ({ ...p, email: e.target.value }))} />
