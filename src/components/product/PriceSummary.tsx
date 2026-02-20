@@ -1,4 +1,4 @@
-import { Loader2, ShoppingCart } from "lucide-react";
+import { Loader2, ShoppingCart, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { humanizeSlug, translatePropertyTitle } from "@/lib/slug-translations";
 
@@ -17,7 +17,9 @@ interface ConfigurableProp {
 interface PriceSummaryProps {
   priceResult: any;
   priceLoading: boolean;
+  priceError?: string | null;
   onAddToCart: () => void;
+  onRetryPrice?: () => void;
   disabled: boolean;
   selectedOptions: Record<string, string>;
   configurableProps: ConfigurableProp[];
@@ -35,7 +37,9 @@ function getOptionLabel(prop: ConfigurableProp, selectedSlug: string): string {
 export default function PriceSummary({
   priceResult,
   priceLoading,
+  priceError,
   onAddToCart,
+  onRetryPrice,
   disabled,
   selectedOptions,
   configurableProps,
@@ -64,6 +68,16 @@ export default function PriceSummary({
           <div className="flex items-center justify-center gap-2 py-3 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
             <span className="text-sm">Calcul du prix…</span>
+          </div>
+        ) : priceError ? (
+          <div className="space-y-2 py-2">
+            <p className="text-sm text-destructive">Impossible de calculer le prix</p>
+            {onRetryPrice && (
+              <Button variant="outline" size="sm" onClick={onRetryPrice} className="w-full">
+                <RefreshCw className="mr-2 h-3 w-3" />
+                Réessayer
+              </Button>
+            )}
           </div>
         ) : priceResult ? (
           <div className="space-y-1">
