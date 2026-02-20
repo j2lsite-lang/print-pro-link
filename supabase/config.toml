@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.map-categories]
 verify_jwt = false
+
+[functions.sync-cms-images]
+verify_jwt = false
