@@ -9,14 +9,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import imgImpression from "@/assets/services/impression-numerique.jpg";
+import imgGrandFormat from "@/assets/services/grand-format.jpg";
+import imgSupports from "@/assets/services/supports-publicitaires.jpg";
+import imgPerso from "@/assets/services/personnalisation.jpg";
+import imgLivraison from "@/assets/services/livraison-express.jpg";
+import imgPdf from "@/assets/services/verification-pdf.jpg";
+
 /* ─── Data ─── */
 const services = [
-  { icon: FileText, title: "Impression numérique", desc: "Cartes de visite, flyers, dépliants, affiches en petite et grande série." },
-  { icon: Image, title: "Grand format", desc: "Bâches, banderoles, adhésifs, kakémonos et enseignes." },
-  { icon: Layers, title: "Supports publicitaires", desc: "Roll-ups, totems, PLV et signalétique complète." },
-  { icon: Printer, title: "Personnalisation", desc: "Marquage textile, objets publicitaires et goodies." },
-  { icon: Truck, title: "Livraison express", desc: "Expédition rapide en France et en Europe." },
-  { icon: CheckCircle, title: "Vérification PDF", desc: "Contrôle automatique de vos fichiers avant impression." },
+  { icon: FileText, title: "Impression numérique", desc: "Cartes de visite, flyers, dépliants, affiches en petite et grande série.", img: imgImpression },
+  { icon: Image, title: "Grand format", desc: "Bâches, banderoles, adhésifs, kakémonos et enseignes.", img: imgGrandFormat },
+  { icon: Layers, title: "Supports publicitaires", desc: "Roll-ups, totems, PLV et signalétique complète.", img: imgSupports },
+  { icon: Printer, title: "Personnalisation", desc: "Marquage textile, objets publicitaires et goodies.", img: imgPerso },
+  { icon: Truck, title: "Livraison express", desc: "Expédition rapide en France et en Europe.", img: imgLivraison },
+  { icon: CheckCircle, title: "Vérification PDF", desc: "Contrôle automatique de vos fichiers avant impression.", img: imgPdf },
 ];
 
 const faqItems = [
@@ -99,12 +106,17 @@ export default function Index() {
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((s) => (
-              <div key={s.title} className="glass-card p-5 group hover:shadow-elevated transition-all">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 mb-3">
-                  <s.icon className="h-5 w-5 text-primary" />
+              <div key={s.title} className="glass-card overflow-hidden group hover:shadow-elevated transition-all">
+                <div className="h-36 overflow-hidden">
+                  <img src={s.img} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
-                <h3 className="font-display text-base font-semibold text-foreground">{s.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
+                <div className="p-5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 mb-3">
+                    <s.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="font-display text-base font-semibold text-foreground">{s.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
+                </div>
               </div>
             ))}
           </div>
