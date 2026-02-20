@@ -11,14 +11,63 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-function getApiKey(): string {
-  const apiKey = Deno.env.get("PRINTCOM_API_KEY");
-  if (!apiKey) {
-    throw new Error("PRINTCOM_API_KEY not configured");
+// --- JWT Token Cache ---
+let cachedToken: string | null = null;
+let tokenExpiresAt = 0;
+
+async function getJwtToken(): Promise<string> {
+  // Return cached token if still valid (with 60s margin)
+  if (cachedToken && Date.now() < tokenExpiresAt - 60_000) {
+    return cachedToken;
   }
-  return apiKey;
+
+  const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
+  const username = Deno.env.get("PRINTCOM_USERNAME");
+  const password = Deno.env.get("PRINTCOM_PASSWORD");
+
+  if (!username || !password) {
+    throw new Error("PRINTCOM_USERNAME or PRINTCOM_PASSWORD not configured");
+  }
+
+  // Try multiple credential formats
+  const formats = [
+    { credentials: { email: username, password } },
+    { email: username, password },
+    { credentials: { username, password } },
+  ];
+
+  for (const loginBody of formats) {
+    console.log(`[auth] Trying login format: ${JSON.stringify(loginBody).replace(password, "***")}`);
+    const res = await fetch(`${apiBase}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(loginBody),
+    });
+
+    const text = await res.text();
+    if (res.ok) {
+      const data = JSON.parse(text);
+      const token = data.token || data.access_token || data.jwt;
+      if (token) {
+        const expiresIn = data.expires_in || data.expiresIn || 3600;
+        cachedToken = token;
+        tokenExpiresAt = Date.now() + expiresIn * 1000;
+        console.log(`[auth] Login successful, token expires in ${expiresIn}s`);
+        return token;
+      }
+      console.warn(`[auth] Login 200 but no token. Keys: ${Object.keys(data).join(", ")}`);
+    } else {
+      console.warn(`[auth] Login attempt failed ${res.status}: ${text.substring(0, 200)}`);
+    }
+  }
+
+  throw new Error("All Print.com login formats failed");
 }
 
+// --- Proxy Request ---
 async function proxyRequest(
   method: string,
   path: string,
@@ -32,8 +81,17 @@ async function proxyRequest(
   const baseUrl = isPlatform ? platformBase : apiBase;
   const url = `${baseUrl}${path}`;
 
-  const apiKey = getApiKey();
-  const authHeader = `PrintApiKey ${apiKey}`;
+  // Try JWT auth first, fallback to PrintApiKey
+  let authHeader: string;
+  try {
+    const jwt = await getJwtToken();
+    authHeader = `Bearer ${jwt}`;
+  } catch (e) {
+    console.warn(`[proxy] JWT auth failed, falling back to PrintApiKey: ${(e as Error).message}`);
+    const apiKey = Deno.env.get("PRINTCOM_API_KEY");
+    if (!apiKey) throw new Error("No authentication available (JWT failed, no PRINTCOM_API_KEY)");
+    authHeader = `PrintApiKey ${apiKey}`;
+  }
 
   const headers: Record<string, string> = {
     Authorization: authHeader,
@@ -48,13 +106,29 @@ async function proxyRequest(
   }
 
   console.log(`[proxy] ${method} ${url}`);
-  if (body) console.log(`[proxy] body keys: ${Object.keys(body as Record<string, unknown>).join(", ")}`);
 
   const res = await fetch(url, fetchOptions);
   const text = await res.text();
   console.log(`[proxy] response ${res.status} (${text.length} bytes)`);
 
-  // If Print.com returned an error, log it and forward with their status
+  // If we got 401 with JWT, invalidate cache and retry once with PrintApiKey
+  if (res.status === 401 && authHeader.startsWith("Bearer")) {
+    console.warn("[proxy] JWT returned 401, invalidating token and retrying with PrintApiKey");
+    cachedToken = null;
+    tokenExpiresAt = 0;
+    const apiKey = Deno.env.get("PRINTCOM_API_KEY");
+    if (apiKey) {
+      headers.Authorization = `PrintApiKey ${apiKey}`;
+      const retry = await fetch(url, { ...fetchOptions, headers });
+      const retryText = await retry.text();
+      console.log(`[proxy] retry response ${retry.status} (${retryText.length} bytes)`);
+      return new Response(retryText, {
+        status: retry.status,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  }
+
   if (!res.ok) {
     console.warn(`[proxy] Print.com error ${res.status}: ${text.substring(0, 500)}`);
   }
@@ -65,7 +139,7 @@ async function proxyRequest(
   });
 }
 
-/** Safely parse JSON body; returns null on failure */
+// --- Safe Body Parser ---
 async function safeParseBody(req: Request): Promise<Record<string, unknown> | null> {
   if (req.method !== "POST" && req.method !== "PUT") return null;
   try {
@@ -79,6 +153,7 @@ async function safeParseBody(req: Request): Promise<Record<string, unknown> | nu
   }
 }
 
+// --- Main Handler ---
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -113,14 +188,11 @@ Deno.serve(async (req: Request) => {
           return jsonResponse({ error: "Missing or invalid JSON body for get-price" }, 400);
         }
 
-        // Support two payload formats:
-        // A) { options: { ... } }  B) flat object with option keys
         const NON_OPTION_KEYS = new Set(["copies", "designs", "deliveryPromise", "options"]);
         let options: Record<string, unknown>;
         if (body.options && typeof body.options === "object" && !Array.isArray(body.options)) {
           options = body.options as Record<string, unknown>;
         } else {
-          // Flat format: treat entire body as options
           options = {};
           for (const [k, v] of Object.entries(body)) {
             if (!NON_OPTION_KEYS.has(k)) {
@@ -129,7 +201,6 @@ Deno.serve(async (req: Request) => {
           }
         }
 
-        // Ensure required numeric fields
         const pricePayload: Record<string, unknown> = {
           ...options,
           copies: Number(body.copies) || 1,
@@ -138,7 +209,7 @@ Deno.serve(async (req: Request) => {
         };
 
         const optionKeys = Object.keys(options);
-        console.log(`[proxy] get-price sku=${sku} optionKeys=${optionKeys.length} keys=[${optionKeys.slice(0, 10).join(",")}]`);
+        console.log(`[proxy] get-price sku=${sku} optionKeys=${optionKeys.length}`);
 
         if (optionKeys.length === 0) {
           return jsonResponse({ error: "Missing options for pricing — configure at least one product option" }, 400);
