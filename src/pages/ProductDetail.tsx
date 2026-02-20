@@ -41,7 +41,6 @@ export default function ProductDetail() {
   // Configurator state
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
-  const [copies, setCopies] = useState(1);
 
   // Price
   const [priceResult, setPriceResult] = useState<any>(null);
@@ -60,7 +59,7 @@ export default function ProductDetail() {
         if (prod?.properties) {
           const defaults: Record<string, string> = {};
           for (const prop of prod.properties) {
-            if (prop.slug === "summary_image" || prop.slug === "copies" || prop.slug === "sample") continue;
+            if (prop.slug === "summary_image" || prop.slug === "sample") continue;
             const firstNonNull = prop.options?.find((o) => !o.nullable && o.slug != null);
             if (firstNonNull) {
               defaults[prop.slug] = String(firstNonNull.slug);
@@ -107,7 +106,7 @@ export default function ProductDetail() {
 
   // Filter configurable properties (exclude metadata-like ones)
   const configurableProps = (product?.properties || []).filter(
-    (p) => p.slug !== "summary_image" && p.slug !== "copies" && p.slug !== "sample" && p.options?.length > 0
+    (p) => p.slug !== "summary_image" && p.slug !== "sample" && p.options?.length > 0
   );
 
   // Auto-calculate price when options change
@@ -121,7 +120,7 @@ export default function ProductDetail() {
     for (const [k, v] of Object.entries(selectedOptions)) {
       if (v != null && v !== "") cleanOptions[k] = v;
     }
-    cleanOptions.copies = copies;
+    // copies is now part of selectedOptions, no need to add separately
     const timer = setTimeout(() => {
       setPriceLoading(true);
       getPrice(sku, cleanOptions)
@@ -133,7 +132,7 @@ export default function ProductDetail() {
         .finally(() => setPriceLoading(false));
     }, 600);
     return () => clearTimeout(timer);
-  }, [sku, selectedOptions, copies, product]);
+  }, [sku, selectedOptions, product]);
 
   const handleCalcPrice = async () => {
     if (!sku) return;
@@ -143,7 +142,7 @@ export default function ProductDetail() {
       for (const [k, v] of Object.entries(selectedOptions)) {
         if (v != null && v !== "") cleanOptions[k] = v;
       }
-      cleanOptions.copies = copies;
+      // copies is now part of selectedOptions
       const result = await getPrice(sku, cleanOptions);
       setPriceResult(result);
     } catch (err: any) {
@@ -162,7 +161,7 @@ export default function ProductDetail() {
       productName,
       options: selectedOptions,
       quantity,
-      copies,
+      copies: Number(selectedOptions.copies) || 1,
       unitPrice: priceResult?.price || priceResult?.totalPrice || null,
       currency: priceResult?.currency || "EUR",
       fileUrl: null,
@@ -238,15 +237,9 @@ export default function ProductDetail() {
               </div>
             ))}
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-foreground">Quantité</label>
-                <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-foreground">Exemplaires</label>
-                <Input type="number" min={1} value={copies} onChange={(e) => setCopies(Number(e.target.value))} />
-              </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-foreground">Quantité (nombre de commandes)</label>
+              <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
             </div>
           </div>
 
