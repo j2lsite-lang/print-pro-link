@@ -22,6 +22,7 @@ import CGV from "./pages/CGV";
 import PolitiqueRetours from "./pages/PolitiqueRetours";
 import PolitiqueConfidentialite from "./pages/PolitiqueConfidentialite";
 import Livraison from "./pages/Livraison";
+import Blog from "./pages/Blog";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
                 <Route path="/politique-retours" element={<PolitiqueRetours />} />
                 <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
                 <Route path="/livraison" element={<Livraison />} />
+                <Route path="/blog" element={<Blog />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
