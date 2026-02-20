@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Loader2, ShoppingCart, Calculator, Package } from "lucide-react";
+import { Loader2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { getProduct, getPrice, getAccessories } from "@/lib/printcom";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-
+import OptionSelector from "@/components/product/OptionSelector";
+import PriceSummary from "@/components/product/PriceSummary";
 
 interface ProductProperty {
   slug: string;
   title: string;
   required: boolean;
   locked: boolean;
-  options: { slug: string | number | null; name?: string; nullable?: boolean; eco?: boolean }[];
+  options: { slug: string | number | null; name?: string; nullable?: boolean; eco?: boolean; description?: string; type?: string }[];
 }
 
 interface PrintComProduct {
@@ -37,12 +37,8 @@ export default function ProductDetail() {
   const [error, setError] = useState<string | null>(null);
   const [categoryImageUrl, setCategoryImageUrl] = useState<string | null>(null);
 
-
-  // Configurator state
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
-  const [quantity, setQuantity] = useState(1);
 
-  // Price
   const [priceResult, setPriceResult] = useState<any>(null);
   const [priceLoading, setPriceLoading] = useState(false);
 
@@ -71,7 +67,6 @@ export default function ProductDetail() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 
-    // Fetch CMS image first, then fallback to category image
     supabase
       .from("product_images")
       .select("image_url, thumbnail_url")
@@ -80,9 +75,8 @@ export default function ProductDetail() {
       .then(({ data: imgData }) => {
         if (imgData?.image_url) {
           setCategoryImageUrl(imgData.thumbnail_url || imgData.image_url);
-          return; // CMS image found, no need to fetch category image
+          return;
         }
-        // Fallback: fetch category image
         return supabase
           .from("product_category_mappings")
           .select("category_id")
@@ -103,8 +97,6 @@ export default function ProductDetail() {
       });
   }, [sku]);
 
-
-  // Filter configurable properties (exclude metadata-like ones)
   const configurableProps = (product?.properties || []).filter(
     (p) => p.slug !== "summary_image" && p.slug !== "sample" && p.options?.length > 0
   );
@@ -112,15 +104,16 @@ export default function ProductDetail() {
   // Auto-calculate price when options change
   useEffect(() => {
     if (!sku || !product || configurableProps.length === 0) return;
-    // Only calc if all required options are set and non-empty
-    const allSet = configurableProps.filter(p => p.required).every(p => selectedOptions[p.slug] && selectedOptions[p.slug] !== "");
+    const allSet = configurableProps
+      .filter((p) => p.required)
+      .every((p) => selectedOptions[p.slug] && selectedOptions[p.slug] !== "");
     if (!allSet) return;
-    // Filter out empty values
+
     const cleanOptions: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(selectedOptions)) {
       if (v != null && v !== "") cleanOptions[k] = v;
     }
-    // copies is now part of selectedOptions, no need to add separately
+
     const timer = setTimeout(() => {
       setPriceLoading(true);
       getPrice(sku, cleanOptions)
@@ -134,24 +127,6 @@ export default function ProductDetail() {
     return () => clearTimeout(timer);
   }, [sku, selectedOptions, product]);
 
-  const handleCalcPrice = async () => {
-    if (!sku) return;
-    setPriceLoading(true);
-    try {
-      const cleanOptions: Record<string, unknown> = {};
-      for (const [k, v] of Object.entries(selectedOptions)) {
-        if (v != null && v !== "") cleanOptions[k] = v;
-      }
-      // copies is now part of selectedOptions
-      const result = await getPrice(sku, cleanOptions);
-      setPriceResult(result);
-    } catch (err: any) {
-      toast.error("Erreur calcul prix: " + err.message);
-    } finally {
-      setPriceLoading(false);
-    }
-  };
-
   const productName = product?.titleSingle || sku || "";
 
   const handleAddToCart = () => {
@@ -160,7 +135,7 @@ export default function ProductDetail() {
       sku,
       productName,
       options: selectedOptions,
-      quantity,
+      quantity: 1,
       copies: Number(selectedOptions.copies) || 1,
       unitPrice: priceResult?.price || priceResult?.totalPrice || null,
       currency: priceResult?.currency || "EUR",
@@ -186,132 +161,124 @@ export default function ProductDetail() {
     );
   }
 
+  const imageUrl = product.thumbnailUrl || product.imageUrl || categoryImageUrl;
+
   return (
-    <div className="container py-10">
-      <div className="grid gap-10 lg:grid-cols-2">
-        {/* Left: image */}
-        <div className="aspect-square overflow-hidden rounded-xl bg-muted">
-          {product.thumbnailUrl || product.imageUrl || categoryImageUrl ? (
-            <img
-              src={product.thumbnailUrl || product.imageUrl || categoryImageUrl!}
-              alt={productName}
-              className="h-full w-full object-cover"
-            />
+    <div className="container py-8">
+      {/* Header with image and title */}
+      <div className="mb-8 flex flex-col sm:flex-row gap-6 items-start">
+        <div className="w-full sm:w-48 aspect-[4/3] overflow-hidden rounded-xl bg-muted shrink-0">
+          {imageUrl ? (
+            <img src={imageUrl} alt={productName} className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-3">
-              <Package className="h-20 w-20 text-muted-foreground/20" />
-              <span className="text-sm text-muted-foreground">{productName}</span>
+            <div className="flex h-full flex-col items-center justify-center gap-2">
+              <Package className="h-12 w-12 text-muted-foreground/20" />
             </div>
           )}
         </div>
-
-
-        {/* Right: configurator */}
         <div>
-          <h1 className="font-display text-3xl font-bold text-foreground">{productName}</h1>
-
-          {/* Options configurator */}
-          <div className="mt-8 space-y-5">
-            {configurableProps.map((prop) => (
-              <div key={prop.slug}>
-                <label className="mb-1.5 block text-sm font-medium text-foreground">
-                  {prop.title}
-                  {prop.required && <span className="ml-1 text-destructive">*</span>}
-                </label>
-                <select
-                  value={selectedOptions[prop.slug] || ""}
-                  onChange={(e) =>
-                    setSelectedOptions((prev) => ({ ...prev, [prop.slug]: e.target.value }))
-                  }
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
-                >
-                  {prop.options
-                    .filter((o) => o.slug != null)
-                    .map((o) => (
-                      <option key={String(o.slug)} value={String(o.slug)}>
-                        {o.name || String(o.slug)}
-                        {o.eco ? " 🌿" : ""}
-                      </option>
-                    ))}
-                </select>
-              </div>
-            ))}
-
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-foreground">Quantité (nombre de commandes)</label>
-              <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
-            </div>
-          </div>
-
-          {/* Price */}
-          {priceLoading && (
-            <div className="mt-6 flex items-center gap-2 text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Calcul du prix…</span>
-            </div>
-          )}
-
-          {priceResult && !priceLoading && (
-            <div className="mt-6 rounded-xl border border-primary/30 bg-primary/5 p-5">
-              <p className="text-2xl font-bold text-foreground">
-                {(priceResult.price || priceResult.totalPrice || 0).toFixed(2)} €
-              </p>
-              {priceResult.pricePerUnit && (
-                <p className="text-sm text-muted-foreground">
-                  {priceResult.pricePerUnit.toFixed(2)} € / unité
-                </p>
-              )}
-            </div>
-          )}
-
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Button variant="outline" onClick={handleCalcPrice} disabled={priceLoading}>
-              <Calculator className="mr-2 h-4 w-4" />
-              Recalculer le prix
-            </Button>
-            <Button onClick={handleAddToCart} disabled={!priceResult}>
-              <ShoppingCart className="mr-2 h-4 w-4" />
-              Ajouter au panier
-            </Button>
-          </div>
-
-          {/* Accessories */}
-          {accessories.length > 0 && (
-            <div className="mt-8">
-              <h3 className="font-display text-lg font-semibold text-foreground">Accessoires</h3>
-              <div className="mt-3 grid gap-3">
-                {accessories.map((acc: any) => (
-                  <div key={acc.sku} className="flex items-center justify-between rounded-lg border border-border bg-card p-3">
-                    <div>
-                      <p className="text-sm font-medium text-card-foreground">{acc.titleSingle || acc.name || acc.sku}</p>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        addItem({
-                          sku: acc.sku,
-                          productName: acc.titleSingle || acc.name || acc.sku,
-                          options: {},
-                          quantity: 1,
-                          copies: 1,
-                          unitPrice: acc.price || null,
-                          currency: "EUR",
-                          fileUrl: null,
-                          originalFileName: null,
-                        });
-                        toast.success("Accessoire ajouté !");
-                      }}
-                    >
-                      Ajouter
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
+            {product.titlePlural || productName}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Configurez votre produit en sélectionnant les options ci-dessous
+          </p>
         </div>
       </div>
+
+      {/* Main layout: options grid + sticky price sidebar */}
+      <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+        {/* Left: Options in a multi-column grid */}
+        <div className="grid gap-6 sm:grid-cols-2">
+          {configurableProps.map((prop) => (
+            <OptionSelector
+              key={prop.slug}
+              title={prop.title}
+              slug={prop.slug}
+              options={prop.options}
+              selectedValue={selectedOptions[prop.slug] || ""}
+              onSelect={(val) =>
+                setSelectedOptions((prev) => ({ ...prev, [prop.slug]: val }))
+              }
+              required={prop.required}
+              locked={prop.locked}
+              initialVisibleCount={prop.slug === "copies" ? 8 : 5}
+            />
+          ))}
+        </div>
+
+        {/* Right: Price summary sidebar */}
+        <div className="hidden lg:block">
+          <PriceSummary
+            priceResult={priceResult}
+            priceLoading={priceLoading}
+            onAddToCart={handleAddToCart}
+            disabled={!priceResult}
+            selectedOptions={selectedOptions}
+            configurableProps={configurableProps}
+          />
+        </div>
+      </div>
+
+      {/* Mobile price bar (sticky bottom) */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card p-4">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            {priceLoading ? (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-sm">Calcul…</span>
+              </div>
+            ) : priceResult ? (
+              <p className="text-xl font-bold text-foreground font-display">
+                {(priceResult.price || priceResult.totalPrice || 0).toFixed(2)} €
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground">Configurez les options</p>
+            )}
+          </div>
+          <Button onClick={handleAddToCart} disabled={!priceResult} size="lg">
+            Ajouter au panier
+          </Button>
+        </div>
+      </div>
+
+      {/* Accessories */}
+      {accessories.length > 0 && (
+        <div className="mt-10">
+          <h3 className="font-display text-lg font-semibold text-foreground mb-4">Accessoires</h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {accessories.map((acc: any) => (
+              <div key={acc.sku} className="flex items-center justify-between rounded-lg border border-border bg-card p-3">
+                <p className="text-sm font-medium text-card-foreground">{acc.titleSingle || acc.name || acc.sku}</p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    addItem({
+                      sku: acc.sku,
+                      productName: acc.titleSingle || acc.name || acc.sku,
+                      options: {},
+                      quantity: 1,
+                      copies: 1,
+                      unitPrice: acc.price || null,
+                      currency: "EUR",
+                      fileUrl: null,
+                      originalFileName: null,
+                    });
+                    toast.success("Accessoire ajouté !");
+                  }}
+                >
+                  Ajouter
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Bottom spacing for mobile sticky bar */}
+      <div className="h-20 lg:hidden" />
     </div>
   );
 }
