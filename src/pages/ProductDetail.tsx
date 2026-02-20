@@ -110,6 +110,22 @@ export default function ProductDetail() {
     (p) => p.slug !== "summary_image" && p.slug !== "copies" && p.slug !== "sample" && p.options?.length > 0
   );
 
+  // Auto-calculate price when options change
+  useEffect(() => {
+    if (!sku || !product || configurableProps.length === 0) return;
+    // Only calc if all required options are set
+    const allSet = configurableProps.filter(p => p.required).every(p => selectedOptions[p.slug]);
+    if (!allSet) return;
+    const timer = setTimeout(() => {
+      setPriceLoading(true);
+      getPrice(sku, { ...selectedOptions, copies })
+        .then(setPriceResult)
+        .catch(() => {})
+        .finally(() => setPriceLoading(false));
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [sku, selectedOptions, copies, product]);
+
   const handleCalcPrice = async () => {
     if (!sku) return;
     setPriceLoading(true);
@@ -224,29 +240,36 @@ export default function ProductDetail() {
           </div>
 
           {/* Price */}
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button variant="outline" onClick={handleCalcPrice} disabled={priceLoading}>
-              {priceLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Calculator className="mr-2 h-4 w-4" />}
-              Calculer le prix
-            </Button>
-            <Button onClick={handleAddToCart}>
-              <ShoppingCart className="mr-2 h-4 w-4" />
-              Ajouter au panier
-            </Button>
-          </div>
+          {priceLoading && (
+            <div className="mt-6 flex items-center gap-2 text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="text-sm">Calcul du prix…</span>
+            </div>
+          )}
 
-          {priceResult && (
-            <div className="mt-4 rounded-lg border border-border bg-muted p-4">
-              <p className="text-lg font-bold text-foreground">
-                {(priceResult.price || priceResult.totalPrice || 0).toFixed(2)} {priceResult.currency || "EUR"}
+          {priceResult && !priceLoading && (
+            <div className="mt-6 rounded-xl border border-primary/30 bg-primary/5 p-5">
+              <p className="text-2xl font-bold text-foreground">
+                {(priceResult.price || priceResult.totalPrice || 0).toFixed(2)} €
               </p>
               {priceResult.pricePerUnit && (
                 <p className="text-sm text-muted-foreground">
-                  {priceResult.pricePerUnit.toFixed(2)} / unité
+                  {priceResult.pricePerUnit.toFixed(2)} € / unité
                 </p>
               )}
             </div>
           )}
+
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <Button variant="outline" onClick={handleCalcPrice} disabled={priceLoading}>
+              <Calculator className="mr-2 h-4 w-4" />
+              Recalculer le prix
+            </Button>
+            <Button onClick={handleAddToCart} disabled={!priceResult}>
+              <ShoppingCart className="mr-2 h-4 w-4" />
+              Ajouter au panier
+            </Button>
+          </div>
 
           {/* Accessories */}
           {accessories.length > 0 && (
