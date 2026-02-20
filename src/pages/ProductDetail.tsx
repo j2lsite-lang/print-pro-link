@@ -117,6 +117,10 @@ export default function ProductDetail() {
     if (!cleanOptions.copies) {
       cleanOptions.copies = 1;
     }
+    // Ensure designs is always present (API requires it)
+    if (!cleanOptions.designs) {
+      cleanOptions.designs = 1;
+    }
     return cleanOptions;
   };
 

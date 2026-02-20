@@ -69,20 +69,9 @@ async function proxyRequest(
   const baseUrl = isPlatform ? platformBase : apiBase;
   const url = `${baseUrl}${path}`;
 
-  // Try API key first for all requests; fall back to JWT for POST/PUT if needed
+  // Use PrintApiKey for all requests (v6 - simpler auth)
   const apiKey = getApiKey();
-  let authHeader = `PrintApiKey ${apiKey}`;
-
-  // If JWT credentials are configured, use Bearer for POST/PUT (some endpoints require it)
-  if (method !== "GET") {
-    try {
-      const jwt = await getJwtToken();
-      authHeader = `Bearer ${jwt}`;
-    } catch (jwtErr) {
-      console.warn(`[proxy] JWT login failed, falling back to API key for ${method} ${path}`);
-      // Keep using PrintApiKey
-    }
-  }
+  const authHeader = `PrintApiKey ${apiKey}`;
 
   const headers: Record<string, string> = {
     Authorization: authHeader,
