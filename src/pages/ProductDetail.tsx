@@ -113,6 +113,10 @@ export default function ProductDetail() {
         cleanOptions[k] = v;
       }
     }
+    // Ensure copies is always present (API requires it)
+    if (!cleanOptions.copies) {
+      cleanOptions.copies = 1;
+    }
     return cleanOptions;
   };
 
