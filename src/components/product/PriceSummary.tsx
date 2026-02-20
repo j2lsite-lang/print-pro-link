@@ -1,13 +1,34 @@
 import { Loader2, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+interface OptionItem {
+  slug: string | number | null;
+  name?: string;
+  nullable?: boolean;
+}
+
+interface ConfigurableProp {
+  slug: string;
+  title: string;
+  options: OptionItem[];
+}
+
 interface PriceSummaryProps {
   priceResult: any;
   priceLoading: boolean;
   onAddToCart: () => void;
   disabled: boolean;
   selectedOptions: Record<string, string>;
-  configurableProps: { slug: string; title: string }[];
+  configurableProps: ConfigurableProp[];
+}
+
+function getOptionLabel(prop: ConfigurableProp, selectedSlug: string): string {
+  const match = prop.options.find((o) => String(o.slug) === selectedSlug);
+  if (match?.name) return match.name;
+  // For copies/quantities, format as number
+  const num = Number(selectedSlug);
+  if (!isNaN(num) && prop.slug === "copies") return num.toLocaleString("fr-FR");
+  return selectedSlug;
 }
 
 export default function PriceSummary({
@@ -18,10 +39,9 @@ export default function PriceSummary({
   selectedOptions,
   configurableProps,
 }: PriceSummaryProps) {
-  // Build a readable summary of selected options
   const summaryItems = configurableProps
     .filter((p) => selectedOptions[p.slug])
-    .slice(0, 6);
+    .slice(0, 8);
 
   return (
     <div className="rounded-xl border border-border bg-card p-5 space-y-4 sticky top-24">
@@ -31,8 +51,8 @@ export default function PriceSummary({
         {summaryItems.map((prop) => (
           <div key={prop.slug} className="flex justify-between gap-4">
             <span className="text-muted-foreground truncate">{prop.title}</span>
-            <span className="text-primary font-medium text-right truncate max-w-[50%]">
-              {selectedOptions[prop.slug]}
+            <span className="text-primary font-medium text-right truncate max-w-[55%]">
+              {getOptionLabel(prop, selectedOptions[prop.slug])}
             </span>
           </div>
         ))}
