@@ -2,37 +2,58 @@ export default function MentionsLegales() {
   return (
     <section className="py-12">
       <div className="container max-w-3xl">
-        <h1 className="font-display text-3xl font-bold text-foreground mb-8">Mentions légales</h1>
+        <h1 className="font-display text-3xl font-bold text-foreground mb-8">Mentions Légales</h1>
 
         <div className="space-y-6 text-sm text-muted-foreground leading-relaxed">
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Éditeur du site</h2>
-            <p><strong className="text-foreground">Raison sociale :</strong> LEMAIRE JEAN LUC — J2L Publicité</p>
-            <p><strong className="text-foreground">Forme juridique :</strong> Entrepreneur individuel (Micro-entreprise)</p>
-            <p><strong className="text-foreground">Adresse :</strong> 22 B rue Robert Barret, 88390 Uxegney, France</p>
-            <p><strong className="text-foreground">Téléphone :</strong> 03 29 30 44 79</p>
-            <p><strong className="text-foreground">Email :</strong> contact@j2l-print.fr</p>
+            <p><strong className="text-foreground">J2L Publicité</strong>, entreprise individuelle</p>
+            <p><strong className="text-foreground">Siège social :</strong> 22 B rue Robert Barret, 88390 Uxegney, France</p>
+            <p><strong className="text-foreground">Téléphone :</strong> <a href="tel:+33329304479" className="text-primary hover:underline">03 29 30 44 79</a></p>
+            <p><strong className="text-foreground">Email :</strong> <a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></p>
             <p><strong className="text-foreground">SIREN :</strong> 508 858 784</p>
-            <p><strong className="text-foreground">SIRET (siège) :</strong> 508 858 784 00046</p>
-            <p><strong className="text-foreground">Numéro de TVA :</strong> FR64508858784</p>
-            <p><strong className="text-foreground">RCS :</strong> 508 858 784 R.C.S. Epinal</p>
-            <p><strong className="text-foreground">Code NAF / APE :</strong> 73.11Z — Activités des agences de publicité</p>
-            <p><strong className="text-foreground">Activité :</strong> Agence de publicité — Publicité et études de marché</p>
+            <p><strong className="text-foreground">SIRET :</strong> 508 858 784 00046</p>
+            <p><strong className="text-foreground">TVA intracommunautaire :</strong> FR64 508 858 784</p>
+            <p><strong className="text-foreground">RCS :</strong> 508 858 784 R.C.S. Épinal</p>
+          </div>
+
+          <div className="glass-card p-6 space-y-3">
+            <h2 className="font-display text-lg font-semibold text-foreground">Directeur / Responsable de la publication</h2>
+            <p><strong className="text-foreground">Responsable de la publication :</strong> J2L Publicité</p>
+            <p><strong className="text-foreground">Contact :</strong> <a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></p>
           </div>
 
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Hébergement</h2>
-            <p>Le site est hébergé par Lovable (lovable.dev).</p>
+            <p>Le site est hébergé par <strong className="text-foreground">Lovable</strong> (lovable.dev).</p>
           </div>
 
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Propriété intellectuelle</h2>
-            <p>L'ensemble du contenu de ce site (textes, images, logos, graphismes) est la propriété exclusive de J2L Print / J2L Publicité, sauf mention contraire. Toute reproduction, même partielle, est interdite sans autorisation préalable.</p>
+            <p>L'ensemble des éléments constituant le site (textes, images, graphismes, logo, icônes, vidéos, sons, logiciels, etc.) sont la propriété exclusive de J2L Publicité, sauf mention contraire.</p>
+            <p>Toute reproduction, représentation, modification, publication, adaptation de tout ou partie des éléments du site, quel que soit le moyen ou le procédé utilisé, est interdite sans l'autorisation écrite préalable de J2L Publicité.</p>
+            <p>Toute exploitation non autorisée du site ou de l'un quelconque des éléments qu'il contient sera considérée comme constitutive d'une contrefaçon et poursuivie conformément aux dispositions des articles L.335‑2 et suivants du Code de la propriété intellectuelle.</p>
           </div>
 
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Données personnelles</h2>
-            <p>Les informations collectées via les formulaires du site sont destinées uniquement à J2L Print pour le traitement de vos demandes. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Contactez-nous à contact@j2l-print.fr.</p>
+            <p>Les informations personnelles collectées via les formulaires de contact et/ou de demande de devis (nom, prénom, coordonnées, contenu du message, etc.) sont utilisées uniquement pour répondre aux demandes des utilisateurs et assurer le suivi de la relation commerciale.</p>
+            <p>Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés modifiée, vous disposez d'un droit d'accès, de rectification, d'opposition, de limitation et de suppression des données vous concernant.</p>
+            <p>Vous pouvez exercer ces droits en écrivant à : <a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></p>
+            <p>Les données sont conservées pendant la durée strictement nécessaire au traitement de la demande et au maximum 3 ans à compter du dernier contact avec vous, sauf obligation légale contraire.</p>
+          </div>
+
+          <div className="glass-card p-6 space-y-3">
+            <h2 className="font-display text-lg font-semibold text-foreground">Cookies</h2>
+            <p>La navigation sur le site est susceptible de provoquer l'installation de cookies sur l'ordinateur ou le terminal de l'utilisateur.</p>
+            <p>Les cookies utilisés ont pour finalité le bon fonctionnement du site et, le cas échéant, la mesure d'audience.</p>
+            <p>Vous pouvez configurer votre navigateur pour refuser tout ou partie des cookies ou être averti de leur installation. Le refus d'installation d'un cookie peut entraîner l'impossibilité d'accéder à certains services.</p>
+          </div>
+
+          <div className="glass-card p-6 space-y-3">
+            <h2 className="font-display text-lg font-semibold text-foreground">Droit applicable</h2>
+            <p>Le présent site et ses mentions légales sont soumis au droit français.</p>
+            <p>En cas de litige, et à défaut de résolution amiable, les tribunaux français seront seuls compétents.</p>
           </div>
         </div>
       </div>
