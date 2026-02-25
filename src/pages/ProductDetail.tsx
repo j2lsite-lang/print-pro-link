@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Loader2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getProduct, getPrice, getAccessories } from "@/lib/printcom";
-import { getResalePrice } from "@/lib/pricing";
+import { getResalePrice, DESIGN_FEE_BASE } from "@/lib/pricing";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -213,7 +213,7 @@ export default function ProductDetail() {
       options: selectedOptions,
       quantity: 1,
       copies: Number(selectedOptions.copies) || 1,
-      unitPrice: priceResult ? getResalePrice(priceResult) : null,
+      unitPrice: priceResult ? getResalePrice(priceResult) + DESIGN_FEE_BASE : null,
       currency: priceResult?.prices?.currency || priceResult?.currency || "EUR",
       fileUrl: null,
       originalFileName: null,
@@ -311,7 +311,7 @@ export default function ProductDetail() {
               <p className="text-sm text-destructive">Erreur prix</p>
             ) : priceResult ? (
               <p className="text-xl font-bold text-foreground font-display">
-                {getResalePrice(priceResult).toFixed(2)} €
+                {(getResalePrice(priceResult) + DESIGN_FEE_BASE).toFixed(2)} € HT
               </p>
             ) : (
               <p className="text-sm text-muted-foreground">Configurez les options</p>
