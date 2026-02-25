@@ -102,8 +102,10 @@ export default function ProductDetail() {
       });
   }, [sku]);
 
+  // Only show the 5 main configurable properties
+  const MAIN_PROPERTY_SLUGS = new Set(["copies", "size", "material", "printtype", "finishing"]);
   const configurableProps = (product?.properties || []).filter(
-    (p) => p.slug !== "summary_image" && p.slug !== "sample" && p.options?.length > 0
+    (p) => MAIN_PROPERTY_SLUGS.has(p.slug) && p.options?.length > 0
   );
 
   // Build price payload from selected options
