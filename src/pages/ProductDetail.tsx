@@ -148,13 +148,23 @@ export default function ProductDetail() {
       .catch((err) => {
         console.error("[price] Request failed:", err.message);
         setPriceResult(null);
-        // Parse the error message for a better user-facing message
-        const match = err.message?.match(/\[(\d+)\]/);
+        // Parse the error for a user-facing message
+        const errText = err.message || "";
+        const match = errText.match(/\[(\d+)\]/);
         const status = match ? parseInt(match[1]) : 0;
+        
         if (status === 400) {
-          setPriceError("Options incomplètes — veuillez configurer toutes les options requises.");
+          if (errText.includes("exclude group") || errText.includes("excluded configuration")) {
+            setPriceError("Certaines options sélectionnées sont incompatibles entre elles. Essayez une autre combinaison.");
+          } else if (errText.includes("does not match any range")) {
+            setPriceError("La quantité sélectionnée n'est pas disponible pour ce produit. Essayez une autre valeur.");
+          } else if (errText.includes("missing required property")) {
+            setPriceError("Options incomplètes — veuillez configurer toutes les options requises.");
+          } else {
+            setPriceError("Configuration invalide — veuillez modifier vos options.");
+          }
         } else if (status === 500) {
-          setPriceError("Le service Print.com est temporairement indisponible. Réessayez.");
+          setPriceError("Le service est temporairement indisponible. Réessayez.");
         } else {
           setPriceError("Impossible de calculer le prix. Vérifiez vos options.");
         }
