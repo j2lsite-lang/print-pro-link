@@ -43,6 +43,27 @@ function getPricingProperties(properties: ProductProperty[] = []): ProductProper
   });
 }
 
+const MAIN_CONFIG_SLUGS = ["copies", "fold", "size", "material", "printtype", "finish"] as const;
+
+function getMainConfiguratorProps(properties: ProductProperty[] = []): ProductProperty[] {
+  const all = getPricingProperties(properties);
+  const main = all.filter((p) => MAIN_CONFIG_SLUGS.includes(p.slug as (typeof MAIN_CONFIG_SLUGS)[number]));
+
+  // Fallback for products without the standard slugs: keep the smallest meaningful set.
+  if (main.length > 0) return main;
+  return all.filter((p) => p.required || p.slug === "copies").slice(0, 7);
+}
+
+function parseMissingRequiredProperty(errorText: string): string | null {
+  const frMatch = errorText.match(/propriété requise manquante\s*:?\s*([a-zA-Z0-9_:-]+)/i);
+  if (frMatch?.[1]) return frMatch[1];
+
+  const enMatch = errorText.match(/missing required property\s*:?\s*([a-zA-Z0-9_:-]+)/i);
+  if (enMatch?.[1]) return enMatch[1];
+
+  return null;
+}
+
 export default function ProductDetail() {
   const { sku } = useParams<{ sku: string }>();
   const { addItem } = useCart();
@@ -73,10 +94,10 @@ export default function ProductDetail() {
         setAccessories(Array.isArray(accs) ? accs : accs?.accessories || []);
         if (prod?.properties) {
           const defaults: Record<string, string> = {};
-          const pricingProps = getPricingProperties(prod.properties);
+          const visibleProps = getMainConfiguratorProps(prod.properties);
 
-          // Preselect first selectable option for each property to build a valid initial configuration
-          for (const prop of pricingProps) {
+          // Preselect only the main visible options for a stable initial configuration
+          for (const prop of visibleProps) {
             const firstOption = prop.options?.find((o) => o.slug != null);
             if (firstOption) {
               defaults[prop.slug] = String(firstOption.slug);
@@ -134,39 +155,40 @@ export default function ProductDetail() {
       });
   }, [sku]);
 
-  // Show primary configurable properties (avoid mixed branch schemas that produce invalid combinations)
-  const configurableProps = getPricingProperties(product?.properties || []).filter(
+  const allPricingProps = getPricingProperties(product?.properties || []);
+
+  // Show only the main options in UI to avoid invalid auto-combinations.
+  const configurableProps = getMainConfiguratorProps(product?.properties || []).filter(
     (p) => p.options?.length > 0
   );
 
-  // Build price payload — only send visible options + missing required primary options
-  const buildPricePayload = () => {
+  // Build price payload — send only visible options, keep hidden options minimal.
+  const buildPricePayload = (forcedOptions: Record<string, string | number> = {}) => {
     const options: Record<string, unknown> = {};
     const allowedSlugs = new Set(configurableProps.map((p) => p.slug));
 
     for (const [k, v] of Object.entries(selectedOptions)) {
       if (!allowedSlugs.has(k)) continue;
       if (v == null || v === "") continue;
-      if (k === "copies") {
-        options[k] = Number(v) || 1;
-      } else {
-        options[k] = v;
-      }
+      options[k] = k === "copies" ? Number(v) || 1 : v;
     }
 
-    // Safety net: ensure all required visible properties are present in payload
-    for (const prop of configurableProps) {
-      if (!prop.required) continue;
+    // Keep only locked hidden required properties by default (stable + low-risk).
+    for (const prop of allPricingProps) {
+      if (!prop.required || allowedSlugs.has(prop.slug) || !prop.locked) continue;
       if (options[prop.slug]) continue;
       const firstOption = prop.options?.find((o) => o.slug != null);
       if (firstOption) {
-        options[prop.slug] = String(firstOption.slug);
+        options[prop.slug] = prop.slug === "copies" ? Number(firstOption.slug) || 1 : String(firstOption.slug);
       }
     }
 
-    if (!options.copies) {
-      options.copies = 1;
+    for (const [k, v] of Object.entries(forcedOptions)) {
+      options[k] = k === "copies" ? Number(v) || 1 : v;
     }
+
+    if (!options.copies) options.copies = 1;
+
     return {
       deliveryPromise: 0,
       designs: 1,
@@ -174,49 +196,80 @@ export default function ProductDetail() {
     };
   };
 
-  const fetchPrice = () => {
+  const requestPriceWithFallback = async () => {
+    const forcedOptions: Record<string, string | number> = {};
+    const injected = new Set<string>();
+
+    while (true) {
+      const payload = buildPricePayload(forcedOptions);
+      try {
+        console.log("[price] Requesting price for", sku, "with", Object.keys(payload.options || {}).length, "options");
+        return await getPrice(sku!, payload);
+      } catch (err: any) {
+        const errText = err?.message || "";
+        const missingProp = parseMissingRequiredProperty(errText);
+
+        // Auto-fill missing required props only when API explicitly asks for one.
+        if (!missingProp || injected.has(missingProp)) {
+          throw err;
+        }
+
+        const prop = allPricingProps.find((p) => p.slug === missingProp);
+        const fallbackOpt = prop?.options?.find((o) => o.slug != null);
+        if (!fallbackOpt) {
+          throw err;
+        }
+
+        forcedOptions[missingProp] = missingProp === "copies"
+          ? Number(fallbackOpt.slug) || 1
+          : String(fallbackOpt.slug);
+        injected.add(missingProp);
+      }
+    }
+  };
+
+  const fetchPrice = async () => {
     if (!sku) return;
-    const payload = buildPricePayload();
-    console.log("[price] Requesting price for", sku, "with", Object.keys(payload).length, "options");
     setPriceLoading(true);
     setPriceError(null);
-    getPrice(sku, payload)
-      .then((result) => {
-        // Print.com may return an error object inside a 200 response
-        if (result?.errorMessage) {
-          console.warn("[price] Print.com error:", result.errorMessage);
-          setPriceResult(null);
-          setPriceError(`Erreur Print.com : ${result.errorMessage}`);
-        } else {
-          console.log("[price] Got price:", result?.prices?.salesPrice ?? result?.price ?? result?.totalPrice);
-          setPriceResult(result);
-        }
-      })
-      .catch((err) => {
-        console.error("[price] Request failed:", err.message);
+
+    try {
+      const result = await requestPriceWithFallback();
+
+      // Print.com may return an error object inside a 200 response
+      if (result?.errorMessage) {
+        console.warn("[price] Print.com error:", result.errorMessage);
         setPriceResult(null);
-        // Parse the error for a user-facing message
-        const errText = err.message || "";
-        const match = errText.match(/\[(\d+)\]/);
-        const status = match ? parseInt(match[1]) : 0;
-        
-        if (status === 400) {
-          if (errText.includes("exclude group") || errText.includes("excluded configuration")) {
-            setPriceError("Certaines options sélectionnées sont incompatibles entre elles. Essayez une autre combinaison.");
-          } else if (errText.includes("does not match any range")) {
-            setPriceError("La quantité sélectionnée n'est pas disponible pour ce produit. Essayez une autre valeur.");
-          } else if (errText.includes("missing required property")) {
-            setPriceError("Options incomplètes — veuillez configurer toutes les options requises.");
-          } else {
-            setPriceError("Configuration invalide — veuillez modifier vos options.");
-          }
-        } else if (status === 500) {
-          setPriceError("Le service est temporairement indisponible. Réessayez.");
+        setPriceError(`Erreur API : ${result.errorMessage}`);
+      } else {
+        console.log("[price] Got price:", result?.prices?.salesPrice ?? result?.price ?? result?.totalPrice);
+        setPriceResult(result);
+      }
+    } catch (err: any) {
+      console.error("[price] Request failed:", err?.message || err);
+      setPriceResult(null);
+      const errText = err?.message || "";
+      const match = errText.match(/\[(\d+)\]/);
+      const status = match ? parseInt(match[1]) : 0;
+
+      if (status === 400) {
+        if (errText.includes("exclude group") || errText.includes("excluded configuration")) {
+          setPriceError("Combinaison d'options non valide. Essayez un autre format ou mode de pliage.");
+        } else if (errText.includes("does not match any range")) {
+          setPriceError("La quantité sélectionnée n'est pas disponible pour ce produit.");
+        } else if (errText.includes("missing required property") || errText.includes("propriété requise manquante")) {
+          setPriceError("Configuration incomplète — sélectionnez les options principales.");
         } else {
-          setPriceError("Impossible de calculer le prix. Vérifiez vos options.");
+          setPriceError("Configuration invalide — veuillez modifier vos options.");
         }
-      })
-      .finally(() => setPriceLoading(false));
+      } else if (status === 500) {
+        setPriceError("Le service tarifaire est temporairement indisponible. Réessayez.");
+      } else {
+        setPriceError("Impossible de calculer le prix pour le moment.");
+      }
+    } finally {
+      setPriceLoading(false);
+    }
   };
 
   // Auto-calculate price when options change
