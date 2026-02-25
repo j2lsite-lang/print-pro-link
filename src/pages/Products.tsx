@@ -89,17 +89,19 @@ export default function Products() {
     return title.includes(q) || p.sku.toLowerCase().includes(q);
   });
 
+  const visibleCategories = categories.filter((cat) => cat.slug !== "publicite");
+
   return (
     <div className="container py-10">
       <h1 className="font-display text-3xl font-bold text-foreground">Catalogue</h1>
       <p className="mt-2 text-muted-foreground">Découvrez tous nos produits d'impression et supports publicitaires.</p>
 
       {/* Categories */}
-      {!catLoading && categories.length > 0 && (
+      {!catLoading && visibleCategories.length > 0 && (
         <div className="mt-8">
           <h2 className="font-display text-xl font-semibold text-foreground mb-4">Catégories</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {categories.map((cat) => (
+            {visibleCategories.map((cat) => (
               <Link
                 key={cat.id}
                 to={`/products/category/${cat.slug}`}
