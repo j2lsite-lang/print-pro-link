@@ -55,12 +55,11 @@ export default function ProductDetail() {
         setAccessories(Array.isArray(accs) ? accs : accs?.accessories || []);
         if (prod?.properties) {
           const defaults: Record<string, string> = {};
-          // Only pre-select REQUIRED options + copies/printtype/size/material to avoid
-          // incompatible default combinations (e.g. material + finish exclusion groups)
-          const ALWAYS_PRESELECT = new Set(["copies", "size", "printtype", "material", "printingmethod"]);
+          // Only pre-select the 5 main displayed options to avoid
+          // incompatible default combinations (exclude groups)
+          const MAIN_SLUGS = new Set(["copies", "size", "material", "printtype", "finishing"]);
           for (const prop of prod.properties) {
-            if (prop.slug === "summary_image" || prop.slug === "sample") continue;
-            if (!prop.required && !ALWAYS_PRESELECT.has(prop.slug)) continue;
+            if (!MAIN_SLUGS.has(prop.slug)) continue;
             const firstNonNull = prop.options?.find((o) => !o.nullable && o.slug != null);
             if (firstNonNull) {
               defaults[prop.slug] = String(firstNonNull.slug);
@@ -108,27 +107,24 @@ export default function ProductDetail() {
     (p) => MAIN_PROPERTY_SLUGS.has(p.slug) && p.options?.length > 0
   );
 
-  // Build price payload from selected options
+  // Build price payload — only send the 5 main displayed options
   const buildPricePayload = () => {
     const options: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(selectedOptions)) {
       if (v == null || v === "") continue;
+      if (!MAIN_PROPERTY_SLUGS.has(k)) continue; // skip hidden properties
       if (k === "copies") {
         options[k] = Number(v) || 1;
-      } else if (k === "designs") {
-        // designs goes at root level, skip here
-        continue;
       } else {
         options[k] = v;
       }
     }
-    // Ensure copies is always present
     if (!options.copies) {
       options.copies = 1;
     }
     return {
       deliveryPromise: 0,
-      designs: Number(selectedOptions.designs) || 1,
+      designs: 1,
       options,
     };
   };
