@@ -104,24 +104,27 @@ export default function ProductDetail() {
 
   // Build price payload from selected options
   const buildPricePayload = () => {
-    const cleanOptions: Record<string, unknown> = { deliveryPromise: 0 };
+    const options: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(selectedOptions)) {
       if (v == null || v === "") continue;
       if (k === "copies") {
-        cleanOptions[k] = Number(v);
+        options[k] = Number(v) || 1;
+      } else if (k === "designs") {
+        // designs goes at root level, skip here
+        continue;
       } else {
-        cleanOptions[k] = v;
+        options[k] = v;
       }
     }
-    // Ensure copies is always present (API requires it)
-    if (!cleanOptions.copies) {
-      cleanOptions.copies = 1;
+    // Ensure copies is always present
+    if (!options.copies) {
+      options.copies = 1;
     }
-    // Ensure designs is always present (API requires it)
-    if (!cleanOptions.designs) {
-      cleanOptions.designs = 1;
-    }
-    return cleanOptions;
+    return {
+      deliveryPromise: 0,
+      designs: Number(selectedOptions.designs) || 1,
+      options,
+    };
   };
 
   const fetchPrice = () => {
