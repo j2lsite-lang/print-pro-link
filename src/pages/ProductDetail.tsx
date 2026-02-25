@@ -162,7 +162,19 @@ export default function ProductDetail() {
     (p) => p.options?.length > 0
   );
 
-  // Build price payload — send only visible options, keep hidden options minimal.
+  // Remove stale keys from previous payload strategies (prevents invalid option combos lingering in state).
+  useEffect(() => {
+    const allowed = new Set(configurableProps.map((p) => p.slug));
+    setSelectedOptions((prev) => {
+      const next = Object.fromEntries(
+        Object.entries(prev).filter(([k, v]) => allowed.has(k) && v != null && v !== "")
+      );
+      const prevKeys = Object.keys(prev).sort().join("|");
+      const nextKeys = Object.keys(next).sort().join("|");
+      const sameValues = prevKeys === nextKeys && Object.keys(next).every((k) => prev[k] === next[k]);
+      return sameValues ? prev : next;
+    });
+  }, [product?.sku, configurableProps.map((p) => p.slug).join("|")]);
   const buildPricePayload = (forcedOptions: Record<string, string | number> = {}) => {
     const options: Record<string, unknown> = {};
     const allowedSlugs = new Set(configurableProps.map((p) => p.slug));
@@ -173,9 +185,9 @@ export default function ProductDetail() {
       options[k] = k === "copies" ? Number(v) || 1 : v;
     }
 
-    // Keep only locked hidden required properties by default (stable + low-risk).
+    // Inject hidden required base properties (ex: printingmethod) to avoid first-call API errors.
     for (const prop of allPricingProps) {
-      if (!prop.required || allowedSlugs.has(prop.slug) || !prop.locked) continue;
+      if (!prop.required || allowedSlugs.has(prop.slug) || prop.slug.includes(":")) continue;
       if (options[prop.slug]) continue;
       const firstOption = prop.options?.find((o) => o.slug != null);
       if (firstOption) {
