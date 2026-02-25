@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Loader2, Package } from "lucide-react";
+import { useParams, Link } from "react-router-dom";
+import { Loader2, Package, X, ZoomIn, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getProduct, getPrice, getAccessories } from "@/lib/printcom";
 import { getResalePrice, DESIGN_FEE_BASE } from "@/lib/pricing";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import OptionSelector from "@/components/product/OptionSelector";
 import PriceSummary from "@/components/product/PriceSummary";
+import { humanizeSlug, translatePropertyTitle } from "@/lib/slug-translations";
 
 interface ProductProperty {
   slug: string;
@@ -31,6 +32,7 @@ interface PrintComProduct {
 export default function ProductDetail() {
   const { sku } = useParams<{ sku: string }>();
   const { addItem } = useCart();
+  const [imageZoom, setImageZoom] = useState(false);
 
   const [product, setProduct] = useState<PrintComProduct | null>(null);
   const [accessories, setAccessories] = useState<any[]>([]);
@@ -70,6 +72,7 @@ export default function ProductDetail() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 
+    // Fetch product image: prefer full image_url over thumbnail
     supabase
       .from("product_images")
       .select("image_url, thumbnail_url")
@@ -77,7 +80,8 @@ export default function ProductDetail() {
       .maybeSingle()
       .then(({ data: imgData }) => {
         if (imgData?.image_url) {
-          setCategoryImageUrl(imgData.thumbnail_url || imgData.image_url);
+          // Use full image URL for quality, not thumbnail
+          setCategoryImageUrl(imgData.image_url);
           return;
         }
         return supabase
@@ -231,27 +235,60 @@ export default function ProductDetail() {
     );
   }
 
-  const imageUrl = product.thumbnailUrl || product.imageUrl || categoryImageUrl;
+  const imageUrl = product.imageUrl || categoryImageUrl || product.thumbnailUrl;
+
+  // Generate a description from product properties
+  const descriptionParts: string[] = [];
+  for (const prop of product.properties || []) {
+    const validOpts = prop.options?.filter((o) => o.slug != null && !o.nullable) || [];
+    if (validOpts.length > 0 && prop.slug !== "copies") {
+      const label = translatePropertyTitle(prop.slug, prop.title);
+      const count = validOpts.length;
+      descriptionParts.push(`${count} ${label.toLowerCase()}`);
+    }
+  }
 
   return (
     <div className="container py-8">
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+        <Link to="/products" className="hover:text-primary transition-colors">Catalogue</Link>
+        <ChevronRight className="h-3 w-3" />
+        <span className="text-foreground">{product.titlePlural || productName}</span>
+      </nav>
+
       {/* Header with image and title */}
       <div className="mb-8 flex flex-col sm:flex-row gap-6 items-start">
-        <div className="w-full sm:w-48 aspect-[4/3] overflow-hidden rounded-xl bg-muted shrink-0">
+        <div
+          className="w-full sm:w-64 aspect-square overflow-hidden rounded-xl bg-muted shrink-0 cursor-pointer relative group"
+          onClick={() => imageUrl && setImageZoom(true)}
+        >
           {imageUrl ? (
-            <img src={imageUrl} alt={productName} className="h-full w-full object-cover" />
+            <>
+              <img src={imageUrl} alt={productName} className="h-full w-full object-contain p-2" />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors">
+                <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </>
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-2">
               <Package className="h-12 w-12 text-muted-foreground/20" />
             </div>
           )}
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
             {product.titlePlural || productName}
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Configurez votre produit en sélectionnant les options ci-dessous
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            Configurez votre {(productName).toLowerCase()} en sélectionnant les options ci-dessous.
+            {descriptionParts.length > 0 && (
+              <> Disponible avec {descriptionParts.slice(0, 4).join(", ")}.</>
+            )}
+          </p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Livraison rapide partout en France. Devis gratuit, 
+            <Link to="/#devis" className="text-primary hover:underline ml-1">contactez-nous</Link>.
           </p>
         </div>
       </div>
@@ -355,6 +392,27 @@ export default function ProductDetail() {
 
       {/* Bottom spacing for mobile sticky bar */}
       <div className="h-20 lg:hidden" />
+
+      {/* Image zoom modal */}
+      {imageZoom && imageUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setImageZoom(false)}
+        >
+          <button
+            onClick={() => setImageZoom(false)}
+            className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+          >
+            <X className="h-6 w-6" />
+          </button>
+          <img
+            src={imageUrl}
+            alt={productName}
+            className="max-h-[85vh] max-w-[90vw] object-contain rounded-xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
