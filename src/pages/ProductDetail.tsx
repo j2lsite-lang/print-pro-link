@@ -29,6 +29,23 @@ interface PrintComProduct {
   imageUrl?: string;
 }
 
+function getPricingProperties(properties: ProductProperty[] = []): ProductProperty[] {
+  const firstNestedIndex = properties.findIndex((p) => p.slug.includes(":"));
+  const hasBaseAndNestedOverlap = properties.some((p) => {
+    if (!p.slug.includes(":")) return false;
+    const baseSlug = p.slug.split(":")[0];
+    return properties.some((base) => base.slug === baseSlug);
+  });
+
+  if (firstNestedIndex === -1 || !hasBaseAndNestedOverlap) {
+    return properties;
+  }
+
+  // Keep the primary branch only when mixed branches are returned by the API
+  // (e.g. material + material:material + size + size:size + finish)
+  return properties.filter((prop, index) => index < firstNestedIndex || prop.slug === "copies");
+}
+
 export default function ProductDetail() {
   const { sku } = useParams<{ sku: string }>();
   const { addItem } = useCart();
@@ -59,8 +76,11 @@ export default function ProductDetail() {
         setAccessories(Array.isArray(accs) ? accs : accs?.accessories || []);
         if (prod?.properties) {
           const defaults: Record<string, string> = {};
-          // Preselect first non-null option for all properties
-          for (const prop of prod.properties) {
+          const pricingProps = getPricingProperties(prod.properties);
+
+          // Preselect only the primary required options (+ copies) to avoid invalid mixed configurations
+          for (const prop of pricingProps) {
+            if (!prop.required && prop.slug !== "copies") continue;
             const firstNonNull = prop.options?.find((o) => !o.nullable && o.slug != null);
             if (firstNonNull) {
               defaults[prop.slug] = String(firstNonNull.slug);
@@ -104,15 +124,18 @@ export default function ProductDetail() {
       });
   }, [sku]);
 
-  // Show ALL configurable properties from the API
-  const configurableProps = (product?.properties || []).filter(
+  // Show primary configurable properties (avoid mixed branch schemas that produce invalid combinations)
+  const configurableProps = getPricingProperties(product?.properties || []).filter(
     (p) => p.options?.length > 0
   );
 
-  // Build price payload — only send displayed options + hidden required options
+  // Build price payload — only send visible options + missing required primary options
   const buildPricePayload = () => {
     const options: Record<string, unknown> = {};
+    const allowedSlugs = new Set(configurableProps.map((p) => p.slug));
+
     for (const [k, v] of Object.entries(selectedOptions)) {
+      if (!allowedSlugs.has(k)) continue;
       if (v == null || v === "") continue;
       if (k === "copies") {
         options[k] = Number(v) || 1;
@@ -121,25 +144,13 @@ export default function ProductDetail() {
       }
     }
 
-    // Safety net: ensure all required properties are present in payload
-    for (const prop of product?.properties || []) {
+    // Safety net: ensure all required visible properties are present in payload
+    for (const prop of configurableProps) {
       if (!prop.required) continue;
       if (options[prop.slug]) continue;
       const firstNonNull = prop.options?.find((o) => !o.nullable && o.slug != null);
       if (firstNonNull) {
         options[prop.slug] = String(firstNonNull.slug);
-      }
-    }
-
-    // Remove base properties when a more specific variant exists (e.g. "material" when "material:material" is set)
-    // Properties like "material:material" override the base "material" in Print.com's API
-    const keys = Object.keys(options);
-    for (const key of keys) {
-      if (key.includes(":")) {
-        const baseName = key.split(":")[0];
-        if (options[baseName] && baseName !== key) {
-          delete options[baseName];
-        }
       }
     }
 
