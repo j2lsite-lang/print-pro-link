@@ -90,8 +90,8 @@ export default function Index() {
               <a href="tel:+33329304479" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
                 <Phone className="h-4 w-4 text-primary" /> 03 29 30 44 79
               </a>
-              <a href="mailto:contact@j2l-print.fr" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
-                <Mail className="h-4 w-4 text-primary" /> contact@j2l-print.fr
+              <a href="mailto:contact@j2lpublicite.fr" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+                <Mail className="h-4 w-4 text-primary" /> contact@j2lpublicite.fr
               </a>
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function Index() {
               <a href="tel:+33329304479" className="pill font-semibold">
                 <Phone className="h-4 w-4 mr-1.5" /> 03 29 30 44 79
               </a>
-              <a href="mailto:contact@j2l-print.fr" className="pill font-semibold">
+              <a href="mailto:contact@j2lpublicite.fr" className="pill font-semibold">
                 <Mail className="h-4 w-4 mr-1.5" /> Email
               </a>
               <button onClick={() => setCallbackOpen(true)} className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-95 transition">
