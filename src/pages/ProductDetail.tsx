@@ -37,6 +37,7 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [categoryImageUrl, setCategoryImageUrl] = useState<string | null>(null);
+  const [includeDesignFee, setIncludeDesignFee] = useState(false);
 
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
 
@@ -213,7 +214,7 @@ export default function ProductDetail() {
       options: selectedOptions,
       quantity: 1,
       copies: Number(selectedOptions.copies) || 1,
-      unitPrice: priceResult ? getResalePrice(priceResult) + DESIGN_FEE_BASE : null,
+      unitPrice: priceResult ? getResalePrice(priceResult) + (includeDesignFee ? DESIGN_FEE_BASE : 0) : null,
       currency: priceResult?.prices?.currency || priceResult?.currency || "EUR",
       fileUrl: null,
       originalFileName: null,
@@ -294,6 +295,8 @@ export default function ProductDetail() {
             disabled={!priceResult}
             selectedOptions={selectedOptions}
             configurableProps={configurableProps}
+            includeDesignFee={includeDesignFee}
+            onToggleDesignFee={setIncludeDesignFee}
           />
         </div>
       </div>
@@ -311,7 +314,7 @@ export default function ProductDetail() {
               <p className="text-sm text-destructive">Erreur prix</p>
             ) : priceResult ? (
               <p className="text-xl font-bold text-foreground font-display">
-                {(getResalePrice(priceResult) + DESIGN_FEE_BASE).toFixed(2)} € HT
+                {(getResalePrice(priceResult) + (includeDesignFee ? DESIGN_FEE_BASE : 0)).toFixed(2)} € HT
               </p>
             ) : (
               <p className="text-sm text-muted-foreground">Configurez les options</p>
