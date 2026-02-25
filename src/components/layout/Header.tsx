@@ -28,29 +28,27 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-2 md:flex flex-wrap justify-end">
+        <nav className="hidden items-center gap-1.5 md:flex flex-wrap justify-end">
           {navLinks.map((l) => (
-            <Link key={l.to} to={l.to} className="pill text-sm text-foreground/90">
+            <Link key={l.to} to={l.to} className="pill px-3 py-1.5 text-[13px] text-foreground/90">
               {l.label}
             </Link>
           ))}
-          <Link to="/cart" className="pill relative">
+          <Link to="/cart" className="pill relative px-2.5 py-1.5">
             <ShoppingCart className="h-4 w-4" />
             {itemCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
                 {itemCount}
               </span>
             )}
           </Link>
-          <button
-            onClick={() => {
-              window.dispatchEvent(new CustomEvent('open-callback'));
-            }}
-            className="inline-flex items-center gap-1 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition hover:brightness-95"
+          <a
+            href="mailto:contact@j2lpublicite.fr"
+            className="inline-flex items-center gap-1 rounded-full bg-accent px-3 py-1.5 text-[13px] font-semibold text-accent-foreground transition hover:brightness-95"
           >
-            <Phone className="h-4 w-4" />
-            Rappelez-moi
-          </button>
+            <Phone className="h-3.5 w-3.5" />
+            Contactez-nous
+          </a>
         </nav>
 
         {/* Mobile toggle */}
