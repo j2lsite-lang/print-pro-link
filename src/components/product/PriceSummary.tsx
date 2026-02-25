@@ -71,7 +71,7 @@ export default function PriceSummary({
           </div>
         ) : priceError ? (
           <div className="space-y-2 py-2">
-            <p className="text-sm text-destructive">Impossible de calculer le prix</p>
+            <p className="text-sm text-destructive">{priceError}</p>
             {onRetryPrice && (
               <Button variant="outline" size="sm" onClick={onRetryPrice} className="w-full">
                 <RefreshCw className="mr-2 h-3 w-3" />
@@ -83,11 +83,11 @@ export default function PriceSummary({
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">Total hors TVA</p>
             <p className="text-3xl font-bold text-foreground font-display">
-              {(priceResult.price || priceResult.totalPrice || 0).toFixed(2)} €
+              {(priceResult.prices?.salesPrice || priceResult.price || priceResult.totalPrice || 0).toFixed(2)} €
             </p>
-            {priceResult.pricePerUnit && (
+            {priceResult.prices?.salesPrice && priceResult.options?.copies > 1 && (
               <p className="text-xs text-muted-foreground">
-                {priceResult.pricePerUnit.toFixed(2)} € / unité
+                {(priceResult.prices.salesPrice / priceResult.options.copies).toFixed(4)} € / unité
               </p>
             )}
           </div>
