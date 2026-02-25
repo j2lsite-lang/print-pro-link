@@ -18,12 +18,12 @@ import imgPdf from "@/assets/services/verification-pdf.jpg";
 
 /* ─── Data ─── */
 const services = [
-  { icon: FileText, title: "Impression numérique", desc: "Cartes de visite, flyers, dépliants, affiches en petite et grande série.", img: imgImpression },
-  { icon: Image, title: "Grand format", desc: "Bâches, banderoles, adhésifs, kakémonos et enseignes.", img: imgGrandFormat },
-  { icon: Layers, title: "Supports publicitaires", desc: "Roll-ups, totems, PLV et signalétique complète.", img: imgSupports },
-  { icon: Printer, title: "Personnalisation", desc: "Marquage textile, objets publicitaires et goodies.", img: imgPerso },
-  { icon: Truck, title: "Livraison express", desc: "Expédition rapide en France et en Europe.", img: imgLivraison },
-  { icon: CheckCircle, title: "Vérification PDF", desc: "Contrôle automatique de vos fichiers avant impression.", img: imgPdf },
+  { icon: FileText, title: "Impression numérique", desc: "Cartes de visite, flyers, dépliants, affiches en petite et grande série. Qualité professionnelle offset et numérique, livrée partout en France.", img: imgImpression, link: "/products" },
+  { icon: Image, title: "Grand format", desc: "Bâches, banderoles, adhésifs, kakémonos et enseignes sur mesure. Impression haute résolution jusqu'à 1440 dpi pour une communication visuelle percutante.", img: imgGrandFormat, link: "/products" },
+  { icon: Layers, title: "Supports publicitaires", desc: "Roll-ups, totems, PLV, comptoirs d'accueil et signalétique intérieure/extérieure. Idéal pour salons, événements et points de vente.", img: imgSupports, link: "/products" },
+  { icon: Printer, title: "Personnalisation", desc: "Marquage textile (t-shirts, polos, sweats), objets publicitaires (mugs, stylos, clés USB) et goodies personnalisés pour votre entreprise.", img: imgPerso, link: "/products" },
+  { icon: Truck, title: "Livraison rapide France", desc: "Expédition en 3 à 5 jours ouvrés dans toute la France : Paris, Lyon, Marseille, Lille, Strasbourg, Bordeaux, Nantes et toutes les villes.", img: imgLivraison, link: "/livraison" },
+  { icon: CheckCircle, title: "Vérification PDF", desc: "Contrôle automatique de vos fichiers avant impression : résolution, fonds perdus, colorimétrie CMJN. Évitez les mauvaises surprises.", img: imgPdf, link: "/blog" },
 ];
 
 const faqItems = [
@@ -62,11 +62,11 @@ export default function Index() {
           {/* Left card */}
           <div className="glass-card p-6 md:p-8 flex flex-col justify-center">
             <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight text-foreground">
-              <span className="text-primary">J2L Print</span> — Votre imprimeur en ligne
+              <span className="text-primary">J2L Print</span> — Votre imprimerie en ligne dans toute la France
             </h1>
             <p className="mt-4 text-muted-foreground leading-relaxed max-w-lg">
-              Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs.
-              Commandez en ligne, livraison partout en France.
+              Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires.
+              Commandez en ligne, livraison rapide partout en France. Devis gratuit sous 24h.
             </p>
             <div className="flex flex-wrap gap-2 mt-6">
               <span className="tag">🖨️ Offset & numérique</span>
@@ -106,7 +106,7 @@ export default function Index() {
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((s) => (
-              <div key={s.title} className="glass-card overflow-hidden group hover:shadow-elevated transition-all">
+              <Link key={s.title} to={s.link} className="glass-card overflow-hidden group hover:shadow-elevated transition-all block">
                 <div className="h-36 overflow-hidden">
                   <img src={s.img} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
@@ -116,8 +116,11 @@ export default function Index() {
                   </div>
                   <h3 className="font-display text-base font-semibold text-foreground">{s.title}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
+                  <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                    En savoir plus <ArrowRight className="h-3 w-3" />
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
