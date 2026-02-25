@@ -131,6 +131,18 @@ export default function ProductDetail() {
       }
     }
 
+    // Remove base properties when a more specific variant exists (e.g. "material" when "material:material" is set)
+    // Properties like "material:material" override the base "material" in Print.com's API
+    const keys = Object.keys(options);
+    for (const key of keys) {
+      if (key.includes(":")) {
+        const baseName = key.split(":")[0];
+        if (options[baseName] && baseName !== key) {
+          delete options[baseName];
+        }
+      }
+    }
+
     if (!options.copies) {
       options.copies = 1;
     }
