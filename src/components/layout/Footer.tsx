@@ -64,8 +64,8 @@ export default function Footer() {
 
           {/* Villes */}
           <div>
-            <h4 className="font-display text-sm font-semibold text-foreground mb-3">Imprimerie en ligne</h4>
-            <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
+            <h4 className="font-display text-sm font-semibold text-foreground mb-3">Villes desservies</h4>
+            <nav aria-label="Imprimerie en ligne par ville" className="flex flex-col gap-2 text-sm text-muted-foreground">
               {cityLinks.map((c) => (
                 <Link key={c.slug} to={`/imprimerie/${c.slug}`} className="hover:text-foreground transition-colors">
                   Imprimerie {c.name}
