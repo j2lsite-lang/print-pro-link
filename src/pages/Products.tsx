@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { listProducts } from "@/lib/printcom";
 import { useCategories } from "@/hooks/useCategories";
+import { supabase } from "@/integrations/supabase/client";
+import fallbackProductImage from "@/assets/services/supports-publicitaires.jpg";
 
 interface Product {
   sku: string;
@@ -12,6 +14,8 @@ interface Product {
   titlePlural?: string;
   active?: boolean;
   thumbnailUrl?: string;
+  cmsImageUrl?: string;
+  categoryImageUrl?: string;
 }
 
 export default function Products() {
@@ -24,10 +28,55 @@ export default function Products() {
   const [showAllProducts, setShowAllProducts] = useState(false);
 
   useEffect(() => {
-    listProducts()
-      .then((data) => {
+    Promise.all([
+      listProducts(),
+      supabase.from("product_images").select("sku, image_url, thumbnail_url"),
+      supabase.from("product_category_mappings").select("sku, category_id"),
+      supabase.from("product_categories").select("id, image_url, parent_id"),
+    ])
+      .then(([data, { data: imgData }, { data: mappings }, { data: categoriesData }]) => {
         const items: Product[] = Array.isArray(data) ? data : data?.products || data?.items || [];
-        setProducts(items.filter((p) => p.active !== false));
+
+        const cmsImageBySku: Record<string, string> = {};
+        for (const row of imgData || []) {
+          cmsImageBySku[row.sku] = row.image_url || row.thumbnail_url || "";
+        }
+
+        const categoryMap: Record<string, { image_url: string | null; parent_id: string | null }> = {};
+        for (const category of categoriesData || []) {
+          categoryMap[category.id] = {
+            image_url: category.image_url,
+            parent_id: category.parent_id,
+          };
+        }
+
+        const categoryImageBySku: Record<string, string> = {};
+        for (const mapping of mappings || []) {
+          if (categoryImageBySku[mapping.sku]) continue;
+
+          const category = categoryMap[mapping.category_id];
+          if (!category) continue;
+
+          if (category.image_url) {
+            categoryImageBySku[mapping.sku] = category.image_url;
+            continue;
+          }
+
+          if (category.parent_id) {
+            const parent = categoryMap[category.parent_id];
+            if (parent?.image_url) {
+              categoryImageBySku[mapping.sku] = parent.image_url;
+            }
+          }
+        }
+
+        setProducts(
+          items.filter((p) => p.active !== false).map((p) => ({
+            ...p,
+            cmsImageUrl: cmsImageBySku[p.sku] || undefined,
+            categoryImageUrl: categoryImageBySku[p.sku] || undefined,
+          }))
+        );
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -127,14 +176,13 @@ export default function Products() {
                   to={`/products/${product.sku}`}
                   className="group overflow-hidden rounded-xl border border-border bg-card shadow-card transition-all hover:shadow-elevated"
                 >
-                  <div className="aspect-[4/3] bg-muted">
-                    {product.thumbnailUrl ? (
-                      <img src={product.thumbnailUrl} alt={product.titleSingle || product.sku} className="h-full w-full object-cover" />
-                    ) : (
-                      <div className="flex h-full items-center justify-center">
-                        <span className="text-4xl font-bold text-muted-foreground/20">{product.sku}</span>
-                      </div>
-                    )}
+                  <div className="aspect-[4/3] bg-muted overflow-hidden">
+                    <img
+                      src={product.cmsImageUrl || product.categoryImageUrl || product.thumbnailUrl || fallbackProductImage}
+                      alt={product.titleSingle || product.sku}
+                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                      loading="lazy"
+                    />
                   </div>
                   <div className="p-4">
                     <h3 className="font-display font-semibold text-card-foreground group-hover:text-primary transition-colors">

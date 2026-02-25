@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import OptionSelector from "@/components/product/OptionSelector";
 import PriceSummary from "@/components/product/PriceSummary";
 import { humanizeSlug, translatePropertyTitle } from "@/lib/slug-translations";
+import fallbackProductImage from "@/assets/services/supports-publicitaires.jpg";
 
 interface ProductProperty {
   slug: string;
@@ -30,20 +31,15 @@ interface PrintComProduct {
 }
 
 function getPricingProperties(properties: ProductProperty[] = []): ProductProperty[] {
-  const firstNestedIndex = properties.findIndex((p) => p.slug.includes(":"));
-  const hasBaseAndNestedOverlap = properties.some((p) => {
-    if (!p.slug.includes(":")) return false;
-    const baseSlug = p.slug.split(":")[0];
-    return properties.some((base) => base.slug === baseSlug);
+  const withOptions = properties.filter((p) => p.options?.some((o) => o.slug != null));
+  const slugs = new Set(withOptions.map((p) => p.slug));
+
+  // If both "material" and "material:material" exist, keep the base property.
+  return withOptions.filter((prop) => {
+    if (!prop.slug.includes(":")) return true;
+    const baseSlug = prop.slug.split(":")[0];
+    return !slugs.has(baseSlug);
   });
-
-  if (firstNestedIndex === -1 || !hasBaseAndNestedOverlap) {
-    return properties;
-  }
-
-  // Keep the primary branch only when mixed branches are returned by the API
-  // (e.g. material + material:material + size + size:size + finish)
-  return properties.filter((prop, index) => index < firstNestedIndex || prop.slug === "copies");
 }
 
 export default function ProductDetail() {
@@ -78,12 +74,11 @@ export default function ProductDetail() {
           const defaults: Record<string, string> = {};
           const pricingProps = getPricingProperties(prod.properties);
 
-          // Preselect only the primary required options (+ copies) to avoid invalid mixed configurations
+          // Preselect first selectable option for each property to build a valid initial configuration
           for (const prop of pricingProps) {
-            if (!prop.required && prop.slug !== "copies") continue;
-            const firstNonNull = prop.options?.find((o) => !o.nullable && o.slug != null);
-            if (firstNonNull) {
-              defaults[prop.slug] = String(firstNonNull.slug);
+            const firstOption = prop.options?.find((o) => o.slug != null);
+            if (firstOption) {
+              defaults[prop.slug] = String(firstOption.slug);
             }
           }
           setSelectedOptions(defaults);
@@ -92,34 +87,48 @@ export default function ProductDetail() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 
-    // Fetch product image: prefer full image_url over thumbnail
+    // Fetch product image: product image first, then category image, then parent category image
     supabase
       .from("product_images")
       .select("image_url, thumbnail_url")
       .eq("sku", sku)
       .maybeSingle()
       .then(({ data: imgData }) => {
-        if (imgData?.image_url) {
-          // Use full image URL for quality, not thumbnail
-          setCategoryImageUrl(imgData.image_url);
+        if (imgData?.image_url || imgData?.thumbnail_url) {
+          setCategoryImageUrl(imgData.image_url || imgData.thumbnail_url || null);
           return;
         }
+
         return supabase
           .from("product_category_mappings")
           .select("category_id")
           .eq("sku", sku)
           .limit(1)
           .maybeSingle()
-          .then(({ data: mapping }) => {
+          .then(async ({ data: mapping }) => {
             if (!mapping?.category_id) return;
-            return supabase
+
+            const { data: category } = await supabase
               .from("product_categories")
-              .select("image_url")
+              .select("image_url, parent_id")
               .eq("id", mapping.category_id)
               .maybeSingle();
-          })
-          .then((res: any) => {
-            if (res?.data?.image_url) setCategoryImageUrl(res.data.image_url);
+
+            if (category?.image_url) {
+              setCategoryImageUrl(category.image_url);
+              return;
+            }
+
+            if (category?.parent_id) {
+              const { data: parentCategory } = await supabase
+                .from("product_categories")
+                .select("image_url")
+                .eq("id", category.parent_id)
+                .maybeSingle();
+              if (parentCategory?.image_url) {
+                setCategoryImageUrl(parentCategory.image_url);
+              }
+            }
           });
       });
   }, [sku]);
@@ -148,9 +157,9 @@ export default function ProductDetail() {
     for (const prop of configurableProps) {
       if (!prop.required) continue;
       if (options[prop.slug]) continue;
-      const firstNonNull = prop.options?.find((o) => !o.nullable && o.slug != null);
-      if (firstNonNull) {
-        options[prop.slug] = String(firstNonNull.slug);
+      const firstOption = prop.options?.find((o) => o.slug != null);
+      if (firstOption) {
+        options[prop.slug] = String(firstOption.slug);
       }
     }
 
@@ -258,12 +267,12 @@ export default function ProductDetail() {
     );
   }
 
-  const imageUrl = product.imageUrl || categoryImageUrl || product.thumbnailUrl;
+  const imageUrl = product.imageUrl || categoryImageUrl || product.thumbnailUrl || fallbackProductImage;
 
   // Generate a description from product properties
   const descriptionParts: string[] = [];
   for (const prop of product.properties || []) {
-    const validOpts = prop.options?.filter((o) => o.slug != null && !o.nullable) || [];
+    const validOpts = prop.options?.filter((o) => o.slug != null) || [];
     if (validOpts.length > 0 && prop.slug !== "copies") {
       const label = translatePropertyTitle(prop.slug, prop.title);
       const count = validOpts.length;

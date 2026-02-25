@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { listProducts } from "@/lib/printcom";
 import { useCategoryBySlug, useCategories, useSkusForCategory } from "@/hooks/useCategories";
 import { supabase } from "@/integrations/supabase/client";
+import fallbackProductImage from "@/assets/services/supports-publicitaires.jpg";
 
 interface Product {
   sku: string;
@@ -159,17 +160,12 @@ export default function CategoryProducts() {
                 className="group overflow-hidden rounded-xl border border-border bg-card shadow-card transition-all hover:shadow-elevated"
               >
                 <div className="aspect-[4/3] bg-muted overflow-hidden">
-                  {product.cmsImageUrl || product.thumbnailUrl || category.image_url || parentImageUrl ? (
-                    <img
-                      src={product.cmsImageUrl || product.thumbnailUrl || category.image_url || parentImageUrl!}
-                      alt={product.titleSingle || product.sku}
-                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center">
-                      <span className="text-2xl font-bold text-muted-foreground/20">{product.titleSingle || product.sku}</span>
-                    </div>
-                  )}
+                  <img
+                    src={product.cmsImageUrl || product.thumbnailUrl || category.image_url || parentImageUrl || fallbackProductImage}
+                    alt={product.titleSingle || product.sku}
+                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                    loading="lazy"
+                  />
                 </div>
                 <div className="p-4">
                   <h3 className="font-display font-semibold text-card-foreground group-hover:text-primary transition-colors">
