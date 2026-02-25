@@ -1,5 +1,6 @@
 import { Loader2, ShoppingCart, RefreshCw, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { humanizeSlug, translatePropertyTitle } from "@/lib/slug-translations";
 import { getResalePrice, getUnitResalePrice, getCopies, DESIGN_FEE_BASE } from "@/lib/pricing";
 
@@ -24,12 +25,13 @@ interface PriceSummaryProps {
   disabled: boolean;
   selectedOptions: Record<string, string>;
   configurableProps: ConfigurableProp[];
+  includeDesignFee: boolean;
+  onToggleDesignFee: (checked: boolean) => void;
 }
 
 function getOptionLabel(prop: ConfigurableProp, selectedSlug: string): string {
   const match = prop.options.find((o) => String(o.slug) === selectedSlug);
   if (match?.name) return match.name;
-  // For copies/quantities, format as number
   const num = Number(selectedSlug);
   if (!isNaN(num) && prop.slug === "copies") return num.toLocaleString("fr-FR");
   return humanizeSlug(selectedSlug);
@@ -44,10 +46,14 @@ export default function PriceSummary({
   disabled,
   selectedOptions,
   configurableProps,
+  includeDesignFee,
+  onToggleDesignFee,
 }: PriceSummaryProps) {
   const summaryItems = configurableProps
     .filter((p) => selectedOptions[p.slug])
     .slice(0, 8);
+
+  const designFee = includeDesignFee ? DESIGN_FEE_BASE : 0;
 
   return (
     <div className="rounded-xl border border-border bg-card p-5 space-y-4 sticky top-24">
@@ -62,6 +68,25 @@ export default function PriceSummary({
             </span>
           </div>
         ))}
+      </div>
+
+      {/* Design fee toggle */}
+      <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/50 p-3">
+        <Checkbox
+          id="design-fee"
+          checked={includeDesignFee}
+          onCheckedChange={(checked) => onToggleDesignFee(checked === true)}
+          className="mt-0.5"
+        />
+        <label htmlFor="design-fee" className="cursor-pointer space-y-0.5">
+          <span className="flex items-center gap-1 text-sm font-medium text-foreground">
+            <Palette className="h-3.5 w-3.5 text-primary" />
+            Conception de maquette
+          </span>
+          <span className="text-xs text-muted-foreground block">
+            À partir de {DESIGN_FEE_BASE} € HT (si vous ne fournissez pas de fichier)
+          </span>
+        </label>
       </div>
 
       <div className="border-t border-border pt-4">
@@ -82,7 +107,6 @@ export default function PriceSummary({
           </div>
         ) : priceResult ? (
           <div className="space-y-3">
-            {/* Breakdown */}
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Impression</span>
@@ -93,19 +117,20 @@ export default function PriceSummary({
                   {getUnitResalePrice(priceResult).toFixed(4)} € / unité
                 </p>
               )}
-              <div className="flex justify-between">
-                <span className="text-muted-foreground flex items-center gap-1">
-                  <Palette className="h-3 w-3" /> Maquette
-                </span>
-                <span className="text-foreground">{DESIGN_FEE_BASE.toFixed(2)} €</span>
-              </div>
+              {includeDesignFee && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground flex items-center gap-1">
+                    <Palette className="h-3 w-3" /> Maquette
+                  </span>
+                  <span className="text-foreground">{DESIGN_FEE_BASE.toFixed(2)} €</span>
+                </div>
+              )}
             </div>
 
-            {/* Total */}
             <div className="border-t border-border pt-2">
               <p className="text-xs text-muted-foreground">Total HT</p>
               <p className="text-3xl font-bold text-foreground font-display">
-                {(getResalePrice(priceResult) + DESIGN_FEE_BASE).toFixed(2)} €
+                {(getResalePrice(priceResult) + designFee).toFixed(2)} €
               </p>
             </div>
           </div>

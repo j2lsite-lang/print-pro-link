@@ -2,11 +2,16 @@ export default function MentionsLegales() {
   return (
     <section className="py-12">
       <div className="container max-w-3xl">
-        <h1 className="font-display text-3xl font-bold text-foreground mb-8">Mentions Légales</h1>
+        <h1 className="font-display text-3xl font-bold text-foreground mb-2">Mentions Légales</h1>
+        <p className="text-sm text-muted-foreground mb-8">
+          Le site <a href="https://j2lprint.fr" className="text-primary hover:underline">j2lprint.fr</a> est un site de la marque{" "}
+          <a href="https://j2lpublicite.fr" className="text-primary hover:underline">j2lpublicite.fr</a>
+        </p>
 
         <div className="space-y-6 text-sm text-muted-foreground leading-relaxed">
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Éditeur du site</h2>
+            <p>Le site internet <a href="https://j2lprint.fr" className="text-primary hover:underline">https://j2lprint.fr</a> est édité par :</p>
             <p><strong className="text-foreground">J2L Publicité</strong>, entreprise individuelle</p>
             <p><strong className="text-foreground">Siège social :</strong> 22 B rue Robert Barret, 88390 Uxegney, France</p>
             <p><strong className="text-foreground">Téléphone :</strong> <a href="tel:+33329304479" className="text-primary hover:underline">03 29 30 44 79</a></p>
@@ -25,13 +30,16 @@ export default function MentionsLegales() {
 
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Hébergement</h2>
-            <p>Le site est hébergé par <strong className="text-foreground">Lovable</strong> (lovable.dev).</p>
+            <p>Le site est hébergé par :</p>
+            <p><strong className="text-foreground">Hostinger International Ltd.</strong></p>
+            <p>61 Lordou Vironos Street, 6023 Larnaca, Chypre</p>
+            <p>Site web : <a href="https://www.hostinger.fr" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">https://www.hostinger.fr</a></p>
           </div>
 
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Propriété intellectuelle</h2>
-            <p>L'ensemble des éléments constituant le site (textes, images, graphismes, logo, icônes, vidéos, sons, logiciels, etc.) sont la propriété exclusive de J2L Publicité, sauf mention contraire.</p>
-            <p>Toute reproduction, représentation, modification, publication, adaptation de tout ou partie des éléments du site, quel que soit le moyen ou le procédé utilisé, est interdite sans l'autorisation écrite préalable de J2L Publicité.</p>
+            <p>L'ensemble des éléments constituant le site <a href="https://j2lprint.fr" className="text-primary hover:underline">j2lprint.fr</a> (textes, images, graphismes, logo, icônes, vidéos, sons, logiciels, etc.) sont la propriété exclusive de J2L PUBLICITE, sauf mention contraire.</p>
+            <p>Toute reproduction, représentation, modification, publication, adaptation de tout ou partie des éléments du site, quel que soit le moyen ou le procédé utilisé, est interdite sans l'autorisation écrite préalable de J2L PUBLICITE.</p>
             <p>Toute exploitation non autorisée du site ou de l'un quelconque des éléments qu'il contient sera considérée comme constitutive d'une contrefaçon et poursuivie conformément aux dispositions des articles L.335‑2 et suivants du Code de la propriété intellectuelle.</p>
           </div>
 
@@ -45,7 +53,7 @@ export default function MentionsLegales() {
 
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Cookies</h2>
-            <p>La navigation sur le site est susceptible de provoquer l'installation de cookies sur l'ordinateur ou le terminal de l'utilisateur.</p>
+            <p>La navigation sur le site <a href="https://j2lprint.fr" className="text-primary hover:underline">j2lprint.fr</a> est susceptible de provoquer l'installation de cookies sur l'ordinateur ou le terminal de l'utilisateur.</p>
             <p>Les cookies utilisés ont pour finalité le bon fonctionnement du site et, le cas échéant, la mesure d'audience.</p>
             <p>Vous pouvez configurer votre navigateur pour refuser tout ou partie des cookies ou être averti de leur installation. Le refus d'installation d'un cookie peut entraîner l'impossibilité d'accéder à certains services.</p>
           </div>
