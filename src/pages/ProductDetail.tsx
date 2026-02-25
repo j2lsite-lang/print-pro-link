@@ -55,8 +55,12 @@ export default function ProductDetail() {
         setAccessories(Array.isArray(accs) ? accs : accs?.accessories || []);
         if (prod?.properties) {
           const defaults: Record<string, string> = {};
+          // Only pre-select REQUIRED options + copies/printtype/size/material to avoid
+          // incompatible default combinations (e.g. material + finish exclusion groups)
+          const ALWAYS_PRESELECT = new Set(["copies", "size", "printtype", "material", "printingmethod"]);
           for (const prop of prod.properties) {
             if (prop.slug === "summary_image" || prop.slug === "sample") continue;
+            if (!prop.required && !ALWAYS_PRESELECT.has(prop.slug)) continue;
             const firstNonNull = prop.options?.find((o) => !o.nullable && o.slug != null);
             if (firstNonNull) {
               defaults[prop.slug] = String(firstNonNull.slug);
@@ -197,8 +201,8 @@ export default function ProductDetail() {
       options: selectedOptions,
       quantity: 1,
       copies: Number(selectedOptions.copies) || 1,
-      unitPrice: priceResult?.price || priceResult?.totalPrice || null,
-      currency: priceResult?.currency || "EUR",
+      unitPrice: priceResult?.prices?.salesPrice || priceResult?.price || priceResult?.totalPrice || null,
+      currency: priceResult?.prices?.currency || priceResult?.currency || "EUR",
       fileUrl: null,
       originalFileName: null,
     });
@@ -295,7 +299,7 @@ export default function ProductDetail() {
               <p className="text-sm text-destructive">Erreur prix</p>
             ) : priceResult ? (
               <p className="text-xl font-bold text-foreground font-display">
-                {(priceResult.price || priceResult.totalPrice || 0).toFixed(2)} €
+                {(priceResult.prices?.salesPrice || priceResult.price || priceResult.totalPrice || 0).toFixed(2)} €
               </p>
             ) : (
               <p className="text-sm text-muted-foreground">Configurez les options</p>
