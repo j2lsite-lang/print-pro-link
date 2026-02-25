@@ -156,7 +156,7 @@ export default function ProductDetail() {
           setPriceResult(null);
           setPriceError(`Erreur Print.com : ${result.errorMessage}`);
         } else {
-          console.log("[price] Got price:", result?.price || result?.totalPrice);
+          console.log("[price] Got price:", result?.prices?.salesPrice ?? result?.price ?? result?.totalPrice);
           setPriceResult(result);
         }
       })
@@ -212,7 +212,7 @@ export default function ProductDetail() {
       options: selectedOptions,
       quantity: 1,
       copies: Number(selectedOptions.copies) || 1,
-      unitPrice: priceResult?.prices?.salesPrice || priceResult?.price || priceResult?.totalPrice || null,
+      unitPrice: priceResult?.prices?.salesPrice ?? priceResult?.price ?? priceResult?.totalPrice ?? null,
       currency: priceResult?.prices?.currency || priceResult?.currency || "EUR",
       fileUrl: null,
       originalFileName: null,
@@ -310,7 +310,7 @@ export default function ProductDetail() {
               <p className="text-sm text-destructive">Erreur prix</p>
             ) : priceResult ? (
               <p className="text-xl font-bold text-foreground font-display">
-                {(priceResult.prices?.salesPrice || priceResult.price || priceResult.totalPrice || 0).toFixed(2)} €
+                {(priceResult.prices?.salesPrice ?? priceResult.price ?? priceResult.totalPrice ?? 0).toFixed(2)} €
               </p>
             ) : (
               <p className="text-sm text-muted-foreground">Configurez les options</p>
