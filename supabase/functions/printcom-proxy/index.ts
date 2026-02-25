@@ -124,11 +124,17 @@ Deno.serve(async (req: Request) => {
           }
         }
 
+        // designs goes at root level, copies stays in options
+        const cleanedOptions = { ...options };
+        delete cleanedOptions.designs;
+        // Ensure copies is a number inside options
+        cleanedOptions.copies = Number(body.copies) || Number(options.copies) || 1;
+
         const pricePayload: Record<string, unknown> = {
-          ...options,
-          copies: Number(body.copies) || 1,
-          designs: Number(body.designs) || 1,
+          sku,
+          designs: Number(body.designs) || Number(options.designs) || 1,
           deliveryPromise: Number(body.deliveryPromise) || 0,
+          options: cleanedOptions,
         };
 
         const optionKeys = Object.keys(options);
