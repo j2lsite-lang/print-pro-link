@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Menu, X, Phone, Search } from "lucide-react";
+import { ShoppingCart, Menu, X, Search } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/hooks/useCart";
 import { listProducts } from "@/lib/printcom";
@@ -160,13 +160,6 @@ export default function Header() {
               </span>
             )}
           </Link>
-          <a
-            href="mailto:contact@j2lpublicite.fr"
-            className="inline-flex items-center gap-1 rounded-full bg-accent px-3 py-1.5 text-[13px] font-semibold text-accent-foreground transition hover:brightness-95"
-          >
-            <Phone className="h-3.5 w-3.5" />
-            Contactez-nous
-          </a>
         </nav>
 
         {/* Mobile toggle */}
@@ -200,15 +193,6 @@ export default function Header() {
             <Link to="/cart" onClick={() => setMobileOpen(false)} className="pill text-sm">
               Panier ({itemCount})
             </Link>
-            <button
-              onClick={() => {
-                setMobileOpen(false);
-                window.dispatchEvent(new CustomEvent('open-callback'));
-              }}
-              className="pill text-sm text-left font-semibold"
-            >
-              <Phone className="h-4 w-4 mr-1" /> Rappelez-moi
-            </button>
           </nav>
         </div>
       )}
