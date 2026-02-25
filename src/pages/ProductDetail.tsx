@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Loader2, Package, X, ZoomIn, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { getProduct, getPrice, getAccessories } from "@/lib/printcom";
 import { getResalePrice, DESIGN_FEE_BASE } from "@/lib/pricing";
@@ -325,25 +326,29 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* Main layout: options grid + sticky price sidebar */}
-      <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
-        {/* Left: Options in a multi-column grid */}
-        <div className="grid gap-6 sm:grid-cols-2">
-          {configurableProps.map((prop) => (
-            <OptionSelector
-              key={prop.slug}
-              title={prop.title}
-              slug={prop.slug}
-              options={prop.options}
-              selectedValue={selectedOptions[prop.slug] || ""}
-              onSelect={(val) =>
-                setSelectedOptions((prev) => ({ ...prev, [prop.slug]: val }))
-              }
-              required={prop.required}
-              locked={prop.locked}
-              initialVisibleCount={prop.slug === "copies" ? 8 : 5}
-            />
-          ))}
+      {/* Main layout: options + sticky price sidebar */}
+      <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
+        {/* Left: Options — full-width visual types, 2-col for others */}
+        <div className="space-y-6">
+          {configurableProps.map((prop) => {
+            const isWide = ["foldingtype", "foldingmethod", "size", "format"].includes(prop.slug);
+            return (
+              <div key={prop.slug} className={cn(isWide ? "col-span-full" : "")}>
+                <OptionSelector
+                  title={prop.title}
+                  slug={prop.slug}
+                  options={prop.options}
+                  selectedValue={selectedOptions[prop.slug] || ""}
+                  onSelect={(val) =>
+                    setSelectedOptions((prev) => ({ ...prev, [prop.slug]: val }))
+                  }
+                  required={prop.required}
+                  locked={prop.locked}
+                  initialVisibleCount={prop.slug === "copies" ? 10 : 6}
+                />
+              </div>
+            );
+          })}
         </div>
 
         {/* Right: Price summary sidebar */}
