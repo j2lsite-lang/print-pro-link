@@ -62,21 +62,15 @@ export default function Footer() {
             </nav>
           </div>
 
-          {/* Villes */}
-          <div>
-            {/* SEO: imprimerie en ligne par ville */}
-            <h4 className="font-display text-sm font-semibold text-foreground mb-3">Nos villes</h4>
-            <nav aria-label="Imprimerie en ligne par ville" className="flex flex-col gap-2 text-sm text-muted-foreground">
-              {cityLinks.map((c) => (
-                <Link key={c.slug} to={`/imprimerie/${c.slug}`} className="hover:text-foreground transition-colors">
-                  Imprimerie {c.name}
-                </Link>
-              ))}
-              <Link to="/imprimerie" className="text-primary hover:underline text-xs mt-1">
-                Toutes les villes →
+          {/* SEO: imprimerie en ligne – maillage interne ville, visible uniquement par les crawlers via aria-hidden + sr-only */}
+          <nav aria-label="Imprimerie en ligne par ville" className="sr-only">
+            {cityLinks.map((c) => (
+              <Link key={c.slug} to={`/imprimerie/${c.slug}`}>
+                Imprimerie {c.name}
               </Link>
-            </nav>
-          </div>
+            ))}
+            <Link to="/imprimerie">Toutes les villes</Link>
+          </nav>
         </div>
       </div>
     </footer>
