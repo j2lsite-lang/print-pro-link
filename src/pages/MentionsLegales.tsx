@@ -24,16 +24,15 @@ export default function MentionsLegales() {
 
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Directeur / Responsable de la publication</h2>
-            <p><strong className="text-foreground">Responsable de la publication :</strong> J2L Publicité</p>
+            <p><strong className="text-foreground">Responsable de la publication :</strong> M. Jean-Luc Lemaire, en qualité de gérant de J2L Publicité</p>
             <p><strong className="text-foreground">Contact :</strong> <a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></p>
           </div>
 
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Hébergement</h2>
             <p>Le site est hébergé par :</p>
-            <p><strong className="text-foreground">Hostinger International Ltd.</strong></p>
-            <p>61 Lordou Vironos Street, 6023 Larnaca, Chypre</p>
-            <p>Site web : <a href="https://www.hostinger.fr" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">https://www.hostinger.fr</a></p>
+            <p><strong className="text-foreground">Lovable (Lovable.dev)</strong></p>
+            <p>Site web : <a href="https://lovable.dev" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">https://lovable.dev</a></p>
           </div>
 
           <div className="glass-card p-6 space-y-3">
@@ -46,16 +45,28 @@ export default function MentionsLegales() {
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Données personnelles</h2>
             <p>Les informations personnelles collectées via les formulaires de contact et/ou de demande de devis (nom, prénom, coordonnées, contenu du message, etc.) sont utilisées uniquement pour répondre aux demandes des utilisateurs et assurer le suivi de la relation commerciale.</p>
-            <p>Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés modifiée, vous disposez d'un droit d'accès, de rectification, d'opposition, de limitation et de suppression des données vous concernant.</p>
+            <p>Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés modifiée, vous disposez d'un droit d'accès, de rectification, d'opposition, de limitation, de suppression et de portabilité des données vous concernant.</p>
             <p>Vous pouvez exercer ces droits en écrivant à : <a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></p>
             <p>Les données sont conservées pendant la durée strictement nécessaire au traitement de la demande et au maximum 3 ans à compter du dernier contact avec vous, sauf obligation légale contraire.</p>
+            <p>Vous disposez également du droit d'introduire une réclamation auprès de la Commission Nationale de l'Informatique et des Libertés (CNIL) : <a href="https://www.cnil.fr" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">www.cnil.fr</a></p>
+            <p>Pour en savoir plus, consultez notre <a href="/politique-confidentialite" className="text-primary hover:underline">Politique de confidentialité</a>.</p>
           </div>
 
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Cookies</h2>
             <p>La navigation sur le site <a href="https://j2lprint.fr" className="text-primary hover:underline">j2lprint.fr</a> est susceptible de provoquer l'installation de cookies sur l'ordinateur ou le terminal de l'utilisateur.</p>
-            <p>Les cookies utilisés ont pour finalité le bon fonctionnement du site et, le cas échéant, la mesure d'audience.</p>
+            <p>Les cookies utilisés ont pour finalité exclusive le bon fonctionnement du site (cookies techniques strictement nécessaires). Aucun cookie publicitaire ou de profilage n'est utilisé.</p>
             <p>Vous pouvez configurer votre navigateur pour refuser tout ou partie des cookies ou être averti de leur installation. Le refus d'installation d'un cookie peut entraîner l'impossibilité d'accéder à certains services.</p>
+          </div>
+
+          <div className="glass-card p-6 space-y-3">
+            <h2 className="font-display text-lg font-semibold text-foreground">Médiation de la consommation</h2>
+            <p>Conformément aux articles L.611-1 et suivants du Code de la consommation, tout consommateur a le droit de recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige.</p>
+            <p>Le médiateur compétent est :</p>
+            <p><strong className="text-foreground">CM2C — Centre de Médiation de la Consommation de Conciliateurs de Justice</strong></p>
+            <p>14 rue Saint Jean, 75017 Paris</p>
+            <p>Site web : <a href="https://www.cm2c.net" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">www.cm2c.net</a></p>
+            <p className="text-xs">Vous pouvez également recourir à la plateforme européenne de règlement en ligne des litiges (RLL) : <a href="https://ec.europa.eu/consumers/odr" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr</a></p>
           </div>
 
           <div className="glass-card p-6 space-y-3">
