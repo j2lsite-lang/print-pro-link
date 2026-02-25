@@ -121,6 +121,17 @@ export default function ProductDetail() {
         options[k] = v;
       }
     }
+
+    // Safety net: ensure hidden required properties are always present in payload
+    for (const requiredSlug of HIDDEN_REQUIRED_PROPERTY_SLUGS) {
+      if (options[requiredSlug]) continue;
+      const prop = product?.properties?.find((p) => p.slug === requiredSlug);
+      const firstNonNull = prop?.options?.find((o) => !o.nullable && o.slug != null);
+      if (firstNonNull) {
+        options[requiredSlug] = String(firstNonNull.slug);
+      }
+    }
+
     if (!options.copies) {
       options.copies = 1;
     }
