@@ -83,11 +83,11 @@ export default function PriceSummary({
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">Total hors TVA</p>
             <p className="text-3xl font-bold text-foreground font-display">
-              {(priceResult.prices?.salesPrice || priceResult.price || priceResult.totalPrice || 0).toFixed(2)} €
+              {(priceResult.prices?.salesPrice ?? priceResult.price ?? priceResult.totalPrice ?? 0).toFixed(2)} €
             </p>
-            {priceResult.prices?.salesPrice && priceResult.options?.copies > 1 && (
+            {(priceResult.prices?.salesPrice ?? 0) > 0 && (priceResult.options?.copies ?? 1) > 1 && (
               <p className="text-xs text-muted-foreground">
-                {(priceResult.prices.salesPrice / priceResult.options.copies).toFixed(4)} € / unité
+                {((priceResult.prices.salesPrice) / priceResult.options.copies).toFixed(4)} € / unité
               </p>
             )}
           </div>
