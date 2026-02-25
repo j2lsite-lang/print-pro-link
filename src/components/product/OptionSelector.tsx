@@ -35,10 +35,14 @@ export default function OptionSelector({
 }: OptionSelectorProps) {
   const [expanded, setExpanded] = useState(false);
 
-  const validOptions = options.filter((o) => o.slug != null && !o.nullable);
+  const validOptions = options.filter((o) => o.slug != null);
   const isQuantityType = slug === "copies";
   const showToggle = validOptions.length > initialVisibleCount;
   const visibleOptions = expanded ? validOptions : validOptions.slice(0, initialVisibleCount);
+
+  if (validOptions.length === 0) {
+    return null;
+  }
 
   if (locked && validOptions.length === 1) {
     return null; // Don't show locked single-option properties
