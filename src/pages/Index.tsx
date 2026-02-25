@@ -58,19 +58,19 @@ export default function Index() {
     <>
       {/* ─── HERO ─── */}
       <section className="py-10 md:py-16">
-        <div className="container grid gap-5 md:grid-cols-[1.2fr_.8fr] items-stretch">
+        <div className="container max-w-3xl">
           {/* Left card */}
           <div className="glass-card p-6 md:p-8 flex flex-col justify-center">
             <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight text-foreground">
-              <span className="text-primary">J2L Print</span> — Votre imprimerie en ligne dans toute la France
+              <span className="text-primary">J2L Print</span> — Votre imprimerie en ligne
             </h1>
             <p className="mt-4 text-muted-foreground leading-relaxed max-w-lg">
               Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires.
-              Commandez en ligne, livraison rapide partout en France. Devis gratuit sous 24h.
+              Commandez en ligne, nous livrons partout. Devis gratuit sous 24h.
             </p>
             <div className="flex flex-wrap gap-2 mt-6">
               <span className="tag">🖨️ Offset & numérique</span>
-              <span className="tag">🚚 Livraison France</span>
+              <span className="tag">🚚 Livraison partout</span>
               <span className="tag">📐 Sur mesure</span>
               <span className="tag">✅ Vérif. PDF</span>
             </div>
@@ -80,19 +80,6 @@ export default function Index() {
                   Voir le catalogue <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-            </div>
-          </div>
-
-          {/* Right card - Contact */}
-          <div className="glass-card p-6 flex flex-col justify-center">
-            <h3 className="font-display text-primary text-lg font-semibold mb-4">Contactez-nous</h3>
-            <div className="space-y-3 text-sm">
-              <a href="tel:+33329304479" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
-                <Phone className="h-4 w-4 text-primary" /> 03 29 30 44 79
-              </a>
-              <a href="mailto:contact@j2lpublicite.fr" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
-                <Mail className="h-4 w-4 text-primary" /> contact@j2lpublicite.fr
-              </a>
             </div>
           </div>
         </div>
