@@ -31,8 +31,9 @@ export default function MentionsLegales() {
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Hébergement</h2>
             <p>Le site est hébergé par :</p>
-            <p><strong className="text-foreground">Lovable (Lovable.dev)</strong></p>
-            <p>Site web : <a href="https://lovable.dev" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">https://lovable.dev</a></p>
+            <p><strong className="text-foreground">Hostinger International Ltd.</strong></p>
+            <p>61 Lordou Vironos Street, 6023 Larnaca, Chypre</p>
+            <p>Site web : <a href="https://www.hostinger.fr" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">https://www.hostinger.fr</a></p>
           </div>
 
           <div className="glass-card p-6 space-y-3">
