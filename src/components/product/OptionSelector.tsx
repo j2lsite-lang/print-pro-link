@@ -88,6 +88,7 @@ export default function OptionSelector({
               const val = String(opt.slug);
               const isSelected = selectedValue === val;
               const label = opt.name || humanizeSlug(val);
+              const foldKey = val.toLowerCase();
               return (
                 <button
                   key={val}
@@ -101,12 +102,37 @@ export default function OptionSelector({
                     locked && "opacity-50 cursor-not-allowed"
                   )}
                 >
-                  {/* Icon placeholder */}
+                  {/* Fold visual */}
                   <div className={cn(
-                    "h-12 w-12 rounded-lg flex items-center justify-center mb-2 text-lg font-bold",
-                    isSelected ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
+                    "h-12 w-12 rounded-lg flex items-center justify-center mb-2",
+                    isSelected ? "bg-primary/20" : "bg-muted"
                   )}>
-                    {isSelected ? <Check className="h-5 w-5" /> : label.charAt(0).toUpperCase()}
+                    {isSelected ? (
+                      <Check className="h-5 w-5" />
+                    ) : (
+                      <svg viewBox="0 0 48 48" className="h-8 w-8" fill="none" aria-hidden="true">
+                        {foldKey.includes("cross") ? (
+                          <>
+                            <path d="M8 24h32M24 8v32" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                            <rect x="10" y="10" width="28" height="28" rx="2" stroke="currentColor" strokeWidth="2" opacity="0.8" />
+                          </>
+                        ) : foldKey.includes("zigzag") ? (
+                          <path d="M6 34l10-20 10 20 10-20 6 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                        ) : foldKey.includes("wikkel") ? (
+                          <path d="M8 34l6-20 10 6 10-6 6 20" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                        ) : foldKey.includes("luik") ? (
+                          <>
+                            <rect x="18" y="12" width="12" height="24" rx="1.5" stroke="currentColor" strokeWidth="2.2" />
+                            <path d="M6 14l12 4v12l-12 4V14Zm36 0-12 4v12l12 4V14Z" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
+                          </>
+                        ) : (
+                          <>
+                            <rect x="10" y="10" width="28" height="28" rx="2" stroke="currentColor" strokeWidth="2.2" />
+                            <path d="M24 10v28" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                          </>
+                        )}
+                      </svg>
+                    )}
                   </div>
                   <span className="text-xs font-medium leading-tight line-clamp-2">
                     {label}
