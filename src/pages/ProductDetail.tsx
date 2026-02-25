@@ -57,11 +57,8 @@ export default function ProductDetail() {
         setAccessories(Array.isArray(accs) ? accs : accs?.accessories || []);
         if (prod?.properties) {
           const defaults: Record<string, string> = {};
-          // Keep only 5 visible options, but also preselect hidden mandatory API fields
-          const MAIN_SLUGS = new Set(["copies", "size", "material", "printtype", "finishing"]);
-          const HIDDEN_REQUIRED_SLUGS = new Set(["printingmethod"]);
+          // Preselect first non-null option for all properties
           for (const prop of prod.properties) {
-            if (!MAIN_SLUGS.has(prop.slug) && !HIDDEN_REQUIRED_SLUGS.has(prop.slug)) continue;
             const firstNonNull = prop.options?.find((o) => !o.nullable && o.slug != null);
             if (firstNonNull) {
               defaults[prop.slug] = String(firstNonNull.slug);
@@ -103,12 +100,9 @@ export default function ProductDetail() {
       });
   }, [sku]);
 
-  // Only show the 5 main configurable properties
-  const MAIN_PROPERTY_SLUGS = new Set(["copies", "size", "material", "printtype", "finishing"]);
-  // Hidden but required by Print.com pricing for this product family
-  const HIDDEN_REQUIRED_PROPERTY_SLUGS = new Set(["printingmethod"]);
+  // Show ALL configurable properties from the API
   const configurableProps = (product?.properties || []).filter(
-    (p) => MAIN_PROPERTY_SLUGS.has(p.slug) && p.options?.length > 0
+    (p) => p.options?.length > 0
   );
 
   // Build price payload — only send displayed options + hidden required options
@@ -116,7 +110,6 @@ export default function ProductDetail() {
     const options: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(selectedOptions)) {
       if (v == null || v === "") continue;
-      if (!MAIN_PROPERTY_SLUGS.has(k) && !HIDDEN_REQUIRED_PROPERTY_SLUGS.has(k)) continue;
       if (k === "copies") {
         options[k] = Number(v) || 1;
       } else {
@@ -124,13 +117,13 @@ export default function ProductDetail() {
       }
     }
 
-    // Safety net: ensure hidden required properties are always present in payload
-    for (const requiredSlug of HIDDEN_REQUIRED_PROPERTY_SLUGS) {
-      if (options[requiredSlug]) continue;
-      const prop = product?.properties?.find((p) => p.slug === requiredSlug);
-      const firstNonNull = prop?.options?.find((o) => !o.nullable && o.slug != null);
+    // Safety net: ensure all required properties are present in payload
+    for (const prop of product?.properties || []) {
+      if (!prop.required) continue;
+      if (options[prop.slug]) continue;
+      const firstNonNull = prop.options?.find((o) => !o.nullable && o.slug != null);
       if (firstNonNull) {
-        options[requiredSlug] = String(firstNonNull.slug);
+        options[prop.slug] = String(firstNonNull.slug);
       }
     }
 

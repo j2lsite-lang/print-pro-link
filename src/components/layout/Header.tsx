@@ -21,7 +21,7 @@ export default function Header() {
       <div className="container flex h-16 items-center justify-between">
         {/* Brand */}
         <Link to="/" className="flex items-center gap-3 min-w-[160px]">
-          <img src={logoJ2L} alt="J2L Print" className="h-10 w-10 rounded-xl object-cover" />
+          <img src={logoJ2L} alt="J2L Print" className="h-10 w-10 rounded-xl object-contain bg-primary/10 p-0.5" />
           <span className="font-display text-base font-bold tracking-wide text-foreground">
             J2L Print
           </span>

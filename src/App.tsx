@@ -23,6 +23,8 @@ import PolitiqueRetours from "./pages/PolitiqueRetours";
 import PolitiqueConfidentialite from "./pages/PolitiqueConfidentialite";
 import Livraison from "./pages/Livraison";
 import Blog from "./pages/Blog";
+import CityPage from "./pages/CityPage";
+import CitiesIndex from "./pages/CitiesIndex";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +54,8 @@ const App = () => (
                 <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
                 <Route path="/livraison" element={<Livraison />} />
                 <Route path="/blog" element={<Blog />} />
+                <Route path="/imprimerie" element={<CitiesIndex />} />
+                <Route path="/imprimerie/:slug" element={<CityPage />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
