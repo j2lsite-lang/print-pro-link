@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShoppingCart, Menu, X, Search } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/hooks/useCart";
@@ -25,6 +25,16 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { itemCount } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleHashLink = (e: React.MouseEvent, to: string) => {
+    const [path, hash] = to.split("#");
+    if (hash && (location.pathname === "/" || location.pathname === path)) {
+      e.preventDefault();
+      const el = document.getElementById(hash);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<QuickProduct[]>([]);
@@ -147,7 +157,7 @@ export default function Header() {
         {/* Desktop nav */}
         <nav className="hidden items-center gap-1.5 md:flex flex-wrap justify-end shrink-0">
           {navLinks.map((l) => (
-            <Link key={l.to} to={l.to} className="pill px-3 py-1.5 text-[13px] text-foreground/90">
+            <Link key={l.to} to={l.to} onClick={(e) => handleHashLink(e, l.to)} className="pill px-3 py-1.5 text-[13px] text-foreground/90">
               {l.label}
             </Link>
           ))}
@@ -185,7 +195,7 @@ export default function Header() {
           </form>
           <nav className="flex flex-col gap-2">
             {navLinks.map((l) => (
-              <Link key={l.to} to={l.to} onClick={() => setMobileOpen(false)} className="pill text-sm">
+              <Link key={l.to} to={l.to} onClick={(e) => { handleHashLink(e, l.to); setMobileOpen(false); }} className="pill text-sm">
                 {l.label}
               </Link>
             ))}
