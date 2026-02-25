@@ -1,6 +1,7 @@
-import { Loader2, ShoppingCart, RefreshCw } from "lucide-react";
+import { Loader2, ShoppingCart, RefreshCw, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { humanizeSlug, translatePropertyTitle } from "@/lib/slug-translations";
+import { getResalePrice, getUnitResalePrice, getCopies, DESIGN_FEE_BASE } from "@/lib/pricing";
 
 interface OptionItem {
   slug: string | number | null;
@@ -83,11 +84,11 @@ export default function PriceSummary({
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">Total hors TVA</p>
             <p className="text-3xl font-bold text-foreground font-display">
-              {(priceResult.prices?.salesPrice ?? priceResult.price ?? priceResult.totalPrice ?? 0).toFixed(2)} €
+              {getResalePrice(priceResult).toFixed(2)} €
             </p>
-            {(priceResult.prices?.salesPrice ?? 0) > 0 && (priceResult.options?.copies ?? 1) > 1 && (
+            {getCopies(priceResult) > 1 && (
               <p className="text-xs text-muted-foreground">
-                {((priceResult.prices.salesPrice) / priceResult.options.copies).toFixed(4)} € / unité
+                {getUnitResalePrice(priceResult).toFixed(4)} € / unité
               </p>
             )}
           </div>
@@ -107,6 +108,17 @@ export default function PriceSummary({
         <ShoppingCart className="mr-2 h-4 w-4" />
         Ajouter au panier
       </Button>
+
+      {/* Design fees notice */}
+      <div className="rounded-lg border border-border bg-muted/50 p-3 space-y-1">
+        <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+          <Palette className="h-4 w-4 text-primary" />
+          Conception de maquette
+        </div>
+        <p className="text-xs text-muted-foreground">
+          À partir de <span className="font-semibold text-foreground">{DESIGN_FEE_BASE} € HT</span>
+        </p>
+      </div>
     </div>
   );
 }
