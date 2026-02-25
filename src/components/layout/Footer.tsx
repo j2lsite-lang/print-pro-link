@@ -2,12 +2,12 @@ import { Link } from "react-router-dom";
 import logoJ2L from "@/assets/logo-j2l.png";
 
 const cityLinks = [
+  { slug: "epinal", name: "Épinal" },
+  { slug: "nancy", name: "Nancy" },
+  { slug: "metz", name: "Metz" },
+  { slug: "strasbourg", name: "Strasbourg" },
   { slug: "paris", name: "Paris" },
   { slug: "lyon", name: "Lyon" },
-  { slug: "marseille", name: "Marseille" },
-  { slug: "strasbourg", name: "Strasbourg" },
-  { slug: "nancy", name: "Nancy" },
-  { slug: "epinal", name: "Épinal" },
 ];
 
 export default function Footer() {
