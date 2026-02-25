@@ -40,8 +40,9 @@ export default function OptionSelector({
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const validOptions = options.filter((o) => o.slug != null);
-  const isQuantityType = slug === "copies";
-  const isVisualType = ["foldingtype", "foldingmethod", "size", "format"].includes(slug);
+  const normalizedSlug = slug.toLowerCase();
+  const isQuantityType = normalizedSlug === "copies";
+  const isVisualType = ["fold", "foldingtype", "foldingmethod", "size", "format"].includes(normalizedSlug) || normalizedSlug.includes("fold");
   const showToggle = !isVisualType && validOptions.length > initialVisibleCount;
   const visibleOptions = expanded || isVisualType ? validOptions : validOptions.slice(0, initialVisibleCount);
 
