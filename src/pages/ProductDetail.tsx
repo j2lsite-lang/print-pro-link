@@ -55,11 +55,11 @@ export default function ProductDetail() {
         setAccessories(Array.isArray(accs) ? accs : accs?.accessories || []);
         if (prod?.properties) {
           const defaults: Record<string, string> = {};
-          // Only pre-select the 5 main displayed options to avoid
-          // incompatible default combinations (exclude groups)
+          // Keep only 5 visible options, but also preselect hidden mandatory API fields
           const MAIN_SLUGS = new Set(["copies", "size", "material", "printtype", "finishing"]);
+          const HIDDEN_REQUIRED_SLUGS = new Set(["printingmethod"]);
           for (const prop of prod.properties) {
-            if (!MAIN_SLUGS.has(prop.slug)) continue;
+            if (!MAIN_SLUGS.has(prop.slug) && !HIDDEN_REQUIRED_SLUGS.has(prop.slug)) continue;
             const firstNonNull = prop.options?.find((o) => !o.nullable && o.slug != null);
             if (firstNonNull) {
               defaults[prop.slug] = String(firstNonNull.slug);
@@ -103,16 +103,18 @@ export default function ProductDetail() {
 
   // Only show the 5 main configurable properties
   const MAIN_PROPERTY_SLUGS = new Set(["copies", "size", "material", "printtype", "finishing"]);
+  // Hidden but required by Print.com pricing for this product family
+  const HIDDEN_REQUIRED_PROPERTY_SLUGS = new Set(["printingmethod"]);
   const configurableProps = (product?.properties || []).filter(
     (p) => MAIN_PROPERTY_SLUGS.has(p.slug) && p.options?.length > 0
   );
 
-  // Build price payload — only send the 5 main displayed options
+  // Build price payload — only send displayed options + hidden required options
   const buildPricePayload = () => {
     const options: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(selectedOptions)) {
       if (v == null || v === "") continue;
-      if (!MAIN_PROPERTY_SLUGS.has(k)) continue; // skip hidden properties
+      if (!MAIN_PROPERTY_SLUGS.has(k) && !HIDDEN_REQUIRED_PROPERTY_SLUGS.has(k)) continue;
       if (k === "copies") {
         options[k] = Number(v) || 1;
       } else {
