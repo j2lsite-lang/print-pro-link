@@ -81,16 +81,33 @@ export default function PriceSummary({
             )}
           </div>
         ) : priceResult ? (
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Total hors TVA</p>
-            <p className="text-3xl font-bold text-foreground font-display">
-              {getResalePrice(priceResult).toFixed(2)} €
-            </p>
-            {getCopies(priceResult) > 1 && (
-              <p className="text-xs text-muted-foreground">
-                {getUnitResalePrice(priceResult).toFixed(4)} € / unité
+          <div className="space-y-3">
+            {/* Breakdown */}
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Impression</span>
+                <span className="text-foreground">{getResalePrice(priceResult).toFixed(2)} €</span>
+              </div>
+              {getCopies(priceResult) > 1 && (
+                <p className="text-xs text-muted-foreground text-right">
+                  {getUnitResalePrice(priceResult).toFixed(4)} € / unité
+                </p>
+              )}
+              <div className="flex justify-between">
+                <span className="text-muted-foreground flex items-center gap-1">
+                  <Palette className="h-3 w-3" /> Maquette
+                </span>
+                <span className="text-foreground">{DESIGN_FEE_BASE.toFixed(2)} €</span>
+              </div>
+            </div>
+
+            {/* Total */}
+            <div className="border-t border-border pt-2">
+              <p className="text-xs text-muted-foreground">Total HT</p>
+              <p className="text-3xl font-bold text-foreground font-display">
+                {(getResalePrice(priceResult) + DESIGN_FEE_BASE).toFixed(2)} €
               </p>
-            )}
+            </div>
           </div>
         ) : (
           <p className="text-sm text-muted-foreground py-2">
@@ -106,19 +123,8 @@ export default function PriceSummary({
         size="lg"
       >
         <ShoppingCart className="mr-2 h-4 w-4" />
-        Ajouter au panier
+        Demander un devis
       </Button>
-
-      {/* Design fees notice */}
-      <div className="rounded-lg border border-border bg-muted/50 p-3 space-y-1">
-        <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-          <Palette className="h-4 w-4 text-primary" />
-          Conception de maquette
-        </div>
-        <p className="text-xs text-muted-foreground">
-          À partir de <span className="font-semibold text-foreground">{DESIGN_FEE_BASE} € HT</span>
-        </p>
-      </div>
     </div>
   );
 }
