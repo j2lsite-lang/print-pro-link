@@ -14,6 +14,14 @@ export const MARGIN_COEFFICIENT = 2.0;
 export const DESIGN_FEE_BASE = 65;
 
 /**
+ * Round a price up to the nearest 0.10 € for clean display
+ * e.g. 46.83 → 46.90, 93.51 → 93.60
+ */
+function roundUp10(value: number): number {
+  return Math.ceil(value * 10) / 10;
+}
+
+/**
  * Extract the supplier price from a Print.com price result
  */
 export function getSupplierPrice(priceResult: any): number {
@@ -22,10 +30,11 @@ export function getSupplierPrice(priceResult: any): number {
 
 /**
  * Calculate the resale price (customer-facing) from a price result
+ * Rounded up to nearest 0.10 € for clean display
  */
 export function getResalePrice(priceResult: any): number {
   const supplier = getSupplierPrice(priceResult);
-  return supplier * MARGIN_COEFFICIENT;
+  return roundUp10(supplier * MARGIN_COEFFICIENT);
 }
 
 /**
@@ -41,5 +50,5 @@ export function getCopies(priceResult: any): number {
 export function getUnitResalePrice(priceResult: any): number {
   const total = getResalePrice(priceResult);
   const copies = getCopies(priceResult);
-  return copies > 1 ? total / copies : total;
+  return copies > 1 ? Math.ceil((total / copies) * 10000) / 10000 : total;
 }

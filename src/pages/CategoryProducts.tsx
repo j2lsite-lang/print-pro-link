@@ -45,7 +45,7 @@ export default function CategoryProducts() {
     ]).then(([data, { data: imgData }]) => {
       const items: Product[] = Array.isArray(data) ? data : data?.products || data?.items || [];
       const imgMap: Record<string, string> = {};
-      for (const row of imgData || []) imgMap[row.sku] = row.thumbnail_url || row.image_url;
+      for (const row of imgData || []) imgMap[row.sku] = row.image_url || row.thumbnail_url;
       setAllProducts(
         items.filter((p) => p.active !== false).map((p) => ({
           ...p,
