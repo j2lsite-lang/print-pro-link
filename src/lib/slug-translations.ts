@@ -101,7 +101,7 @@ const PROPERTY_TITLE_TRANSLATIONS: Record<string, string> = {
   packaging: "Emballage",
   customformat_width: "Largeur (mm)",
   customformat_height: "Hauteur (mm)",
-  material: "Matériau",
+  material: "Matériaux",
   printtype: "Type d'impression",
   finishing: "Finition",
   lamination: "Pelliculage",
