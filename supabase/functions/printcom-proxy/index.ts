@@ -1,4 +1,4 @@
-// printcom-proxy v8
+// printcom-proxy v9 – API key only (per provider recommendation)
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -12,66 +12,6 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-// --- JWT Token Cache ---
-let cachedToken: string | null = null;
-let tokenExpiresAt = 0;
-
-async function getJwtToken(): Promise<string> {
-  // Return cached token if still valid (with 60s margin)
-  if (cachedToken && Date.now() < tokenExpiresAt - 60_000) {
-    return cachedToken;
-  }
-
-  const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
-  const username = Deno.env.get("PRINTCOM_USERNAME");
-  const password = Deno.env.get("PRINTCOM_PASSWORD");
-
-  if (!username || !password) {
-    throw new Error("PRINTCOM_USERNAME or PRINTCOM_PASSWORD not configured");
-  }
-
-  // Try multiple credential formats
-  const formats = [
-    { credentials: { email: username, password } },
-    { email: username, password },
-    { credentials: { username, password } },
-  ];
-
-  for (const loginBody of formats) {
-    console.log(`[auth] Trying login format: ${JSON.stringify(loginBody).replace(password, "***")}`);
-    const res = await fetch(`${apiBase}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(loginBody),
-    });
-
-    const text = await res.text();
-    if (res.ok) {
-      const data = JSON.parse(text);
-      console.log(`[auth] Login 200 response preview: ${text.substring(0, 500)}`);
-      // Handle array response (some endpoints return [token_string])
-      const resolved = Array.isArray(data) ? data[0] : data;
-      const token = typeof resolved === "string" ? resolved
-        : (resolved?.token || resolved?.access_token || resolved?.jwt || resolved?.id_token);
-      if (token) {
-        const expiresIn = resolved?.expires_in || resolved?.expiresIn || 3600;
-        cachedToken = token;
-        tokenExpiresAt = Date.now() + expiresIn * 1000;
-        console.log(`[auth] Login successful, token expires in ${expiresIn}s`);
-        return token;
-      }
-      console.warn(`[auth] Login 200 but no token found. Type=${typeof resolved}, keys=${resolved && typeof resolved === 'object' ? Object.keys(resolved).join(',') : 'n/a'}`);
-    } else {
-      console.warn(`[auth] Login attempt failed ${res.status}: ${text.substring(0, 200)}`);
-    }
-  }
-
-  throw new Error("All Print.com login formats failed");
-}
-
 // --- Proxy Request ---
 async function proxyRequest(
   method: string,
@@ -82,24 +22,17 @@ async function proxyRequest(
   const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
   const platformBase = Deno.env.get("PRINTCOM_PLATFORM_BASE") || "https://platform.print.com";
 
+  const apiKey = Deno.env.get("PRINTCOM_API_KEY");
+  if (!apiKey) {
+    return jsonResponse({ error: "PRINTCOM_API_KEY not configured" }, 500);
+  }
+
   const isPlatform = path.startsWith("/pdf/") || path.startsWith("/products/batch/");
   const baseUrl = isPlatform ? platformBase : apiBase;
   const url = `${baseUrl}${path}`;
 
-  // Try JWT auth first, fallback to PrintApiKey
-  let authHeader: string;
-  try {
-    const jwt = await getJwtToken();
-    authHeader = `Bearer ${jwt}`;
-  } catch (e) {
-    console.warn(`[proxy] JWT auth failed, falling back to PrintApiKey: ${(e as Error).message}`);
-    const apiKey = Deno.env.get("PRINTCOM_API_KEY");
-    if (!apiKey) throw new Error("No authentication available (JWT failed, no PRINTCOM_API_KEY)");
-    authHeader = `PrintApiKey ${apiKey}`;
-  }
-
   const headers: Record<string, string> = {
-    Authorization: authHeader,
+    Authorization: `PrintApiKey ${apiKey}`,
     "Accept-Language": lang,
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -111,28 +44,13 @@ async function proxyRequest(
   }
 
   console.log(`[proxy] ${method} ${url}`);
+  if (body && method !== "GET") {
+    console.log(`[proxy] body: ${JSON.stringify(body).substring(0, 500)}`);
+  }
 
   const res = await fetch(url, fetchOptions);
   const text = await res.text();
   console.log(`[proxy] response ${res.status} (${text.length} bytes)`);
-
-  // If we got 401 with JWT, invalidate cache and retry once with PrintApiKey
-  if (res.status === 401 && authHeader.startsWith("Bearer")) {
-    console.warn("[proxy] JWT returned 401, invalidating token and retrying with PrintApiKey");
-    cachedToken = null;
-    tokenExpiresAt = 0;
-    const apiKey = Deno.env.get("PRINTCOM_API_KEY");
-    if (apiKey) {
-      headers.Authorization = `PrintApiKey ${apiKey}`;
-      const retry = await fetch(url, { ...fetchOptions, headers });
-      const retryText = await retry.text();
-      console.log(`[proxy] retry response ${retry.status} (${retryText.length} bytes)`);
-      return new Response(retryText, {
-        status: retry.status,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-  }
 
   if (!res.ok) {
     console.warn(`[proxy] Print.com error ${res.status}: ${text.substring(0, 500)}`);
@@ -214,7 +132,7 @@ Deno.serve(async (req: Request) => {
         };
 
         const optionKeys = Object.keys(options);
-        console.log(`[proxy] get-price sku=${sku} optionKeys=${optionKeys.length}`);
+        console.log(`[proxy] get-price sku=${sku} optionKeys=${optionKeys.length} payload=${JSON.stringify(pricePayload).substring(0, 500)}`);
 
         if (optionKeys.length === 0) {
           return jsonResponse({ error: "Missing options for pricing — configure at least one product option" }, 400);
