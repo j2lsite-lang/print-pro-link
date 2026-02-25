@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
+import FloatingContact from "./FloatingContact";
 
 export default function AppLayout() {
   return (
@@ -10,6 +11,7 @@ export default function AppLayout() {
         <Outlet />
       </main>
       <Footer />
+      <FloatingContact />
     </div>
   );
 }
