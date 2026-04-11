@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Leaf } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { humanizeSlug, translatePropertyTitle } from "@/lib/slug-translations";
+
 
 interface OptionItem {
   slug: string | number | null;
@@ -41,8 +41,8 @@ export default function OptionSelector({
 
   const validOptions = options.filter((o) => o.slug != null);
   const normalizedSlug = slug.toLowerCase();
-  const isQuantityType = normalizedSlug === "copies";
-  const isVisualType = ["fold", "foldingtype", "foldingmethod", "size", "format"].includes(normalizedSlug) || normalizedSlug.includes("fold");
+  const isQuantityType = normalizedSlug.includes("quantit");
+  const isVisualType = normalizedSlug.includes("format") || normalizedSlug.includes("taille");
   const showToggle = !isVisualType && validOptions.length > initialVisibleCount;
   const visibleOptions = expanded || isVisualType ? validOptions : validOptions.slice(0, initialVisibleCount);
 
@@ -57,7 +57,7 @@ export default function OptionSelector({
     <div className="space-y-3">
       {/* Section header */}
       <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase flex items-center gap-2">
-        {translatePropertyTitle(slug, title)}
+        {title}
         {required && <span className="text-destructive text-xs">*</span>}
       </h3>
 
@@ -88,7 +88,7 @@ export default function OptionSelector({
             {validOptions.map((opt) => {
               const val = String(opt.slug);
               const isSelected = selectedValue === val;
-              const label = opt.name || humanizeSlug(val);
+               const label = opt.name || val;
               const foldKey = val.toLowerCase();
               return (
                 <button
@@ -200,7 +200,7 @@ export default function OptionSelector({
                 )}
               >
                 <span className="flex items-center gap-2">
-                  {opt.name || humanizeSlug(String(opt.slug))}
+                  {opt.name || String(opt.slug)}
                   {opt.eco && <Leaf className="h-3.5 w-3.5 text-success" />}
                 </span>
                 {isSelected && <Check className="h-4 w-4 text-primary shrink-0" />}

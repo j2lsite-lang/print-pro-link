@@ -1,146 +1,129 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Loader2, Package, X, ZoomIn, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { getProduct, getPrice, getAccessories } from "@/lib/printcom";
+import {
+  getConfigurations,
+  showVariables,
+  saveConfiguration,
+  getPrice,
+} from "@/lib/realisaprint";
 import { getResalePrice, DESIGN_FEE_BASE } from "@/lib/pricing";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import OptionSelector from "@/components/product/OptionSelector";
 import PriceSummary from "@/components/product/PriceSummary";
-import { humanizeSlug, translatePropertyTitle } from "@/lib/slug-translations";
 import fallbackProductImage from "@/assets/services/supports-publicitaires.jpg";
 
-interface ProductProperty {
-  slug: string;
-  title: string;
-  required: boolean;
-  locked: boolean;
-  options: { slug: string | number | null; name?: string; nullable?: boolean; eco?: boolean; description?: string; type?: string }[];
+interface RealisaprintVariable {
+  name: string;
+  type: string;
+  default: string;
+  values: Record<string, string> | false;
+  readonly: boolean;
+  quantity: boolean;
+  production_time: boolean;
+  area: string;
+  position: string;
 }
 
-interface PrintComProduct {
-  sku: string;
-  titleSingle?: string;
-  titlePlural?: string;
-  active?: boolean;
-  properties?: ProductProperty[];
-  thumbnailUrl?: string;
-  imageUrl?: string;
-}
-
-function getPricingProperties(properties: ProductProperty[] = []): ProductProperty[] {
-  const withOptions = properties.filter((p) => p.options?.some((o) => o.slug != null));
-  const slugs = new Set(withOptions.map((p) => p.slug));
-
-  // If both "material" and "material:material" exist, keep the base property.
-  return withOptions.filter((prop) => {
-    if (!prop.slug.includes(":")) return true;
-    const baseSlug = prop.slug.split(":")[0];
-    return !slugs.has(baseSlug);
-  });
-}
-
-const MAIN_CONFIG_SLUGS = ["copies", "fold", "size", "material", "printtype", "finish"] as const;
-
-function getMainConfiguratorProps(properties: ProductProperty[] = []): ProductProperty[] {
-  const all = getPricingProperties(properties);
-  const main = all.filter((p) => MAIN_CONFIG_SLUGS.includes(p.slug as (typeof MAIN_CONFIG_SLUGS)[number]));
-
-  // Fallback for products without the standard slugs: keep the smallest meaningful set.
-  if (main.length > 0) return main;
-  return all.filter((p) => p.required || p.slug === "copies").slice(0, 7);
-}
-
-function parseMissingRequiredProperty(errorText: string): string | null {
-  const frMatch = errorText.match(/propriété requise manquante\s*:?\s*([a-zA-Z0-9_:-]+)/i);
-  if (frMatch?.[1]) return frMatch[1];
-
-  const enMatch = errorText.match(/missing required property\s*:?\s*([a-zA-Z0-9_:-]+)/i);
-  if (enMatch?.[1]) return enMatch[1];
-
-  return null;
+interface ConfigResult {
+  stocks: Record<string, string>;
+  variables: Record<string, RealisaprintVariable>;
 }
 
 export default function ProductDetail() {
-  const { sku } = useParams<{ sku: string }>();
+  const { sku: productId } = useParams<{ sku: string }>();
   const { addItem } = useCart();
   const [imageZoom, setImageZoom] = useState(false);
 
-  const [product, setProduct] = useState<PrintComProduct | null>(null);
-  const [accessories, setAccessories] = useState<any[]>([]);
+  const [productName, setProductName] = useState("");
+  const [config, setConfig] = useState<ConfigResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [categoryImageUrl, setCategoryImageUrl] = useState<string | null>(null);
   const [includeDesignFee, setIncludeDesignFee] = useState(false);
 
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
+  // Selected stock (first stock by default)
+  const [selectedStock, setSelectedStock] = useState<string>("");
 
+  // Selected variable values: { VARTICLE_XXX_: "value" }
+  const [selectedVars, setSelectedVars] = useState<Record<string, string>>({});
+
+  // Visible variables from show_variables
+  const [visibleVars, setVisibleVars] = useState<Record<string, boolean>>({});
+  const [variableValues, setVariableValues] = useState<Record<string, Record<string, string>>>({});
+
+  // Price state
+  const [configCode, setConfigCode] = useState<string | null>(null);
   const [priceResult, setPriceResult] = useState<any>(null);
   const [priceLoading, setPriceLoading] = useState(false);
   const [priceError, setPriceError] = useState<string | null>(null);
+  const [configDetails, setConfigDetails] = useState<string>("");
 
+  // Quantity variable key
+  const [quantityVarKey, setQuantityVarKey] = useState<string | null>(null);
+
+  // Load product configurations
   useEffect(() => {
-    if (!sku) return;
+    if (!productId) return;
     setLoading(true);
-    Promise.all([
-      getProduct(sku).catch(() => null),
-      getAccessories(sku).catch(() => []),
-    ])
-      .then(([prod, accs]) => {
-        setProduct(prod);
-        setAccessories(Array.isArray(accs) ? accs : accs?.accessories || []);
-        if (prod?.properties) {
-          const defaults: Record<string, string> = {};
-          const visibleProps = getMainConfiguratorProps(prod.properties);
 
-          // Preselect only the main visible options for a stable initial configuration
-          for (const prop of visibleProps) {
-            const firstOption = prop.options?.find((o) => o.slug != null);
-            if (firstOption) {
-              defaults[prop.slug] = String(firstOption.slug);
-            }
-          }
-          setSelectedOptions(defaults);
+    getConfigurations(productId)
+      .then((data: ConfigResult) => {
+        setConfig(data);
+
+        // Set first stock
+        const stockIds = Object.keys(data.stocks || {});
+        if (stockIds.length > 0) {
+          setSelectedStock(stockIds[0]);
         }
+
+        // Set default values for all variables
+        const defaults: Record<string, string> = {};
+        for (const [key, variable] of Object.entries(data.variables || {})) {
+          if (variable.default) {
+            defaults[key] = variable.default;
+          }
+          if (variable.quantity) {
+            setQuantityVarKey(key);
+          }
+        }
+        setSelectedVars(defaults);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 
-    // Fetch product image: product image first, then category image, then parent category image
+    // Fetch product image from DB
     supabase
       .from("product_images")
       .select("image_url, thumbnail_url")
-      .eq("sku", sku)
+      .eq("sku", productId)
       .maybeSingle()
       .then(({ data: imgData }) => {
         if (imgData?.image_url || imgData?.thumbnail_url) {
           setCategoryImageUrl(imgData.image_url || imgData.thumbnail_url || null);
           return;
         }
-
         return supabase
           .from("product_category_mappings")
           .select("category_id")
-          .eq("sku", sku)
+          .eq("sku", productId)
           .limit(1)
           .maybeSingle()
           .then(async ({ data: mapping }) => {
             if (!mapping?.category_id) return;
-
             const { data: category } = await supabase
               .from("product_categories")
               .select("image_url, parent_id")
               .eq("id", mapping.category_id)
               .maybeSingle();
-
             if (category?.image_url) {
               setCategoryImageUrl(category.image_url);
               return;
             }
-
             if (category?.parent_id) {
               const { data: parentCategory } = await supabase
                 .from("product_categories")
@@ -153,164 +136,119 @@ export default function ProductDetail() {
             }
           });
       });
-  }, [sku]);
 
-  const allPricingProps = getPricingProperties(product?.properties || []);
-
-  // Show only the main options in UI to avoid invalid auto-combinations.
-  const configurableProps = getMainConfiguratorProps(product?.properties || []).filter(
-    (p) => p.options?.length > 0
-  );
-
-  // Remove stale keys from previous payload strategies (prevents invalid option combos lingering in state).
-  useEffect(() => {
-    const allowed = new Set(configurableProps.map((p) => p.slug));
-    setSelectedOptions((prev) => {
-      const next = Object.fromEntries(
-        Object.entries(prev).filter(([k, v]) => allowed.has(k) && v != null && v !== "")
-      );
-      const prevKeys = Object.keys(prev).sort().join("|");
-      const nextKeys = Object.keys(next).sort().join("|");
-      const sameValues = prevKeys === nextKeys && Object.keys(next).every((k) => prev[k] === next[k]);
-      return sameValues ? prev : next;
+    // Fetch product name from the products list
+    import("@/lib/realisaprint").then(({ listProducts }) => {
+      listProducts().then((data: any) => {
+        const name = data?.products?.[productId!];
+        if (name) setProductName(name);
+      }).catch(() => {});
     });
-  }, [product?.sku, configurableProps.map((p) => p.slug).join("|")]);
-  const buildPricePayload = (forcedOptions: Record<string, string | number> = {}) => {
-    const options: Record<string, unknown> = {};
-    const allowedSlugs = new Set(configurableProps.map((p) => p.slug));
+  }, [productId]);
 
-    for (const [k, v] of Object.entries(selectedOptions)) {
-      if (!allowedSlugs.has(k)) continue;
-      if (v == null || v === "") continue;
-      options[k] = k === "copies" ? Number(v) || 1 : v;
-    }
+  // Call show_variables when selection changes
+  useEffect(() => {
+    if (!productId || !selectedStock || Object.keys(selectedVars).length === 0) return;
 
-    // Inject hidden required base properties (ex: printingmethod) to avoid first-call API errors.
-    for (const prop of allPricingProps) {
-      if (!prop.required || allowedSlugs.has(prop.slug) || prop.slug.includes(":")) continue;
-      if (options[prop.slug]) continue;
-      const firstOption = prop.options?.find((o) => o.slug != null);
-      if (firstOption) {
-        options[prop.slug] = prop.slug === "copies" ? Number(firstOption.slug) || 1 : String(firstOption.slug);
-      }
-    }
+    const timer = setTimeout(() => {
+      showVariables(productId, selectedStock, selectedVars, true)
+        .then((data: any) => {
+          // Update visibility
+          const visibility: Record<string, boolean> = {};
+          const updatedValues: Record<string, Record<string, string>> = {};
 
-    for (const [k, v] of Object.entries(forcedOptions)) {
-      options[k] = k === "copies" ? Number(v) || 1 : v;
-    }
+          for (const [key, val] of Object.entries(data)) {
+            if (key.startsWith("VARTICLE_") || key.startsWith("CALCARTICLE_")) {
+              visibility[key] = val as boolean;
+            }
+          }
+          setVisibleVars(visibility);
 
-    if (!options.copies) options.copies = 1;
+          // Update available values
+          if (data.variable_values) {
+            for (const [key, vals] of Object.entries(data.variable_values as Record<string, Record<string, string>>)) {
+              updatedValues[key] = vals;
+            }
+            setVariableValues(updatedValues);
+          }
 
-    return {
-      deliveryPromise: 0,
-      designs: 1,
-      options,
-    };
-  };
+          // Apply corrected values from invalid_variables
+          if (data.current_variables) {
+            setSelectedVars((prev) => {
+              const next = { ...prev };
+              for (const [key, val] of Object.entries(data.current_variables as Record<string, string>)) {
+                if (val != null) next[key] = String(val);
+              }
+              return next;
+            });
+          }
+        })
+        .catch((err) => {
+          console.warn("[show_variables] error:", err.message);
+        });
+    }, 300);
 
-  const requestPriceWithFallback = async () => {
-    const forcedOptions: Record<string, string | number> = {};
-    const injected = new Set<string>();
+    return () => clearTimeout(timer);
+  }, [productId, selectedStock, JSON.stringify(selectedVars)]);
 
-    while (true) {
-      const payload = buildPricePayload(forcedOptions);
-      try {
-        console.log("[price] Requesting price for", sku, "with", Object.keys(payload.options || {}).length, "options");
-        return await getPrice(sku!, payload);
-      } catch (err: any) {
-        const errText = err?.message || "";
-        const missingProp = parseMissingRequiredProperty(errText);
-
-        // Auto-fill missing required props only when API explicitly asks for one.
-        if (!missingProp || injected.has(missingProp)) {
-          throw err;
-        }
-
-        const prop = allPricingProps.find((p) => p.slug === missingProp);
-        const fallbackOpt = prop?.options?.find((o) => o.slug != null);
-        if (!fallbackOpt) {
-          throw err;
-        }
-
-        forcedOptions[missingProp] = missingProp === "copies"
-          ? Number(fallbackOpt.slug) || 1
-          : String(fallbackOpt.slug);
-        injected.add(missingProp);
-      }
-    }
-  };
-
-  const fetchPrice = async () => {
-    if (!sku) return;
+  // Save configuration and get price
+  const fetchPrice = useCallback(async () => {
+    if (!productId || !selectedStock) return;
     setPriceLoading(true);
     setPriceError(null);
 
     try {
-      const result = await requestPriceWithFallback();
+      // Step 1: save_configuration to get a code
+      const saveResult = await saveConfiguration(productId, selectedStock, selectedVars);
 
-      // Print.com may return an error object inside a 200 response
-      if (result?.errorMessage) {
-        console.warn("[price] Print.com error:", result.errorMessage);
+      if (saveResult.error) {
+        setPriceError(saveResult.error);
+        setPriceLoading(false);
+        return;
+      }
+
+      const code = String(saveResult.code);
+      setConfigCode(code);
+      setConfigDetails(saveResult.details || "");
+
+      // Step 2: get_price with the code
+      const quantity = quantityVarKey ? selectedVars[quantityVarKey] || "1" : "1";
+      const priceData = await getPrice(code, quantity);
+
+      if (priceData.error) {
+        setPriceError(priceData.error);
         setPriceResult(null);
-        setPriceError(`Erreur API : ${result.errorMessage}`);
       } else {
-        console.log("[price] Got price:", result?.prices?.salesPrice ?? result?.price ?? result?.totalPrice);
-        setPriceResult(result);
+        setPriceResult(priceData);
       }
     } catch (err: any) {
-      console.error("[price] Request failed:", err?.message || err);
+      console.error("[price] error:", err);
       setPriceResult(null);
-      const errText = err?.message || "";
-      const match = errText.match(/\[(\d+)\]/);
-      const status = match ? parseInt(match[1]) : 0;
-
-      if (status === 400) {
-        if (errText.includes("exclude group") || errText.includes("excluded configuration")) {
-          setPriceError("Combinaison d'options non valide. Essayez un autre format ou mode de pliage.");
-        } else if (errText.includes("does not match any range")) {
-          setPriceError("La quantité sélectionnée n'est pas disponible pour ce produit.");
-        } else if (errText.includes("missing required property") || errText.includes("propriété requise manquante")) {
-          setPriceError("Configuration incomplète — sélectionnez les options principales.");
-        } else {
-          setPriceError("Configuration invalide — veuillez modifier vos options.");
-        }
-      } else if (status === 500) {
-        setPriceError("Le service tarifaire est temporairement indisponible. Réessayez.");
-      } else {
-        setPriceError("Impossible de calculer le prix pour le moment.");
-      }
+      setPriceError("Impossible de calculer le prix pour le moment.");
     } finally {
       setPriceLoading(false);
     }
-  };
+  }, [productId, selectedStock, selectedVars, quantityVarKey]);
 
-  // Auto-calculate price when options change
+  // Auto-fetch price when variables change
   useEffect(() => {
-    if (!sku || !product || configurableProps.length === 0) return;
-    const allSet = configurableProps
-      .filter((p) => p.required)
-      .every((p) => selectedOptions[p.slug] && selectedOptions[p.slug] !== "");
-    if (!allSet) {
-      setPriceError(null);
-      return;
-    }
-
-    const timer = setTimeout(fetchPrice, 500);
+    if (!productId || !config || !selectedStock) return;
+    const timer = setTimeout(fetchPrice, 800);
     return () => clearTimeout(timer);
-  }, [sku, selectedOptions, product]);
-
-  const productName = product?.titleSingle || sku || "";
+  }, [fetchPrice]);
 
   const handleAddToCart = () => {
-    if (!product || !sku) return;
+    if (!productId) return;
+    const quantity = quantityVarKey ? parseInt(selectedVars[quantityVarKey] || "1") : 1;
+
     addItem({
-      sku,
-      productName,
-      options: selectedOptions,
+      sku: productId,
+      productName: productName || `Produit ${productId}`,
+      options: selectedVars,
       quantity: 1,
-      copies: Number(selectedOptions.copies) || 1,
+      copies: quantity,
       unitPrice: priceResult ? getResalePrice(priceResult) + (includeDesignFee ? DESIGN_FEE_BASE : 0) : null,
-      currency: priceResult?.prices?.currency || priceResult?.currency || "EUR",
+      currency: "EUR",
       fileUrl: null,
       originalFileName: null,
     });
@@ -325,7 +263,7 @@ export default function ProductDetail() {
     );
   }
 
-  if (error || !product) {
+  if (error || !config) {
     return (
       <div className="container py-20 text-center">
         <p className="text-destructive">Erreur : {error || "Produit introuvable"}</p>
@@ -333,18 +271,40 @@ export default function ProductDetail() {
     );
   }
 
-  const imageUrl = product.imageUrl || categoryImageUrl || product.thumbnailUrl || fallbackProductImage;
+  const imageUrl = categoryImageUrl || fallbackProductImage;
 
-  // Generate a description from product properties
-  const descriptionParts: string[] = [];
-  for (const prop of product.properties || []) {
-    const validOpts = prop.options?.filter((o) => o.slug != null) || [];
-    if (validOpts.length > 0 && prop.slug !== "copies") {
-      const label = translatePropertyTitle(prop.slug, prop.title);
-      const count = validOpts.length;
-      descriptionParts.push(`${count} ${label.toLowerCase()}`);
-    }
-  }
+  // Build configurable props from Realisaprint variables
+  const configurableProps = Object.entries(config.variables || {})
+    .filter(([key]) => {
+      // Show only visible variables
+      if (Object.keys(visibleVars).length > 0 && visibleVars[key] === false) return false;
+      return true;
+    })
+    .filter(([, variable]) => {
+      // Hide readonly, production_time, session type
+      if (variable.readonly) return false;
+      if (variable.production_time) return false;
+      if (variable.type === "session") return false;
+      return true;
+    })
+    .sort(([, a], [, b]) => parseInt(a.position) - parseInt(b.position))
+    .map(([key, variable]) => {
+      // Use updated values from show_variables if available
+      const values = variableValues[key] || (variable.values && typeof variable.values === "object" ? variable.values : {});
+      
+      return {
+        slug: key,
+        title: variable.name,
+        required: true,
+        locked: variable.readonly,
+        isQuantity: variable.quantity,
+        options: Object.entries(values).map(([id, name]) => ({
+          slug: id,
+          name,
+        })),
+      };
+    })
+    .filter((p) => p.options.length > 0);
 
   return (
     <div className="container py-8">
@@ -352,71 +312,85 @@ export default function ProductDetail() {
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <Link to="/products" className="hover:text-primary transition-colors">Catalogue</Link>
         <ChevronRight className="h-3 w-3" />
-        <span className="text-foreground">{product.titlePlural || productName}</span>
+        <span className="text-foreground">{productName || `Produit ${productId}`}</span>
       </nav>
 
-      {/* Header with image and title */}
+      {/* Header */}
       <div className="mb-8 flex flex-col sm:flex-row gap-6 items-start">
         <div
           className="w-full sm:w-64 aspect-square overflow-hidden rounded-xl bg-muted shrink-0 cursor-pointer relative group"
           onClick={() => imageUrl && setImageZoom(true)}
         >
-          {imageUrl ? (
-            <>
-              <img src={imageUrl} alt={productName} className="h-full w-full object-contain p-2" />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors">
-                <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-            </>
-          ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-2">
-              <Package className="h-12 w-12 text-muted-foreground/20" />
-            </div>
-          )}
+          <img src={imageUrl} alt={productName} className="h-full w-full object-contain p-2" />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors">
+            <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
         </div>
         <div className="flex-1">
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
-            {product.titlePlural || productName}
+            {productName || `Produit ${productId}`}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-            Configurez votre {(productName).toLowerCase()} en sélectionnant les options ci-dessous.
-            {descriptionParts.length > 0 && (
-              <> Disponible avec {descriptionParts.slice(0, 4).join(", ")}.</>
-            )}
+            Configurez votre produit en sélectionnant les options ci-dessous.
           </p>
+          {configDetails && (
+            <p className="mt-2 text-xs text-muted-foreground whitespace-pre-line">{configDetails}</p>
+          )}
           <p className="mt-2 text-xs text-muted-foreground">
-            Livraison rapide partout en France. Devis gratuit, 
+            Livraison rapide partout en France. Devis gratuit,
             <Link to="/#devis" className="text-primary hover:underline ml-1">contactez-nous</Link>.
           </p>
         </div>
       </div>
 
-      {/* Main layout: options + sticky price sidebar */}
+      {/* Stock selector (if multiple stocks) */}
+      {Object.keys(config.stocks || {}).length > 1 && (
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase mb-3">
+            Type de produit
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(config.stocks).map(([id, name]) => (
+              <button
+                key={id}
+                onClick={() => setSelectedStock(id)}
+                className={cn(
+                  "rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all",
+                  selectedStock === id
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-card text-muted-foreground hover:border-primary/40"
+                )}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Main layout */}
       <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
-        {/* Left: Options — full-width visual types, 2-col for others */}
+        {/* Options */}
         <div className="space-y-6">
-          {configurableProps.map((prop) => {
-            const isWide = ["foldingtype", "foldingmethod", "size", "format"].includes(prop.slug);
-            return (
-              <div key={prop.slug} className={cn(isWide ? "col-span-full" : "")}>
-                <OptionSelector
-                  title={prop.title}
-                  slug={prop.slug}
-                  options={prop.options}
-                  selectedValue={selectedOptions[prop.slug] || ""}
-                  onSelect={(val) =>
-                    setSelectedOptions((prev) => ({ ...prev, [prop.slug]: val }))
-                  }
-                  required={prop.required}
-                  locked={prop.locked}
-                  initialVisibleCount={prop.slug === "copies" ? 10 : 6}
-                />
-              </div>
-            );
-          })}
+          {configurableProps.map((prop) => (
+            <div key={prop.slug}>
+              <OptionSelector
+                title={prop.title}
+                slug={prop.slug}
+                options={prop.options}
+                selectedValue={selectedVars[prop.slug] || ""}
+                onSelect={(val) =>
+                  setSelectedVars((prev) => ({ ...prev, [prop.slug]: val }))
+                }
+                required={prop.required}
+                locked={prop.locked}
+                initialVisibleCount={prop.isQuantity ? 10 : 6}
+              />
+            </div>
+          ))}
         </div>
 
-        {/* Right: Price summary sidebar */}
+        {/* Price sidebar */}
         <div className="hidden lg:block">
           <PriceSummary
             priceResult={priceResult}
@@ -425,7 +399,7 @@ export default function ProductDetail() {
             onAddToCart={handleAddToCart}
             onRetryPrice={fetchPrice}
             disabled={!priceResult}
-            selectedOptions={selectedOptions}
+            selectedOptions={selectedVars}
             configurableProps={configurableProps}
             includeDesignFee={includeDesignFee}
             onToggleDesignFee={setIncludeDesignFee}
@@ -433,7 +407,7 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* Mobile price bar (sticky bottom) */}
+      {/* Mobile price bar */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card p-4">
         <div className="flex items-center justify-between gap-4">
           <div>
@@ -457,40 +431,6 @@ export default function ProductDetail() {
           </Button>
         </div>
       </div>
-
-      {/* Accessories */}
-      {accessories.length > 0 && (
-        <div className="mt-10">
-          <h3 className="font-display text-lg font-semibold text-foreground mb-4">Accessoires</h3>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {accessories.map((acc: any) => (
-              <div key={acc.sku} className="flex items-center justify-between rounded-lg border border-border bg-card p-3">
-                <p className="text-sm font-medium text-card-foreground">{acc.titleSingle || acc.name || acc.sku}</p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    addItem({
-                      sku: acc.sku,
-                      productName: acc.titleSingle || acc.name || acc.sku,
-                      options: {},
-                      quantity: 1,
-                      copies: 1,
-                      unitPrice: acc.price || null,
-                      currency: "EUR",
-                      fileUrl: null,
-                      originalFileName: null,
-                    });
-                    toast.success("Accessoire ajouté !");
-                  }}
-                >
-                  Ajouter
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Bottom spacing for mobile sticky bar */}
       <div className="h-20 lg:hidden" />

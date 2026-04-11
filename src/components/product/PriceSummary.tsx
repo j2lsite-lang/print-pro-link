@@ -1,8 +1,7 @@
 import { Loader2, ShoppingCart, RefreshCw, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { humanizeSlug, translatePropertyTitle } from "@/lib/slug-translations";
-import { getResalePrice, getUnitResalePrice, getCopies, DESIGN_FEE_BASE } from "@/lib/pricing";
+import { getResalePrice, DESIGN_FEE_BASE } from "@/lib/pricing";
 
 interface OptionItem {
   slug: string | number | null;
@@ -32,9 +31,7 @@ interface PriceSummaryProps {
 function getOptionLabel(prop: ConfigurableProp, selectedSlug: string): string {
   const match = prop.options.find((o) => String(o.slug) === selectedSlug);
   if (match?.name) return match.name;
-  const num = Number(selectedSlug);
-  if (!isNaN(num) && prop.slug === "copies") return num.toLocaleString("fr-FR");
-  return humanizeSlug(selectedSlug);
+  return selectedSlug;
 }
 
 export default function PriceSummary({
@@ -62,7 +59,7 @@ export default function PriceSummary({
       <div className="space-y-2 text-sm">
         {summaryItems.map((prop) => (
           <div key={prop.slug} className="flex justify-between gap-4">
-            <span className="text-muted-foreground truncate">{translatePropertyTitle(prop.slug, prop.title)}</span>
+            <span className="text-muted-foreground truncate">{prop.title}</span>
             <span className="text-primary font-medium text-right truncate max-w-[55%]">
               {getOptionLabel(prop, selectedOptions[prop.slug])}
             </span>
@@ -112,9 +109,9 @@ export default function PriceSummary({
                 <span className="text-muted-foreground">Impression</span>
                 <span className="text-foreground">{getResalePrice(priceResult).toFixed(2)} €</span>
               </div>
-              {getCopies(priceResult) > 1 && (
-                <p className="text-xs text-muted-foreground text-right">
-                  {getUnitResalePrice(priceResult).toFixed(4)} € / unité
+              {priceResult.delai && (
+                <p className="text-xs text-muted-foreground">
+                  Délai : {priceResult.delai} ({priceResult.delai_fab}j fab. + {priceResult.delai_liv}j liv.)
                 </p>
               )}
               {includeDesignFee && (

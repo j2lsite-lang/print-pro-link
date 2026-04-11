@@ -1,9 +1,9 @@
 /**
  * Pricing configuration for J2L Print
- * 
- * MARGIN_COEFFICIENT: multiplier applied to the supplier price (salesPrice)
+ * Adapted for Realisaprint API
+ *
+ * MARGIN_COEFFICIENT: multiplier applied to the supplier price
  * to calculate the resale price for the customer.
- * Example: 2.0 means the customer pays 2x the supplier cost.
  */
 export const MARGIN_COEFFICIENT = 2.0;
 
@@ -15,22 +15,22 @@ export const DESIGN_FEE_BASE = 65;
 
 /**
  * Round a price up to the nearest 0.10 € for clean display
- * e.g. 46.83 → 46.90, 93.51 → 93.60
  */
 function roundUp10(value: number): number {
   return Math.ceil(value * 10) / 10;
 }
 
 /**
- * Extract the supplier price from a Print.com price result
+ * Extract the supplier price from a Realisaprint price result
+ * Realisaprint returns { price: "33.00", ... }
  */
 export function getSupplierPrice(priceResult: any): number {
-  return priceResult?.prices?.salesPrice ?? priceResult?.price ?? priceResult?.totalPrice ?? 0;
+  if (!priceResult) return 0;
+  return parseFloat(priceResult.price) || 0;
 }
 
 /**
- * Calculate the resale price (customer-facing) from a price result
- * Rounded up to nearest 0.10 € for clean display
+ * Calculate the resale price (customer-facing)
  */
 export function getResalePrice(priceResult: any): number {
   const supplier = getSupplierPrice(priceResult);
@@ -38,17 +38,17 @@ export function getResalePrice(priceResult: any): number {
 }
 
 /**
- * Get the number of copies from a price result
+ * Get the number of copies from context (not in price result for Realisaprint)
  */
-export function getCopies(priceResult: any): number {
-  return priceResult?.options?.copies ?? 1;
+export function getCopies(priceResult: any, quantity?: number): number {
+  return quantity || 1;
 }
 
 /**
  * Calculate per-unit resale price
  */
-export function getUnitResalePrice(priceResult: any): number {
+export function getUnitResalePrice(priceResult: any, quantity?: number): number {
   const total = getResalePrice(priceResult);
-  const copies = getCopies(priceResult);
+  const copies = getCopies(priceResult, quantity);
   return copies > 1 ? Math.ceil((total / copies) * 10000) / 10000 : total;
 }

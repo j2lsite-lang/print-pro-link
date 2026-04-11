@@ -1,4 +1,3 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -7,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-serve(async (req: Request) => {
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -16,36 +15,26 @@ serve(async (req: Request) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    const PRINTCOM_API_KEY = Deno.env.get("PRINTCOM_API_KEY");
-    if (!PRINTCOM_API_KEY) throw new Error("PRINTCOM_API_KEY not configured");
+    const shopId = Deno.env.get("REALISAPRINT_SHOP_ID");
+    const apiKey = Deno.env.get("REALISAPRINT_API_KEY");
+    if (!shopId || !apiKey) throw new Error("REALISAPRINT credentials not configured");
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Parse optional parameters
     let body: any = {};
     try { body = await req.json(); } catch { body = {}; }
     const subcategoriesOnly = body.subcategoriesOnly === true;
     const startFrom = body.startFrom || 0;
 
-    // 1. Fetch ALL categories (parents + subcategories) from DB
+    // 1. Fetch categories from DB
     const { data: categories, error: catErr } = await supabase
       .from("product_categories")
       .select("id, name, slug, description, parent_id")
       .order("sort_order");
     if (catErr) throw new Error("Failed to fetch categories: " + catErr.message);
 
-    // Build category info for AI prompt
-    const categoryList = categories!.map((c: any) => {
-      const parentName = c.parent_id
-        ? categories!.find((p: any) => p.id === c.parent_id)?.name || ""
-        : "";
-      const label = parentName ? `${parentName} > ${c.name}` : c.name;
-      return `- ${c.id}: ${label} (${c.description || ""})`;
-    }).join("\n");
-
-    // Filter which categories to map to
     const targetCategories = subcategoriesOnly
       ? categories!.filter((c: any) => c.parent_id !== null)
       : categories!;
@@ -58,22 +47,22 @@ serve(async (req: Request) => {
       return `- ${c.id}: ${label} (${c.description || ""})`;
     }).join("\n");
 
-    // 2. Fetch products from Print.com API
-    const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
-    const prodRes = await fetch(`${apiBase}/products`, {
-      headers: {
-        Authorization: `PrintApiKey ${PRINTCOM_API_KEY}`,
-        "Accept-Language": "fr-FR",
-        "Content-Type": "application/json",
-      },
+    // 2. Fetch products from Realisaprint API
+    const params = new URLSearchParams({ shop_id: shopId, api_key: apiKey });
+    const prodRes = await fetch("https://www.realisaprint.com/api/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
     });
-    if (!prodRes.ok) throw new Error("Print.com API error: " + await prodRes.text());
-    const products = await prodRes.json();
-    const activeProducts = (Array.isArray(products) ? products : [])
-      .filter((p: any) => p.active !== false)
-      .map((p: any) => ({ sku: p.sku, title: p.titleSingle || p.titlePlural || p.sku }));
+    if (!prodRes.ok) throw new Error("Realisaprint API error: " + await prodRes.text());
+    const prodData = await prodRes.json();
+    const productsObj = prodData?.products || {};
+    const activeProducts = Object.entries(productsObj).map(([id, name]) => ({
+      sku: id,
+      title: name as string,
+    }));
 
-    console.log(`[map-categories] ${activeProducts.length} products, ${targetCategories.length} target categories, startFrom=${startFrom}`);
+    console.log(`[map-categories] ${activeProducts.length} products, ${targetCategories.length} target categories`);
 
     // 3. Process in batches
     const batchSize = 50;
@@ -81,14 +70,14 @@ serve(async (req: Request) => {
 
     for (let i = startFrom; i < activeProducts.length; i += batchSize) {
       const batch = activeProducts.slice(i, i + batchSize);
-      const productList = batch.map((p: any) => `- ${p.sku}: ${p.title}`).join("\n");
+      const productList = batch.map((p) => `- ${p.sku}: ${p.title}`).join("\n");
 
       const prompt = `Tu es un expert en classification de produits d'impression et publicitaires.
 
 Voici les catégories et sous-catégories disponibles (format: UUID: Nom (description)) :
 ${targetCategoryList}
 
-Voici une liste de produits avec leur SKU et nom :
+Voici une liste de produits avec leur ID et nom :
 ${productList}
 
 Pour chaque produit, associe-le aux catégories ET sous-catégories les plus pertinentes.
@@ -134,7 +123,7 @@ Règles :
       try {
         mappings = JSON.parse(jsonStr);
       } catch {
-        console.error("[map-categories] Failed to parse batch", i / batchSize + 1, content.substring(0, 200));
+        console.error("[map-categories] Failed to parse batch", i / batchSize + 1);
         continue;
       }
 
