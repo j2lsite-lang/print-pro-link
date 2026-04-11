@@ -13,10 +13,8 @@ const navLinks = [
 ];
 
 interface QuickProduct {
-  sku: string;
-  titleSingle?: string;
-  titlePlural?: string;
-  thumbnailUrl?: string;
+  id: string;
+  name: string;
 }
 
 let cachedProducts: QuickProduct[] | null = null;
@@ -49,8 +47,11 @@ export default function Header() {
       return;
     }
     listProducts().then((data) => {
-      const items: QuickProduct[] = Array.isArray(data) ? data : data?.products || data?.items || [];
-      cachedProducts = items.filter((p: any) => p.active !== false);
+      const productsObj = data?.products || {};
+      cachedProducts = Object.entries(productsObj).map(([id, name]) => ({
+        id,
+        name: name as string,
+      }));
       setAllProducts(cachedProducts);
     }).catch(() => {});
   }, []);
@@ -63,8 +64,7 @@ export default function Header() {
     }
     const q = query.toLowerCase();
     const matched = allProducts.filter((p) => {
-      const title = (p.titleSingle || p.titlePlural || "").toLowerCase();
-      return title.includes(q) || p.sku.toLowerCase().includes(q);
+      return p.name.toLowerCase().includes(q) || p.id.includes(q);
     }).slice(0, 8);
     setResults(matched);
   }, [query, allProducts]);
@@ -89,8 +89,8 @@ export default function Header() {
     }
   };
 
-  const goToProduct = (sku: string) => {
-    navigate(`/products/${sku}`);
+  const goToProduct = (id: string) => {
+    navigate(`/products/${id}`);
     setShowResults(false);
     setQuery("");
   };
@@ -125,18 +125,14 @@ export default function Header() {
             <div className="absolute top-full left-0 right-0 mt-1 rounded-xl border border-border bg-background shadow-elevated z-50 overflow-hidden">
               {results.map((p) => (
                 <button
-                  key={p.sku}
-                  onClick={() => goToProduct(p.sku)}
+                  key={p.id}
+                  onClick={() => goToProduct(p.id)}
                   className="flex items-center gap-3 w-full px-4 py-2.5 text-left hover:bg-muted/50 transition-colors"
                 >
-                  {p.thumbnailUrl ? (
-                    <img src={p.thumbnailUrl} alt="" className="h-8 w-8 rounded object-cover shrink-0" />
-                  ) : (
-                    <div className="h-8 w-8 rounded bg-muted flex items-center justify-center shrink-0">
-                      <Search className="h-3 w-3 text-muted-foreground" />
-                    </div>
-                  )}
-                  <span className="text-sm text-foreground truncate">{p.titleSingle || p.sku}</span>
+                  <div className="h-8 w-8 rounded bg-muted flex items-center justify-center shrink-0">
+                    <Search className="h-3 w-3 text-muted-foreground" />
+                  </div>
+                  <span className="text-sm text-foreground truncate">{p.name}</span>
                 </button>
               ))}
               <button
