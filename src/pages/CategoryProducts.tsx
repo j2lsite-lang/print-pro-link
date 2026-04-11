@@ -2,17 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Search, Loader2, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { listProducts } from "@/lib/printcom";
+import { listProducts } from "@/lib/realisaprint";
 import { useCategoryBySlug, useCategories, useSkusForCategory } from "@/hooks/useCategories";
 import { supabase } from "@/integrations/supabase/client";
 import fallbackProductImage from "@/assets/services/supports-publicitaires.jpg";
 
 interface Product {
-  sku: string;
-  titleSingle?: string;
-  titlePlural?: string;
-  active?: boolean;
-  thumbnailUrl?: string;
+  id: string;
+  name: string;
   cmsImageUrl?: string;
 }
 
@@ -22,7 +19,6 @@ export default function CategoryProducts() {
   const { categories: subCategories } = useCategories(category?.id || null);
   const { skus, loading: skusLoading } = useSkusForCategory(category?.id);
 
-  // Fetch parent category image as fallback when current category has no image
   const [parentImageUrl, setParentImageUrl] = useState<string | null>(null);
   useEffect(() => {
     if (!category?.parent_id || category?.image_url) { setParentImageUrl(null); return; }
@@ -41,16 +37,20 @@ export default function CategoryProducts() {
 
   useEffect(() => {
     Promise.all([
-      listProducts().catch(() => ({ products: [] })),
+      listProducts().catch(() => ({ products: {} })),
       supabase.from("product_images").select("sku, image_url, thumbnail_url"),
     ]).then(([data, { data: imgData }]) => {
-      const items: Product[] = Array.isArray(data) ? data : data?.products || data?.items || [];
+      const productsObj = data?.products || {};
+      const items: Product[] = Object.entries(productsObj).map(([id, name]) => ({
+        id,
+        name: name as string,
+      }));
       const imgMap: Record<string, string> = {};
       for (const row of imgData || []) imgMap[row.sku] = row.image_url || row.thumbnail_url;
       setAllProducts(
-        items.filter((p) => p.active !== false).map((p) => ({
+        items.map((p) => ({
           ...p,
-          cmsImageUrl: imgMap[p.sku] || undefined,
+          cmsImageUrl: imgMap[p.id] || undefined,
         }))
       );
     })
@@ -60,16 +60,14 @@ export default function CategoryProducts() {
 
   const loading = catLoading || skusLoading || productsLoading;
 
-  // Filter products by SKUs in this category
   const categoryProducts = skus.length > 0
-    ? allProducts.filter((p) => skus.includes(p.sku))
+    ? allProducts.filter((p) => skus.includes(p.id))
     : [];
 
   const filtered = categoryProducts.filter((p) => {
     if (!search) return true;
     const q = search.toLowerCase();
-    const title = (p.titleSingle || p.titlePlural || "").toLowerCase();
-    return title.includes(q) || p.sku.toLowerCase().includes(q);
+    return p.name.toLowerCase().includes(q) || p.id.includes(q);
   });
 
   if (catLoading) {
@@ -93,7 +91,6 @@ export default function CategoryProducts() {
 
   return (
     <div className="container py-10">
-      {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <Link to="/products" className="hover:text-foreground transition-colors">Catalogue</Link>
         <ChevronRight className="h-3 w-3" />
@@ -105,7 +102,6 @@ export default function CategoryProducts() {
         <p className="mt-2 text-muted-foreground">{category.description}</p>
       )}
 
-      {/* Sub-categories */}
       {subCategories.length > 0 && (
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {subCategories.map((sub) => (
@@ -123,7 +119,6 @@ export default function CategoryProducts() {
         </div>
       )}
 
-      {/* Search */}
       <div className="mt-8">
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -136,7 +131,6 @@ export default function CategoryProducts() {
         </div>
       </div>
 
-      {/* Products */}
       {loading && (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -155,21 +149,21 @@ export default function CategoryProducts() {
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((product) => (
               <Link
-                key={product.sku}
-                to={`/products/${product.sku}`}
+                key={product.id}
+                to={`/products/${product.id}`}
                 className="group overflow-hidden rounded-xl border border-border bg-card shadow-card transition-all hover:shadow-elevated"
               >
                 <div className="aspect-[4/3] bg-muted overflow-hidden">
                   <img
-                    src={product.cmsImageUrl || product.thumbnailUrl || category.image_url || parentImageUrl || fallbackProductImage}
-                    alt={product.titleSingle || product.sku}
+                    src={product.cmsImageUrl || category.image_url || parentImageUrl || fallbackProductImage}
+                    alt={product.name}
                     className="h-full w-full object-cover transition-transform group-hover:scale-105"
                     loading="lazy"
                   />
                 </div>
                 <div className="p-4">
                   <h3 className="font-display font-semibold text-card-foreground group-hover:text-primary transition-colors">
-                    {product.titleSingle || product.sku}
+                    {product.name}
                   </h3>
                 </div>
               </Link>
@@ -179,8 +173,6 @@ export default function CategoryProducts() {
           {filtered.length === 0 && skus.length === 0 && (
             <p className="mt-8 py-10 text-center text-muted-foreground">
               Aucun produit associé à cette catégorie pour le moment.
-              <br />
-              <span className="text-xs">Les produits seront associés aux catégories prochainement.</span>
             </p>
           )}
 

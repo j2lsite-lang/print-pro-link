@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
-import { pdfPreflight } from "@/lib/printcom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -14,16 +13,12 @@ export default function Checkout() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Address form
   const [address, setAddress] = useState({
     firstName: "", lastName: "", company: "", street: "", houseNumber: "",
     city: "", postalCode: "", country: "FR", phone: "", email: "",
   });
 
-  // File uploads per item
   const [fileUploads, setFileUploads] = useState<Record<string, { url: string; name: string }>>({});
-  const [preflightResults, setPreflightResults] = useState<Record<string, any>>({});
-
   const [submitting, setSubmitting] = useState(false);
 
   const handleFileUpload = async (itemId: string, file: File) => {
@@ -37,18 +32,6 @@ export default function Checkout() {
     toast.success("Fichier uploadé !");
   };
 
-  const handlePreflight = async (itemId: string) => {
-    const file = fileUploads[itemId];
-    if (!file) return;
-    try {
-      const result = await pdfPreflight({ fileUrl: file.url, fileName: file.name });
-      setPreflightResults(prev => ({ ...prev, [itemId]: result }));
-      toast.success("Vérification terminée !");
-    } catch (err: any) {
-      toast.error("Erreur preflight: " + err.message);
-    }
-  };
-
   const handleSubmitOrder = async () => {
     if (!address.email || !address.firstName || !address.lastName) {
       toast.error("Veuillez remplir au minimum votre nom, prénom et email.");
@@ -57,7 +40,6 @@ export default function Checkout() {
     setSubmitting(true);
 
     try {
-      // Save address
       const { data: addrData } = await supabase.from("addresses").insert({
         user_id: user?.id || null,
         first_name: address.firstName,
@@ -72,7 +54,6 @@ export default function Checkout() {
         email: address.email,
       }).select().single();
 
-      // Create order
       const deduplicationId = crypto.randomUUID();
       const { data: order, error: orderErr } = await supabase.from("orders").insert({
         user_id: user?.id || null,
@@ -88,7 +69,6 @@ export default function Checkout() {
 
       if (orderErr) throw orderErr;
 
-      // Create order items
       const orderItems = items.map(i => ({
         order_id: order.id,
         sku: i.sku,
@@ -121,7 +101,6 @@ export default function Checkout() {
     <div className="container max-w-4xl py-10">
       <h1 className="font-display text-3xl font-bold text-foreground">Demande de devis</h1>
 
-      {/* Address */}
       <section className="mt-8">
         <h2 className="font-display text-xl font-semibold text-foreground">Vos coordonnées</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -137,36 +116,26 @@ export default function Checkout() {
         </div>
       </section>
 
-      {/* Files */}
       <section className="mt-10">
         <h2 className="font-display text-xl font-semibold text-foreground">Fichiers d'impression</h2>
         <div className="mt-4 space-y-4">
           {items.map(item => (
             <div key={item.id} className="rounded-lg border border-border bg-card p-4">
-              <p className="font-medium text-card-foreground">{item.productName} ({item.sku})</p>
+              <p className="font-medium text-card-foreground">{item.productName}</p>
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-input px-4 py-2 text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors">
                   <Upload className="h-4 w-4" />
-                  {fileUploads[item.id] ? fileUploads[item.id].name : "Uploader un PDF"}
+                  {fileUploads[item.id] ? fileUploads[item.id].name : "Uploader un fichier"}
                   <input
                     type="file"
-                    accept=".pdf"
+                    accept=".pdf,.jpg,.jpeg,.tif,.tiff"
                     className="hidden"
                     onChange={e => e.target.files?.[0] && handleFileUpload(item.id, e.target.files[0])}
                   />
                 </label>
                 {fileUploads[item.id] && (
-                  <Button variant="outline" size="sm" onClick={() => handlePreflight(item.id)}>
-                    Vérifier le fichier
-                  </Button>
-                )}
-                {preflightResults[item.id] && (
-                  <span className="flex items-center gap-1 text-sm">
-                    {preflightResults[item.id].ok || preflightResults[item.id].status === "ok" ? (
-                      <><CheckCircle className="h-4 w-4 text-success" /> OK</>
-                    ) : (
-                      <><AlertCircle className="h-4 w-4 text-warning" /> Attention</>
-                    )}
+                  <span className="flex items-center gap-1 text-sm text-success">
+                    <CheckCircle className="h-4 w-4" /> Fichier prêt
                   </span>
                 )}
               </div>
@@ -175,7 +144,6 @@ export default function Checkout() {
         </div>
       </section>
 
-      {/* Shipping info */}
       <section className="mt-10">
         <div className="rounded-lg border border-border bg-card p-6 flex items-start gap-4">
           <Truck className="h-6 w-6 text-primary shrink-0 mt-0.5" />
@@ -191,7 +159,6 @@ export default function Checkout() {
         </div>
       </section>
 
-      {/* Submit */}
       <div className="mt-10 rounded-xl border border-border bg-card p-6">
         <div className="flex items-center justify-between">
           <div>
