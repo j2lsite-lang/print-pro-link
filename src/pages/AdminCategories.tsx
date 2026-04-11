@@ -73,7 +73,7 @@ export default function AdminCategories() {
     <div className="container py-10 max-w-3xl">
       <h1 className="font-display text-3xl font-bold text-foreground">Administration des catégories</h1>
       <p className="mt-2 text-muted-foreground">
-        Associez automatiquement les produits Print.com aux catégories et sous-catégories.
+        Associez automatiquement les produits Realisaprint aux catégories et sous-catégories.
       </p>
 
       <div className="mt-8 rounded-xl border border-border bg-card p-6">

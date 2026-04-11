@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Leaf } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { humanizeSlug, translatePropertyTitle } from "@/lib/slug-translations";
+
 
 interface OptionItem {
   slug: string | number | null;
