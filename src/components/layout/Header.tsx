@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShoppingCart, Menu, X, Search } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/hooks/useCart";
-import { listProducts } from "@/lib/printcom";
+import { listProducts } from "@/lib/realisaprint";
 import logoJ2L from "@/assets/logo-j2l.png";
 
 const navLinks = [
