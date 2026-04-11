@@ -10,7 +10,7 @@ export default function OrderDetail() {
   const { user } = useAuth();
   const [order, setOrder] = useState<any>(null);
   const [items, setItems] = useState<any[]>([]);
-  const [printcomData, setPrintcomData] = useState<any>(null);
+  const [externalData, setExternalData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,11 +33,11 @@ export default function OrderDetail() {
           .eq("order_id", orderData.id);
         setItems(itemsData || []);
 
-        // Try to get Print.com status
+        // Try to get order status from Realisaprint
         if (orderData.printcom_order_number) {
           try {
-            const pcData = await getOrder(orderData.printcom_order_number);
-            setPrintcomData(pcData);
+            const extData = await getOrder(orderData.printcom_order_number);
+            setExternalData(extData);
           } catch {}
         }
       }
@@ -75,21 +75,21 @@ export default function OrderDetail() {
         </div>
         {order.printcom_order_number && (
           <div className="rounded-lg border border-border bg-card p-4">
-            <p className="text-sm text-muted-foreground">N° Print.com</p>
+            <p className="text-sm text-muted-foreground">N° Commande</p>
             <p className="mt-1 font-semibold text-foreground">{order.printcom_order_number}</p>
           </div>
         )}
       </div>
 
       {/* Tracking */}
-      {printcomData?.tracking && (
+      {externalData?.tracking && (
         <div className="mt-6 rounded-lg border border-success/20 bg-success/5 p-4">
           <div className="flex items-center gap-2">
             <Truck className="h-5 w-5 text-success" />
             <p className="font-medium text-foreground">Suivi de livraison</p>
           </div>
-          <a href={printcomData.tracking.url} target="_blank" rel="noopener" className="mt-2 block text-sm text-primary hover:underline">
-            {printcomData.tracking.carrier}: {printcomData.tracking.trackingNumber}
+          <a href={externalData.tracking.url} target="_blank" rel="noopener" className="mt-2 block text-sm text-primary hover:underline">
+            {externalData.tracking.carrier}: {externalData.tracking.trackingNumber}
           </a>
         </div>
       )}
