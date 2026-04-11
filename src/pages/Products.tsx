@@ -3,17 +3,14 @@ import { Link } from "react-router-dom";
 import { Search, Loader2, Grid3x3, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { listProducts } from "@/lib/printcom";
+import { listProducts } from "@/lib/realisaprint";
 import { useCategories } from "@/hooks/useCategories";
 import { supabase } from "@/integrations/supabase/client";
 import fallbackProductImage from "@/assets/services/supports-publicitaires.jpg";
 
 interface Product {
-  sku: string;
-  titleSingle?: string;
-  titlePlural?: string;
-  active?: boolean;
-  thumbnailUrl?: string;
+  id: string;
+  name: string;
   cmsImageUrl?: string;
   categoryImageUrl?: string;
 }
@@ -35,7 +32,12 @@ export default function Products() {
       supabase.from("product_categories").select("id, image_url, parent_id"),
     ])
       .then(([data, { data: imgData }, { data: mappings }, { data: categoriesData }]) => {
-        const items: Product[] = Array.isArray(data) ? data : data?.products || data?.items || [];
+        // Realisaprint returns { products: { "297": "Carte de visite", ... } }
+        const productsObj = data?.products || {};
+        const items: Product[] = Object.entries(productsObj).map(([id, name]) => ({
+          id,
+          name: name as string,
+        }));
 
         const cmsImageBySku: Record<string, string> = {};
         for (const row of imgData || []) {
@@ -53,15 +55,12 @@ export default function Products() {
         const categoryImageBySku: Record<string, string> = {};
         for (const mapping of mappings || []) {
           if (categoryImageBySku[mapping.sku]) continue;
-
           const category = categoryMap[mapping.category_id];
           if (!category) continue;
-
           if (category.image_url) {
             categoryImageBySku[mapping.sku] = category.image_url;
             continue;
           }
-
           if (category.parent_id) {
             const parent = categoryMap[category.parent_id];
             if (parent?.image_url) {
@@ -71,10 +70,10 @@ export default function Products() {
         }
 
         setProducts(
-          items.filter((p) => p.active !== false).map((p) => ({
+          items.map((p) => ({
             ...p,
-            cmsImageUrl: cmsImageBySku[p.sku] || undefined,
-            categoryImageUrl: categoryImageBySku[p.sku] || undefined,
+            cmsImageUrl: cmsImageBySku[p.id] || undefined,
+            categoryImageUrl: categoryImageBySku[p.id] || undefined,
           }))
         );
       })
@@ -85,8 +84,7 @@ export default function Products() {
   const filtered = products.filter((p) => {
     if (!search) return true;
     const q = search.toLowerCase();
-    const title = (p.titleSingle || p.titlePlural || "").toLowerCase();
-    return title.includes(q) || p.sku.toLowerCase().includes(q);
+    return p.name.toLowerCase().includes(q) || p.id.includes(q);
   });
 
   const visibleCategories = categories.filter((cat) => cat.slug !== "publicite");
@@ -174,21 +172,21 @@ export default function Products() {
             <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filtered.map((product) => (
                 <Link
-                  key={product.sku}
-                  to={`/products/${product.sku}`}
+                  key={product.id}
+                  to={`/products/${product.id}`}
                   className="group overflow-hidden rounded-xl border border-border bg-card shadow-card transition-all hover:shadow-elevated"
                 >
                   <div className="aspect-[4/3] bg-muted overflow-hidden">
                     <img
-                      src={product.cmsImageUrl || product.categoryImageUrl || product.thumbnailUrl || fallbackProductImage}
-                      alt={product.titleSingle || product.sku}
+                      src={product.cmsImageUrl || product.categoryImageUrl || fallbackProductImage}
+                      alt={product.name}
                       className="h-full w-full object-cover transition-transform group-hover:scale-105"
                       loading="lazy"
                     />
                   </div>
                   <div className="p-4">
                     <h3 className="font-display font-semibold text-card-foreground group-hover:text-primary transition-colors">
-                      {product.titleSingle || product.sku}
+                      {product.name}
                     </h3>
                   </div>
                 </Link>
