@@ -44,116 +44,115 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [categoryImageUrl, setCategoryImageUrl] = useState<string | null>(null);
+  const [productPictures, setProductPictures] = useState<string[]>([]);
   const [includeDesignFee, setIncludeDesignFee] = useState(false);
 
-  // Selected stock (first stock by default)
   const [selectedStock, setSelectedStock] = useState<string>("");
-
-  // Selected variable values: { VARTICLE_XXX_: "value" }
   const [selectedVars, setSelectedVars] = useState<Record<string, string>>({});
-
-  // Visible variables from show_variables
   const [visibleVars, setVisibleVars] = useState<Record<string, boolean>>({});
   const [variableValues, setVariableValues] = useState<Record<string, Record<string, string>>>({});
 
-  // Price state
   const [configCode, setConfigCode] = useState<string | null>(null);
   const [priceResult, setPriceResult] = useState<any>(null);
   const [priceLoading, setPriceLoading] = useState(false);
   const [priceError, setPriceError] = useState<string | null>(null);
   const [configDetails, setConfigDetails] = useState<string>("");
-
-  // Quantity variable key
   const [quantityVarKey, setQuantityVarKey] = useState<string | null>(null);
 
-  // Load product configurations
   useEffect(() => {
     if (!productId) return;
+
     setLoading(true);
+    setError(null);
+    setConfig(null);
+    setCategoryImageUrl(null);
+    setProductPictures([]);
+    setSelectedStock("");
+    setSelectedVars({});
+    setVisibleVars({});
+    setVariableValues({});
+    setConfigCode(null);
+    setPriceResult(null);
+    setPriceError(null);
+    setConfigDetails("");
+    setQuantityVarKey(null);
 
     getConfigurations(productId)
       .then((data: ConfigResult) => {
         setConfig(data);
 
-        // Set first stock
         const stockIds = Object.keys(data.stocks || {});
         if (stockIds.length > 0) {
           setSelectedStock(stockIds[0]);
         }
 
-        // Set default values for all variables
         const defaults: Record<string, string> = {};
+        let nextQuantityVarKey: string | null = null;
+
         for (const [key, variable] of Object.entries(data.variables || {})) {
           if (variable.default) {
             defaults[key] = variable.default;
           }
           if (variable.quantity) {
-            setQuantityVarKey(key);
+            nextQuantityVarKey = key;
           }
         }
+
+        setQuantityVarKey(nextQuantityVarKey);
         setSelectedVars(defaults);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 
-    // Fetch product image from DB
     supabase
-      .from("product_images")
-      .select("image_url, thumbnail_url")
+      .from("product_category_mappings")
+      .select("category_id")
       .eq("sku", productId)
+      .limit(1)
       .maybeSingle()
-      .then(({ data: imgData }) => {
-        if (imgData?.image_url || imgData?.thumbnail_url) {
-          setCategoryImageUrl(imgData.image_url || imgData.thumbnail_url || null);
+      .then(async ({ data: mapping }) => {
+        if (!mapping?.category_id) return;
+
+        const { data: category } = await supabase
+          .from("product_categories")
+          .select("image_url, parent_id")
+          .eq("id", mapping.category_id)
+          .maybeSingle();
+
+        if (category?.image_url) {
+          setCategoryImageUrl(category.image_url);
           return;
         }
-        return supabase
-          .from("product_category_mappings")
-          .select("category_id")
-          .eq("sku", productId)
-          .limit(1)
-          .maybeSingle()
-          .then(async ({ data: mapping }) => {
-            if (!mapping?.category_id) return;
-            const { data: category } = await supabase
-              .from("product_categories")
-              .select("image_url, parent_id")
-              .eq("id", mapping.category_id)
-              .maybeSingle();
-            if (category?.image_url) {
-              setCategoryImageUrl(category.image_url);
-              return;
-            }
-            if (category?.parent_id) {
-              const { data: parentCategory } = await supabase
-                .from("product_categories")
-                .select("image_url")
-                .eq("id", category.parent_id)
-                .maybeSingle();
-              if (parentCategory?.image_url) {
-                setCategoryImageUrl(parentCategory.image_url);
-              }
-            }
-          });
+
+        if (category?.parent_id) {
+          const { data: parentCategory } = await supabase
+            .from("product_categories")
+            .select("image_url")
+            .eq("id", category.parent_id)
+            .maybeSingle();
+
+          if (parentCategory?.image_url) {
+            setCategoryImageUrl(parentCategory.image_url);
+          }
+        }
       });
 
-    // Fetch product name from the products list
     import("@/lib/realisaprint").then(({ listProducts }) => {
-      listProducts().then((data: any) => {
-        const name = data?.products?.[productId!];
-        if (name) setProductName(name);
-      }).catch(() => {});
+      listProducts()
+        .then((data: any) => {
+          const name = data?.products?.[productId];
+          if (name) setProductName(name);
+        })
+        .catch(() => {});
     });
   }, [productId]);
 
-  // Call show_variables when selection changes
   useEffect(() => {
     if (!productId || !selectedStock || Object.keys(selectedVars).length === 0) return;
 
     const timer = setTimeout(() => {
       showVariables(productId, selectedStock, selectedVars, true)
         .then((data: any) => {
-          // Update visibility
           const visibility: Record<string, boolean> = {};
           const updatedValues: Record<string, Record<string, string>> = {};
 
@@ -164,7 +163,6 @@ export default function ProductDetail() {
           }
           setVisibleVars(visibility);
 
-          // Update available values
           if (data.variable_values) {
             for (const [key, vals] of Object.entries(data.variable_values as Record<string, Record<string, string>>)) {
               updatedValues[key] = vals;
@@ -172,15 +170,26 @@ export default function ProductDetail() {
             setVariableValues(updatedValues);
           }
 
-          // Apply corrected values from invalid_variables
-          if (data.current_variables) {
+          const currentValues = (data.current_values || data.current_variables) as Record<string, string> | undefined;
+          if (currentValues) {
             setSelectedVars((prev) => {
               const next = { ...prev };
-              for (const [key, val] of Object.entries(data.current_variables as Record<string, string>)) {
-                if (val != null) next[key] = String(val);
+              for (const [key, val] of Object.entries(currentValues)) {
+                if (val != null && key.startsWith("VARTICLE_")) {
+                  next[key] = String(val);
+                }
               }
               return next;
             });
+          }
+
+          if (Array.isArray(data.pictures)) {
+            const nextPictures = data.pictures.filter(
+              (picture: unknown): picture is string => typeof picture === "string" && picture.length > 0,
+            );
+            if (nextPictures.length > 0) {
+              setProductPictures(nextPictures);
+            }
           }
         })
         .catch((err) => {
@@ -191,14 +200,12 @@ export default function ProductDetail() {
     return () => clearTimeout(timer);
   }, [productId, selectedStock, JSON.stringify(selectedVars)]);
 
-  // Save configuration and get price
   const fetchPrice = useCallback(async () => {
     if (!productId || !selectedStock) return;
     setPriceLoading(true);
     setPriceError(null);
 
     try {
-      // Step 1: save_configuration to get a code
       const saveResult = await saveConfiguration(productId, selectedStock, selectedVars);
 
       if (saveResult.error) {
@@ -211,7 +218,6 @@ export default function ProductDetail() {
       setConfigCode(code);
       setConfigDetails(saveResult.details || "");
 
-      // Step 2: get_price with the code
       const quantity = quantityVarKey ? selectedVars[quantityVarKey] || "1" : "1";
       const priceData = await getPrice(code, quantity);
 
@@ -230,7 +236,6 @@ export default function ProductDetail() {
     }
   }, [productId, selectedStock, selectedVars, quantityVarKey]);
 
-  // Auto-fetch price when variables change
   useEffect(() => {
     if (!productId || !config || !selectedStock) return;
     const timer = setTimeout(fetchPrice, 800);
@@ -271,7 +276,7 @@ export default function ProductDetail() {
     );
   }
 
-  const imageUrl = categoryImageUrl || fallbackProductImage;
+  const imageUrl = productPictures[0] || categoryImageUrl || fallbackProductImage;
 
   // Build configurable props from Realisaprint variables
   const configurableProps = Object.entries(config.variables || {})

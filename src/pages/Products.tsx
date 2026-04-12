@@ -11,7 +11,6 @@ import fallbackProductImage from "@/assets/services/supports-publicitaires.jpg";
 interface Product {
   id: string;
   name: string;
-  cmsImageUrl?: string;
   categoryImageUrl?: string;
 }
 
@@ -27,22 +26,15 @@ export default function Products() {
   useEffect(() => {
     Promise.all([
       listProducts(),
-      supabase.from("product_images").select("sku, image_url, thumbnail_url"),
       supabase.from("product_category_mappings").select("sku, category_id"),
       supabase.from("product_categories").select("id, image_url, parent_id"),
     ])
-      .then(([data, { data: imgData }, { data: mappings }, { data: categoriesData }]) => {
-        // Realisaprint returns { products: { "297": "Carte de visite", ... } }
+      .then(([data, { data: mappings }, { data: categoriesData }]) => {
         const productsObj = data?.products || {};
         const items: Product[] = Object.entries(productsObj).map(([id, name]) => ({
           id,
           name: name as string,
         }));
-
-        const cmsImageBySku: Record<string, string> = {};
-        for (const row of imgData || []) {
-          cmsImageBySku[row.sku] = row.image_url || row.thumbnail_url || "";
-        }
 
         const categoryMap: Record<string, { image_url: string | null; parent_id: string | null }> = {};
         for (const category of categoriesData || []) {
@@ -70,10 +62,9 @@ export default function Products() {
         }
 
         setProducts(
-          items.map((p) => ({
-            ...p,
-            cmsImageUrl: cmsImageBySku[p.id] || undefined,
-            categoryImageUrl: categoryImageBySku[p.id] || undefined,
+          items.map((product) => ({
+            ...product,
+            categoryImageUrl: categoryImageBySku[product.id] || undefined,
           }))
         );
       })
@@ -94,7 +85,6 @@ export default function Products() {
       <h1 className="font-display text-3xl font-bold text-foreground">Catalogue</h1>
       <p className="mt-2 text-muted-foreground">Découvrez tous nos produits d'impression et supports publicitaires.</p>
 
-      {/* Categories */}
       {!catLoading && visibleCategories.length > 0 && (
         <div className="mt-8">
           <h2 className="font-display text-xl font-semibold text-foreground mb-4">Catégories</h2>
@@ -128,7 +118,6 @@ export default function Products() {
         </div>
       )}
 
-      {/* Toggle all products */}
       <div className="mt-10 flex items-center gap-4">
         <Button
           variant={showAllProducts ? "default" : "outline"}
@@ -141,7 +130,6 @@ export default function Products() {
 
       {showAllProducts && (
         <>
-          {/* Search */}
           <div className="mt-6">
             <div className="relative max-w-md">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -154,7 +142,6 @@ export default function Products() {
             </div>
           </div>
 
-          {/* Content */}
           {loading && (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -178,7 +165,7 @@ export default function Products() {
                 >
                   <div className="aspect-[4/3] bg-muted overflow-hidden">
                     <img
-                      src={product.cmsImageUrl || product.categoryImageUrl || fallbackProductImage}
+                      src={product.categoryImageUrl || fallbackProductImage}
                       alt={product.name}
                       className="h-full w-full object-cover transition-transform group-hover:scale-105"
                       loading="lazy"
