@@ -10,7 +10,6 @@ import fallbackProductImage from "@/assets/services/supports-publicitaires.jpg";
 interface Product {
   id: string;
   name: string;
-  cmsImageUrl?: string;
 }
 
 export default function CategoryProducts() {
@@ -21,7 +20,11 @@ export default function CategoryProducts() {
 
   const [parentImageUrl, setParentImageUrl] = useState<string | null>(null);
   useEffect(() => {
-    if (!category?.parent_id || category?.image_url) { setParentImageUrl(null); return; }
+    if (!category?.parent_id || category?.image_url) {
+      setParentImageUrl(null);
+      return;
+    }
+
     supabase
       .from("product_categories")
       .select("image_url")
@@ -36,38 +39,30 @@ export default function CategoryProducts() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    Promise.all([
-      listProducts().catch(() => ({ products: {} })),
-      supabase.from("product_images").select("sku, image_url, thumbnail_url"),
-    ]).then(([data, { data: imgData }]) => {
-      const productsObj = data?.products || {};
-      const items: Product[] = Object.entries(productsObj).map(([id, name]) => ({
-        id,
-        name: name as string,
-      }));
-      const imgMap: Record<string, string> = {};
-      for (const row of imgData || []) imgMap[row.sku] = row.image_url || row.thumbnail_url;
-      setAllProducts(
-        items.map((p) => ({
-          ...p,
-          cmsImageUrl: imgMap[p.id] || undefined,
-        }))
-      );
-    })
-    .catch((err) => setError(err.message))
-    .finally(() => setProductsLoading(false));
+    listProducts()
+      .then((data) => {
+        const productsObj = data?.products || {};
+        setAllProducts(
+          Object.entries(productsObj).map(([id, name]) => ({
+            id,
+            name: name as string,
+          }))
+        );
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setProductsLoading(false));
   }, []);
 
   const loading = catLoading || skusLoading || productsLoading;
 
   const categoryProducts = skus.length > 0
-    ? allProducts.filter((p) => skus.includes(p.id))
+    ? allProducts.filter((product) => skus.includes(product.id))
     : [];
 
-  const filtered = categoryProducts.filter((p) => {
+  const filtered = categoryProducts.filter((product) => {
     if (!search) return true;
     const q = search.toLowerCase();
-    return p.name.toLowerCase().includes(q) || p.id.includes(q);
+    return product.name.toLowerCase().includes(q) || product.id.includes(q);
   });
 
   if (catLoading) {
@@ -155,7 +150,7 @@ export default function CategoryProducts() {
               >
                 <div className="aspect-[4/3] bg-muted overflow-hidden">
                   <img
-                    src={product.cmsImageUrl || category.image_url || parentImageUrl || fallbackProductImage}
+                    src={category.image_url || parentImageUrl || fallbackProductImage}
                     alt={product.name}
                     className="h-full w-full object-cover transition-transform group-hover:scale-105"
                     loading="lazy"
