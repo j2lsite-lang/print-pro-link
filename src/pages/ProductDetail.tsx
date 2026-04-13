@@ -383,10 +383,13 @@ export default function ProductDetail() {
       {/* Main layout */}
       <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
         {/* Options */}
-        <div className="space-y-6">
-          {configurableProps.map((prop) => (
-            <div key={prop.slug}>
+        <div className="space-y-5">
+          {/* Main options (non-boolean) */}
+          {configurableProps
+            .filter((p) => !p.isBoolean)
+            .map((prop) => (
               <OptionSelector
+                key={prop.slug}
                 title={prop.title}
                 slug={prop.slug}
                 options={prop.options}
@@ -396,11 +399,38 @@ export default function ProductDetail() {
                 }
                 required={prop.required}
                 locked={prop.locked}
-                initialVisibleCount={prop.isQuantity ? 10 : 6}
                 inputType={prop.inputType}
               />
+            ))}
+
+          {/* Boolean toggles grouped under "OPTIONS" */}
+          {configurableProps.some((p) => p.isBoolean) && (
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">Options</h3>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {configurableProps
+                  .filter((p) => p.isBoolean)
+                  .map((prop) => (
+                    <OptionSelector
+                      key={prop.slug}
+                      title={prop.title}
+                      slug={prop.slug}
+                      options={prop.options}
+                      selectedValue={selectedVars[prop.slug] || ""}
+                      onSelect={(val) =>
+                        setSelectedVars((prev) => ({ ...prev, [prop.slug]: val }))
+                      }
+                      required={prop.required}
+                      locked={prop.locked}
+                      inputType={prop.inputType}
+                    />
+                  ))}
+              </div>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Price sidebar */}
