@@ -276,7 +276,7 @@ export default function ProductDetail() {
     );
   }
 
-  const imageUrl = productPictures[0] || categoryImageUrl || fallbackProductImage;
+  const imageUrl = productPictures[0] || categoryImageUrl || null;
 
   // Build configurable props from Realisaprint variables
   const configurableProps = Object.entries(config.variables || {})
