@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Leaf } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import { Input } from "@/components/ui/input";
 
 interface OptionItem {
   slug: string | number | null;
@@ -21,8 +21,8 @@ interface OptionSelectorProps {
   required?: boolean;
   locked?: boolean;
   initialVisibleCount?: number;
-  /** Price per option (keyed by slug) — shown to the right when available */
   optionPrices?: Record<string, number>;
+  inputType?: string;
 }
 
 export default function OptionSelector({
@@ -35,6 +35,7 @@ export default function OptionSelector({
   locked,
   initialVisibleCount = 8,
   optionPrices,
+  inputType,
 }: OptionSelectorProps) {
   const [expanded, setExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -43,25 +44,46 @@ export default function OptionSelector({
   const normalizedSlug = slug.toLowerCase();
   const isQuantityType = normalizedSlug.includes("quantit");
   const isVisualType = normalizedSlug.includes("format") || normalizedSlug.includes("taille");
-  const showToggle = !isVisualType && validOptions.length > initialVisibleCount;
+  const isFloatInput = inputType === "float" && validOptions.length === 0;
+  const showToggle = !isVisualType && !isFloatInput && validOptions.length > initialVisibleCount;
   const visibleOptions = expanded || isVisualType ? validOptions : validOptions.slice(0, initialVisibleCount);
 
-  if (validOptions.length === 0) return null;
+  if (!isFloatInput && validOptions.length === 0) return null;
   if (locked && validOptions.length === 1) return null;
 
   const scroll = (dir: "left" | "right") => {
     scrollRef.current?.scrollBy({ left: dir === "left" ? -200 : 200, behavior: "smooth" });
   };
 
+  // Float input (quantity, dimensions, etc.)
+  if (isFloatInput) {
+    return (
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase flex items-center gap-2">
+          {title}
+          {required && <span className="text-destructive text-xs">*</span>}
+        </h3>
+        <Input
+          type="number"
+          min="1"
+          step="1"
+          value={selectedValue}
+          onChange={(e) => onSelect(e.target.value)}
+          disabled={locked}
+          className="max-w-xs"
+          placeholder={title}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
-      {/* Section header */}
       <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase flex items-center gap-2">
         {title}
         {required && <span className="text-destructive text-xs">*</span>}
       </h3>
 
-      {/* Horizontal scrollable visual cards (for visual types like folding, size) */}
       {isVisualType ? (
         <div className="relative group/scroll">
           {validOptions.length > 5 && (
@@ -88,7 +110,7 @@ export default function OptionSelector({
             {validOptions.map((opt) => {
               const val = String(opt.slug);
               const isSelected = selectedValue === val;
-               const label = opt.name || val;
+              const label = opt.name || val;
               const foldKey = val.toLowerCase();
               return (
                 <button
@@ -103,7 +125,6 @@ export default function OptionSelector({
                     locked && "opacity-50 cursor-not-allowed"
                   )}
                 >
-                  {/* Fold visual */}
                   <div className={cn(
                     "h-12 w-12 rounded-lg flex items-center justify-center mb-2",
                     isSelected ? "bg-primary/20" : "bg-muted"
@@ -145,7 +166,6 @@ export default function OptionSelector({
           </div>
         </div>
       ) : isQuantityType ? (
-        /* Quantity grid with prices */
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {visibleOptions.map((opt) => {
             const val = String(opt.slug);
@@ -181,7 +201,6 @@ export default function OptionSelector({
           })}
         </div>
       ) : (
-        /* Standard list options */
         <div className="space-y-1.5">
           {visibleOptions.map((opt) => {
             const val = String(opt.slug);
