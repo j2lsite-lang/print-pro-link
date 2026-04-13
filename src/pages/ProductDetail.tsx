@@ -297,14 +297,21 @@ export default function ProductDetail() {
       // Use updated values from show_variables if available
       const values = variableValues[key] || (variable.values && typeof variable.values === "object" ? variable.values : {});
       
+      const optionEntries = Object.entries(values);
+      const isBooleanToggle =
+        optionEntries.length === 2 &&
+        optionEntries.some(([, n]) => ["non", "no", "sans"].includes(n.toLowerCase())) &&
+        optionEntries.some(([, n]) => ["oui", "yes", "avec"].includes(n.toLowerCase()));
+
       return {
         slug: key,
         title: variable.name,
         required: true,
         locked: variable.readonly,
         isQuantity: variable.quantity,
-        inputType: variable.type as string, // "select", "float", "session", etc.
-        options: Object.entries(values).map(([id, name]) => ({
+        isBoolean: isBooleanToggle,
+        inputType: variable.type as string,
+        options: optionEntries.map(([id, name]) => ({
           slug: id,
           name,
         })),
