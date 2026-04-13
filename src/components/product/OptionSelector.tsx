@@ -3,6 +3,7 @@ import { ChevronDown, Check, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface OptionItem {
   slug: string | number | null;
@@ -17,9 +18,10 @@ interface OptionSelectorProps {
   onSelect: (value: string) => void;
   required?: boolean;
   locked?: boolean;
-  initialVisibleCount?: number;
-  optionPrices?: Record<string, number>;
   inputType?: string;
+  description?: string;
+  alert?: string;
+  info?: string;
 }
 
 export default function OptionSelector({
@@ -31,46 +33,83 @@ export default function OptionSelector({
   required,
   locked,
   inputType,
+  description,
+  alert,
+  info,
 }: OptionSelectorProps) {
   const [open, setOpen] = useState(false);
   const validOptions = options.filter((o) => o.slug != null);
   const isFloatInput = inputType === "float" && validOptions.length === 0;
+  const isTextInput = inputType === "text" && validOptions.length === 0;
+  const isCheckbox = inputType === "checkbox";
 
-  if (!isFloatInput && validOptions.length === 0) return null;
+  if (!isFloatInput && !isTextInput && !isCheckbox && validOptions.length === 0) return null;
   if (locked && validOptions.length === 1) return null;
 
-  // Check if this is a boolean toggle (Yes/No or Oui/Non with exactly 2 options)
+  // Boolean toggle (Yes/No with exactly 2 options)
   const isBooleanToggle =
     validOptions.length === 2 &&
     validOptions.some((o) => {
       const name = (o.name || String(o.slug)).toLowerCase();
-      return name === "non" || name === "no" || name === "sans";
+      return ["non", "no", "sans"].includes(name);
     }) &&
     validOptions.some((o) => {
       const name = (o.name || String(o.slug)).toLowerCase();
-      return name === "oui" || name === "yes" || name === "avec";
+      return ["oui", "yes", "avec"].includes(name);
     });
 
-  // Boolean toggle – rendered as a switch
+  const wrapper = (children: React.ReactNode) => (
+    <div className="space-y-1">
+      {children}
+      {description && (
+        <p className="text-xs text-muted-foreground">{description}</p>
+      )}
+      {info && (
+        <p className="text-xs text-blue-600 flex items-center gap-1">
+          <Info className="h-3 w-3 shrink-0" /> {info}
+        </p>
+      )}
+      {alert && (
+        <p className="text-xs text-amber-600 font-medium">{alert}</p>
+      )}
+    </div>
+  );
+
+  // Checkbox type
+  if (isCheckbox) {
+    const isChecked = selectedValue === "1" || selectedValue === "true";
+    return wrapper(
+      <div className="flex items-center gap-2">
+        <Info className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+        <Switch
+          checked={isChecked}
+          onCheckedChange={(checked) => onSelect(checked ? "1" : "0")}
+          disabled={locked}
+        />
+        <span className="text-sm text-foreground">{title}</span>
+      </div>
+    );
+  }
+
+  // Boolean toggle as switch
   if (isBooleanToggle) {
     const yesOption = validOptions.find((o) => {
       const name = (o.name || String(o.slug)).toLowerCase();
-      return name === "oui" || name === "yes" || name === "avec";
+      return ["oui", "yes", "avec"].includes(name);
     });
     const noOption = validOptions.find((o) => {
       const name = (o.name || String(o.slug)).toLowerCase();
-      return name === "non" || name === "no" || name === "sans";
+      return ["non", "no", "sans"].includes(name);
     });
     const isChecked = selectedValue === String(yesOption?.slug);
 
-    return (
+    return wrapper(
       <div className="flex items-center gap-2">
         <Info className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
         <Switch
           checked={isChecked}
           onCheckedChange={(checked) => {
-            const val = checked ? String(yesOption?.slug) : String(noOption?.slug);
-            onSelect(val);
+            onSelect(checked ? String(yesOption?.slug) : String(noOption?.slug));
           }}
           disabled={locked}
         />
@@ -81,7 +120,7 @@ export default function OptionSelector({
 
   // Float input (quantity, dimensions)
   if (isFloatInput) {
-    return (
+    return wrapper(
       <div className="space-y-2">
         <label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1">
           {title}
@@ -101,9 +140,29 @@ export default function OptionSelector({
     );
   }
 
+  // Text input
+  if (isTextInput) {
+    return wrapper(
+      <div className="space-y-2">
+        <label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1">
+          {title}
+          {required && <span className="text-destructive">*</span>}
+        </label>
+        <Input
+          type="text"
+          value={selectedValue}
+          onChange={(e) => onSelect(e.target.value)}
+          disabled={locked}
+          className="max-w-full"
+          placeholder={title}
+        />
+      </div>
+    );
+  }
+
   // Radio buttons for small option sets (2-4 options)
   if (validOptions.length <= 4) {
-    return (
+    return wrapper(
       <div className="space-y-2">
         <label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1">
           {title}
@@ -127,22 +186,12 @@ export default function OptionSelector({
                 <span
                   className={cn(
                     "h-4 w-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors",
-                    isSelected
-                      ? "border-primary"
-                      : "border-muted-foreground/40"
+                    isSelected ? "border-primary" : "border-muted-foreground/40"
                   )}
                 >
-                  {isSelected && (
-                    <span className="h-2 w-2 rounded-full bg-primary" />
-                  )}
+                  {isSelected && <span className="h-2 w-2 rounded-full bg-primary" />}
                 </span>
-                <span
-                  className={cn(
-                    isSelected
-                      ? "text-primary font-medium"
-                      : "text-foreground"
-                  )}
-                >
+                <span className={cn(isSelected ? "text-primary font-medium" : "text-foreground")}>
                   {opt.name || val}
                 </span>
               </button>
@@ -153,12 +202,11 @@ export default function OptionSelector({
     );
   }
 
-  // Dropdown for larger option sets (5+)
+  // Dropdown for 5+ options
   const selectedLabel =
-    validOptions.find((o) => String(o.slug) === selectedValue)?.name ||
-    selectedValue;
+    validOptions.find((o) => String(o.slug) === selectedValue)?.name || selectedValue;
 
-  return (
+  return wrapper(
     <div className="space-y-2 relative">
       <label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1">
         {title}
@@ -171,38 +219,19 @@ export default function OptionSelector({
         disabled={locked}
         className={cn(
           "w-full flex items-center justify-between rounded-lg border-2 px-4 py-3 text-sm text-left transition-colors",
-          open
-            ? "border-primary bg-primary/5"
-            : "border-border bg-card hover:border-primary/40",
+          open ? "border-primary bg-primary/5" : "border-border bg-card hover:border-primary/40",
           locked && "opacity-50 cursor-not-allowed"
         )}
       >
-        <span
-          className={cn(
-            "truncate",
-            selectedValue
-              ? "text-foreground font-medium"
-              : "text-muted-foreground"
-          )}
-        >
-          {selectedValue
-            ? selectedLabel
-            : `Choisir ${title.toLowerCase()}`}
+        <span className={cn("truncate", selectedValue ? "text-foreground font-medium" : "text-muted-foreground")}>
+          {selectedValue ? selectedLabel : `Choisir ${title.toLowerCase()}`}
         </span>
-        <ChevronDown
-          className={cn(
-            "h-4 w-4 text-muted-foreground shrink-0 transition-transform",
-            open && "rotate-180"
-          )}
-        />
+        <ChevronDown className={cn("h-4 w-4 text-muted-foreground shrink-0 transition-transform", open && "rotate-180")} />
       </button>
 
       {open && (
         <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setOpen(false)}
-          />
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute z-50 top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto rounded-lg border border-border bg-card shadow-lg">
             {validOptions.map((opt) => {
               const val = String(opt.slug);
@@ -210,21 +239,14 @@ export default function OptionSelector({
               return (
                 <button
                   key={val}
-                  onClick={() => {
-                    onSelect(val);
-                    setOpen(false);
-                  }}
+                  onClick={() => { onSelect(val); setOpen(false); }}
                   className={cn(
                     "w-full flex items-center justify-between px-4 py-2.5 text-sm text-left transition-colors",
-                    isSelected
-                      ? "bg-primary/10 text-primary font-medium"
-                      : "text-foreground hover:bg-muted"
+                    isSelected ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-muted"
                   )}
                 >
                   <span>{opt.name || val}</span>
-                  {isSelected && (
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                  )}
+                  {isSelected && <Check className="h-4 w-4 text-primary shrink-0" />}
                 </button>
               );
             })}
