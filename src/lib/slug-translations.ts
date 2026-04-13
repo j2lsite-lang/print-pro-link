@@ -1,5 +1,5 @@
 /**
- * Common slug-to-French translations for Print.com API values
+ * Common slug-to-French translations for API values
  * that don't come with a localized `name` field.
  */
 const SLUG_TRANSLATIONS: Record<string, string> = {
