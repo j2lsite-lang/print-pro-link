@@ -397,6 +397,7 @@ export default function ProductDetail() {
                 required={prop.required}
                 locked={prop.locked}
                 initialVisibleCount={prop.isQuantity ? 10 : 6}
+                inputType={prop.inputType}
               />
             </div>
           ))}
