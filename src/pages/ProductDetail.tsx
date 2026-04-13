@@ -303,13 +303,14 @@ export default function ProductDetail() {
         required: true,
         locked: variable.readonly,
         isQuantity: variable.quantity,
+        inputType: variable.type as string, // "select", "float", "session", etc.
         options: Object.entries(values).map(([id, name]) => ({
           slug: id,
           name,
         })),
       };
     })
-    .filter((p) => p.options.length > 0);
+    .filter((p) => p.options.length > 0 || p.inputType === "float");
 
   return (
     <div className="container py-8">
