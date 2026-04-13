@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import OptionSelector from "@/components/product/OptionSelector";
 import PriceSummary from "@/components/product/PriceSummary";
-import fallbackProductImage from "@/assets/services/supports-publicitaires.jpg";
+
 
 interface RealisaprintVariable {
   name: string;
@@ -276,7 +276,7 @@ export default function ProductDetail() {
     );
   }
 
-  const imageUrl = productPictures[0] || categoryImageUrl || fallbackProductImage;
+  const imageUrl = productPictures[0] || categoryImageUrl || null;
 
   // Build configurable props from Realisaprint variables
   const configurableProps = Object.entries(config.variables || {})
@@ -322,15 +322,21 @@ export default function ProductDetail() {
 
       {/* Header */}
       <div className="mb-8 flex flex-col sm:flex-row gap-6 items-start">
-        <div
-          className="w-full sm:w-64 aspect-square overflow-hidden rounded-xl bg-muted shrink-0 cursor-pointer relative group"
-          onClick={() => imageUrl && setImageZoom(true)}
-        >
-          <img src={imageUrl} alt={productName} className="h-full w-full object-contain p-2" />
-          <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors">
-            <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+        {imageUrl ? (
+          <div
+            className="w-full sm:w-64 aspect-square overflow-hidden rounded-xl bg-muted shrink-0 cursor-pointer relative group"
+            onClick={() => setImageZoom(true)}
+          >
+            <img src={imageUrl} alt={productName} className="h-full w-full object-contain p-2" />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors">
+              <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="w-full sm:w-64 aspect-square overflow-hidden rounded-xl bg-muted shrink-0 flex items-center justify-center">
+            <Package className="h-16 w-16 text-muted-foreground/30" />
+          </div>
+        )}
         <div className="flex-1">
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
             {productName || `Produit ${productId}`}
