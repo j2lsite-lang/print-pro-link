@@ -124,7 +124,7 @@ export default function Products() {
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Produit Realisaprint</p>
+                      <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Produit J2L Print</p>
                       <h3 className="mt-3 font-display text-lg font-semibold text-card-foreground transition-colors group-hover:text-primary">
                         {product.name}
                       </h3>
