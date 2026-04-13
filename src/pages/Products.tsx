@@ -42,9 +42,7 @@ export default function Products() {
     });
   }, [products, search]);
 
-  // Hide legacy categories (sort_order >= 50) and "publicite"
-  const hiddenSlugs = ["publicite", "impression-papier", "publicite-exterieure", "publicite-interieure", "etiquettes-stickers", "emballages-sacs", "textiles-accessoires", "panneaux-baches-vinyles"];
-  const visibleCategories = categories.filter((cat) => !hiddenSlugs.includes(cat.slug));
+  const visibleCategories = categories;
 
   return (
     <div className="container py-10">
