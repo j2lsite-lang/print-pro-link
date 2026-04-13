@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import OptionSelector from "@/components/product/OptionSelector";
 import PriceSummary from "@/components/product/PriceSummary";
-import fallbackProductImage from "@/assets/services/supports-publicitaires.jpg";
+
 
 interface RealisaprintVariable {
   name: string;
