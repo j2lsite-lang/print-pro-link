@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Loader2, Package, X, ZoomIn, ChevronRight } from "lucide-react";
+import { Loader2, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import OptionSelector from "@/components/product/OptionSelector";
 import PriceSummary from "@/components/product/PriceSummary";
-
+import ProductGallery from "@/components/product/ProductGallery";
+import DeliveryInfo from "@/components/product/DeliveryInfo";
 
 interface RealisaprintVariable {
   name: string;
@@ -34,10 +35,37 @@ interface ConfigResult {
   variables: Record<string, RealisaprintVariable>;
 }
 
+interface SaveResult {
+  code?: string;
+  details?: string;
+  details_html?: string;
+  delai?: string;
+  delai_fab?: string;
+  delai_liv?: string;
+  has_files?: boolean;
+  files?: Record<string, any>;
+  template?: string;
+  quantities?: { default_table?: string[] };
+  error?: string;
+}
+
+interface ConfigurableProp {
+  slug: string;
+  title: string;
+  required: boolean;
+  locked: boolean;
+  isQuantity: boolean;
+  isBoolean: boolean;
+  inputType: string;
+  description?: string;
+  alert?: string;
+  info?: string;
+  options: { slug: string; name: string }[];
+}
+
 export default function ProductDetail() {
   const { sku: productId } = useParams<{ sku: string }>();
   const { addItem } = useCart();
-  const [imageZoom, setImageZoom] = useState(false);
 
   const [productName, setProductName] = useState("");
   const [config, setConfig] = useState<ConfigResult | null>(null);
@@ -51,14 +79,20 @@ export default function ProductDetail() {
   const [selectedVars, setSelectedVars] = useState<Record<string, string>>({});
   const [visibleVars, setVisibleVars] = useState<Record<string, boolean>>({});
   const [variableValues, setVariableValues] = useState<Record<string, Record<string, string>>>({});
+  const [variableDescriptions, setVariableDescriptions] = useState<Record<string, string>>({});
+  const [variableAlerts, setVariableAlerts] = useState<Record<string, string>>({});
+  const [variableInfos, setVariableInfos] = useState<Record<string, string>>({});
+  const [invalidVars, setInvalidVars] = useState<Record<string, string>>({});
 
   const [configCode, setConfigCode] = useState<string | null>(null);
+  const [saveResult, setSaveResult] = useState<SaveResult | null>(null);
   const [priceResult, setPriceResult] = useState<any>(null);
   const [priceLoading, setPriceLoading] = useState(false);
   const [priceError, setPriceError] = useState<string | null>(null);
   const [configDetails, setConfigDetails] = useState<string>("");
   const [quantityVarKey, setQuantityVarKey] = useState<string | null>(null);
 
+  // Load product config
   useEffect(() => {
     if (!productId) return;
 
@@ -71,7 +105,12 @@ export default function ProductDetail() {
     setSelectedVars({});
     setVisibleVars({});
     setVariableValues({});
+    setVariableDescriptions({});
+    setVariableAlerts({});
+    setVariableInfos({});
+    setInvalidVars({});
     setConfigCode(null);
+    setSaveResult(null);
     setPriceResult(null);
     setPriceError(null);
     setConfigDetails("");
@@ -82,20 +121,14 @@ export default function ProductDetail() {
         setConfig(data);
 
         const stockIds = Object.keys(data.stocks || {});
-        if (stockIds.length > 0) {
-          setSelectedStock(stockIds[0]);
-        }
+        if (stockIds.length > 0) setSelectedStock(stockIds[0]);
 
         const defaults: Record<string, string> = {};
         let nextQuantityVarKey: string | null = null;
 
         for (const [key, variable] of Object.entries(data.variables || {})) {
-          if (variable.default) {
-            defaults[key] = variable.default;
-          }
-          if (variable.quantity) {
-            nextQuantityVarKey = key;
-          }
+          if (variable.default) defaults[key] = variable.default;
+          if (variable.quantity) nextQuantityVarKey = key;
         }
 
         setQuantityVarKey(nextQuantityVarKey);
@@ -104,6 +137,7 @@ export default function ProductDetail() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 
+    // Fetch category image fallback
     supabase
       .from("product_category_mappings")
       .select("category_id")
@@ -112,7 +146,6 @@ export default function ProductDetail() {
       .maybeSingle()
       .then(async ({ data: mapping }) => {
         if (!mapping?.category_id) return;
-
         const { data: category } = await supabase
           .from("product_categories")
           .select("image_url, parent_id")
@@ -123,20 +156,17 @@ export default function ProductDetail() {
           setCategoryImageUrl(category.image_url);
           return;
         }
-
         if (category?.parent_id) {
-          const { data: parentCategory } = await supabase
+          const { data: parent } = await supabase
             .from("product_categories")
             .select("image_url")
             .eq("id", category.parent_id)
             .maybeSingle();
-
-          if (parentCategory?.image_url) {
-            setCategoryImageUrl(parentCategory.image_url);
-          }
+          if (parent?.image_url) setCategoryImageUrl(parent.image_url);
         }
       });
 
+    // Fetch product name
     import("@/lib/realisaprint").then(({ listProducts }) => {
       listProducts()
         .then((data: any) => {
@@ -147,15 +177,15 @@ export default function ProductDetail() {
     });
   }, [productId]);
 
+  // Dynamic show_variables on every change
   useEffect(() => {
     if (!productId || !selectedStock || Object.keys(selectedVars).length === 0) return;
 
     const timer = setTimeout(() => {
       showVariables(productId, selectedStock, selectedVars, true)
         .then((data: any) => {
+          // Visibility
           const visibility: Record<string, boolean> = {};
-          const updatedValues: Record<string, Record<string, string>> = {};
-
           for (const [key, val] of Object.entries(data)) {
             if (key.startsWith("VARTICLE_") || key.startsWith("CALCARTICLE_")) {
               visibility[key] = val as boolean;
@@ -163,13 +193,22 @@ export default function ProductDetail() {
           }
           setVisibleVars(visibility);
 
+          // Updated values
           if (data.variable_values) {
+            const updatedValues: Record<string, Record<string, string>> = {};
             for (const [key, vals] of Object.entries(data.variable_values as Record<string, Record<string, string>>)) {
               updatedValues[key] = vals;
             }
             setVariableValues(updatedValues);
           }
 
+          // Descriptions, alerts, infos
+          if (data.variables_descriptions) setVariableDescriptions(data.variables_descriptions);
+          if (data.variable_alerts) setVariableAlerts(data.variable_alerts);
+          if (data.variables_infos) setVariableInfos(data.variables_infos);
+          if (data.invalid_variables) setInvalidVars(data.invalid_variables);
+
+          // Current values from API
           const currentValues = (data.current_values || data.current_variables) as Record<string, string> | undefined;
           if (currentValues) {
             setSelectedVars((prev) => {
@@ -183,40 +222,38 @@ export default function ProductDetail() {
             });
           }
 
+          // Pictures
           if (Array.isArray(data.pictures)) {
-            const nextPictures = data.pictures.filter(
-              (picture: unknown): picture is string => typeof picture === "string" && picture.length > 0,
+            const pics = data.pictures.filter(
+              (p: unknown): p is string => typeof p === "string" && p.length > 0
             );
-            if (nextPictures.length > 0) {
-              setProductPictures(nextPictures);
-            }
+            if (pics.length > 0) setProductPictures(pics);
           }
         })
-        .catch((err) => {
-          console.warn("[show_variables] error:", err.message);
-        });
+        .catch((err) => console.warn("[show_variables] error:", err.message));
     }, 300);
 
     return () => clearTimeout(timer);
   }, [productId, selectedStock, JSON.stringify(selectedVars)]);
 
+  // Save configuration & get price
   const fetchPrice = useCallback(async () => {
     if (!productId || !selectedStock) return;
     setPriceLoading(true);
     setPriceError(null);
 
     try {
-      const saveResult = await saveConfiguration(productId, selectedStock, selectedVars);
-
-      if (saveResult.error) {
-        setPriceError(saveResult.error);
+      const result = await saveConfiguration(productId, selectedStock, selectedVars);
+      if (result.error) {
+        setPriceError(result.error);
         setPriceLoading(false);
         return;
       }
 
-      const code = String(saveResult.code);
+      const code = String(result.code);
       setConfigCode(code);
-      setConfigDetails(saveResult.details || "");
+      setSaveResult(result);
+      setConfigDetails(result.details || "");
 
       const quantity = quantityVarKey ? selectedVars[quantityVarKey] || "1" : "1";
       const priceData = await getPrice(code, quantity);
@@ -276,17 +313,13 @@ export default function ProductDetail() {
     );
   }
 
-  const imageUrl = productPictures[0] || categoryImageUrl || null;
-
-  // Build configurable props from Realisaprint variables
-  const configurableProps = Object.entries(config.variables || {})
+  // Build configurable props
+  const configurableProps: ConfigurableProp[] = Object.entries(config.variables || {})
     .filter(([key]) => {
-      // Show only visible variables
       if (Object.keys(visibleVars).length > 0 && visibleVars[key] === false) return false;
       return true;
     })
     .filter(([, variable]) => {
-      // Hide readonly, production_time, session type
       if (variable.readonly) return false;
       if (variable.production_time) return false;
       if (variable.type === "session") return false;
@@ -294,10 +327,9 @@ export default function ProductDetail() {
     })
     .sort(([, a], [, b]) => parseInt(a.position) - parseInt(b.position))
     .map(([key, variable]) => {
-      // Use updated values from show_variables if available
       const values = variableValues[key] || (variable.values && typeof variable.values === "object" ? variable.values : {});
-      
       const optionEntries = Object.entries(values);
+
       const isBooleanToggle =
         optionEntries.length === 2 &&
         optionEntries.some(([, n]) => ["non", "no", "sans"].includes(n.toLowerCase())) &&
@@ -309,15 +341,18 @@ export default function ProductDetail() {
         required: true,
         locked: variable.readonly,
         isQuantity: variable.quantity,
-        isBoolean: isBooleanToggle,
-        inputType: variable.type as string,
-        options: optionEntries.map(([id, name]) => ({
-          slug: id,
-          name,
-        })),
+        isBoolean: isBooleanToggle || variable.type === "checkbox",
+        inputType: variable.type,
+        description: variableDescriptions[key],
+        alert: variableAlerts[key],
+        info: variableInfos[key],
+        options: optionEntries.map(([id, name]) => ({ slug: id, name })),
       };
     })
-    .filter((p) => p.options.length > 0 || p.inputType === "float");
+    .filter((p) => p.options.length > 0 || p.inputType === "float" || p.inputType === "text" || p.inputType === "checkbox");
+
+  const mainProps = configurableProps.filter((p) => !p.isBoolean);
+  const booleanProps = configurableProps.filter((p) => p.isBoolean);
 
   return (
     <div className="container py-8">
@@ -328,23 +363,13 @@ export default function ProductDetail() {
         <span className="text-foreground">{productName || `Produit ${productId}`}</span>
       </nav>
 
-      {/* Header */}
+      {/* Header: Image + Info */}
       <div className="mb-8 flex flex-col sm:flex-row gap-6 items-start">
-        {imageUrl ? (
-          <div
-            className="w-full sm:w-64 aspect-square overflow-hidden rounded-xl bg-muted shrink-0 cursor-pointer relative group"
-            onClick={() => setImageZoom(true)}
-          >
-            <img src={imageUrl} alt={productName} className="h-full w-full object-contain p-2" />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors">
-              <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-          </div>
-        ) : (
-          <div className="w-full sm:w-64 aspect-square overflow-hidden rounded-xl bg-muted shrink-0 flex items-center justify-center">
-            <Package className="h-16 w-16 text-muted-foreground/30" />
-          </div>
-        )}
+        <ProductGallery
+          images={productPictures}
+          productName={productName || `Produit ${productId}`}
+          fallbackImage={categoryImageUrl}
+        />
         <div className="flex-1">
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
             {productName || `Produit ${productId}`}
@@ -359,10 +384,24 @@ export default function ProductDetail() {
             Livraison rapide partout en France. Devis gratuit,
             <Link to="/#devis" className="text-primary hover:underline ml-1">contactez-nous</Link>.
           </p>
+
+          {/* Delivery info */}
+          {saveResult && (
+            <div className="mt-4">
+              <DeliveryInfo
+                delai={saveResult.delai}
+                delaiFab={saveResult.delai_fab}
+                delaiLiv={saveResult.delai_liv}
+                hasFiles={saveResult.has_files}
+                files={saveResult.files}
+                template={saveResult.template}
+              />
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Stock selector (if multiple stocks) */}
+      {/* Stock selector */}
       {Object.keys(config.stocks || {}).length > 1 && (
         <div className="mb-6">
           <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase mb-3">
@@ -387,54 +426,60 @@ export default function ProductDetail() {
         </div>
       )}
 
+      {/* Invalid variables warnings */}
+      {Object.keys(invalidVars).length > 0 && (
+        <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 space-y-1">
+          {Object.entries(invalidVars).map(([key, msg]) => (
+            <p key={key} className="text-sm text-destructive">{msg}</p>
+          ))}
+        </div>
+      )}
+
       {/* Main layout */}
       <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
-        {/* Options */}
         <div className="space-y-5">
-          {/* Main options (non-boolean) */}
-          {configurableProps
-            .filter((p) => !p.isBoolean)
-            .map((prop) => (
-              <OptionSelector
-                key={prop.slug}
-                title={prop.title}
-                slug={prop.slug}
-                options={prop.options}
-                selectedValue={selectedVars[prop.slug] || ""}
-                onSelect={(val) =>
-                  setSelectedVars((prev) => ({ ...prev, [prop.slug]: val }))
-                }
-                required={prop.required}
-                locked={prop.locked}
-                inputType={prop.inputType}
-              />
-            ))}
+          {/* Main options */}
+          {mainProps.map((prop) => (
+            <OptionSelector
+              key={prop.slug}
+              title={prop.title}
+              slug={prop.slug}
+              options={prop.options}
+              selectedValue={selectedVars[prop.slug] || ""}
+              onSelect={(val) => setSelectedVars((prev) => ({ ...prev, [prop.slug]: val }))}
+              required={prop.required}
+              locked={prop.locked}
+              inputType={prop.inputType}
+              description={prop.description}
+              alert={prop.alert}
+              info={prop.info}
+            />
+          ))}
 
-          {/* Boolean toggles grouped under "OPTIONS" */}
-          {configurableProps.some((p) => p.isBoolean) && (
+          {/* Boolean toggles in "OPTIONS" section */}
+          {booleanProps.length > 0 && (
             <div className="space-y-3 pt-2">
               <div className="flex items-center gap-2">
                 <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">Options</h3>
                 <div className="flex-1 h-px bg-border" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {configurableProps
-                  .filter((p) => p.isBoolean)
-                  .map((prop) => (
-                    <OptionSelector
-                      key={prop.slug}
-                      title={prop.title}
-                      slug={prop.slug}
-                      options={prop.options}
-                      selectedValue={selectedVars[prop.slug] || ""}
-                      onSelect={(val) =>
-                        setSelectedVars((prev) => ({ ...prev, [prop.slug]: val }))
-                      }
-                      required={prop.required}
-                      locked={prop.locked}
-                      inputType={prop.inputType}
-                    />
-                  ))}
+                {booleanProps.map((prop) => (
+                  <OptionSelector
+                    key={prop.slug}
+                    title={prop.title}
+                    slug={prop.slug}
+                    options={prop.options}
+                    selectedValue={selectedVars[prop.slug] || ""}
+                    onSelect={(val) => setSelectedVars((prev) => ({ ...prev, [prop.slug]: val }))}
+                    required={prop.required}
+                    locked={prop.locked}
+                    inputType={prop.inputType}
+                    description={prop.description}
+                    alert={prop.alert}
+                    info={prop.info}
+                  />
+                ))}
               </div>
             </div>
           )}
@@ -482,29 +527,7 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* Bottom spacing for mobile sticky bar */}
       <div className="h-20 lg:hidden" />
-
-      {/* Image zoom modal */}
-      {imageZoom && imageUrl && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
-          onClick={() => setImageZoom(false)}
-        >
-          <button
-            onClick={() => setImageZoom(false)}
-            className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
-          >
-            <X className="h-6 w-6" />
-          </button>
-          <img
-            src={imageUrl}
-            alt={productName}
-            className="max-h-[85vh] max-w-[90vw] object-contain rounded-xl"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
     </div>
   );
 }
