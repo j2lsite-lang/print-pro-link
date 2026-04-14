@@ -1,12 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Loader2, Upload, CheckCircle, AlertCircle, Truck } from "lucide-react";
+import { Loader2, Upload, CheckCircle, Truck, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { getShippingPossibilities } from "@/lib/printcom";
 import { toast } from "sonner";
+
+interface ShippingOption {
+  name: string;
+  price: number;
+  currency: string;
+  deliveryDays?: number;
+  carrier?: string;
+}
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
@@ -20,6 +29,103 @@ export default function Checkout() {
 
   const [fileUploads, setFileUploads] = useState<Record<string, { url: string; name: string }>>({});
   const [submitting, setSubmitting] = useState(false);
+
+  // Shipping state
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
+  const [shippingLoading, setShippingLoading] = useState(false);
+  const [shippingError, setShippingError] = useState<string | null>(null);
+
+  // Fetch shipping when address postal code & country are filled
+  const fetchShipping = useCallback(async () => {
+    if (!address.postalCode || !address.country || items.length === 0) return;
+
+    setShippingLoading(true);
+    setShippingError(null);
+    setShippingOptions([]);
+    setSelectedShipping(null);
+
+    try {
+      // Call shipping-possibilities for each item and merge results
+      const allOptions = new Map<string, ShippingOption>();
+
+      for (const item of items) {
+        const opts = item.options as Record<string, unknown>;
+        const itemOptions: Record<string, unknown> = {};
+        for (const [key, val] of Object.entries(opts)) {
+          if (val !== undefined && val !== null && val !== "") {
+            // Extract slug from object options
+            itemOptions[key] = typeof val === "object" && val !== null && "slug" in val
+              ? (val as any).slug
+              : val;
+          }
+        }
+        // Ensure copies is set
+        if (!itemOptions.copies) {
+          itemOptions.copies = item.copies;
+        }
+
+        try {
+          const result = await getShippingPossibilities({
+            address: {
+              country: address.country,
+              postalCode: address.postalCode,
+              city: address.city || undefined,
+            },
+            item: {
+              sku: item.sku,
+              options: itemOptions,
+            },
+          });
+
+          if (result?.results?.length) {
+            for (const r of result.results) {
+              const key = r.name || r.carrier || "standard";
+              if (!allOptions.has(key)) {
+                allOptions.set(key, {
+                  name: r.name || r.carrier || "Livraison standard",
+                  price: r.price?.salesPrice || r.price?.normalPrice || 0,
+                  currency: r.price?.currency || "EUR",
+                  deliveryDays: r.deliveryDays || r.deliveryTimeInDays,
+                  carrier: r.carrier,
+                });
+              } else {
+                // Add prices for combined shipment
+                const existing = allOptions.get(key)!;
+                existing.price += r.price?.salesPrice || r.price?.normalPrice || 0;
+              }
+            }
+          }
+        } catch (err) {
+          console.warn(`[shipping] Could not get shipping for ${item.sku}:`, err);
+        }
+      }
+
+      const options = Array.from(allOptions.values()).sort((a, b) => a.price - b.price);
+
+      if (options.length > 0) {
+        setShippingOptions(options);
+        setSelectedShipping(options[0]);
+      } else {
+        setShippingError("Les frais de livraison seront calculés dans votre devis personnalisé.");
+      }
+    } catch (err: any) {
+      console.error("[shipping] error:", err);
+      setShippingError("Les frais de livraison seront calculés dans votre devis personnalisé.");
+    } finally {
+      setShippingLoading(false);
+    }
+  }, [address.postalCode, address.country, address.city, items]);
+
+  useEffect(() => {
+    if (address.postalCode.length >= 4 && address.country) {
+      const timer = setTimeout(fetchShipping, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [fetchShipping]);
+
+  const shippingCost = selectedShipping?.price || 0;
+  const grandTotal = total + shippingCost;
 
   const handleFileUpload = async (itemId: string, file: File) => {
     const userId = user?.id || "guest";
@@ -58,13 +164,15 @@ export default function Checkout() {
       const { data: order, error: orderErr } = await supabase.from("orders").insert({
         user_id: user?.id || null,
         status: "pending",
-        total,
+        total: grandTotal,
         currency: "EUR",
         deduplication_id: deduplicationId,
         po_number: `J2L-${Date.now()}`,
         customer_reference: `REF-${address.email}`,
         shipping_address_id: addrData?.id,
         billing_address_id: addrData?.id,
+        shipping_cost: shippingCost,
+        shipping_method: selectedShipping ? JSON.parse(JSON.stringify(selectedShipping)) : null,
       }).select().single();
 
       if (orderErr) throw orderErr;
@@ -110,7 +218,7 @@ export default function Checkout() {
           <Input placeholder="Entreprise (optionnel)" value={address.company} onChange={e => setAddress(p => ({ ...p, company: e.target.value }))} className="sm:col-span-2" />
           <Input placeholder="Rue" value={address.street} onChange={e => setAddress(p => ({ ...p, street: e.target.value }))} />
           <Input placeholder="N°" value={address.houseNumber} onChange={e => setAddress(p => ({ ...p, houseNumber: e.target.value }))} />
-          <Input placeholder="Code postal" value={address.postalCode} onChange={e => setAddress(p => ({ ...p, postalCode: e.target.value }))} />
+          <Input placeholder="Code postal *" value={address.postalCode} onChange={e => setAddress(p => ({ ...p, postalCode: e.target.value }))} />
           <Input placeholder="Ville" value={address.city} onChange={e => setAddress(p => ({ ...p, city: e.target.value }))} />
           <Input placeholder="Téléphone" value={address.phone} onChange={e => setAddress(p => ({ ...p, phone: e.target.value }))} />
         </div>
@@ -144,34 +252,86 @@ export default function Checkout() {
         </div>
       </section>
 
+      {/* Shipping section */}
       <section className="mt-10">
-        <div className="rounded-lg border border-border bg-card p-6 flex items-start gap-4">
-          <Truck className="h-6 w-6 text-primary shrink-0 mt-0.5" />
-          <div className="space-y-1">
+        <div className="rounded-lg border border-border bg-card p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Truck className="h-5 w-5 text-primary shrink-0" />
             <h2 className="font-display text-lg font-semibold text-foreground">Livraison</h2>
-            <p className="text-sm text-muted-foreground">
-              Les frais de livraison seront calculés et inclus dans votre devis personnalisé.
-            </p>
-            <Link to="/livraison" className="text-sm text-primary hover:underline inline-block mt-1">
-              Consulter nos informations de livraison →
-            </Link>
           </div>
+
+          {shippingLoading ? (
+            <div className="flex items-center gap-2 py-3 text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="text-sm">Calcul des frais de livraison…</span>
+            </div>
+          ) : shippingOptions.length > 0 ? (
+            <div className="space-y-2">
+              {shippingOptions.map((opt, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedShipping(opt)}
+                  className={`w-full flex items-center justify-between rounded-lg border p-4 text-left transition-colors ${
+                    selectedShipping?.name === opt.name
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Package className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{opt.name}</p>
+                      {opt.deliveryDays && (
+                        <p className="text-xs text-muted-foreground">
+                          {opt.deliveryDays} jour{opt.deliveryDays > 1 ? "s" : ""} ouvré{opt.deliveryDays > 1 ? "s" : ""}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-sm font-semibold text-foreground">
+                    {opt.price > 0 ? `${opt.price.toFixed(2)} €` : "Gratuit"}
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : shippingError ? (
+            <p className="text-sm text-muted-foreground">{shippingError}</p>
+          ) : (
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">
+                Renseignez votre code postal pour calculer automatiquement les frais de livraison.
+              </p>
+              <Link to="/livraison" className="text-sm text-primary hover:underline inline-block">
+                Consulter nos informations de livraison →
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
       <div className="mt-10 rounded-xl border border-border bg-card p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">Total estimé (hors livraison)</p>
-            <p className="text-2xl font-bold text-foreground">
-              {total.toFixed(2)} €
-            </p>
+        <div className="space-y-2 mb-4">
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Produits HT</span>
+            <span className="text-foreground">{total.toFixed(2)} €</span>
           </div>
-          <Button size="lg" onClick={handleSubmitOrder} disabled={submitting}>
-            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Demander un devis
-          </Button>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Livraison</span>
+            <span className="text-foreground">
+              {shippingLoading ? "…" : shippingCost > 0 ? `${shippingCost.toFixed(2)} €` : selectedShipping ? "Gratuit" : "À calculer"}
+            </span>
+          </div>
+          <div className="border-t border-border pt-2 flex justify-between">
+            <span className="text-sm font-medium text-foreground">Total estimé HT</span>
+            <span className="text-2xl font-bold text-foreground font-display">
+              {grandTotal.toFixed(2)} €
+            </span>
+          </div>
         </div>
+        <Button size="lg" className="w-full" onClick={handleSubmitOrder} disabled={submitting}>
+          {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Demander un devis
+        </Button>
       </div>
     </div>
   );
