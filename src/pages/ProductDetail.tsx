@@ -98,14 +98,15 @@ export default function ProductDetail() {
         // Set defaults from Print.com properties, including hidden required ones
         const defaults: Record<string, string> = {};
         const allProps = data.properties || data.configurableProperties || [];
-        const copiesProp = allProps.find((prop) => prop.slug === "copies");
+        const copiesProp = allProps.find((prop: any) => prop.slug === "copies");
 
         for (const prop of allProps) {
+          if (prop.slug === "copies") continue;
           if (!prop.options?.length) continue;
-          const firstNonNullable = prop.options.find((o) => !o.nullable) || prop.options[0];
-          if (prop.slug === "copies") {
-            continue;
-          }
+          // Skip properties where all options are nullable (internal props like summary_image)
+          const nonNullableOptions = prop.options.filter((o: any) => !o.nullable);
+          if (nonNullableOptions.length === 0) continue;
+          const firstNonNullable = nonNullableOptions[0] || prop.options[0];
           if (prop.locked || prop.required) {
             defaults[prop.slug] = String(firstNonNullable.slug);
           }
@@ -113,9 +114,42 @@ export default function ProductDetail() {
 
         setSelectedOptions(defaults);
 
-        if (copiesProp?.options?.length) {
-          const firstCopy = copiesProp.options.find((o) => o.slug != null) || copiesProp.options[0];
-          setQuantity(String(firstCopy.slug));
+        // Build quantity options from rangeSets or optionsInSummary or options
+        if (copiesProp) {
+          let qtyOpts: { slug: string; name: string }[] = [];
+
+          if (copiesProp.optionsInSummary?.length) {
+            // Use optionsInSummary as suggested quantities
+            qtyOpts = (copiesProp.optionsInSummary as number[]).map((n: number) => ({
+              slug: String(n),
+              name: String(n),
+            }));
+          } else if ((copiesProp as any).rangeSets?.length) {
+            // Generate from rangeSets
+            const rangeSet = (copiesProp as any).rangeSets[0];
+            if (rangeSet.summary?.length) {
+              qtyOpts = rangeSet.summary.map((n: number) => ({
+                slug: String(n),
+                name: String(n),
+              }));
+            } else if (rangeSet.options?.length) {
+              const r = rangeSet.options[0];
+              const step = r.steps || 1;
+              const max = Math.min(r.max || 10, 20);
+              for (let i = r.min || 1; i <= max; i += step) {
+                qtyOpts.push({ slug: String(i), name: String(i) });
+              }
+            }
+          } else if (copiesProp.options?.length) {
+            qtyOpts = copiesProp.options
+              .filter((o: any) => o.slug != null)
+              .map((o: any) => ({ slug: String(o.slug), name: o.name || String(o.slug) }));
+          }
+
+          setQuantityOptions(qtyOpts);
+          if (qtyOpts.length > 0) {
+            setQuantity(qtyOpts[0].slug);
+          }
         }
       })
       .catch((err) => setError(err.message))
