@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
+import { useSEO } from "@/hooks/useSEO";
 
 export default function Livraison() {
+  useSEO({
+    title: "Livraison – Délais et tarifs d'expédition",
+    description: "Informations sur la livraison J2L Print : délais 3-5 jours ouvrés, expédition France et Europe, suivi de colis. Livraison partout en France.",
+  });
+
   return (
     <section className="py-12">
       <div className="container max-w-3xl">

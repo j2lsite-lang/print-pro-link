@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { getCatalogProducts, type CatalogProduct } from "@/lib/printcom";
 import { useCategories } from "@/hooks/useCategories";
 import { supabase } from "@/integrations/supabase/client";
+import { useSEO } from "@/hooks/useSEO";
 
 interface Product extends CatalogProduct {}
 
@@ -16,6 +17,11 @@ interface CategoryCount {
 export default function Products() {
   const { categories, loading: catLoading } = useCategories();
   const [categoryCounts, setCategoryCounts] = useState<CategoryCount>({});
+
+  useSEO({
+    title: "Catalogue produits – Impression en ligne",
+    description: "Parcourez notre catalogue d'impression : flyers, cartes de visite, affiches, bâches, adhésifs, textiles, objets publicitaires. Commandez en ligne, livraison rapide en France.",
+  });
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);

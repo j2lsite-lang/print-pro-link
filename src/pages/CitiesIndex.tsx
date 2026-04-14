@@ -1,8 +1,13 @@
 import { Link } from "react-router-dom";
 import { MapPin, ArrowRight } from "lucide-react";
 import { cities } from "./CityPage";
+import { useSEO } from "@/hooks/useSEO";
 
 export default function CitiesIndex() {
+  useSEO({
+    title: "Imprimerie en ligne partout en France – Zones de livraison",
+    description: "J2L Print livre vos impressions dans toute la France : Paris, Lyon, Marseille, Strasbourg, Nancy, Épinal et 27 villes. Imprimerie en ligne avec livraison rapide.",
+  });
   const regions = [...new Set(cities.map((c) => c.region))].sort();
 
   return (

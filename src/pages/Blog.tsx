@@ -1,5 +1,6 @@
 import { FileText, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useSEO } from "@/hooks/useSEO";
 
 const posts = [
   {
