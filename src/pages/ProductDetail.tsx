@@ -260,6 +260,14 @@ export default function ProductDetail() {
 
     return allProps
       .filter((prop) => !hiddenSlugs.has(prop.slug))
+      // Hide internal props: summary_image, properties where all options are nullable
+      .filter((prop) => prop.slug !== "summary_image")
+      .filter((prop) => {
+        if (prop.slug === "copies") return true; // handled separately
+        if (!prop.options?.length) return false;
+        const nonNullable = prop.options.filter((o) => !o.nullable);
+        return nonNullable.length > 0;
+      })
       .filter((prop) => !prop.locked || prop.options.length > 1)
       .map((prop) => {
         const isBooleanToggle =
