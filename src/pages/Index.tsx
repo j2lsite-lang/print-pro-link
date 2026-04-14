@@ -286,21 +286,21 @@ export default function Index() {
                 <p className="text-foreground font-semibold">Merci ! Nous vous rappelons bientôt.</p>
               </div>
             ) : (
-              <form onSubmit={handleCallbackSubmit} className="space-y-3">
+              <form ref={callbackFormRef} onSubmit={handleCallbackSubmit} className="space-y-3">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
                     <Label>Nom</Label>
-                    <Input placeholder="Votre nom" required />
+                    <Input name="cb_name" placeholder="Votre nom" required />
                   </div>
                   <div>
                     <Label>Téléphone</Label>
-                    <Input type="tel" placeholder="06 12 34 56 78" required />
+                    <Input name="cb_phone" type="tel" placeholder="06 12 34 56 78" required />
                   </div>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
                     <Label>Créneau souhaité</Label>
-                    <select className="flex w-full rounded-xl border border-border bg-background/25 px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary/55">
+                    <select name="cb_slot" className="flex w-full rounded-xl border border-border bg-background/25 px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary/55">
                       <option>Matin</option>
                       <option>Après-midi</option>
                       <option>Soir</option>
@@ -308,20 +308,21 @@ export default function Index() {
                   </div>
                   <div>
                     <Label>Sujet</Label>
-                    <Input placeholder="Ex : devis bâche" />
+                    <Input name="cb_subject" placeholder="Ex : devis bâche" />
                   </div>
                 </div>
                 <div>
                   <Label>Message</Label>
                   <textarea
+                    name="cb_message"
                     className="flex w-full rounded-xl border border-border bg-background/25 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/55"
                     placeholder="Détails..."
                     rows={3}
                   />
                 </div>
                 <div className="flex gap-3">
-                  <Button type="submit" className="rounded-xl bg-primary text-primary-foreground font-bold hover:brightness-95">
-                    Envoyer
+                  <Button type="submit" disabled={callbackLoading} className="rounded-xl bg-primary text-primary-foreground font-bold hover:brightness-95">
+                    {callbackLoading ? "Envoi…" : "Envoyer"}
                   </Button>
                   <button type="button" onClick={() => setCallbackOpen(false)} className="pill font-semibold">
                     Annuler
