@@ -89,7 +89,22 @@ Deno.serve(async (req: Request) => {
       case "get-price": {
         const sku = url.searchParams.get("sku");
         if (!sku) return jsonError("sku required");
-        return proxyRequest("POST", `/products/${sku}/price`, body, lang);
+
+        // Restructure flat body into Print.com expected format
+        const rawBody = body as Record<string, any> | null;
+        if (!rawBody) return jsonError("body required for get-price");
+
+        const { copies, ...options } = rawBody;
+        const priceBody = {
+          copies: typeof copies === "number" ? copies : parseInt(String(copies), 10) || 1,
+          options,
+          designs: [{}],
+          deliveryPromise: { urgency: options.urgency || "standard" },
+        };
+        // Remove urgency from options since it's in deliveryPromise
+        delete priceBody.options.urgency;
+
+        return proxyRequest("POST", `/products/${sku}/price`, priceBody, lang);
       }
 
       case "get-accessories": {
