@@ -70,6 +70,7 @@ export default function ProductDetail() {
 
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState("");
+  const [quantityOptions, setQuantityOptions] = useState<{ slug: string; name: string }[]>([]);
 
   const [priceResult, setPriceResult] = useState<any>(null);
   const [priceLoading, setPriceLoading] = useState(false);
