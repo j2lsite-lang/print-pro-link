@@ -207,7 +207,7 @@ export default function ProductDetail() {
           isQuantity: prop.slug === "copies" || prop.slug === "quantity",
           isBoolean: isBooleanToggle,
           inputType: prop.options.length > 0 ? "select" : "text",
-          options: prop.options.map((o) => ({ slug: o.slug, name: o.name })),
+          options: prop.options.map((o) => ({ slug: String(o.slug), name: o.name })),
         };
       })
       .filter((p) => p.options.length > 0);
