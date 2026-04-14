@@ -612,6 +612,8 @@ export default function ProductDetail() {
             configurableProps={configurableProps}
             includeDesignFee={includeDesignFee}
             onToggleDesignFee={setIncludeDesignFee}
+            shippingOptions={shippingOptions}
+            shippingLoading={shippingLoading}
           />
         </div>
       </div>
