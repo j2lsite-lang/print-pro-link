@@ -158,8 +158,26 @@ Deno.serve(async (req: Request) => {
         return proxyRequest("GET", `/pdf/links?url=${encodeURIComponent(platformUrl)}`, null, lang);
       }
 
+      case "get-categories":
+        return proxyRequest("GET", "/categories", null, lang);
+
+      case "get-catalog":
+        return proxyRequest("GET", "/catalog", null, lang);
+
+      case "get-product-images": {
+        const sku = url.searchParams.get("sku");
+        if (!sku) return jsonError("sku required");
+        return proxyRequest("GET", `/products/${sku}/images`, null, lang);
+      }
+
+      case "raw": {
+        const path = url.searchParams.get("path");
+        if (!path) return jsonError("path required");
+        return proxyRequest("GET", path, null, lang);
+      }
+
       default:
-        return jsonError(`Unknown action: ${action}. Available: list-products, get-product, get-price, get-accessories, batch-specs, shippable-countries, shipping-possibilities, combined-shipment, create-order, list-orders, get-order, update-order, pdf-preflight, pdf-preview, pdf-links`);
+        return jsonError(`Unknown action: ${action}.`);
     }
   } catch (error) {
     console.error("[PrintCom] Unhandled error:", error);
