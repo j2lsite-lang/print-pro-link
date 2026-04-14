@@ -139,9 +139,16 @@ export default function ProductDetail() {
 
     try {
       const copies = parseInt(quantity) || 1;
+      // Filter out empty/undefined values to avoid Print.com API errors
+      const cleanOptions: Record<string, any> = {};
+      for (const [key, value] of Object.entries(selectedOptions)) {
+        if (value !== undefined && value !== null && value !== "") {
+          cleanOptions[key] = value;
+        }
+      }
       const body: any = {
         copies,
-        ...selectedOptions,
+        ...cleanOptions,
       };
 
       const data = await getPrice(sku, body);
