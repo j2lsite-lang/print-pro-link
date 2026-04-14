@@ -267,6 +267,25 @@ export default function ProductDetail() {
     });
   }, [product]);
 
+  // Fetch shipping estimate
+  const fetchShipping = useCallback(async (copies: number) => {
+    if (!sku) return;
+    setShippingLoading(true);
+    try {
+      const body = {
+        items: [{ sku, copies }],
+        destination: { country: "FR" },
+      };
+      const data = await getShippingPossibilities(body);
+      const options = Array.isArray(data) ? data : data?.shippingOptions || data?.options || [];
+      setShippingOptions(options);
+    } catch {
+      setShippingOptions([]);
+    } finally {
+      setShippingLoading(false);
+    }
+  }, [sku]);
+
   // Fetch price
   const fetchPrice = useCallback(async () => {
     if (!sku || !product) return;
