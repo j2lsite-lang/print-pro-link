@@ -597,6 +597,14 @@ export default function ProductDetail() {
       </div>
 
       <div className="h-20 lg:hidden" />
+
+      <ProductSEOContent
+        productName={product.titleSingle || product.name || sku || "Produit"}
+        description={product.description}
+        options={mainProps.map((p) => ({
+          title: p.title,
+          values: p.options.map((o) => o.name),
+        }))}
+      />
     </div>
-  );
 }
