@@ -42,32 +42,27 @@ Deno.serve(async (req: Request) => {
         thumbnailUrl = "https:" + assets[product.image.id].file;
       }
 
-      // Gallery images
-      const imageIds: string[] = [];
+      // Gallery images (excluding icon to avoid duplicates)
+      const galleryUrls: string[] = [];
+      const iconAssetId = product.icon?.id || product.image?.id || null;
       if (product.images && Array.isArray(product.images)) {
         for (const img of product.images) {
-          if (img.id && assets[img.id]?.file) {
-            imageIds.push(img.id);
+          if (img.id && assets[img.id]?.file && img.id !== iconAssetId) {
+            galleryUrls.push("https:" + assets[img.id].file);
           }
         }
       }
 
-      if (imageIds.length > 0) {
-        for (const id of imageIds) {
-          const url = "https:" + assets[id].file;
-          records.push({
-            sku,
-            image_url: url,
-            thumbnail_url: thumbnailUrl || url,
-            source: "printcom_cms",
-          });
-        }
-      } else if (thumbnailUrl) {
-        // Only icon/main image, no gallery
+      // Build ordered list: icon/main image FIRST, then gallery
+      const orderedImages: string[] = [];
+      if (thumbnailUrl) orderedImages.push(thumbnailUrl);
+      orderedImages.push(...galleryUrls);
+
+      for (const url of orderedImages) {
         records.push({
           sku,
-          image_url: thumbnailUrl,
-          thumbnail_url: thumbnailUrl,
+          image_url: url,
+          thumbnail_url: thumbnailUrl || url,
           source: "printcom_cms",
         });
       }
