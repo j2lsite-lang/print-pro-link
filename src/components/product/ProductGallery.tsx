@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Package, X, ZoomIn, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -9,10 +9,16 @@ interface ProductGalleryProps {
 }
 
 export default function ProductGallery({ images, productName, fallbackImage }: ProductGalleryProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const allImages = images.length > 0 ? images : fallbackImage ? [fallbackImage] : [];
+  // Default to 2nd image (index 1) when available — Print.com puts the hero shot there
+  const [selectedIndex, setSelectedIndex] = useState(allImages.length > 1 ? 1 : 0);
   const [zoom, setZoom] = useState(false);
 
-  const allImages = images.length > 0 ? images : fallbackImage ? [fallbackImage] : [];
+  // Reset when images change
+  useEffect(() => {
+    setSelectedIndex(allImages.length > 1 ? 1 : 0);
+  }, [allImages.length]);
+
   const currentImage = allImages[selectedIndex] || null;
 
   return (
