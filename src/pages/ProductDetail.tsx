@@ -61,6 +61,7 @@ export default function ProductDetail() {
   const { addItem } = useCart();
 
   const [product, setProduct] = useState<PrintComProduct | null>(null);
+  const [categoryImageUrl, setCategoryImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [includeDesignFee, setIncludeDesignFee] = useState(false);
