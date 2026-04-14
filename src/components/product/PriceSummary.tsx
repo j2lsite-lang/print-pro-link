@@ -47,6 +47,8 @@ export default function PriceSummary({
   configurableProps,
   includeDesignFee,
   onToggleDesignFee,
+  shippingOptions = [],
+  shippingLoading = false,
 }: PriceSummaryProps) {
   const summaryItems = configurableProps
     .filter((p) => selectedOptions[p.slug])
