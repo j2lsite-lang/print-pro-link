@@ -171,42 +171,41 @@ export default function Index() {
               Décrivez votre projet, nous vous répondons sous 24h.
             </p>
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                alert("Merci ! Votre demande a été envoyée. (Démo)");
-              }}
+              ref={devisFormRef}
+              onSubmit={handleDevisSubmit}
               className="space-y-4"
             >
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label>Nom</Label>
-                  <Input placeholder="Votre nom" required />
+                  <Input name="name" placeholder="Votre nom" required />
                 </div>
                 <div>
                   <Label>Email</Label>
-                  <Input type="email" placeholder="votre@email.com" required />
+                  <Input name="email" type="email" placeholder="votre@email.com" required />
                 </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label>Téléphone</Label>
-                  <Input type="tel" placeholder="06 12 34 56 78" />
+                  <Input name="phone" type="tel" placeholder="06 12 34 56 78" />
                 </div>
                 <div>
                   <Label>Produit souhaité</Label>
-                  <Input placeholder="Ex : 500 flyers A5" />
+                  <Input name="product" placeholder="Ex : 500 flyers A5" />
                 </div>
               </div>
               <div>
                 <Label>Message</Label>
                 <textarea
+                  name="message"
                   className="flex w-full rounded-xl border border-border bg-background/25 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/55 min-h-[100px]"
                   placeholder="Détails du projet..."
                   rows={4}
                 />
               </div>
-              <Button type="submit" className="rounded-xl bg-primary text-primary-foreground font-bold hover:brightness-95 w-full sm:w-auto">
-                Envoyer la demande
+              <Button type="submit" disabled={devisLoading} className="rounded-xl bg-primary text-primary-foreground font-bold hover:brightness-95 w-full sm:w-auto">
+                {devisLoading ? "Envoi…" : "Envoyer la demande"}
               </Button>
             </form>
           </div>
