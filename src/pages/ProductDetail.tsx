@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import OptionSelector from "@/components/product/OptionSelector";
 import PriceSummary from "@/components/product/PriceSummary";
 import ProductGallery from "@/components/product/ProductGallery";
+import ProductSEOContent from "@/components/product/ProductSEOContent";
 import { useSEO } from "@/hooks/useSEO";
 
 interface ProductOption {
