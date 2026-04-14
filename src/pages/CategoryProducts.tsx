@@ -23,6 +23,7 @@ export default function CategoryProducts() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [cmsThumbnails, setCmsThumbnails] = useState<Record<string, string>>({});
+  const [subCategoryCounts, setSubCategoryCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     listProducts()
@@ -60,6 +61,25 @@ export default function CategoryProducts() {
         setCmsThumbnails(map);
       });
   }, [skus]);
+
+  // Fetch product counts per subcategory
+  useEffect(() => {
+    if (subCategories.length === 0) return;
+    const subIds = subCategories.map(s => s.id);
+    supabase
+      .from("product_category_mappings")
+      .select("sku, category_id")
+      .in("category_id", subIds)
+      .then(({ data }) => {
+        if (!data) return;
+        const counts: Record<string, number> = {};
+        for (const sub of subCategories) {
+          const uniqueSkus = new Set(data.filter(m => m.category_id === sub.id).map(m => m.sku));
+          counts[sub.id] = uniqueSkus.size;
+        }
+        setSubCategoryCounts(counts);
+      });
+  }, [subCategories]);
 
   const loading = catLoading || skusLoading || productsLoading;
 
@@ -107,15 +127,37 @@ export default function CategoryProducts() {
       {category.description && <p className="mt-2 max-w-3xl text-muted-foreground">{category.description}</p>}
 
       {subCategories.length > 0 && (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {subCategories.map((sub) => (
             <Link
               key={sub.id}
               to={`/products/category/${sub.slug}`}
-              className="rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/30 hover:shadow-elevated"
+              className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:border-primary/40 hover:shadow-elevated"
             >
-              <h3 className="font-display font-semibold text-card-foreground">{sub.name}</h3>
-              {sub.description && <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{sub.description}</p>}
+              <div className="aspect-[4/3] overflow-hidden bg-muted/50">
+                {sub.image_url ? (
+                  <img
+                    src={sub.image_url}
+                    alt={sub.name}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <span className="text-5xl opacity-20">📦</span>
+                  </div>
+                )}
+              </div>
+              <div className="px-4 py-3.5 flex items-baseline justify-between gap-2">
+                <h3 className="font-display text-sm font-semibold text-card-foreground transition-colors group-hover:text-primary truncate">
+                  {sub.name}
+                </h3>
+                {subCategoryCounts[sub.id] != null && (
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    ({subCategoryCounts[sub.id]})
+                  </span>
+                )}
+              </div>
             </Link>
           ))}
         </div>
