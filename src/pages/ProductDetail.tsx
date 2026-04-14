@@ -474,7 +474,6 @@ export default function ProductDetail() {
     });
     toast.success("Produit ajouté au panier !");
   };
-  };
 
   const images = productImages.length > 0 ? productImages : (product?.images || []);
   const thumbnailUrl = product?.thumbnailUrl || null;
