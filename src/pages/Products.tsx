@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, Loader2, Grid3x3, List, ArrowUpRight } from "lucide-react";
+import { Search, Loader2, ArrowUpRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { listProducts } from "@/lib/printcom";
 import { useCategories } from "@/hooks/useCategories";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Product {
   sku: string;
@@ -12,14 +13,58 @@ interface Product {
   thumbnailUrl?: string;
 }
 
+interface CategoryCount {
+  [categoryId: string]: number;
+}
+
 export default function Products() {
   const { categories, loading: catLoading } = useCategories();
+  const [categoryCounts, setCategoryCounts] = useState<CategoryCount>({});
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [showAllProducts, setShowAllProducts] = useState(false);
+
+  // Fetch product counts per category
+  useEffect(() => {
+    if (categories.length === 0) return;
+    
+    async function fetchCounts() {
+      // Get all subcategories
+      const { data: allCats } = await supabase
+        .from("product_categories")
+        .select("id, parent_id");
+      
+      const subCatMap: Record<string, string[]> = {};
+      allCats?.forEach((c) => {
+        if (c.parent_id) {
+          if (!subCatMap[c.parent_id]) subCatMap[c.parent_id] = [];
+          subCatMap[c.parent_id].push(c.id);
+        }
+      });
+
+      // Get all mappings
+      const { data: mappings } = await supabase
+        .from("product_category_mappings")
+        .select("sku, category_id");
+
+      if (!mappings) return;
+
+      const counts: CategoryCount = {};
+      for (const cat of categories) {
+        const relatedIds = [cat.id, ...(subCatMap[cat.id] || [])];
+        const uniqueSkus = new Set(
+          mappings.filter((m) => relatedIds.includes(m.category_id)).map((m) => m.sku)
+        );
+        counts[cat.id] = uniqueSkus.size;
+      }
+      setCategoryCounts(counts);
+    }
+
+    fetchCounts();
+  }, [categories]);
 
   useEffect(() => {
     listProducts()
@@ -47,47 +92,53 @@ export default function Products() {
     });
   }, [products, search]);
 
-  const visibleCategories = categories;
-
   return (
     <div className="container py-10">
-      <h1 className="font-display text-3xl font-bold text-foreground">Catalogue</h1>
-      <p className="mt-2 text-muted-foreground">Découvrez tous nos produits d'impression et supports publicitaires.</p>
+      <p className="text-sm font-medium text-muted-foreground">Catalogue</p>
+      <h1 className="mt-1 font-display text-3xl font-bold text-foreground">Categories</h1>
 
-      {!catLoading && visibleCategories.length > 0 && (
-        <div className="mt-8">
-          <h2 className="mb-4 font-display text-xl font-semibold text-foreground">Catégories</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {visibleCategories.map((cat) => (
-              <Link
-                key={cat.id}
-                to={`/products/category/${cat.slug}`}
-                className="group overflow-hidden rounded-xl border border-border bg-card shadow-card transition-all hover:border-primary/30 hover:shadow-elevated"
-              >
-                {cat.image_url ? (
-                  <div className="aspect-[16/9] bg-muted">
-                    <img src={cat.image_url} alt={cat.name} className="h-full w-full object-cover" loading="lazy" />
-                  </div>
-                ) : (
-                  <div className="flex aspect-[16/9] items-center justify-center bg-muted">
-                    <Grid3x3 className="h-10 w-10 text-muted-foreground/20" />
-                  </div>
-                )}
-                <div className="p-4">
-                  <h3 className="font-display font-semibold text-card-foreground transition-colors group-hover:text-primary">
-                    {cat.name}
-                  </h3>
-                  {cat.description && <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{cat.description}</p>}
+      {!catLoading && categories.length > 0 && (
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {categories.map((cat) => (
+            <Link
+              key={cat.id}
+              to={`/products/category/${cat.slug}`}
+              className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all hover:shadow-elevated hover:border-primary/30"
+            >
+              {cat.image_url ? (
+                <div className="aspect-[4/3] overflow-hidden bg-muted">
+                  <img
+                    src={cat.image_url}
+                    alt={cat.name}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                  />
                 </div>
-              </Link>
-            ))}
-          </div>
+              ) : (
+                <div className="flex aspect-[4/3] items-center justify-center bg-muted">
+                  <div className="text-4xl text-muted-foreground/20">📦</div>
+                </div>
+              )}
+              <div className="px-4 py-3">
+                <h3 className="font-display text-sm font-semibold text-card-foreground transition-colors group-hover:text-primary">
+                  {cat.name}
+                  {categoryCounts[cat.id] != null && (
+                    <span className="ml-2 font-normal text-muted-foreground">
+                      ({categoryCounts[cat.id]})
+                    </span>
+                  )}
+                </h3>
+              </div>
+            </Link>
+          ))}
         </div>
       )}
 
-      <div className="mt-10 flex items-center gap-4">
-        <Button variant={showAllProducts ? "default" : "outline"} onClick={() => setShowAllProducts(!showAllProducts)}>
-          <List className="mr-2 h-4 w-4" />
+      <div className="mt-8">
+        <Button
+          variant={showAllProducts ? "default" : "outline"}
+          onClick={() => setShowAllProducts(!showAllProducts)}
+        >
           {showAllProducts ? "Masquer tous les produits" : "Voir tous les produits"}
         </Button>
       </div>
