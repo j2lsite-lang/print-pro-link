@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Loader2, ChevronRight } from "lucide-react";
+import { Loader2, ChevronRight, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { getProduct, getPrice } from "@/lib/printcom";
@@ -471,19 +471,35 @@ export default function ProductDetail() {
           productName={product.titleSingle || product.name || sku}
           fallbackImage={categoryImageUrl || thumbnailUrl}
         />
-        <div className="flex-1">
+        <div className="flex-1 space-y-4">
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
             {product.titleSingle || product.name || sku}
           </h1>
+
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Commandez votre <strong>{(product.titleSingle || product.name || "produit").toLowerCase()}</strong> en
+            ligne chez <strong>J2L Print</strong>. Impression professionnelle, contrôle qualité et livraison
+            rapide partout en France. Devis gratuit,{" "}
+            <Link to="/#devis" className="text-primary hover:underline">contactez-nous</Link>.
+          </p>
+
           {product.description && (
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {product.description}
             </p>
           )}
-          <p className="mt-2 text-xs text-muted-foreground">
-            Livraison rapide partout en France. Devis gratuit,
-            <Link to="/#devis" className="text-primary hover:underline ml-1">contactez-nous</Link>.
-          </p>
+
+          <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-1">
+            <span className="flex items-center gap-1.5">
+              <CheckCircle className="h-3.5 w-3.5 text-primary" /> Livraison 3-5 jours
+            </span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle className="h-3.5 w-3.5 text-primary" /> Vérification fichiers
+            </span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle className="h-3.5 w-3.5 text-primary" /> Devis sous 24h
+            </span>
+          </div>
         </div>
       </div>
 
