@@ -104,6 +104,31 @@ export default function ProductDetail() {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+
+    // Fetch category image fallback
+    supabase
+      .from("product_category_mappings")
+      .select("category_id")
+      .eq("sku", sku)
+      .limit(1)
+      .maybeSingle()
+      .then(async ({ data: mapping }) => {
+        if (!mapping?.category_id) return;
+        const { data: category } = await supabase
+          .from("product_categories")
+          .select("image_url, parent_id")
+          .eq("id", mapping.category_id)
+          .maybeSingle();
+        if (category?.image_url) { setCategoryImageUrl(category.image_url); return; }
+        if (category?.parent_id) {
+          const { data: parent } = await supabase
+            .from("product_categories")
+            .select("image_url")
+            .eq("id", category.parent_id)
+            .maybeSingle();
+          if (parent?.image_url) setCategoryImageUrl(parent.image_url);
+        }
+      });
   }, [sku]);
 
   // Fetch price
