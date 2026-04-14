@@ -40,6 +40,11 @@ export default function Index() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [callbackOpen, setCallbackOpen] = useState(false);
   const [callbackSent, setCallbackSent] = useState(false);
+  const [devisLoading, setDevisLoading] = useState(false);
+  const [callbackLoading, setCallbackLoading] = useState(false);
+  const { toast } = useToast();
+  const devisFormRef = useRef<HTMLFormElement>(null);
+  const callbackFormRef = useRef<HTMLFormElement>(null);
 
   useSEO({
     title: "J2L Print – Imprimerie en ligne | Impression & supports publicitaires",
@@ -53,13 +58,49 @@ export default function Index() {
     return () => window.removeEventListener('open-callback', handler);
   }, []);
 
-  const handleCallbackSubmit = (e: React.FormEvent) => {
+  const handleDevisSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setCallbackSent(true);
-    setTimeout(() => {
-      setCallbackOpen(false);
-      setCallbackSent(false);
-    }, 2500);
+    setDevisLoading(true);
+    const form = devisFormRef.current!;
+    const formData = new FormData(form);
+    const { error } = await supabase.from("devis_requests").insert({
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      phone: (formData.get("phone") as string) || null,
+      product: (formData.get("product") as string) || null,
+      message: (formData.get("message") as string) || null,
+    });
+    setDevisLoading(false);
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible d'envoyer la demande.", variant: "destructive" });
+    } else {
+      toast({ title: "Demande envoyée ✓", description: "Nous vous répondons sous 24h." });
+      form.reset();
+    }
+  };
+
+  const handleCallbackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCallbackLoading(true);
+    const form = callbackFormRef.current!;
+    const formData = new FormData(form);
+    const { error } = await supabase.from("callback_requests").insert({
+      name: formData.get("cb_name") as string,
+      phone: formData.get("cb_phone") as string,
+      time_slot: (formData.get("cb_slot") as string) || null,
+      subject: (formData.get("cb_subject") as string) || null,
+      message: (formData.get("cb_message") as string) || null,
+    });
+    setCallbackLoading(false);
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible d'envoyer la demande.", variant: "destructive" });
+    } else {
+      setCallbackSent(true);
+      setTimeout(() => {
+        setCallbackOpen(false);
+        setCallbackSent(false);
+      }, 2500);
+    }
   };
 
   return (
