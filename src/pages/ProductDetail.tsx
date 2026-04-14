@@ -76,6 +76,8 @@ export default function ProductDetail() {
   const [priceError, setPriceError] = useState<string | null>(null);
 
   // Load product
+  const [productImages, setProductImages] = useState<string[]>([]);
+
   useEffect(() => {
     if (!sku) return;
 
