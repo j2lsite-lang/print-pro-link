@@ -89,7 +89,19 @@ Deno.serve(async (req: Request) => {
       case "get-price": {
         const sku = url.searchParams.get("sku");
         if (!sku) return jsonError("sku required");
-        return proxyRequest("POST", `/products/${sku}/price`, body, lang);
+
+        const rawBody = body as Record<string, any> | null;
+        if (!rawBody) return jsonError("body required for get-price");
+
+        const { urgency, ...options } = rawBody;
+        // copies stays inside options as Print.com expects it there
+        const priceBody = {
+          sku,
+          options,
+          deliveryPromise: urgency === "express" ? 1 : 0,
+        };
+
+        return proxyRequest("POST", `/products/${sku}/price`, priceBody, lang);
       }
 
       case "get-accessories": {
