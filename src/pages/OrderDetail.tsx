@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Loader2, Package, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { getOrder } from "@/lib/realisaprint";
+import { getOrder } from "@/lib/printcom";
 
 export default function OrderDetail() {
   const { orderNumber } = useParams<{ orderNumber: string }>();
