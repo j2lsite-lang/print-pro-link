@@ -119,43 +119,7 @@ export default function ProductDetail() {
 
         setSelectedOptions(defaults);
 
-        // Build quantity options from rangeSets or optionsInSummary or options
-        if (copiesProp) {
-          let qtyOpts: { slug: string; name: string }[] = [];
-
-          if (copiesProp.optionsInSummary?.length) {
-            // Use optionsInSummary as suggested quantities
-            qtyOpts = (copiesProp.optionsInSummary as number[]).map((n: number) => ({
-              slug: String(n),
-              name: String(n),
-            }));
-          } else if ((copiesProp as any).rangeSets?.length) {
-            // Generate from rangeSets
-            const rangeSet = (copiesProp as any).rangeSets[0];
-            if (rangeSet.summary?.length) {
-              qtyOpts = rangeSet.summary.map((n: number) => ({
-                slug: String(n),
-                name: String(n),
-              }));
-            } else if (rangeSet.options?.length) {
-              const r = rangeSet.options[0];
-              const step = r.steps || 1;
-              const max = Math.min(r.max || 10, 20);
-              for (let i = r.min || 1; i <= max; i += step) {
-                qtyOpts.push({ slug: String(i), name: String(i) });
-              }
-            }
-          } else if (copiesProp.options?.length) {
-            qtyOpts = copiesProp.options
-              .filter((o: any) => o.slug != null)
-              .map((o: any) => ({ slug: String(o.slug), name: o.name || String(o.slug) }));
-          }
-
-          setQuantityOptions(qtyOpts);
-          if (qtyOpts.length > 0) {
-            setQuantity(qtyOpts[0].slug);
-          }
-        }
+        // Initial quantity will be set by the reactive effect below
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
