@@ -58,12 +58,13 @@ Deno.serve(async (req: Request) => {
       if (thumbnailUrl) orderedImages.push(thumbnailUrl);
       orderedImages.push(...galleryUrls);
 
-      for (const url of orderedImages) {
+      for (let idx = 0; idx < orderedImages.length; idx++) {
         records.push({
           sku,
-          image_url: url,
-          thumbnail_url: thumbnailUrl || url,
+          image_url: orderedImages[idx],
+          thumbnail_url: thumbnailUrl || orderedImages[idx],
           source: "printcom_cms",
+          sort_order: idx,
         });
       }
     }
