@@ -47,10 +47,10 @@ export default function Header() {
       return;
     }
     listProducts().then((data) => {
-      const productsObj = data?.products || {};
-      cachedProducts = Object.entries(productsObj).map(([id, name]) => ({
-        id,
-        name: name as string,
+      const items = (Array.isArray(data) ? data : []);
+      cachedProducts = items.map((p: any) => ({
+        id: p.sku,
+        name: p.name || p.sku,
       }));
       setAllProducts(cachedProducts);
     }).catch(() => {});
