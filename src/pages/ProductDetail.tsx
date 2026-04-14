@@ -308,6 +308,8 @@ export default function ProductDetail() {
         setPriceResult(null);
       } else {
         setPriceResult(data);
+        // Fetch shipping estimate for France
+        fetchShipping(copies);
       }
     } catch (err: any) {
       console.error("[price] error:", err);
