@@ -14,28 +14,6 @@ export default function ProductSEOContent({ productName, sku, description, optio
 
   return (
     <div className="mt-12 space-y-10 border-t border-border pt-10">
-      {/* Section 1 — Description longue */}
-      <div className="space-y-4">
-        <h2 className="font-display text-xl font-bold text-foreground">
-          {productName} – Impression professionnelle en ligne
-        </h2>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {seo.intro}
-        </p>
-        {description && (
-          <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-        )}
-      </div>
-
-      {/* Section 2 — Utilisations */}
-      <div className="space-y-4">
-        <h3 className="font-display text-lg font-semibold text-foreground">
-          À quoi sert {/^[aeiouyàâéèêëïîôùûüÿæœ]/i.test(productName) ? "un " : "un "}{productName.toLowerCase()} ?
-        </h3>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {seo.useCases}
-        </p>
-      </div>
 
       {/* Section 3 — Options de personnalisation */}
       {options && options.length > 0 && (
