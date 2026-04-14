@@ -90,19 +90,16 @@ Deno.serve(async (req: Request) => {
         const sku = url.searchParams.get("sku");
         if (!sku) return jsonError("sku required");
 
-        // Restructure flat body into Print.com expected format
         const rawBody = body as Record<string, any> | null;
         if (!rawBody) return jsonError("body required for get-price");
 
-        const { copies, ...options } = rawBody;
+        const { copies, urgency, ...options } = rawBody;
         const priceBody = {
+          sku,
           copies: typeof copies === "number" ? copies : parseInt(String(copies), 10) || 1,
           options,
-          designs: [{}],
-          deliveryPromise: { urgency: options.urgency || "standard" },
+          deliveryPromise: urgency === "express" ? 1 : 0,
         };
-        // Remove urgency from options since it's in deliveryPromise
-        delete priceBody.options.urgency;
 
         return proxyRequest("POST", `/products/${sku}/price`, priceBody, lang);
       }
