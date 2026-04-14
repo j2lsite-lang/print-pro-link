@@ -138,6 +138,73 @@ export default function Checkout() {
     toast.success("Fichier uploadé !");
   };
 
+  const handlePayOnline = async () => {
+    if (!address.email || !address.firstName || !address.lastName) {
+      toast.error("Veuillez remplir au minimum votre nom, prénom et email.");
+      return;
+    }
+    if (!grandTotal || grandTotal <= 0) {
+      toast.error("Le montant total doit être supérieur à 0 €.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      // Save order first
+      const { data: addrData } = await supabase.from("addresses").insert({
+        user_id: user?.id || null,
+        first_name: address.firstName, last_name: address.lastName,
+        company: address.company, street: address.street, house_number: address.houseNumber,
+        city: address.city, postal_code: address.postalCode, country: address.country,
+        phone: address.phone, email: address.email,
+      }).select().single();
+
+      const { data: order, error: orderErr } = await supabase.from("orders").insert({
+        user_id: user?.id || null, status: "awaiting_payment",
+        total: grandTotal, currency: "EUR", deduplication_id: crypto.randomUUID(),
+        po_number: `J2L-${Date.now()}`, customer_reference: `REF-${address.email}`,
+        shipping_address_id: addrData?.id, billing_address_id: addrData?.id,
+        shipping_cost: shippingCost,
+        shipping_method: selectedShipping ? JSON.parse(JSON.stringify(selectedShipping)) : null,
+      }).select().single();
+      if (orderErr) throw orderErr;
+
+      await supabase.from("order_items").insert(
+        items.map(i => ({
+          order_id: order.id, sku: i.sku, product_name: i.productName,
+          options: JSON.parse(JSON.stringify(i.options)),
+          quantity: i.quantity, copies: i.copies,
+          file_url: fileUploads[i.id]?.url || i.fileUrl || null,
+          price_breakdown: JSON.parse(JSON.stringify({ unitPrice: i.unitPrice, total: (i.unitPrice || 0) * i.quantity })),
+        }))
+      );
+
+      // Create Stripe payment link
+      const { data: paymentData, error: paymentErr } = await supabase.functions.invoke("create-payment-link", {
+        body: {
+          orderId: order.id,
+          amount: grandTotal,
+          customerEmail: address.email,
+          items: items.map(i => ({ productName: i.productName, copies: i.copies })),
+        },
+      });
+
+      if (paymentErr || paymentData?.error) {
+        throw new Error(paymentData?.error || paymentErr?.message || "Erreur de paiement");
+      }
+
+      if (paymentData?.url) {
+        clearCart();
+        window.location.href = paymentData.url;
+      } else {
+        throw new Error("URL de paiement non reçue");
+      }
+    } catch (err: any) {
+      toast.error("Erreur paiement: " + err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleSubmitOrder = async () => {
     if (!address.email || !address.firstName || !address.lastName) {
       toast.error("Veuillez remplir au minimum votre nom, prénom et email.");
