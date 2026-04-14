@@ -109,9 +109,9 @@ export default function PriceSummary({
                 <span className="text-muted-foreground">Impression</span>
                 <span className="text-foreground">{getResalePrice(priceResult).toFixed(2)} €</span>
               </div>
-              {priceResult.delai && (
+              {priceResult?.deliveryDays && (
                 <p className="text-xs text-muted-foreground">
-                  Délai : {priceResult.delai} ({priceResult.delai_fab}j fab. + {priceResult.delai_liv}j liv.)
+                  Délai estimé : {priceResult.deliveryDays} jours ouvrés
                 </p>
               )}
               {includeDesignFee && (
