@@ -125,6 +125,7 @@ export default function ProductDetail() {
       .from("product_images")
       .select("image_url")
       .eq("sku", sku)
+      .order("sort_order", { ascending: true })
       .then(({ data: imgs }) => {
         if (imgs && imgs.length > 0) {
           setProductImages(imgs.map((i) => i.image_url));

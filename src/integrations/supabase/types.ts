@@ -337,6 +337,7 @@ export type Database = {
           id: string
           image_url: string
           sku: string
+          sort_order: number
           source: string | null
           thumbnail_url: string | null
           updated_at: string
@@ -346,6 +347,7 @@ export type Database = {
           id?: string
           image_url: string
           sku: string
+          sort_order?: number
           source?: string | null
           thumbnail_url?: string | null
           updated_at?: string
@@ -355,6 +357,7 @@ export type Database = {
           id?: string
           image_url?: string
           sku?: string
+          sort_order?: number
           source?: string | null
           thumbnail_url?: string | null
           updated_at?: string
