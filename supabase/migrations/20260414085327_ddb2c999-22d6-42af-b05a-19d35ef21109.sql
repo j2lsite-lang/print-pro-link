@@ -1,0 +1,1 @@
+ALTER TABLE public.product_images DROP CONSTRAINT IF EXISTS product_images_sku_key;
