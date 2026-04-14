@@ -27,6 +27,9 @@ interface ConfigurableProperty {
   locked?: boolean;
   options: ProductOption[];
   group?: string;
+  optionsInSummary?: number[];
+  rangeSets?: Array<{ options: Array<{ min: number; max: number; steps: number }>; summary?: number[] }>;
+  type?: string;
 }
 
 interface PrintComProduct {
@@ -70,6 +73,7 @@ export default function ProductDetail() {
 
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState("");
+  const [quantityOptions, setQuantityOptions] = useState<{ slug: string; name: string }[]>([]);
 
   const [priceResult, setPriceResult] = useState<any>(null);
   const [priceLoading, setPriceLoading] = useState(false);
@@ -97,14 +101,15 @@ export default function ProductDetail() {
         // Set defaults from Print.com properties, including hidden required ones
         const defaults: Record<string, string> = {};
         const allProps = data.properties || data.configurableProperties || [];
-        const copiesProp = allProps.find((prop) => prop.slug === "copies");
+        const copiesProp = allProps.find((prop: any) => prop.slug === "copies");
 
         for (const prop of allProps) {
+          if (prop.slug === "copies") continue;
           if (!prop.options?.length) continue;
-          const firstNonNullable = prop.options.find((o) => !o.nullable) || prop.options[0];
-          if (prop.slug === "copies") {
-            continue;
-          }
+          // Skip properties where all options are nullable (internal props like summary_image)
+          const nonNullableOptions = prop.options.filter((o: any) => !o.nullable);
+          if (nonNullableOptions.length === 0) continue;
+          const firstNonNullable = nonNullableOptions[0] || prop.options[0];
           if (prop.locked || prop.required) {
             defaults[prop.slug] = String(firstNonNullable.slug);
           }
@@ -112,9 +117,42 @@ export default function ProductDetail() {
 
         setSelectedOptions(defaults);
 
-        if (copiesProp?.options?.length) {
-          const firstCopy = copiesProp.options.find((o) => o.slug != null) || copiesProp.options[0];
-          setQuantity(String(firstCopy.slug));
+        // Build quantity options from rangeSets or optionsInSummary or options
+        if (copiesProp) {
+          let qtyOpts: { slug: string; name: string }[] = [];
+
+          if (copiesProp.optionsInSummary?.length) {
+            // Use optionsInSummary as suggested quantities
+            qtyOpts = (copiesProp.optionsInSummary as number[]).map((n: number) => ({
+              slug: String(n),
+              name: String(n),
+            }));
+          } else if ((copiesProp as any).rangeSets?.length) {
+            // Generate from rangeSets
+            const rangeSet = (copiesProp as any).rangeSets[0];
+            if (rangeSet.summary?.length) {
+              qtyOpts = rangeSet.summary.map((n: number) => ({
+                slug: String(n),
+                name: String(n),
+              }));
+            } else if (rangeSet.options?.length) {
+              const r = rangeSet.options[0];
+              const step = r.steps || 1;
+              const max = Math.min(r.max || 10, 20);
+              for (let i = r.min || 1; i <= max; i += step) {
+                qtyOpts.push({ slug: String(i), name: String(i) });
+              }
+            }
+          } else if (copiesProp.options?.length) {
+            qtyOpts = copiesProp.options
+              .filter((o: any) => o.slug != null)
+              .map((o: any) => ({ slug: String(o.slug), name: o.name || String(o.slug) }));
+          }
+
+          setQuantityOptions(qtyOpts);
+          if (qtyOpts.length > 0) {
+            setQuantity(qtyOpts[0].slug);
+          }
         }
       })
       .catch((err) => setError(err.message))
@@ -222,6 +260,14 @@ export default function ProductDetail() {
 
     return allProps
       .filter((prop) => !hiddenSlugs.has(prop.slug))
+      // Hide internal props: summary_image, properties where all options are nullable
+      .filter((prop) => prop.slug !== "summary_image")
+      .filter((prop) => {
+        if (prop.slug === "copies") return true; // handled separately
+        if (!prop.options?.length) return false;
+        const nonNullable = prop.options.filter((o) => !o.nullable);
+        return nonNullable.length > 0;
+      })
       .filter((prop) => !prop.locked || prop.options.length > 1)
       .map((prop) => {
         const isBooleanToggle =
@@ -317,17 +363,31 @@ export default function ProductDetail() {
       </div>
 
       {/* Quantity */}
-      <div className="mb-6">
-        <OptionSelector
-          title="Quantité (exemplaires)"
-          slug="copies"
-          options={configurableProps.find((prop) => prop.slug === "copies")?.options || []}
-          selectedValue={quantity}
-          onSelect={setQuantity}
-          required
-          inputType="select"
-        />
-      </div>
+      {quantityOptions.length > 0 ? (
+        <div className="mb-6">
+          <OptionSelector
+            title="Quantité (exemplaires)"
+            slug="copies"
+            options={quantityOptions}
+            selectedValue={quantity}
+            onSelect={setQuantity}
+            required
+            inputType="select"
+          />
+        </div>
+      ) : (
+        <div className="mb-6">
+          <OptionSelector
+            title="Quantité (exemplaires)"
+            slug="copies"
+            options={[]}
+            selectedValue={quantity}
+            onSelect={setQuantity}
+            required
+            inputType="float"
+          />
+        </div>
+      )}
 
       {/* Main layout */}
       <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
