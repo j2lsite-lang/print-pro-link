@@ -1,4 +1,4 @@
-import { Loader2, ShoppingCart, RefreshCw, Palette } from "lucide-react";
+import { Loader2, ShoppingCart, RefreshCw, Palette, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getResalePrice, DESIGN_FEE_BASE } from "@/lib/pricing";
@@ -26,6 +26,8 @@ interface PriceSummaryProps {
   configurableProps: ConfigurableProp[];
   includeDesignFee: boolean;
   onToggleDesignFee: (checked: boolean) => void;
+  shippingOptions?: any[];
+  shippingLoading?: boolean;
 }
 
 function getOptionLabel(prop: ConfigurableProp, selectedSlug: string): string {
