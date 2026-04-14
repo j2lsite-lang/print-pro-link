@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   ArrowRight, Printer, FileText, Image, Layers, Truck,
   CheckCircle, ChevronDown, ChevronUp, Phone, Mail,
@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSEO } from "@/hooks/useSEO";
-
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import imgImpression from "@/assets/services/impression-numerique.jpg";
 import imgGrandFormat from "@/assets/services/grand-format.jpg";
 import imgSupports from "@/assets/services/supports-publicitaires.jpg";
@@ -39,6 +40,11 @@ export default function Index() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [callbackOpen, setCallbackOpen] = useState(false);
   const [callbackSent, setCallbackSent] = useState(false);
+  const [devisLoading, setDevisLoading] = useState(false);
+  const [callbackLoading, setCallbackLoading] = useState(false);
+  const { toast } = useToast();
+  const devisFormRef = useRef<HTMLFormElement>(null);
+  const callbackFormRef = useRef<HTMLFormElement>(null);
 
   useSEO({
     title: "J2L Print – Imprimerie en ligne | Impression & supports publicitaires",
@@ -52,13 +58,49 @@ export default function Index() {
     return () => window.removeEventListener('open-callback', handler);
   }, []);
 
-  const handleCallbackSubmit = (e: React.FormEvent) => {
+  const handleDevisSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setCallbackSent(true);
-    setTimeout(() => {
-      setCallbackOpen(false);
-      setCallbackSent(false);
-    }, 2500);
+    setDevisLoading(true);
+    const form = devisFormRef.current!;
+    const formData = new FormData(form);
+    const { error } = await supabase.from("devis_requests").insert({
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      phone: (formData.get("phone") as string) || null,
+      product: (formData.get("product") as string) || null,
+      message: (formData.get("message") as string) || null,
+    });
+    setDevisLoading(false);
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible d'envoyer la demande.", variant: "destructive" });
+    } else {
+      toast({ title: "Demande envoyée ✓", description: "Nous vous répondons sous 24h." });
+      form.reset();
+    }
+  };
+
+  const handleCallbackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCallbackLoading(true);
+    const form = callbackFormRef.current!;
+    const formData = new FormData(form);
+    const { error } = await supabase.from("callback_requests").insert({
+      name: formData.get("cb_name") as string,
+      phone: formData.get("cb_phone") as string,
+      time_slot: (formData.get("cb_slot") as string) || null,
+      subject: (formData.get("cb_subject") as string) || null,
+      message: (formData.get("cb_message") as string) || null,
+    });
+    setCallbackLoading(false);
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible d'envoyer la demande.", variant: "destructive" });
+    } else {
+      setCallbackSent(true);
+      setTimeout(() => {
+        setCallbackOpen(false);
+        setCallbackSent(false);
+      }, 2500);
+    }
   };
 
   return (
@@ -129,42 +171,41 @@ export default function Index() {
               Décrivez votre projet, nous vous répondons sous 24h.
             </p>
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                alert("Merci ! Votre demande a été envoyée. (Démo)");
-              }}
+              ref={devisFormRef}
+              onSubmit={handleDevisSubmit}
               className="space-y-4"
             >
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label>Nom</Label>
-                  <Input placeholder="Votre nom" required />
+                  <Input name="name" placeholder="Votre nom" required />
                 </div>
                 <div>
                   <Label>Email</Label>
-                  <Input type="email" placeholder="votre@email.com" required />
+                  <Input name="email" type="email" placeholder="votre@email.com" required />
                 </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label>Téléphone</Label>
-                  <Input type="tel" placeholder="06 12 34 56 78" />
+                  <Input name="phone" type="tel" placeholder="06 12 34 56 78" />
                 </div>
                 <div>
                   <Label>Produit souhaité</Label>
-                  <Input placeholder="Ex : 500 flyers A5" />
+                  <Input name="product" placeholder="Ex : 500 flyers A5" />
                 </div>
               </div>
               <div>
                 <Label>Message</Label>
                 <textarea
+                  name="message"
                   className="flex w-full rounded-xl border border-border bg-background/25 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/55 min-h-[100px]"
                   placeholder="Détails du projet..."
                   rows={4}
                 />
               </div>
-              <Button type="submit" className="rounded-xl bg-primary text-primary-foreground font-bold hover:brightness-95 w-full sm:w-auto">
-                Envoyer la demande
+              <Button type="submit" disabled={devisLoading} className="rounded-xl bg-primary text-primary-foreground font-bold hover:brightness-95 w-full sm:w-auto">
+                {devisLoading ? "Envoi…" : "Envoyer la demande"}
               </Button>
             </form>
           </div>
@@ -245,21 +286,21 @@ export default function Index() {
                 <p className="text-foreground font-semibold">Merci ! Nous vous rappelons bientôt.</p>
               </div>
             ) : (
-              <form onSubmit={handleCallbackSubmit} className="space-y-3">
+              <form ref={callbackFormRef} onSubmit={handleCallbackSubmit} className="space-y-3">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
                     <Label>Nom</Label>
-                    <Input placeholder="Votre nom" required />
+                    <Input name="cb_name" placeholder="Votre nom" required />
                   </div>
                   <div>
                     <Label>Téléphone</Label>
-                    <Input type="tel" placeholder="06 12 34 56 78" required />
+                    <Input name="cb_phone" type="tel" placeholder="06 12 34 56 78" required />
                   </div>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
                     <Label>Créneau souhaité</Label>
-                    <select className="flex w-full rounded-xl border border-border bg-background/25 px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary/55">
+                    <select name="cb_slot" className="flex w-full rounded-xl border border-border bg-background/25 px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary/55">
                       <option>Matin</option>
                       <option>Après-midi</option>
                       <option>Soir</option>
@@ -267,20 +308,21 @@ export default function Index() {
                   </div>
                   <div>
                     <Label>Sujet</Label>
-                    <Input placeholder="Ex : devis bâche" />
+                    <Input name="cb_subject" placeholder="Ex : devis bâche" />
                   </div>
                 </div>
                 <div>
                   <Label>Message</Label>
                   <textarea
+                    name="cb_message"
                     className="flex w-full rounded-xl border border-border bg-background/25 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/55"
                     placeholder="Détails..."
                     rows={3}
                   />
                 </div>
                 <div className="flex gap-3">
-                  <Button type="submit" className="rounded-xl bg-primary text-primary-foreground font-bold hover:brightness-95">
-                    Envoyer
+                  <Button type="submit" disabled={callbackLoading} className="rounded-xl bg-primary text-primary-foreground font-bold hover:brightness-95">
+                    {callbackLoading ? "Envoi…" : "Envoyer"}
                   </Button>
                   <button type="button" onClick={() => setCallbackOpen(false)} className="pill font-semibold">
                     Annuler
