@@ -2,58 +2,14 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShoppingCart, Menu, X, Search } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/hooks/useCart";
-import { listProducts } from "@/lib/printcom";
+import { getCatalogProducts } from "@/lib/printcom";
 import logoJ2L from "@/assets/logo-j2l.png";
-
-const navLinks = [
-  { to: "/products", label: "Catalogue" },
-  { to: "/#services", label: "Services" },
-  { to: "/#devis", label: "Devis" },
-  { to: "/blog", label: "Blog" },
-];
-
-interface QuickProduct {
-  id: string;
-  name: string;
-}
-
-let cachedProducts: QuickProduct[] | null = null;
-
-export default function Header() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { itemCount } = useCart();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const handleHashLink = (e: React.MouseEvent, to: string) => {
-    const [path, hash] = to.split("#");
-    if (hash && (location.pathname === "/" || location.pathname === path)) {
-      e.preventDefault();
-      const el = document.getElementById(hash);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<QuickProduct[]>([]);
-  const [showResults, setShowResults] = useState(false);
-  const [allProducts, setAllProducts] = useState<QuickProduct[]>([]);
-  const searchRef = useRef<HTMLDivElement>(null);
-
-  // Load products once for search
-  useEffect(() => {
-    if (cachedProducts) {
-      setAllProducts(cachedProducts);
-      return;
-    }
-    listProducts().then((data) => {
-      const items = (Array.isArray(data) ? data : []);
-      cachedProducts = items
-        .filter((p: any) => p.active !== false)
-        .map((p: any) => ({
-          id: p.sku,
-          name: p.titleSingle || p.name || p.sku,
-        }));
+...
+    getCatalogProducts().then((items) => {
+      cachedProducts = items.map((p) => ({
+        id: p.sku,
+        name: p.name,
+      }));
       setAllProducts(cachedProducts);
     }).catch(() => {});
   }, []);

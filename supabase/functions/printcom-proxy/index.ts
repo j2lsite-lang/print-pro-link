@@ -164,6 +164,15 @@ Deno.serve(async (req: Request) => {
       case "get-catalog":
         return proxyRequest("GET", "/catalog", null, lang);
 
+      case "get-cms": {
+        const cmsRes = await fetch("https://app.print.com/reseller/fr_cms.json");
+        const cmsBody = await cmsRes.text();
+        return new Response(cmsBody, {
+          status: cmsRes.status,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       case "get-product-images": {
         const sku = url.searchParams.get("sku");
         if (!sku) return jsonError("sku required");

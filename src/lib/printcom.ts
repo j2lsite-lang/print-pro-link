@@ -28,9 +28,82 @@ async function callProxy(
   return res.json();
 }
 
+export interface CatalogProduct {
+  sku: string;
+  name: string;
+  thumbnailUrl?: string | null;
+  active?: boolean;
+}
+
+function getCmsAssetUrl(assetId: string | undefined, assets: Record<string, any> | undefined) {
+  if (!assetId || !assets?.[assetId]?.file) return null;
+  return `https:${assets[assetId].file}`;
+}
+
 // ── Products ──
 export const listProducts = (lang = "fr-FR") =>
   callProxy("list-products", { lang });
+
+export const getCmsCatalog = () =>
+  callProxy("get-cms");
+
+export async function getCatalogProducts(lang = "fr-FR"): Promise<CatalogProduct[]> {
+  const [apiProducts, cms] = await Promise.all([
+    listProducts(lang).catch(() => []),
+    getCmsCatalog().catch(() => null),
+  ]);
+
+  const assets = cms?.asset as Record<string, any> | undefined;
+  const cmsProducts = cms?.product as Record<string, any> | undefined;
+  const merged = new Map<string, CatalogProduct>();
+
+  for (const product of Array.isArray(apiProducts) ? apiProducts : []) {
+    const sku = product?.sku;
+    if (!sku) continue;
+
+    const cmsProduct = cmsProducts ? Object.values(cmsProducts).find((item: any) => item?.sku === sku) as any : null;
+    const thumbnailUrl =
+      product?.thumbnailUrl ||
+      product?.thumbnail_url ||
+      getCmsAssetUrl(cmsProduct?.image?.id || cmsProduct?.icon?.id, assets);
+
+    merged.set(sku, {
+      sku,
+      name: product?.titleSingle || product?.name || sku,
+      thumbnailUrl,
+      active: product?.active !== false,
+    });
+  }
+
+  for (const cmsProduct of Object.values(cmsProducts || {})) {
+    const sku = (cmsProduct as any)?.sku;
+    if (!sku) continue;
+
+    const thumbnailUrl = getCmsAssetUrl(
+      (cmsProduct as any)?.image?.id || (cmsProduct as any)?.icon?.id,
+      assets,
+    );
+
+    if (merged.has(sku)) {
+      const existing = merged.get(sku)!;
+      if (!existing.thumbnailUrl && thumbnailUrl) {
+        existing.thumbnailUrl = thumbnailUrl;
+      }
+      continue;
+    }
+
+    merged.set(sku, {
+      sku,
+      name: (cmsProduct as any)?.productName || sku,
+      thumbnailUrl,
+      active: true,
+    });
+  }
+
+  return Array.from(merged.values())
+    .filter((product) => product.active !== false)
+    .sort((a, b) => a.name.localeCompare(b.name, "fr"));
+}
 
 export const getProduct = (sku: string, lang = "fr-FR") =>
   callProxy("get-product", { sku, view: "reseller", lang });

@@ -2,43 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Search, Loader2, ChevronRight, ArrowUpRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { listProducts } from "@/lib/printcom";
+import { getCatalogProducts, type CatalogProduct } from "@/lib/printcom";
 import { supabase } from "@/integrations/supabase/client";
 import { useCategoryBySlug, useCategories, useSkusForCategory } from "@/hooks/useCategories";
 
-interface Product {
-  sku: string;
-  name: string;
-  thumbnailUrl?: string;
-}
-
-export default function CategoryProducts() {
-  const { slug } = useParams<{ slug: string }>();
-  const { category, loading: catLoading } = useCategoryBySlug(slug);
-  const { categories: subCategories } = useCategories(category?.id || null);
-  const { skus, loading: skusLoading } = useSkusForCategory(category?.id);
-
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [productsLoading, setProductsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [cmsThumbnails, setCmsThumbnails] = useState<Record<string, string>>({});
-  const [subCategoryCounts, setSubCategoryCounts] = useState<Record<string, number>>({});
-
+interface Product extends CatalogProduct {}
+...
   useEffect(() => {
-    listProducts()
-      .then((data) => {
-        const items: Product[] = (Array.isArray(data) ? data : [])
-          .filter((p: any) => p.active !== false)
-          .map((p: any) => ({
-            sku: p.sku,
-            name: p.titleSingle || p.name || p.sku,
-            thumbnailUrl: p.thumbnailUrl || p.thumbnail_url || null,
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name, "fr"));
-
-        setAllProducts(items);
-      })
+    getCatalogProducts()
+      .then(setAllProducts)
       .catch((err) => setError(err.message))
       .finally(() => setProductsLoading(false));
   }, []);
