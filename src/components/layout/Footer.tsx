@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Facebook, ExternalLink, MapPin } from "lucide-react";
 import logoJ2L from "@/assets/logo-j2l.png";
 
 const cityLinks = [
@@ -8,6 +9,8 @@ const cityLinks = [
   { slug: "strasbourg", name: "Strasbourg" },
   { slug: "paris", name: "Paris" },
   { slug: "lyon", name: "Lyon" },
+  { slug: "marseille", name: "Marseille" },
+  { slug: "lille", name: "Lille" },
 ];
 
 export default function Footer() {
@@ -33,6 +36,36 @@ export default function Footer() {
             <p className="text-sm text-muted-foreground">
               Email : <a href="mailto:contact@j2lpublicite.fr" className="text-foreground hover:text-primary transition-colors">contact@j2lpublicite.fr</a>
             </p>
+
+            {/* Liens externes */}
+            <div className="flex items-center gap-3 mt-4">
+              <a
+                href="https://www.facebook.com/J2lPublicite"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Facebook J2L Publicité"
+              >
+                <Facebook className="h-4 w-4" />
+              </a>
+              <a
+                href="https://www.j2ltextiles.fr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <ExternalLink className="h-3.5 w-3.5" /> J2L Textiles
+              </a>
+              <a
+                href="https://www.j2lpublicite.fr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <ExternalLink className="h-3.5 w-3.5" /> J2L Publicité
+              </a>
+            </div>
+
             <p className="text-xs text-muted-foreground mt-4">
               © {new Date().getFullYear()} J2L Print (J2L Publicité). Tous droits réservés.
             </p>
@@ -43,15 +76,17 @@ export default function Footer() {
             <h4 className="font-display text-sm font-semibold text-foreground mb-3">Navigation</h4>
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
               <Link to="/products" className="hover:text-foreground transition-colors">Catalogue</Link>
-              <Link to="/#services" className="hover:text-foreground transition-colors">Services</Link>
+              <Link to="/impression-numerique" className="hover:text-foreground transition-colors">Impression numérique</Link>
+              <Link to="/grand-format" className="hover:text-foreground transition-colors">Grand format</Link>
+              <Link to="/supports-publicitaires" className="hover:text-foreground transition-colors">Supports publicitaires</Link>
+              <Link to="/personnalisation" className="hover:text-foreground transition-colors">Personnalisation</Link>
               <Link to="/#devis" className="hover:text-foreground transition-colors">Devis gratuit</Link>
               <Link to="/blog" className="hover:text-foreground transition-colors">Blog</Link>
               <Link to="/livraison" className="hover:text-foreground transition-colors">Livraison</Link>
-              <Link to="/imprimerie" className="hover:text-foreground transition-colors">Nos villes</Link>
             </nav>
           </div>
 
-          {/* Legal */}
+          {/* Legal + Cities */}
           <div>
             <h4 className="font-display text-sm font-semibold text-foreground mb-3">Informations</h4>
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
@@ -60,17 +95,19 @@ export default function Footer() {
               <Link to="/politique-retours" className="hover:text-foreground transition-colors">Politique de retours</Link>
               <Link to="/politique-confidentialite" className="hover:text-foreground transition-colors">Confidentialité</Link>
             </nav>
-          </div>
 
-          {/* SEO: imprimerie en ligne – maillage interne ville, visible uniquement par les crawlers via aria-hidden + sr-only */}
-          <nav aria-label="Imprimerie en ligne par ville" className="sr-only">
-            {cityLinks.map((c) => (
-              <Link key={c.slug} to={`/imprimerie/${c.slug}`}>
-                Imprimerie {c.name}
+            <h4 className="font-display text-sm font-semibold text-foreground mt-5 mb-3">Nos villes</h4>
+            <nav className="flex flex-col gap-1.5 text-sm text-muted-foreground">
+              {cityLinks.map((c) => (
+                <Link key={c.slug} to={`/imprimerie/${c.slug}`} className="hover:text-foreground transition-colors flex items-center gap-1">
+                  <MapPin className="h-3 w-3 text-primary" /> {c.name}
+                </Link>
+              ))}
+              <Link to="/imprimerie" className="text-primary hover:text-foreground transition-colors text-xs mt-1">
+                Voir les 276 villes →
               </Link>
-            ))}
-            <Link to="/imprimerie">Toutes les villes</Link>
-          </nav>
+            </nav>
+          </div>
         </div>
       </div>
     </footer>

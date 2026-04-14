@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Phone, Mail, Image, Ruler, CheckCircle, Shield } from "lucide-react";
+import { ArrowRight, Phone, Mail, Image, Ruler, CheckCircle, Shield, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/grand-format.jpg";
@@ -152,6 +152,18 @@ export default function GrandFormat() {
             <a href="mailto:contact@j2lpublicite.fr" className="flex items-center gap-2 text-muted-foreground hover:text-primary">
               <Mail className="h-4 w-4 text-primary" /> contact@j2lpublicite.fr
             </a>
+          </div>
+        </div>
+
+        {/* Maillage villes */}
+        <div className="glass-card p-5 mb-4">
+          <h3 className="font-display text-sm font-semibold text-foreground mb-3">Grand format par ville</h3>
+          <div className="grid gap-1.5 sm:grid-cols-4 text-xs text-muted-foreground">
+            {["epinal", "nancy", "metz", "strasbourg", "paris", "lyon", "marseille", "bordeaux"].map((slug) => (
+              <Link key={slug} to={`/imprimerie/${slug}`} className="hover:text-primary transition-colors flex items-center gap-1">
+                <MapPin className="h-3 w-3 text-primary" /> Imprimerie {slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, " ")}
+              </Link>
+            ))}
           </div>
         </div>
 
