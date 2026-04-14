@@ -249,7 +249,7 @@ export default function ProductDetail() {
         <ProductGallery
           images={images}
           productName={product.titleSingle || product.name || sku}
-          fallbackImage={thumbnailUrl}
+          fallbackImage={categoryImageUrl || thumbnailUrl}
         />
         <div className="flex-1">
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
