@@ -180,7 +180,7 @@ export default function PriceSummary({
         size="lg"
       >
         <ShoppingCart className="mr-2 h-4 w-4" />
-        Demander un devis
+        Ajouter au panier
       </Button>
     </div>
   );
