@@ -3,6 +3,7 @@ import { ArrowRight, Phone, Mail, Image, Ruler, CheckCircle, Shield } from "luci
 import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/grand-format.jpg";
+import imgBache from "@/assets/services/grand-format-bache.jpg";
 
 export default function GrandFormat() {
   useSEO({
@@ -54,6 +55,15 @@ export default function GrandFormat() {
               <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
             </div>
           ))}
+        </div>
+
+        {/* Visuel atelier */}
+        <div className="glass-card overflow-hidden mb-10">
+          <img src={imgBache} alt="Impression grand format sur imprimante professionnelle" className="w-full h-56 object-cover" loading="lazy" width={1280} height={720} />
+          <div className="p-4">
+            <h3 className="font-display text-base font-semibold text-foreground">Notre atelier grand format</h3>
+            <p className="text-sm text-muted-foreground mt-1">Imprimantes Roland & Mimaki, largeur jusqu'à 3,20 m, résolution 1440 dpi.</p>
+          </div>
         </div>
 
         {/* Contenu SEO */}

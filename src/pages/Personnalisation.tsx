@@ -3,6 +3,7 @@ import { ArrowRight, Phone, Mail, Printer, CheckCircle, Shirt, Coffee } from "lu
 import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/personnalisation.jpg";
+import imgObjets from "@/assets/services/personnalisation-objets.jpg";
 
 export default function Personnalisation() {
   useSEO({
@@ -54,6 +55,15 @@ export default function Personnalisation() {
               <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
             </div>
           ))}
+        </div>
+
+        {/* Visuel objets */}
+        <div className="glass-card overflow-hidden mb-10">
+          <img src={imgObjets} alt="Objets publicitaires personnalisés : t-shirts, mugs, goodies" className="w-full h-56 object-cover" loading="lazy" width={1280} height={720} />
+          <div className="p-4">
+            <h3 className="font-display text-base font-semibold text-foreground">Vos goodies sur mesure</h3>
+            <p className="text-sm text-muted-foreground mt-1">T-shirts, mugs, stylos, sacs — tout personnalisé à votre image pour vos équipes et clients.</p>
+          </div>
         </div>
 
         {/* Techniques */}
