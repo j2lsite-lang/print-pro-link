@@ -38,7 +38,9 @@ interface PrintComProduct {
   customsDescription?: string;
   images?: string[];
   thumbnailUrl?: string;
+  properties?: ConfigurableProperty[];
   configurableProperties?: ConfigurableProperty[];
+  propertyGroups?: Array<{ slug: string; columnWidth?: Record<string, string>; properties: string[] }>;
   excludes?: Array<Array<{ property: string; options: string[] }>>;
 }
 
