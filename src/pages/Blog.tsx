@@ -60,6 +60,11 @@ const posts = [
 ];
 
 export default function Blog() {
+  useSEO({
+    title: "Blog – Conseils impression et communication visuelle",
+    description: "Retrouvez nos articles et conseils sur l'impression : préparation de fichiers, finitions, choix de supports, communication visuelle pour professionnels.",
+  });
+
   return (
     <section className="py-12">
       <div className="container max-w-4xl">
