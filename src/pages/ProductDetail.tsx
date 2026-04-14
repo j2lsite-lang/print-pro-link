@@ -205,6 +205,49 @@ export default function ProductDetail() {
     }
   }, [sku, product, selectedOptions, quantity]);
 
+  // Build quantity options reactively based on selected printingmethod
+  useEffect(() => {
+    if (!product) return;
+    const allProps = product.properties || product.configurableProperties || [];
+    const copiesProp = allProps.find((p) => p.slug === "copies");
+    if (!copiesProp) return;
+
+    const selectedMethod = selectedOptions["printingmethod"] || "";
+    let qtyOpts: { slug: string; name: string }[] = [];
+
+    if (copiesProp.rangeSets?.length) {
+      const matchingSet = copiesProp.rangeSets.find((rs) => rs.printingmethod === selectedMethod)
+        || copiesProp.rangeSets[0];
+      if (matchingSet.summary?.length) {
+        qtyOpts = matchingSet.summary.map((n: number) => ({
+          slug: String(n),
+          name: String(n),
+        }));
+      } else if (matchingSet.options?.length) {
+        const r = matchingSet.options[0];
+        const step = r.steps || 1;
+        const max = Math.min(r.max || 10, 20);
+        for (let i = r.min || 1; i <= max; i += step) {
+          qtyOpts.push({ slug: String(i), name: String(i) });
+        }
+      }
+    } else if (copiesProp.optionsInSummary?.length) {
+      qtyOpts = copiesProp.optionsInSummary.map((n: number) => ({
+        slug: String(n),
+        name: String(n),
+      }));
+    } else if (copiesProp.options?.length) {
+      qtyOpts = copiesProp.options
+        .filter((o) => o.slug != null)
+        .map((o) => ({ slug: String(o.slug), name: o.name || String(o.slug) }));
+    }
+
+    setQuantityOptions(qtyOpts);
+    if (qtyOpts.length > 0 && !qtyOpts.some((o) => o.slug === quantity)) {
+      setQuantity(qtyOpts[0].slug);
+    }
+  }, [product, selectedOptions, quantity]);
+
   useEffect(() => {
     if (!sku || !product) return;
     const timer = setTimeout(fetchPrice, 800);
