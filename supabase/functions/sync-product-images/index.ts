@@ -53,10 +53,9 @@ Deno.serve(async (req: Request) => {
         }
       }
 
-      // Build ordered list: icon/main image FIRST, then gallery
-      const orderedImages: string[] = [];
+      // Build ordered list: gallery images FIRST, then icon at the end
+      const orderedImages: string[] = [...galleryUrls];
       if (thumbnailUrl) orderedImages.push(thumbnailUrl);
-      orderedImages.push(...galleryUrls);
 
       for (let idx = 0; idx < orderedImages.length; idx++) {
         records.push({
