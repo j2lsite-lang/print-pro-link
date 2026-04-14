@@ -69,7 +69,7 @@ export default function ProductDetail() {
   const [includeDesignFee, setIncludeDesignFee] = useState(false);
 
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
-  const [quantity, setQuantity] = useState("1");
+  const [quantity, setQuantity] = useState("");
 
   const [priceResult, setPriceResult] = useState<any>(null);
   const [priceLoading, setPriceLoading] = useState(false);
@@ -83,7 +83,7 @@ export default function ProductDetail() {
     setError(null);
     setProduct(null);
     setSelectedOptions({});
-    setQuantity("1");
+    setQuantity("");
     setPriceResult(null);
     setPriceError(null);
 
@@ -91,19 +91,28 @@ export default function ProductDetail() {
       .then((data: PrintComProduct) => {
         setProduct(data);
 
-        // Set defaults: first option for each required property
+        // Set defaults from Print.com properties, including hidden required ones
         const defaults: Record<string, string> = {};
         const allProps = data.properties || data.configurableProperties || [];
+        const copiesProp = allProps.find((prop) => prop.slug === "copies");
+
         for (const prop of allProps) {
-          if (prop.locked && prop.options.length > 0) {
-            // Use the non-nullable option or first
-            const nonNull = prop.options.find((o) => !o.nullable);
-            defaults[prop.slug] = nonNull?.slug || prop.options[0].slug;
-          } else if (prop.required && prop.options.length > 0) {
-            defaults[prop.slug] = prop.options[0].slug;
+          if (!prop.options?.length) continue;
+          const firstNonNullable = prop.options.find((o) => !o.nullable) || prop.options[0];
+          if (prop.slug === "copies") {
+            continue;
+          }
+          if (prop.locked || prop.required) {
+            defaults[prop.slug] = String(firstNonNullable.slug);
           }
         }
+
         setSelectedOptions(defaults);
+
+        if (copiesProp?.options?.length) {
+          const firstCopy = copiesProp.options.find((o) => o.slug != null) || copiesProp.options[0];
+          setQuantity(String(firstCopy.slug));
+        }
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -141,17 +150,23 @@ export default function ProductDetail() {
     setPriceError(null);
 
     try {
-      const copies = parseInt(quantity) || 1;
-      // Filter out empty/undefined values to avoid Print.com API errors
+      const copies = parseInt(quantity, 10);
+      if (!Number.isFinite(copies) || copies <= 0) {
+        setPriceResult(null);
+        setPriceError("Sélectionnez une quantité valide.");
+        return;
+      }
+
       const cleanOptions: Record<string, any> = {};
       for (const [key, value] of Object.entries(selectedOptions)) {
         if (value !== undefined && value !== null && value !== "") {
           cleanOptions[key] = value;
         }
       }
-      const body: any = {
-        copies,
+
+      const body: Record<string, any> = {
         ...cleanOptions,
+        copies,
       };
 
       const data = await getPrice(sku, body);
@@ -213,7 +228,7 @@ export default function ProductDetail() {
       .filter((p) => p.options.length > 0);
   }, [product]);
 
-  const mainProps = configurableProps.filter((p) => !p.isBoolean);
+  const mainProps = configurableProps.filter((p) => !p.isBoolean && !p.isQuantity);
   const booleanProps = configurableProps.filter((p) => p.isBoolean);
 
   const handleAddToCart = () => {
@@ -291,11 +306,11 @@ export default function ProductDetail() {
         <OptionSelector
           title="Quantité (exemplaires)"
           slug="copies"
-          options={[]}
+          options={configurableProps.find((prop) => prop.slug === "copies")?.options || []}
           selectedValue={quantity}
           onSelect={setQuantity}
           required
-          inputType="float"
+          inputType="select"
         />
       </div>
 
