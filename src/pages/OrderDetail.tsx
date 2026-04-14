@@ -33,7 +33,7 @@ export default function OrderDetail() {
           .eq("order_id", orderData.id);
         setItems(itemsData || []);
 
-        // Try to get order status from Realisaprint
+        // Try to get order status from Print.com
         if (orderData.printcom_order_number) {
           try {
             const extData = await getOrder(orderData.printcom_order_number);
