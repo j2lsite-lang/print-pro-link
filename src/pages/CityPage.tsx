@@ -2,41 +2,34 @@ import { useParams, Link } from "react-router-dom";
 import { ArrowRight, MapPin, Phone, Mail, Printer, Truck, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
-
-const cities = [
-  { slug: "epinal", name: "Épinal", region: "Grand Est (Vosges)", cp: "88000" },
-  { slug: "saint-die-des-vosges", name: "Saint-Dié-des-Vosges", region: "Grand Est (Vosges)", cp: "88100" },
-  { slug: "gerardmer", name: "Gérardmer", region: "Grand Est (Vosges)", cp: "88400" },
-  { slug: "remiremont", name: "Remiremont", region: "Grand Est (Vosges)", cp: "88200" },
-  { slug: "golbey", name: "Golbey", region: "Grand Est (Vosges)", cp: "88190" },
-  { slug: "nancy", name: "Nancy", region: "Grand Est", cp: "54000" },
-  { slug: "luneville", name: "Lunéville", region: "Grand Est", cp: "54300" },
-  { slug: "metz", name: "Metz", region: "Grand Est", cp: "57000" },
-  { slug: "thionville", name: "Thionville", region: "Grand Est", cp: "57100" },
-  { slug: "forbach", name: "Forbach", region: "Grand Est", cp: "57600" },
-  { slug: "sarreguemines", name: "Sarreguemines", region: "Grand Est", cp: "57200" },
-  { slug: "strasbourg", name: "Strasbourg", region: "Grand Est", cp: "67000" },
-  { slug: "colmar", name: "Colmar", region: "Grand Est", cp: "68000" },
-  { slug: "mulhouse", name: "Mulhouse", region: "Grand Est", cp: "68100" },
-  { slug: "reims", name: "Reims", region: "Grand Est", cp: "51100" },
-  { slug: "dijon", name: "Dijon", region: "Bourgogne-Franche-Comté", cp: "21000" },
-  { slug: "troyes", name: "Troyes", region: "Grand Est", cp: "10000" },
-  { slug: "besancon", name: "Besançon", region: "Bourgogne-Franche-Comté", cp: "25000" },
-  { slug: "paris", name: "Paris", region: "Île-de-France", cp: "75000" },
-  { slug: "lyon", name: "Lyon", region: "Auvergne-Rhône-Alpes", cp: "69000" },
-  { slug: "marseille", name: "Marseille", region: "Provence-Alpes-Côte d'Azur", cp: "13000" },
-  { slug: "toulouse", name: "Toulouse", region: "Occitanie", cp: "31000" },
-  { slug: "bordeaux", name: "Bordeaux", region: "Nouvelle-Aquitaine", cp: "33000" },
-  { slug: "lille", name: "Lille", region: "Hauts-de-France", cp: "59000" },
-  { slug: "nantes", name: "Nantes", region: "Pays de la Loire", cp: "44000" },
-  { slug: "nice", name: "Nice", region: "Provence-Alpes-Côte d'Azur", cp: "06000" },
-];
-
-export { cities };
+import { useCity, useCities } from "@/hooks/useCities";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CityPage() {
   const { slug } = useParams<{ slug: string }>();
-  const city = cities.find((c) => c.slug === slug);
+  const { data: city, isLoading } = useCity(slug);
+  const { data: allCities } = useCities();
+
+  const otherCities = (allCities || []).filter((c) => c.slug !== slug).slice(0, 12);
+
+  useSEO({
+    title: city ? `Imprimerie en ligne à ${city.name} (${city.cp}) – Livraison rapide` : "Imprimerie en ligne",
+    description: city
+      ? `J2L Print, votre imprimerie en ligne pour ${city.name}. Flyers, cartes de visite, affiches, bâches, objets publicitaires. Livraison à ${city.name} en 3-5 jours.`
+      : "",
+  });
+
+  if (isLoading) {
+    return (
+      <section className="py-12">
+        <div className="container max-w-4xl space-y-4">
+          <Skeleton className="h-8 w-2/3" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+        </div>
+      </section>
+    );
+  }
 
   if (!city) {
     return (
@@ -46,13 +39,6 @@ export default function CityPage() {
       </div>
     );
   }
-
-  const otherCities = cities.filter((c) => c.slug !== slug).slice(0, 12);
-
-  useSEO({
-    title: `Imprimerie en ligne à ${city.name} (${city.cp}) – Livraison rapide`,
-    description: `J2L Print, votre imprimerie en ligne pour ${city.name}. Flyers, cartes de visite, affiches, bâches, objets publicitaires. Livraison à ${city.name} en 3-5 jours.`,
-  });
 
   return (
     <section className="py-12">
@@ -166,7 +152,7 @@ export default function CityPage() {
           </div>
         </div>
 
-        {/* Maillage interne - Autres villes */}
+        {/* Maillage interne */}
         <div className="space-y-4">
           <h2 className="font-display text-lg font-semibold text-foreground">
             Imprimerie en ligne dans d'autres villes
