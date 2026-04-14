@@ -26,9 +26,16 @@ function roundUp10(value: number): number {
  */
 export function getSupplierPrice(priceResult: any): number {
   if (!priceResult) return 0;
-  // Print.com price format: { price: { totalPrice: N } } or { totalPrice: N }
-  if (priceResult.price?.totalPrice != null) return priceResult.price.totalPrice;
-  if (priceResult.totalPrice != null) return priceResult.totalPrice;
+
+  // Print.com legacy/other formats
+  if (priceResult.price?.totalPrice != null) return Number(priceResult.price.totalPrice) || 0;
+  if (priceResult.totalPrice != null) return Number(priceResult.totalPrice) || 0;
+
+  // Print.com product price response format
+  if (priceResult.prices?.salesPrice != null) return Number(priceResult.prices.salesPrice) || 0;
+  if (priceResult.prices?.productPrice != null) return Number(priceResult.prices.productPrice) || 0;
+  if (priceResult.prices?.normalPrice != null) return Number(priceResult.prices.normalPrice) || 0;
+
   // Fallback: direct number
   if (typeof priceResult.price === "number") return priceResult.price;
   return parseFloat(priceResult.price) || 0;
