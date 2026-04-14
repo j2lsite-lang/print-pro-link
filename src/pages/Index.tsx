@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   ArrowRight, Printer, FileText, Image, Layers, Truck,
   CheckCircle, ChevronDown, ChevronUp, Phone, Mail,
@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSEO } from "@/hooks/useSEO";
-
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import imgImpression from "@/assets/services/impression-numerique.jpg";
 import imgGrandFormat from "@/assets/services/grand-format.jpg";
 import imgSupports from "@/assets/services/supports-publicitaires.jpg";
