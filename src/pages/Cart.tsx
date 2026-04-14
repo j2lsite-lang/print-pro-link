@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Trash2, ShoppingBag, ArrowRight } from "lucide-react";
+import { Trash2, ShoppingBag, ArrowRight, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
 
@@ -26,52 +26,103 @@ export default function Cart() {
       <div className="mt-8 grid gap-8 lg:grid-cols-3">
         {/* Items */}
         <div className="space-y-4 lg:col-span-2">
-          {items.map((item) => (
-            <div key={item.id} className="flex items-start gap-4 rounded-xl border border-border bg-card p-4 shadow-card">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-muted">
-                <span className="text-xs font-bold text-muted-foreground">{item.sku.slice(0, 6)}</span>
+          {items.map((item) => {
+            const price = item.unitPrice ? item.unitPrice * item.quantity : null;
+            // Filter out internal/technical options
+            const displayOptions = Object.entries(item.options).filter(
+              ([k]) => !["article_number", "copies"].includes(k)
+            );
+
+            return (
+              <div key={item.id} className="rounded-xl border border-border bg-card p-5 shadow-card">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <ShoppingBag className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="font-display font-semibold text-card-foreground">{item.productName}</h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Réf: {item.sku} · {item.copies} exemplaire{item.copies > 1 ? "s" : ""}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        {price != null ? (
+                          <p className="font-display font-bold text-foreground text-lg">
+                            {price.toFixed(2)} € <span className="text-xs font-normal text-muted-foreground">HT</span>
+                          </p>
+                        ) : (
+                          <p className="text-sm text-muted-foreground italic">Sur devis</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {displayOptions.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {displayOptions.slice(0, 8).map(([k, v]) => {
+                          const label = typeof v === "object" && v !== null
+                            ? (v as any).name || (v as any).slug || JSON.stringify(v)
+                            : String(v);
+                          return (
+                            <span
+                              key={k}
+                              className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground"
+                            >
+                              <span className="font-medium text-foreground">{k}:</span> {label}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-3 flex items-center justify-end border-t border-border pt-3">
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    className="flex items-center gap-1 text-xs text-destructive hover:text-destructive/80 transition-colors"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Supprimer
+                  </button>
+                </div>
               </div>
-              <div className="flex-1">
-                <h3 className="font-display font-semibold text-card-foreground">{item.productName}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  SKU: {item.sku} · Qté: {item.quantity} · Ex: {item.copies}
-                </p>
-                {Object.keys(item.options).length > 0 && (
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {Object.entries(item.options).map(([k, v]) => `${k}: ${typeof v === 'object' && v !== null ? (v as any).slug || (v as any).name || JSON.stringify(v) : v}`).join(" · ")}
-                  </p>
-                )}
-              </div>
-              <div className="text-right">
-                {item.unitPrice && (
-                  <p className="font-semibold text-foreground">{(item.unitPrice * item.quantity).toFixed(2)} €</p>
-                )}
-                <button onClick={() => removeItem(item.id)} className="mt-2 text-destructive hover:text-destructive/80">
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Summary */}
-        <div className="rounded-xl border border-border bg-card p-6 shadow-card h-fit">
+        <div className="rounded-xl border border-border bg-card p-6 shadow-card h-fit sticky top-24">
           <h3 className="font-display text-lg font-semibold text-card-foreground">Résumé</h3>
-          <div className="mt-4 space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Sous-total</span>
-              <span className="font-medium text-foreground">{total.toFixed(2)} €</span>
+          <div className="mt-4 space-y-3 text-sm">
+            {items.map((item) => (
+              <div key={item.id} className="flex justify-between gap-2">
+                <span className="text-muted-foreground truncate">{item.productName}</span>
+                <span className="font-medium text-foreground shrink-0">
+                  {item.unitPrice ? `${(item.unitPrice * item.quantity).toFixed(2)} €` : "Sur devis"}
+                </span>
+              </div>
+            ))}
+            <div className="border-t border-border pt-3">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Sous-total HT</span>
+                <span className="font-medium text-foreground">{total.toFixed(2)} €</span>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Livraison</span>
-              <span className="text-muted-foreground">Calculé au checkout</span>
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-muted-foreground flex items-center gap-1">
+                <Truck className="h-3.5 w-3.5" /> Livraison
+              </span>
+              <span className="text-muted-foreground">Calculée à l'étape suivante</span>
             </div>
           </div>
           <div className="mt-4 border-t border-border pt-4">
-            <div className="flex justify-between text-lg font-bold">
-              <span>Total</span>
+            <div className="flex justify-between text-lg font-bold font-display">
+              <span>Total HT</span>
               <span>{total.toFixed(2)} €</span>
             </div>
+            <p className="text-xs text-muted-foreground mt-1">Hors frais de livraison</p>
           </div>
           <Button asChild className="mt-6 w-full" size="lg">
             <Link to="/checkout">

@@ -448,10 +448,23 @@ export default function ProductDetail() {
     if (!sku || !product) return;
     const copies = parseInt(quantity) || 1;
 
+    // Build human-readable options for display in cart
+    const readableOptions: Record<string, string> = {};
+    for (const [key, value] of Object.entries(selectedOptions)) {
+      const prop = configurableProps.find((p) => p.slug === key);
+      if (prop) {
+        const opt = prop.options.find((o) => o.slug === value);
+        readableOptions[prop.title] = opt?.name || value;
+      } else {
+        readableOptions[key] = String(value);
+      }
+    }
+    readableOptions["Exemplaires"] = String(copies);
+
     addItem({
       sku,
       productName: product.titleSingle || product.name || `Produit ${sku}`,
-      options: { ...selectedOptions, copies: String(copies) },
+      options: readableOptions,
       quantity: 1,
       copies,
       unitPrice: priceResult ? getResalePrice(priceResult) + (includeDesignFee ? DESIGN_FEE_BASE : 0) : null,
