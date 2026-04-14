@@ -478,10 +478,7 @@ export default function ProductDetail() {
           </h1>
 
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Commandez votre <strong>{(product.titleSingle || product.name || "produit").toLowerCase()}</strong> en
-            ligne chez <strong>J2L Print</strong>. Impression professionnelle, contrôle qualité et livraison
-            rapide partout en France. Devis gratuit,{" "}
-            <Link to="/#devis" className="text-primary hover:underline">contactez-nous</Link>.
+            {getProductSEOData(productName, sku).intro}
           </p>
 
           {product.description && (
@@ -489,6 +486,13 @@ export default function ProductDetail() {
               {product.description}
             </p>
           )}
+
+          <h2 className="font-display text-lg font-semibold text-foreground pt-2">
+            À quoi sert {/^[aeiouyàâéèêëïîôùûüÿæœ]/i.test(productName) ? "un " : "un "}{productName.toLowerCase()} ?
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {getProductSEOData(productName, sku).useCases}
+          </p>
 
           <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-1">
             <span className="flex items-center gap-1.5">
