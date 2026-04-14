@@ -328,10 +328,30 @@ export default function Checkout() {
             </span>
           </div>
         </div>
-        <Button size="lg" className="w-full" onClick={handleSubmitOrder} disabled={submitting}>
-          {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Demander un devis
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Button size="lg" className="flex-1" onClick={handleSubmitOrder} disabled={submitting}>
+            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Demander un devis
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
+            className="flex-1"
+            onClick={handlePayOnline}
+            disabled={submitting || !total}
+          >
+            {submitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <CreditCard className="mr-2 h-4 w-4" />
+            )}
+            Payer en ligne
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground text-center mt-2">
+          « Demander un devis » : nous vous recontactons avec un lien de paiement.
+          « Payer en ligne » : règlement immédiat par carte bancaire.
+        </p>
       </div>
     </div>
   );
