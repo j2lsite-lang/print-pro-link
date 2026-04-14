@@ -18,7 +18,7 @@ async function proxyRequest(
   lang: string,
 ): Promise<Response> {
   const apiKey = getApiKey();
-  const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
+  const apiBase = "https://api.print.com";
   const platformBase = Deno.env.get("PRINTCOM_PLATFORM_BASE") || "https://platform.print.com";
 
   const isPlatform = path.startsWith("/pdf/") || path.startsWith("/products/batch/");
