@@ -145,6 +145,36 @@ export type Database = {
         }
         Relationships: []
       }
+      cities: {
+        Row: {
+          cp: string
+          created_at: string
+          department: string | null
+          id: string
+          name: string
+          region: string
+          slug: string
+        }
+        Insert: {
+          cp: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          name: string
+          region: string
+          slug: string
+        }
+        Update: {
+          cp?: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          name?: string
+          region?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           copies: number
