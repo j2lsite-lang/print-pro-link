@@ -33,13 +33,18 @@ async function proxyRequest(
 
   const fetchOptions: RequestInit = { method, headers };
   if (body && method !== "GET") {
-    fetchOptions.body = JSON.stringify(body);
+    const bodyStr = JSON.stringify(body);
+    console.log(`[PrintCom] Body: ${bodyStr.substring(0, 500)}`);
+    fetchOptions.body = bodyStr;
   }
 
   console.log(`[PrintCom] ${method} ${url}`);
   const res = await fetch(url, fetchOptions);
   const responseBody = await res.text();
   console.log(`[PrintCom] ${res.status} (${responseBody.length} bytes)`);
+  if (res.status >= 400) {
+    console.log(`[PrintCom] Error response: ${responseBody.substring(0, 500)}`);
+  }
 
   return new Response(responseBody, {
     status: res.status,
