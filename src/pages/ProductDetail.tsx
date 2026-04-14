@@ -363,17 +363,31 @@ export default function ProductDetail() {
       </div>
 
       {/* Quantity */}
-      <div className="mb-6">
-        <OptionSelector
-          title="Quantité (exemplaires)"
-          slug="copies"
-          options={configurableProps.find((prop) => prop.slug === "copies")?.options || []}
-          selectedValue={quantity}
-          onSelect={setQuantity}
-          required
-          inputType="select"
-        />
-      </div>
+      {quantityOptions.length > 0 ? (
+        <div className="mb-6">
+          <OptionSelector
+            title="Quantité (exemplaires)"
+            slug="copies"
+            options={quantityOptions}
+            selectedValue={quantity}
+            onSelect={setQuantity}
+            required
+            inputType="select"
+          />
+        </div>
+      ) : (
+        <div className="mb-6">
+          <OptionSelector
+            title="Quantité (exemplaires)"
+            slug="copies"
+            options={[]}
+            selectedValue={quantity}
+            onSelect={setQuantity}
+            required
+            inputType="float"
+          />
+        </div>
+      )}
 
       {/* Main layout */}
       <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
