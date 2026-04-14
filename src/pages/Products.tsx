@@ -25,9 +25,10 @@ export default function Products() {
     listProducts()
       .then((data) => {
         const items: Product[] = (Array.isArray(data) ? data : [])
+          .filter((p: any) => p.active !== false)
           .map((p: any) => ({
             sku: p.sku,
-            name: p.name || p.sku,
+            name: p.titleSingle || p.name || p.sku,
             thumbnailUrl: p.thumbnailUrl || p.thumbnail_url || null,
           }))
           .sort((a, b) => a.name.localeCompare(b.name, "fr"));

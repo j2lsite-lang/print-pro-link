@@ -48,10 +48,12 @@ export default function Header() {
     }
     listProducts().then((data) => {
       const items = (Array.isArray(data) ? data : []);
-      cachedProducts = items.map((p: any) => ({
-        id: p.sku,
-        name: p.name || p.sku,
-      }));
+      cachedProducts = items
+        .filter((p: any) => p.active !== false)
+        .map((p: any) => ({
+          id: p.sku,
+          name: p.titleSingle || p.name || p.sku,
+        }));
       setAllProducts(cachedProducts);
     }).catch(() => {});
   }, []);
