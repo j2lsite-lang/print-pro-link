@@ -1,6 +1,6 @@
 /**
  * Pricing configuration for J2L Print
- * Adapted for Realisaprint API
+ * Adapted for Print.com API
  *
  * MARGIN_COEFFICIENT: multiplier applied to the supplier price
  * to calculate the resale price for the customer.
@@ -21,11 +21,16 @@ function roundUp10(value: number): number {
 }
 
 /**
- * Extract the supplier price from a Realisaprint price result
- * Realisaprint returns { price: "33.00", ... }
+ * Extract the supplier price from a Print.com price result
+ * Print.com returns { price: { ..., totalPrice: N }, ... }
  */
 export function getSupplierPrice(priceResult: any): number {
   if (!priceResult) return 0;
+  // Print.com price format: { price: { totalPrice: N } } or { totalPrice: N }
+  if (priceResult.price?.totalPrice != null) return priceResult.price.totalPrice;
+  if (priceResult.totalPrice != null) return priceResult.totalPrice;
+  // Fallback: direct number
+  if (typeof priceResult.price === "number") return priceResult.price;
   return parseFloat(priceResult.price) || 0;
 }
 
@@ -38,9 +43,10 @@ export function getResalePrice(priceResult: any): number {
 }
 
 /**
- * Get the number of copies from context (not in price result for Realisaprint)
+ * Get the number of copies from the price result
  */
 export function getCopies(priceResult: any, quantity?: number): number {
+  if (priceResult?.copies) return priceResult.copies;
   return quantity || 1;
 }
 

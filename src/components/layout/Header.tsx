@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShoppingCart, Menu, X, Search } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/hooks/useCart";
-import { listProducts } from "@/lib/realisaprint";
+import { listProducts } from "@/lib/printcom";
 import logoJ2L from "@/assets/logo-j2l.png";
 
 const navLinks = [
@@ -47,11 +47,13 @@ export default function Header() {
       return;
     }
     listProducts().then((data) => {
-      const productsObj = data?.products || {};
-      cachedProducts = Object.entries(productsObj).map(([id, name]) => ({
-        id,
-        name: name as string,
-      }));
+      const items = (Array.isArray(data) ? data : []);
+      cachedProducts = items
+        .filter((p: any) => p.active !== false)
+        .map((p: any) => ({
+          id: p.sku,
+          name: p.titleSingle || p.name || p.sku,
+        }));
       setAllProducts(cachedProducts);
     }).catch(() => {});
   }, []);

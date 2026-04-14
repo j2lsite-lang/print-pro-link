@@ -15,9 +15,10 @@ Deno.serve(async (req: Request) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    const shopId = Deno.env.get("REALISAPRINT_SHOP_ID");
-    const apiKey = Deno.env.get("REALISAPRINT_API_KEY");
-    if (!shopId || !apiKey) throw new Error("REALISAPRINT credentials not configured");
+    const printcomApiKey = Deno.env.get("PRINTCOM_API_KEY");
+    if (!printcomApiKey) throw new Error("PRINTCOM_API_KEY not configured");
+
+    const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -47,20 +48,21 @@ Deno.serve(async (req: Request) => {
       return `- ${c.id}: ${label} (${c.description || ""})`;
     }).join("\n");
 
-    // 2. Fetch products from Realisaprint API
-    const params = new URLSearchParams({ shop_id: shopId, api_key: apiKey });
-    const prodRes = await fetch("https://www.realisaprint.com/api/products", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString(),
+    // 2. Fetch products from Print.com API
+    const prodRes = await fetch(`${apiBase}/products`, {
+      headers: {
+        Authorization: `PrintApiKey ${printcomApiKey}`,
+        "Accept-Language": "fr-FR",
+      },
     });
-    if (!prodRes.ok) throw new Error("Realisaprint API error: " + await prodRes.text());
+    if (!prodRes.ok) throw new Error("Print.com API error: " + await prodRes.text());
     const prodData = await prodRes.json();
-    const productsObj = prodData?.products || {};
-    const activeProducts = Object.entries(productsObj).map(([id, name]) => ({
-      sku: id,
-      title: name as string,
-    }));
+    const activeProducts = (Array.isArray(prodData) ? prodData : [])
+      .filter((p: any) => p.active !== false)
+      .map((p: any) => ({
+        sku: p.sku,
+        title: p.titleSingle || p.name || p.sku,
+      }));
 
     console.log(`[map-categories] ${activeProducts.length} products, ${targetCategories.length} target categories`);
 
@@ -68,7 +70,7 @@ Deno.serve(async (req: Request) => {
     const { error: delErr } = await supabase
       .from("product_category_mappings")
       .delete()
-      .neq("sku", "__placeholder__"); // delete all rows
+      .neq("sku", "__placeholder__");
     if (delErr) console.error("[map-categories] Delete old mappings error:", delErr.message);
     else console.log("[map-categories] Cleared old mappings");
 

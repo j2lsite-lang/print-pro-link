@@ -3,12 +3,13 @@ import { Link } from "react-router-dom";
 import { Search, Loader2, Grid3x3, List, ArrowUpRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { listProducts } from "@/lib/realisaprint";
+import { listProducts } from "@/lib/printcom";
 import { useCategories } from "@/hooks/useCategories";
 
 interface Product {
-  id: string;
+  sku: string;
   name: string;
+  thumbnailUrl?: string;
 }
 
 export default function Products() {
@@ -23,9 +24,13 @@ export default function Products() {
   useEffect(() => {
     listProducts()
       .then((data) => {
-        const productsObj = data?.products || {};
-        const items: Product[] = Object.entries(productsObj)
-          .map(([id, name]) => ({ id, name: name as string }))
+        const items: Product[] = (Array.isArray(data) ? data : [])
+          .filter((p: any) => p.active !== false)
+          .map((p: any) => ({
+            sku: p.sku,
+            name: p.titleSingle || p.name || p.sku,
+            thumbnailUrl: p.thumbnailUrl || p.thumbnail_url || null,
+          }))
           .sort((a, b) => a.name.localeCompare(b.name, "fr"));
 
         setProducts(items);
@@ -38,7 +43,7 @@ export default function Products() {
     return products.filter((product) => {
       if (!search) return true;
       const q = search.toLowerCase();
-      return product.name.toLowerCase().includes(q) || product.id.includes(q);
+      return product.name.toLowerCase().includes(q) || product.sku.toLowerCase().includes(q);
     });
   }, [products, search]);
 
@@ -118,10 +123,15 @@ export default function Products() {
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filtered.map((product) => (
                 <Link
-                  key={product.id}
-                  to={`/products/${product.id}`}
+                  key={product.sku}
+                  to={`/products/${product.sku}`}
                   className="group rounded-2xl border border-border bg-card p-5 shadow-card transition-all hover:border-primary/30 hover:shadow-elevated"
                 >
+                  {product.thumbnailUrl && (
+                    <div className="aspect-[4/3] mb-3 rounded-lg overflow-hidden bg-muted">
+                      <img src={product.thumbnailUrl} alt={product.name} className="h-full w-full object-contain p-2" loading="lazy" />
+                    </div>
+                  )}
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Produit J2L Print</p>
@@ -132,7 +142,7 @@ export default function Products() {
                     <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
                   </div>
                   <div className="mt-6 flex items-center justify-between border-t border-border pt-4 text-sm text-muted-foreground">
-                    <span>Réf. {product.id}</span>
+                    <span>Réf. {product.sku}</span>
                     <span>Configurer</span>
                   </div>
                 </Link>
