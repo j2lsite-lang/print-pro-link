@@ -93,15 +93,16 @@ Deno.serve(async (req: Request) => {
         const rawBody = body as Record<string, any> | null;
         if (!rawBody) return jsonError("body required for get-price");
 
-        const { urgency, copies, ...options } = rawBody;
-        const priceBody: Record<string, any> = {
+        const { urgency, ...options } = rawBody;
+        // Ensure copies is a number
+        if (options.copies !== undefined) {
+          options.copies = Number(options.copies);
+        }
+        const priceBody = {
           sku,
           options,
           deliveryPromise: urgency === "express" ? 1 : 0,
         };
-        if (copies !== undefined && copies !== null) {
-          priceBody.copies = Number(copies);
-        }
 
         return proxyRequest("POST", `/products/${sku}/price`, priceBody, lang);
       }
