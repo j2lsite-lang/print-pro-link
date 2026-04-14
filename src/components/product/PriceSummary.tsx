@@ -126,10 +126,41 @@ export default function PriceSummary({
                   <span className="text-foreground">{DESIGN_FEE_BASE.toFixed(2)} €</span>
                 </div>
               )}
+
+              {/* Shipping */}
+              {shippingLoading ? (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <span className="text-xs">Calcul livraison…</span>
+                </div>
+              ) : shippingOptions.length > 0 ? (
+                <div className="space-y-1">
+                  {shippingOptions.slice(0, 3).map((opt: any, i: number) => {
+                    const price = opt?.price?.totalPrice ?? opt?.price ?? opt?.totalPrice;
+                    const name = opt?.name || opt?.carrier || opt?.description || `Option ${i + 1}`;
+                    const days = opt?.deliveryDays || opt?.estimatedDeliveryDays || opt?.days;
+                    return (
+                      <div key={i} className="flex justify-between text-sm">
+                        <span className="text-muted-foreground flex items-center gap-1 truncate">
+                          <Truck className="h-3 w-3 flex-shrink-0" /> {name}
+                          {days && <span className="text-xs">({days}j)</span>}
+                        </span>
+                        <span className="text-foreground font-medium">
+                          {price != null ? `${Number(price).toFixed(2)} €` : "—"}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : priceResult ? (
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Truck className="h-3 w-3" /> Frais de livraison calculés au checkout
+                </p>
+              ) : null}
             </div>
 
             <div className="border-t border-border pt-2">
-              <p className="text-xs text-muted-foreground">Total HT</p>
+              <p className="text-xs text-muted-foreground">Total HT (hors livraison)</p>
               <p className="text-3xl font-bold text-foreground font-display">
                 {(getResalePrice(priceResult) + designFee).toFixed(2)} €
               </p>
