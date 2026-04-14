@@ -4,6 +4,7 @@ import { Loader2, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { getProduct, getPrice } from "@/lib/printcom";
+import { supabase } from "@/integrations/supabase/client";
 import { getResalePrice, DESIGN_FEE_BASE } from "@/lib/pricing";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
