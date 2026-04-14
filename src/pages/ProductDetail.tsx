@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import OptionSelector from "@/components/product/OptionSelector";
 import PriceSummary from "@/components/product/PriceSummary";
 import ProductGallery from "@/components/product/ProductGallery";
+import ProductSEOContent from "@/components/product/ProductSEOContent";
 import { useSEO } from "@/hooks/useSEO";
 
 interface ProductOption {
@@ -596,6 +597,15 @@ export default function ProductDetail() {
       </div>
 
       <div className="h-20 lg:hidden" />
+
+      <ProductSEOContent
+        productName={product.titleSingle || product.name || sku || "Produit"}
+        description={product.description}
+        options={mainProps.map((p) => ({
+          title: p.title,
+          values: p.options.map((o) => o.name),
+        }))}
+      />
     </div>
   );
 }
