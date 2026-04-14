@@ -88,6 +88,7 @@ export default function ProductDetail() {
     setQuantity("");
     setPriceResult(null);
     setPriceError(null);
+    setProductImages([]);
 
     getProduct(sku)
       .then((data: PrintComProduct) => {
