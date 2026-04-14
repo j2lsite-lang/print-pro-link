@@ -34,6 +34,8 @@ interface ConfigurableProperty {
   copyLimit?: Record<string, number>;
 }
 
+type ExcludeGroup = Array<{ property: string; options: string[] }>;
+
 interface PrintComProduct {
   sku: string;
   name?: string;
@@ -46,7 +48,7 @@ interface PrintComProduct {
   properties?: ConfigurableProperty[];
   configurableProperties?: ConfigurableProperty[];
   propertyGroups?: Array<{ slug: string; columnWidth?: Record<string, string>; properties: string[] }>;
-  excludes?: Array<Array<{ property: string; options: string[] }>>;
+  excludes?: ExcludeGroup[];
 }
 
 interface ConfigurableProp {
@@ -61,6 +63,82 @@ interface ConfigurableProp {
   alert?: string;
   info?: string;
   options: { slug: string; name: string }[];
+}
+
+/**
+ * Check if a given combination of selected options violates any exclude group.
+ * An exclude group is violated when ALL its constraints are matched simultaneously.
+ */
+function isExcludedCombination(
+  selected: Record<string, string>,
+  excludes: ExcludeGroup[] | undefined,
+): boolean {
+  if (!excludes?.length) return false;
+  return excludes.some((group) =>
+    group.every((constraint) => {
+      const val = selected[constraint.property];
+      return val !== undefined && constraint.options.includes(val);
+    })
+  );
+}
+
+/**
+ * For a given property+optionSlug, check if selecting it would create an excluded combo.
+ */
+function wouldBeExcluded(
+  propSlug: string,
+  optionSlug: string,
+  currentSelected: Record<string, string>,
+  excludes: ExcludeGroup[] | undefined,
+): boolean {
+  const hypothetical = { ...currentSelected, [propSlug]: optionSlug };
+  return isExcludedCombination(hypothetical, excludes);
+}
+
+/**
+ * Set defaults that avoid excluded combinations.
+ * Try each option; if the first creates an exclusion, try others.
+ */
+function buildValidDefaults(
+  allProps: ConfigurableProperty[],
+  excludes: ExcludeGroup[] | undefined,
+): Record<string, string> {
+  const defaults: Record<string, string> = {};
+
+  // First pass: set all defaults naively
+  for (const prop of allProps) {
+    if (prop.slug === "copies") continue;
+    if (!prop.options?.length) continue;
+    const nonNullable = prop.options.filter((o) => !o.nullable);
+    if (nonNullable.length === 0) continue;
+    if (prop.locked || prop.required) {
+      defaults[prop.slug] = String(nonNullable[0].slug);
+    }
+  }
+
+  // Second pass: fix any excluded combinations
+  let maxIterations = 10;
+  while (maxIterations-- > 0 && isExcludedCombination(defaults, excludes)) {
+    let fixed = false;
+    for (const prop of allProps) {
+      if (prop.slug === "copies" || !prop.options?.length) continue;
+      if (!defaults[prop.slug]) continue;
+
+      const nonNullable = prop.options.filter((o) => !o.nullable);
+      for (const opt of nonNullable) {
+        const test = { ...defaults, [prop.slug]: String(opt.slug) };
+        if (!isExcludedCombination(test, excludes)) {
+          defaults[prop.slug] = String(opt.slug);
+          fixed = true;
+          break;
+        }
+      }
+      if (fixed) break;
+    }
+    if (!fixed) break; // Can't resolve, give up
+  }
+
+  return defaults;
 }
 
 export default function ProductDetail() {
@@ -81,7 +159,6 @@ export default function ProductDetail() {
   const [priceLoading, setPriceLoading] = useState(false);
   const [priceError, setPriceError] = useState<string | null>(null);
 
-  // Load product
   const [productImages, setProductImages] = useState<string[]>([]);
 
   useEffect(() => {
@@ -99,32 +176,13 @@ export default function ProductDetail() {
     getProduct(sku)
       .then((data: PrintComProduct) => {
         setProduct(data);
-
-        // Set defaults from Print.com properties, including hidden required ones
-        const defaults: Record<string, string> = {};
         const allProps = data.properties || data.configurableProperties || [];
-        const copiesProp = allProps.find((prop: any) => prop.slug === "copies");
-
-        for (const prop of allProps) {
-          if (prop.slug === "copies") continue;
-          if (!prop.options?.length) continue;
-          // Skip properties where all options are nullable (internal props like summary_image)
-          const nonNullableOptions = prop.options.filter((o: any) => !o.nullable);
-          if (nonNullableOptions.length === 0) continue;
-          const firstNonNullable = nonNullableOptions[0] || prop.options[0];
-          if (prop.locked || prop.required) {
-            defaults[prop.slug] = String(firstNonNullable.slug);
-          }
-        }
-
+        const defaults = buildValidDefaults(allProps, data.excludes);
         setSelectedOptions(defaults);
-
-        // Initial quantity will be set by the reactive effect below
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 
-    // Fetch product images from DB (CMS)
     supabase
       .from("product_images")
       .select("image_url")
@@ -136,7 +194,6 @@ export default function ProductDetail() {
         }
       });
 
-    // Fetch category image fallback
     supabase
       .from("product_category_mappings")
       .select("category_id")
@@ -162,9 +219,52 @@ export default function ProductDetail() {
       });
   }, [sku]);
 
+  // Handle option change with exclude validation
+  const handleOptionChange = useCallback((propSlug: string, value: string) => {
+    setSelectedOptions((prev) => {
+      const next = { ...prev, [propSlug]: value };
+
+      // If this creates an excluded combination, try to fix other conflicting props
+      if (product?.excludes && isExcludedCombination(next, product.excludes)) {
+        const allProps = product.properties || product.configurableProperties || [];
+        for (const group of product.excludes) {
+          // Check if this group is now violated
+          const allMatch = group.every((c) => {
+            const v = next[c.property];
+            return v !== undefined && c.options.includes(v);
+          });
+          if (!allMatch) continue;
+
+          // Find the other constraint (not the one we just changed) and switch it
+          for (const constraint of group) {
+            if (constraint.property === propSlug) continue;
+            const prop = allProps.find((p) => p.slug === constraint.property);
+            if (!prop) continue;
+            const nonNullable = prop.options.filter((o) => !o.nullable);
+            const alternative = nonNullable.find((o) => !constraint.options.includes(String(o.slug)));
+            if (alternative) {
+              next[constraint.property] = String(alternative.slug);
+              break;
+            }
+          }
+        }
+      }
+
+      return next;
+    });
+  }, [product]);
+
   // Fetch price
   const fetchPrice = useCallback(async () => {
     if (!sku || !product) return;
+
+    // Don't fetch if current combination is excluded
+    if (isExcludedCombination(selectedOptions, product.excludes)) {
+      setPriceResult(null);
+      setPriceError("Cette combinaison d'options n'est pas disponible. Modifiez vos sélections.");
+      return;
+    }
+
     setPriceLoading(true);
     setPriceError(null);
 
@@ -199,7 +299,13 @@ export default function ProductDetail() {
     } catch (err: any) {
       console.error("[price] error:", err);
       setPriceResult(null);
-      setPriceError("Impossible de calculer le prix pour le moment.");
+      // Show a more specific error from the API if available
+      const msg = err?.message || "";
+      if (msg.includes("validate")) {
+        setPriceError("Configuration invalide. Vérifiez vos options.");
+      } else {
+        setPriceError("Impossible de calculer le prix pour le moment.");
+      }
     } finally {
       setPriceLoading(false);
     }
@@ -254,12 +360,11 @@ export default function ProductDetail() {
     return () => clearTimeout(timer);
   }, [fetchPrice]);
 
-  // Build configurable props
+  // Build configurable props — filter out excluded options per property
   const configurableProps: ConfigurableProp[] = useMemo(() => {
     const allProps = product?.properties || product?.configurableProperties || [];
     if (allProps.length === 0) return [];
 
-    // Determine hidden property slugs from propertyGroups
     const hiddenSlugs = new Set<string>();
     for (const group of product?.propertyGroups || []) {
       if (group.columnWidth?.reseller === "hidden") {
@@ -269,10 +374,9 @@ export default function ProductDetail() {
 
     return allProps
       .filter((prop) => !hiddenSlugs.has(prop.slug))
-      // Hide internal props: summary_image, properties where all options are nullable
       .filter((prop) => prop.slug !== "summary_image")
       .filter((prop) => {
-        if (prop.slug === "copies") return true; // handled separately
+        if (prop.slug === "copies") return true;
         if (!prop.options?.length) return false;
         const nonNullable = prop.options.filter((o) => !o.nullable);
         return nonNullable.length > 0;
@@ -284,6 +388,11 @@ export default function ProductDetail() {
           prop.options.some((o) => ["non", "no", "sans"].includes(o.name.toLowerCase())) &&
           prop.options.some((o) => ["oui", "yes", "avec"].includes(o.name.toLowerCase()));
 
+        // Filter out options that would create excluded combinations
+        const filteredOptions = prop.options
+          .filter((o) => !o.nullable)
+          .filter((o) => !wouldBeExcluded(prop.slug, String(o.slug), selectedOptions, product?.excludes));
+
         return {
           slug: prop.slug,
           title: prop.title,
@@ -291,12 +400,12 @@ export default function ProductDetail() {
           locked: prop.locked || false,
           isQuantity: prop.slug === "copies" || prop.slug === "quantity",
           isBoolean: isBooleanToggle,
-          inputType: prop.options.length > 0 ? "select" : "text",
-          options: prop.options.map((o) => ({ slug: String(o.slug), name: o.name })),
+          inputType: filteredOptions.length > 0 ? "select" : "text",
+          options: filteredOptions.map((o) => ({ slug: String(o.slug), name: o.name })),
         };
       })
       .filter((p) => p.options.length > 0);
-  }, [product]);
+  }, [product, selectedOptions]);
 
   const mainProps = configurableProps.filter((p) => !p.isBoolean && !p.isQuantity);
   const booleanProps = configurableProps.filter((p) => p.isBoolean);
@@ -319,7 +428,6 @@ export default function ProductDetail() {
     toast.success("Produit ajouté au panier !");
   };
 
-  // Images: prefer CMS images from DB, fallback to Print.com API
   const images = productImages.length > 0 ? productImages : (product?.images || []);
   const thumbnailUrl = product?.thumbnailUrl || null;
 
@@ -341,14 +449,12 @@ export default function ProductDetail() {
 
   return (
     <div className="container py-8">
-      {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <Link to="/products" className="hover:text-primary transition-colors">Catalogue</Link>
         <ChevronRight className="h-3 w-3" />
         <span className="text-foreground">{product.titleSingle || product.name || sku}</span>
       </nav>
 
-      {/* Header: Image + Info */}
       <div className="mb-8 flex flex-col sm:flex-row gap-6 items-start">
         <ProductGallery
           images={images}
@@ -401,7 +507,6 @@ export default function ProductDetail() {
       {/* Main layout */}
       <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
         <div className="space-y-5">
-          {/* Main options */}
           {mainProps.map((prop) => (
             <OptionSelector
               key={prop.slug}
@@ -409,14 +514,13 @@ export default function ProductDetail() {
               slug={prop.slug}
               options={prop.options}
               selectedValue={selectedOptions[prop.slug] || ""}
-              onSelect={(val) => setSelectedOptions((prev) => ({ ...prev, [prop.slug]: val }))}
+              onSelect={(val) => handleOptionChange(prop.slug, val)}
               required={prop.required}
               locked={prop.locked}
               inputType={prop.inputType}
             />
           ))}
 
-          {/* Boolean toggles in "OPTIONS" section */}
           {booleanProps.length > 0 && (
             <div className="space-y-3 pt-2">
               <div className="flex items-center gap-2">
@@ -431,7 +535,7 @@ export default function ProductDetail() {
                     slug={prop.slug}
                     options={prop.options}
                     selectedValue={selectedOptions[prop.slug] || ""}
-                    onSelect={(val) => setSelectedOptions((prev) => ({ ...prev, [prop.slug]: val }))}
+                    onSelect={(val) => handleOptionChange(prop.slug, val)}
                     required={prop.required}
                     locked={prop.locked}
                     inputType={prop.inputType}
@@ -442,7 +546,6 @@ export default function ProductDetail() {
           )}
         </div>
 
-        {/* Price sidebar */}
         <div className="hidden lg:block">
           <PriceSummary
             priceResult={priceResult}
@@ -459,7 +562,6 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* Mobile price bar */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card p-4">
         <div className="flex items-center justify-between gap-4">
           <div>
