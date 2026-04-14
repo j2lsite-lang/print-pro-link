@@ -3,15 +3,11 @@ import { Link } from "react-router-dom";
 import { Search, Loader2, ArrowUpRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { listProducts } from "@/lib/printcom";
+import { getCatalogProducts, type CatalogProduct } from "@/lib/printcom";
 import { useCategories } from "@/hooks/useCategories";
 import { supabase } from "@/integrations/supabase/client";
 
-interface Product {
-  sku: string;
-  name: string;
-  thumbnailUrl?: string;
-}
+interface Product extends CatalogProduct {}
 
 interface CategoryCount {
   [categoryId: string]: number;
@@ -27,16 +23,14 @@ export default function Products() {
   const [search, setSearch] = useState("");
   const [showAllProducts, setShowAllProducts] = useState(false);
 
-  // Fetch product counts per category
   useEffect(() => {
     if (categories.length === 0) return;
-    
+
     async function fetchCounts() {
-      // Get all subcategories
       const { data: allCats } = await supabase
         .from("product_categories")
         .select("id, parent_id");
-      
+
       const subCatMap: Record<string, string[]> = {};
       allCats?.forEach((c) => {
         if (c.parent_id) {
@@ -45,7 +39,6 @@ export default function Products() {
         }
       });
 
-      // Get all mappings
       const { data: mappings } = await supabase
         .from("product_category_mappings")
         .select("sku, category_id");
@@ -67,19 +60,8 @@ export default function Products() {
   }, [categories]);
 
   useEffect(() => {
-    listProducts()
-      .then((data) => {
-        const items: Product[] = (Array.isArray(data) ? data : [])
-          .filter((p: any) => p.active !== false)
-          .map((p: any) => ({
-            sku: p.sku,
-            name: p.titleSingle || p.name || p.sku,
-            thumbnailUrl: p.thumbnailUrl || p.thumbnail_url || null,
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name, "fr"));
-
-        setProducts(items);
-      })
+    getCatalogProducts()
+      .then(setProducts)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);

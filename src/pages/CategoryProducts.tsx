@@ -2,15 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Search, Loader2, ChevronRight, ArrowUpRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { listProducts } from "@/lib/printcom";
+import { getCatalogProducts, type CatalogProduct } from "@/lib/printcom";
 import { supabase } from "@/integrations/supabase/client";
 import { useCategoryBySlug, useCategories, useSkusForCategory } from "@/hooks/useCategories";
 
-interface Product {
-  sku: string;
-  name: string;
-  thumbnailUrl?: string;
-}
+interface Product extends CatalogProduct {}
 
 export default function CategoryProducts() {
   const { slug } = useParams<{ slug: string }>();
@@ -26,24 +22,12 @@ export default function CategoryProducts() {
   const [subCategoryCounts, setSubCategoryCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    listProducts()
-      .then((data) => {
-        const items: Product[] = (Array.isArray(data) ? data : [])
-          .filter((p: any) => p.active !== false)
-          .map((p: any) => ({
-            sku: p.sku,
-            name: p.titleSingle || p.name || p.sku,
-            thumbnailUrl: p.thumbnailUrl || p.thumbnail_url || null,
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name, "fr"));
-
-        setAllProducts(items);
-      })
+    getCatalogProducts()
+      .then(setAllProducts)
       .catch((err) => setError(err.message))
       .finally(() => setProductsLoading(false));
   }, []);
 
-  // Fetch CMS thumbnails for SKUs in this category
   useEffect(() => {
     if (skus.length === 0) return;
     supabase
@@ -62,10 +46,9 @@ export default function CategoryProducts() {
       });
   }, [skus]);
 
-  // Fetch product counts per subcategory
   useEffect(() => {
     if (subCategories.length === 0) return;
-    const subIds = subCategories.map(s => s.id);
+    const subIds = subCategories.map((s) => s.id);
     supabase
       .from("product_category_mappings")
       .select("sku, category_id")
@@ -74,7 +57,7 @@ export default function CategoryProducts() {
         if (!data) return;
         const counts: Record<string, number> = {};
         for (const sub of subCategories) {
-          const uniqueSkus = new Set(data.filter(m => m.category_id === sub.id).map(m => m.sku));
+          const uniqueSkus = new Set(data.filter((m) => m.category_id === sub.id).map((m) => m.sku));
           counts[sub.id] = uniqueSkus.size;
         }
         setSubCategoryCounts(counts);
@@ -85,7 +68,8 @@ export default function CategoryProducts() {
 
   const categoryProducts = useMemo(() => {
     if (skus.length === 0) return [];
-    return allProducts.filter((product) => skus.includes(product.sku));
+    const skuSet = new Set(skus);
+    return allProducts.filter((product) => skuSet.has(product.sku));
   }, [allProducts, skus]);
 
   const filtered = useMemo(() => {
@@ -153,9 +137,7 @@ export default function CategoryProducts() {
                   {sub.name}
                 </h3>
                 {subCategoryCounts[sub.id] != null && (
-                  <span className="shrink-0 text-xs text-muted-foreground">
-                    ({subCategoryCounts[sub.id]})
-                  </span>
+                  <span className="shrink-0 text-xs text-muted-foreground">({subCategoryCounts[sub.id]})</span>
                 )}
               </div>
             </Link>
@@ -199,7 +181,7 @@ export default function CategoryProducts() {
               >
                 {(cmsThumbnails[product.sku] || product.thumbnailUrl) && (
                   <div className="aspect-[4/3] mb-3 rounded-lg overflow-hidden bg-muted">
-                    <img src={cmsThumbnails[product.sku] || product.thumbnailUrl} alt={product.name} className="h-full w-full object-contain p-2" loading="lazy" />
+                    <img src={cmsThumbnails[product.sku] || product.thumbnailUrl || undefined} alt={product.name} className="h-full w-full object-contain p-2" loading="lazy" />
                   </div>
                 )}
                 <div className="flex items-start justify-between gap-4">
@@ -223,7 +205,9 @@ export default function CategoryProducts() {
             <p className="mt-8 py-10 text-center text-muted-foreground">Aucun produit associé à cette catégorie pour le moment.</p>
           )}
 
-          {filtered.length === 0 && skus.length > 0 && <p className="mt-8 py-10 text-center text-muted-foreground">Aucun produit trouvé.</p>}
+          {filtered.length === 0 && skus.length > 0 && (
+            <p className="mt-8 py-10 text-center text-muted-foreground">Aucun produit trouvé.</p>
+          )}
 
           <p className="mt-6 text-sm text-muted-foreground">
             {filtered.length} produit{filtered.length > 1 ? "s" : ""} trouvé{filtered.length > 1 ? "s" : ""}
