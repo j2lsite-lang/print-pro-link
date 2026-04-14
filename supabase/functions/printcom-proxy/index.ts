@@ -93,10 +93,10 @@ Deno.serve(async (req: Request) => {
         const rawBody = body as Record<string, any> | null;
         if (!rawBody) return jsonError("body required for get-price");
 
-        const { copies, urgency, ...options } = rawBody;
+        const { urgency, ...options } = rawBody;
+        // copies stays inside options as Print.com expects it there
         const priceBody = {
           sku,
-          copies: typeof copies === "number" ? copies : parseInt(String(copies), 10) || 1,
           options,
           deliveryPromise: urgency === "express" ? 1 : 0,
         };
