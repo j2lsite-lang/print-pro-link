@@ -263,8 +263,8 @@ export default function ProductDetail() {
     toast.success("Produit ajouté au panier !");
   };
 
-  // Images from Print.com
-  const images = product?.images || [];
+  // Images: prefer CMS images from DB, fallback to Print.com API
+  const images = productImages.length > 0 ? productImages : (product?.images || []);
   const thumbnailUrl = product?.thumbnailUrl || null;
 
   if (loading) {
