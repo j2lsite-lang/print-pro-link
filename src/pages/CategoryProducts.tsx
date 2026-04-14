@@ -155,9 +155,9 @@ export default function CategoryProducts() {
                 to={`/products/${product.sku}`}
                 className="group rounded-2xl border border-border bg-card p-5 shadow-card transition-all hover:border-primary/30 hover:shadow-elevated"
               >
-                {product.thumbnailUrl && (
+                {(cmsThumbnails[product.sku] || product.thumbnailUrl) && (
                   <div className="aspect-[4/3] mb-3 rounded-lg overflow-hidden bg-muted">
-                    <img src={product.thumbnailUrl} alt={product.name} className="h-full w-full object-contain p-2" loading="lazy" />
+                    <img src={cmsThumbnails[product.sku] || product.thumbnailUrl} alt={product.name} className="h-full w-full object-contain p-2" loading="lazy" />
                   </div>
                 )}
                 <div className="flex items-start justify-between gap-4">
