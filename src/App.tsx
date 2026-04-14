@@ -25,6 +25,10 @@ import Livraison from "./pages/Livraison";
 import Blog from "./pages/Blog";
 import CityPage from "./pages/CityPage";
 import CitiesIndex from "./pages/CitiesIndex";
+import ImpressionNumerique from "./pages/ImpressionNumerique";
+import GrandFormat from "./pages/GrandFormat";
+import SupportsPublicitaires from "./pages/SupportsPublicitaires";
+import Personnalisation from "./pages/Personnalisation";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +58,10 @@ const App = () => (
                 <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
                 <Route path="/livraison" element={<Livraison />} />
                 <Route path="/blog" element={<Blog />} />
+                <Route path="/impression-numerique" element={<ImpressionNumerique />} />
+                <Route path="/grand-format" element={<GrandFormat />} />
+                <Route path="/supports-publicitaires" element={<SupportsPublicitaires />} />
+                <Route path="/personnalisation" element={<Personnalisation />} />
                 <Route path="/imprimerie" element={<CitiesIndex />} />
                 <Route path="/imprimerie/:slug" element={<CityPage />} />
               </Route>
