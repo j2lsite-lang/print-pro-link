@@ -176,7 +176,7 @@ export default function ProductDetail() {
 
     addItem({
       sku,
-      productName: product.name || `Produit ${sku}`,
+      productName: product.titleSingle || product.name || `Produit ${sku}`,
       options: { ...selectedOptions, copies: String(copies) },
       quantity: 1,
       copies,
@@ -214,19 +214,19 @@ export default function ProductDetail() {
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <Link to="/products" className="hover:text-primary transition-colors">Catalogue</Link>
         <ChevronRight className="h-3 w-3" />
-        <span className="text-foreground">{product.name || sku}</span>
+        <span className="text-foreground">{product.titleSingle || product.name || sku}</span>
       </nav>
 
       {/* Header: Image + Info */}
       <div className="mb-8 flex flex-col sm:flex-row gap-6 items-start">
         <ProductGallery
           images={images}
-          productName={product.name || sku}
+          productName={product.titleSingle || product.name || sku}
           fallbackImage={thumbnailUrl}
         />
         <div className="flex-1">
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
-            {product.name || sku}
+            {product.titleSingle || product.name || sku}
           </h1>
           {product.description && (
             <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
