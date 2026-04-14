@@ -25,18 +25,8 @@ async function proxyRequest(
   const baseUrl = isPlatform ? platformBase : apiBase;
   const url = `${baseUrl}${path}`;
 
-  // Use Basic auth if username/password are available, otherwise PrintApiKey
-  const username = Deno.env.get("PRINTCOM_USERNAME");
-  const password = Deno.env.get("PRINTCOM_PASSWORD");
-  let authHeader: string;
-  if (username && password) {
-    authHeader = `Basic ${btoa(`${username}:${password}`)}`;
-  } else {
-    authHeader = `PrintApiKey ${apiKey}`;
-  }
-
   const headers: Record<string, string> = {
-    Authorization: authHeader,
+    Authorization: `PrintApiKey ${apiKey}`,
     "Accept-Language": lang,
     "Content-Type": "application/json",
   };
