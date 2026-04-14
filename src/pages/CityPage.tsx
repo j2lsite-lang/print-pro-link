@@ -49,6 +49,11 @@ export default function CityPage() {
 
   const otherCities = cities.filter((c) => c.slug !== slug).slice(0, 12);
 
+  useSEO({
+    title: `Imprimerie en ligne à ${city.name} (${city.cp}) – Livraison rapide`,
+    description: `J2L Print, votre imprimerie en ligne pour ${city.name}. Flyers, cartes de visite, affiches, bâches, objets publicitaires. Livraison à ${city.name} en 3-5 jours.`,
+  });
+
   return (
     <section className="py-12">
       <div className="container max-w-4xl">

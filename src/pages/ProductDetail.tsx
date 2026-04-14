@@ -162,6 +162,14 @@ export default function ProductDetail() {
 
   const [productImages, setProductImages] = useState<string[]>([]);
 
+  const productName = product?.titleSingle || product?.name || sku || "Produit";
+  useSEO({
+    title: `${productName} – Impression personnalisée`,
+    description: product?.description
+      ? product.description.slice(0, 155)
+      : `Commandez ${productName} en ligne chez J2L Print. Impression professionnelle, devis gratuit et livraison rapide en France.`,
+    ogType: "product",
+  });
   useEffect(() => {
     if (!sku) return;
 
