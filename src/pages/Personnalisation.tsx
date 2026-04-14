@@ -3,6 +3,7 @@ import { ArrowRight, Phone, Mail, Printer, CheckCircle, Shirt, Coffee } from "lu
 import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/personnalisation.jpg";
+import imgObjets from "@/assets/services/personnalisation-objets.jpg";
 
 export default function Personnalisation() {
   useSEO({

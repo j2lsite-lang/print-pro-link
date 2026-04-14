@@ -3,6 +3,8 @@ import { ArrowRight, Phone, Mail, FileText, Printer, CheckCircle, Layers } from 
 import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/impression-numerique.jpg";
+import imgCartes from "@/assets/services/impression-cartes-visite.jpg";
+import imgBrochures from "@/assets/services/impression-brochures.jpg";
 
 export default function ImpressionNumerique() {
   useSEO({

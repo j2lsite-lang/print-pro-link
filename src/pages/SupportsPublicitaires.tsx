@@ -3,6 +3,7 @@ import { ArrowRight, Phone, Mail, Layers, CheckCircle, Flag, Tent } from "lucide
 import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/supports-publicitaires.jpg";
+import imgSalon from "@/assets/services/supports-salon.jpg";
 
 export default function SupportsPublicitaires() {
   useSEO({

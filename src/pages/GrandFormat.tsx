@@ -3,6 +3,7 @@ import { ArrowRight, Phone, Mail, Image, Ruler, CheckCircle, Shield } from "luci
 import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/grand-format.jpg";
+import imgBache from "@/assets/services/grand-format-bache.jpg";
 
 export default function GrandFormat() {
   useSEO({
