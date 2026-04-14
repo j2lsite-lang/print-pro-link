@@ -29,6 +29,7 @@ import ImpressionNumerique from "./pages/ImpressionNumerique";
 import GrandFormat from "./pages/GrandFormat";
 import SupportsPublicitaires from "./pages/SupportsPublicitaires";
 import Personnalisation from "./pages/Personnalisation";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
                 <Route path="/products/:sku" element={<ProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/payment-success" element={<PaymentSuccess />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/account/orders" element={<Orders />} />
                 <Route path="/account/orders/:orderNumber" element={<OrderDetail />} />
