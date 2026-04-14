@@ -1,52 +1,41 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Loader2, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  getConfigurations,
-  showVariables,
-  saveConfiguration,
-  getPrice,
-} from "@/lib/realisaprint";
+import { getProduct, getPrice } from "@/lib/printcom";
 import { getResalePrice, DESIGN_FEE_BASE } from "@/lib/pricing";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import OptionSelector from "@/components/product/OptionSelector";
 import PriceSummary from "@/components/product/PriceSummary";
 import ProductGallery from "@/components/product/ProductGallery";
-import DeliveryInfo from "@/components/product/DeliveryInfo";
 
-interface RealisaprintVariable {
+interface ProductOption {
+  slug: string;
   name: string;
-  type: string;
-  default: string;
-  values: Record<string, string> | false;
-  readonly: boolean;
-  quantity: boolean;
-  production_time: boolean;
-  area: string;
-  position: string;
+  nullable?: boolean;
+  eco?: boolean;
+  description?: string;
 }
 
-interface ConfigResult {
-  stocks: Record<string, string>;
-  variables: Record<string, RealisaprintVariable>;
+interface ConfigurableProperty {
+  slug: string;
+  title: string;
+  required: boolean;
+  locked?: boolean;
+  options: ProductOption[];
+  group?: string;
 }
 
-interface SaveResult {
-  code?: string;
-  details?: string;
-  details_html?: string;
-  delai?: string;
-  delai_fab?: string;
-  delai_liv?: string;
-  has_files?: boolean;
-  files?: Record<string, any>;
-  template?: string;
-  quantities?: { default_table?: string[] };
-  error?: string;
+interface PrintComProduct {
+  sku: string;
+  name: string;
+  description?: string;
+  images?: string[];
+  thumbnailUrl?: string;
+  configurableProperties?: ConfigurableProperty[];
+  excludes?: Array<Array<{ property: string; options: string[] }>>;
 }
 
 interface ConfigurableProp {
@@ -64,205 +53,74 @@ interface ConfigurableProp {
 }
 
 export default function ProductDetail() {
-  const { sku: productId } = useParams<{ sku: string }>();
+  const { sku } = useParams<{ sku: string }>();
   const { addItem } = useCart();
 
-  const [productName, setProductName] = useState("");
-  const [config, setConfig] = useState<ConfigResult | null>(null);
+  const [product, setProduct] = useState<PrintComProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [categoryImageUrl, setCategoryImageUrl] = useState<string | null>(null);
-  const [productPictures, setProductPictures] = useState<string[]>([]);
   const [includeDesignFee, setIncludeDesignFee] = useState(false);
 
-  const [selectedStock, setSelectedStock] = useState<string>("");
-  const [selectedVars, setSelectedVars] = useState<Record<string, string>>({});
-  const [visibleVars, setVisibleVars] = useState<Record<string, boolean>>({});
-  const [variableValues, setVariableValues] = useState<Record<string, Record<string, string>>>({});
-  const [variableDescriptions, setVariableDescriptions] = useState<Record<string, string>>({});
-  const [variableAlerts, setVariableAlerts] = useState<Record<string, string>>({});
-  const [variableInfos, setVariableInfos] = useState<Record<string, string>>({});
-  const [invalidVars, setInvalidVars] = useState<Record<string, string>>({});
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
+  const [quantity, setQuantity] = useState("1");
 
-  const [configCode, setConfigCode] = useState<string | null>(null);
-  const [saveResult, setSaveResult] = useState<SaveResult | null>(null);
   const [priceResult, setPriceResult] = useState<any>(null);
   const [priceLoading, setPriceLoading] = useState(false);
   const [priceError, setPriceError] = useState<string | null>(null);
-  const [configDetails, setConfigDetails] = useState<string>("");
-  const [quantityVarKey, setQuantityVarKey] = useState<string | null>(null);
 
-  // Load product config
+  // Load product
   useEffect(() => {
-    if (!productId) return;
+    if (!sku) return;
 
     setLoading(true);
     setError(null);
-    setConfig(null);
-    setCategoryImageUrl(null);
-    setProductPictures([]);
-    setSelectedStock("");
-    setSelectedVars({});
-    setVisibleVars({});
-    setVariableValues({});
-    setVariableDescriptions({});
-    setVariableAlerts({});
-    setVariableInfos({});
-    setInvalidVars({});
-    setConfigCode(null);
-    setSaveResult(null);
+    setProduct(null);
+    setSelectedOptions({});
+    setQuantity("1");
     setPriceResult(null);
     setPriceError(null);
-    setConfigDetails("");
-    setQuantityVarKey(null);
 
-    getConfigurations(productId)
-      .then((data: ConfigResult) => {
-        setConfig(data);
+    getProduct(sku)
+      .then((data: PrintComProduct) => {
+        setProduct(data);
 
-        const stockIds = Object.keys(data.stocks || {});
-        if (stockIds.length > 0) setSelectedStock(stockIds[0]);
-
+        // Set defaults: first option for each required property
         const defaults: Record<string, string> = {};
-        let nextQuantityVarKey: string | null = null;
-
-        for (const [key, variable] of Object.entries(data.variables || {})) {
-          if (variable.default) defaults[key] = variable.default;
-          if (variable.quantity) nextQuantityVarKey = key;
+        for (const prop of data.configurableProperties || []) {
+          if (prop.locked && prop.options.length > 0) {
+            // Use the non-nullable option or first
+            const nonNull = prop.options.find((o) => !o.nullable);
+            defaults[prop.slug] = nonNull?.slug || prop.options[0].slug;
+          } else if (prop.required && prop.options.length > 0) {
+            defaults[prop.slug] = prop.options[0].slug;
+          }
         }
-
-        setQuantityVarKey(nextQuantityVarKey);
-        setSelectedVars(defaults);
+        setSelectedOptions(defaults);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+  }, [sku]);
 
-    // Fetch category image fallback
-    supabase
-      .from("product_category_mappings")
-      .select("category_id")
-      .eq("sku", productId)
-      .limit(1)
-      .maybeSingle()
-      .then(async ({ data: mapping }) => {
-        if (!mapping?.category_id) return;
-        const { data: category } = await supabase
-          .from("product_categories")
-          .select("image_url, parent_id")
-          .eq("id", mapping.category_id)
-          .maybeSingle();
-
-        if (category?.image_url) {
-          setCategoryImageUrl(category.image_url);
-          return;
-        }
-        if (category?.parent_id) {
-          const { data: parent } = await supabase
-            .from("product_categories")
-            .select("image_url")
-            .eq("id", category.parent_id)
-            .maybeSingle();
-          if (parent?.image_url) setCategoryImageUrl(parent.image_url);
-        }
-      });
-
-    // Fetch product name
-    import("@/lib/realisaprint").then(({ listProducts }) => {
-      listProducts()
-        .then((data: any) => {
-          const name = data?.products?.[productId];
-          if (name) setProductName(name);
-        })
-        .catch(() => {});
-    });
-  }, [productId]);
-
-  // Dynamic show_variables on every change
-  useEffect(() => {
-    if (!productId || !selectedStock || Object.keys(selectedVars).length === 0) return;
-
-    const timer = setTimeout(() => {
-      showVariables(productId, selectedStock, selectedVars, true)
-        .then((data: any) => {
-          // Visibility
-          const visibility: Record<string, boolean> = {};
-          for (const [key, val] of Object.entries(data)) {
-            if (key.startsWith("VARTICLE_") || key.startsWith("CALCARTICLE_")) {
-              visibility[key] = val as boolean;
-            }
-          }
-          setVisibleVars(visibility);
-
-          // Updated values
-          if (data.variable_values) {
-            const updatedValues: Record<string, Record<string, string>> = {};
-            for (const [key, vals] of Object.entries(data.variable_values as Record<string, Record<string, string>>)) {
-              updatedValues[key] = vals;
-            }
-            setVariableValues(updatedValues);
-          }
-
-          // Descriptions, alerts, infos
-          if (data.variables_descriptions) setVariableDescriptions(data.variables_descriptions);
-          if (data.variable_alerts) setVariableAlerts(data.variable_alerts);
-          if (data.variables_infos) setVariableInfos(data.variables_infos);
-          if (data.invalid_variables) setInvalidVars(data.invalid_variables);
-
-          // Current values from API
-          const currentValues = (data.current_values || data.current_variables) as Record<string, string> | undefined;
-          if (currentValues) {
-            setSelectedVars((prev) => {
-              const next = { ...prev };
-              for (const [key, val] of Object.entries(currentValues)) {
-                if (val != null && key.startsWith("VARTICLE_")) {
-                  next[key] = String(val);
-                }
-              }
-              return next;
-            });
-          }
-
-          // Pictures
-          if (Array.isArray(data.pictures)) {
-            const pics = data.pictures.filter(
-              (p: unknown): p is string => typeof p === "string" && p.length > 0
-            );
-            if (pics.length > 0) setProductPictures(pics);
-          }
-        })
-        .catch((err) => console.warn("[show_variables] error:", err.message));
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [productId, selectedStock, JSON.stringify(selectedVars)]);
-
-  // Save configuration & get price
+  // Fetch price
   const fetchPrice = useCallback(async () => {
-    if (!productId || !selectedStock) return;
+    if (!sku || !product) return;
     setPriceLoading(true);
     setPriceError(null);
 
     try {
-      const result = await saveConfiguration(productId, selectedStock, selectedVars);
-      if (result.error) {
-        setPriceError(result.error);
-        setPriceLoading(false);
-        return;
-      }
+      const copies = parseInt(quantity) || 1;
+      const body: any = {
+        copies,
+        ...selectedOptions,
+      };
 
-      const code = String(result.code);
-      setConfigCode(code);
-      setSaveResult(result);
-      setConfigDetails(result.details || "");
+      const data = await getPrice(sku, body);
 
-      const quantity = quantityVarKey ? selectedVars[quantityVarKey] || "1" : "1";
-      const priceData = await getPrice(code, quantity);
-
-      if (priceData.error) {
-        setPriceError(priceData.error);
+      if (data.error || data.message) {
+        setPriceError(data.error || data.message);
         setPriceResult(null);
       } else {
-        setPriceResult(priceData);
+        setPriceResult(data);
       }
     } catch (err: any) {
       console.error("[price] error:", err);
@@ -271,24 +129,54 @@ export default function ProductDetail() {
     } finally {
       setPriceLoading(false);
     }
-  }, [productId, selectedStock, selectedVars, quantityVarKey]);
+  }, [sku, product, selectedOptions, quantity]);
 
   useEffect(() => {
-    if (!productId || !config || !selectedStock) return;
+    if (!sku || !product) return;
     const timer = setTimeout(fetchPrice, 800);
     return () => clearTimeout(timer);
   }, [fetchPrice]);
 
+  // Build configurable props
+  const configurableProps: ConfigurableProp[] = useMemo(() => {
+    if (!product?.configurableProperties) return [];
+
+    return product.configurableProperties
+      .filter((prop) => !prop.locked || prop.options.length > 1)
+      .filter((prop) => prop.group !== "hidden")
+      .map((prop) => {
+        const isBooleanToggle =
+          prop.options.length === 2 &&
+          prop.options.some((o) => ["non", "no", "sans"].includes(o.name.toLowerCase())) &&
+          prop.options.some((o) => ["oui", "yes", "avec"].includes(o.name.toLowerCase()));
+
+        return {
+          slug: prop.slug,
+          title: prop.title,
+          required: prop.required,
+          locked: prop.locked || false,
+          isQuantity: prop.slug === "copies" || prop.slug === "quantity",
+          isBoolean: isBooleanToggle,
+          inputType: prop.options.length > 0 ? "select" : "text",
+          options: prop.options.map((o) => ({ slug: o.slug, name: o.name })),
+        };
+      })
+      .filter((p) => p.options.length > 0);
+  }, [product]);
+
+  const mainProps = configurableProps.filter((p) => !p.isBoolean);
+  const booleanProps = configurableProps.filter((p) => p.isBoolean);
+
   const handleAddToCart = () => {
-    if (!productId) return;
-    const quantity = quantityVarKey ? parseInt(selectedVars[quantityVarKey] || "1") : 1;
+    if (!sku || !product) return;
+    const copies = parseInt(quantity) || 1;
 
     addItem({
-      sku: productId,
-      productName: productName || `Produit ${productId}`,
-      options: selectedVars,
+      sku,
+      productName: product.name || `Produit ${sku}`,
+      options: { ...selectedOptions, copies: String(copies) },
       quantity: 1,
-      copies: quantity,
+      copies,
       unitPrice: priceResult ? getResalePrice(priceResult) + (includeDesignFee ? DESIGN_FEE_BASE : 0) : null,
       currency: "EUR",
       fileUrl: null,
@@ -296,6 +184,10 @@ export default function ProductDetail() {
     });
     toast.success("Produit ajouté au panier !");
   };
+
+  // Images from Print.com
+  const images = product?.images || [];
+  const thumbnailUrl = product?.thumbnailUrl || null;
 
   if (loading) {
     return (
@@ -305,7 +197,7 @@ export default function ProductDetail() {
     );
   }
 
-  if (error || !config) {
+  if (error || !product) {
     return (
       <div className="container py-20 text-center">
         <p className="text-destructive">Erreur : {error || "Produit introuvable"}</p>
@@ -313,127 +205,50 @@ export default function ProductDetail() {
     );
   }
 
-  // Build configurable props
-  const configurableProps: ConfigurableProp[] = Object.entries(config.variables || {})
-    .filter(([key]) => {
-      if (Object.keys(visibleVars).length > 0 && visibleVars[key] === false) return false;
-      return true;
-    })
-    .filter(([, variable]) => {
-      if (variable.readonly) return false;
-      if (variable.production_time) return false;
-      if (variable.type === "session") return false;
-      return true;
-    })
-    .sort(([, a], [, b]) => parseInt(a.position) - parseInt(b.position))
-    .map(([key, variable]) => {
-      const values = variableValues[key] || (variable.values && typeof variable.values === "object" ? variable.values : {});
-      const optionEntries = Object.entries(values);
-
-      const isBooleanToggle =
-        optionEntries.length === 2 &&
-        optionEntries.some(([, n]) => ["non", "no", "sans"].includes(n.toLowerCase())) &&
-        optionEntries.some(([, n]) => ["oui", "yes", "avec"].includes(n.toLowerCase()));
-
-      return {
-        slug: key,
-        title: variable.name,
-        required: true,
-        locked: variable.readonly,
-        isQuantity: variable.quantity,
-        isBoolean: isBooleanToggle || variable.type === "checkbox",
-        inputType: variable.type,
-        description: variableDescriptions[key],
-        alert: variableAlerts[key],
-        info: variableInfos[key],
-        options: optionEntries.map(([id, name]) => ({ slug: id, name })),
-      };
-    })
-    .filter((p) => p.options.length > 0 || p.inputType === "float" || p.inputType === "text" || p.inputType === "checkbox");
-
-  const mainProps = configurableProps.filter((p) => !p.isBoolean);
-  const booleanProps = configurableProps.filter((p) => p.isBoolean);
-
   return (
     <div className="container py-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <Link to="/products" className="hover:text-primary transition-colors">Catalogue</Link>
         <ChevronRight className="h-3 w-3" />
-        <span className="text-foreground">{productName || `Produit ${productId}`}</span>
+        <span className="text-foreground">{product.name || sku}</span>
       </nav>
 
       {/* Header: Image + Info */}
       <div className="mb-8 flex flex-col sm:flex-row gap-6 items-start">
         <ProductGallery
-          images={productPictures}
-          productName={productName || `Produit ${productId}`}
-          fallbackImage={categoryImageUrl}
+          images={images}
+          productName={product.name || sku}
+          fallbackImage={thumbnailUrl}
         />
         <div className="flex-1">
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
-            {productName || `Produit ${productId}`}
+            {product.name || sku}
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-            Configurez votre produit en sélectionnant les options ci-dessous.
-          </p>
-          {configDetails && (
-            <p className="mt-2 text-xs text-muted-foreground whitespace-pre-line">{configDetails}</p>
+          {product.description && (
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              {product.description}
+            </p>
           )}
           <p className="mt-2 text-xs text-muted-foreground">
             Livraison rapide partout en France. Devis gratuit,
             <Link to="/#devis" className="text-primary hover:underline ml-1">contactez-nous</Link>.
           </p>
-
-          {/* Delivery info */}
-          {saveResult && (
-            <div className="mt-4">
-              <DeliveryInfo
-                delai={saveResult.delai}
-                delaiFab={saveResult.delai_fab}
-                delaiLiv={saveResult.delai_liv}
-                hasFiles={saveResult.has_files}
-                files={saveResult.files}
-                template={saveResult.template}
-              />
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Stock selector */}
-      {Object.keys(config.stocks || {}).length > 1 && (
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase mb-3">
-            Type de produit
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(config.stocks).map(([id, name]) => (
-              <button
-                key={id}
-                onClick={() => setSelectedStock(id)}
-                className={cn(
-                  "rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all",
-                  selectedStock === id
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border bg-card text-muted-foreground hover:border-primary/40"
-                )}
-              >
-                {name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Invalid variables warnings */}
-      {Object.keys(invalidVars).length > 0 && (
-        <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 space-y-1">
-          {Object.entries(invalidVars).map(([key, msg]) => (
-            <p key={key} className="text-sm text-destructive">{msg}</p>
-          ))}
-        </div>
-      )}
+      {/* Quantity */}
+      <div className="mb-6">
+        <OptionSelector
+          title="Quantité (exemplaires)"
+          slug="copies"
+          options={[]}
+          selectedValue={quantity}
+          onSelect={setQuantity}
+          required
+          inputType="float"
+        />
+      </div>
 
       {/* Main layout */}
       <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
@@ -445,14 +260,11 @@ export default function ProductDetail() {
               title={prop.title}
               slug={prop.slug}
               options={prop.options}
-              selectedValue={selectedVars[prop.slug] || ""}
-              onSelect={(val) => setSelectedVars((prev) => ({ ...prev, [prop.slug]: val }))}
+              selectedValue={selectedOptions[prop.slug] || ""}
+              onSelect={(val) => setSelectedOptions((prev) => ({ ...prev, [prop.slug]: val }))}
               required={prop.required}
               locked={prop.locked}
               inputType={prop.inputType}
-              description={prop.description}
-              alert={prop.alert}
-              info={prop.info}
             />
           ))}
 
@@ -470,14 +282,11 @@ export default function ProductDetail() {
                     title={prop.title}
                     slug={prop.slug}
                     options={prop.options}
-                    selectedValue={selectedVars[prop.slug] || ""}
-                    onSelect={(val) => setSelectedVars((prev) => ({ ...prev, [prop.slug]: val }))}
+                    selectedValue={selectedOptions[prop.slug] || ""}
+                    onSelect={(val) => setSelectedOptions((prev) => ({ ...prev, [prop.slug]: val }))}
                     required={prop.required}
                     locked={prop.locked}
                     inputType={prop.inputType}
-                    description={prop.description}
-                    alert={prop.alert}
-                    info={prop.info}
                   />
                 ))}
               </div>
@@ -494,7 +303,7 @@ export default function ProductDetail() {
             onAddToCart={handleAddToCart}
             onRetryPrice={fetchPrice}
             disabled={!priceResult}
-            selectedOptions={selectedVars}
+            selectedOptions={selectedOptions}
             configurableProps={configurableProps}
             includeDesignFee={includeDesignFee}
             onToggleDesignFee={setIncludeDesignFee}
