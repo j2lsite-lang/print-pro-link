@@ -616,6 +616,7 @@ export default function ProductDetail() {
 
       <ProductSEOContent
         productName={product.titleSingle || product.name || sku || "Produit"}
+        sku={sku}
         description={product.description}
         options={mainProps.map((p) => ({
           title: p.title,
