@@ -30,8 +30,11 @@ interface ConfigurableProperty {
 
 interface PrintComProduct {
   sku: string;
-  name: string;
+  name?: string;
+  titleSingle?: string;
+  titlePlural?: string;
   description?: string;
+  customsDescription?: string;
   images?: string[];
   thumbnailUrl?: string;
   configurableProperties?: ConfigurableProperty[];
