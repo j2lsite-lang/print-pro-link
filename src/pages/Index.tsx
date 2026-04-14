@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSEO } from "@/hooks/useSEO";
 
 import imgImpression from "@/assets/services/impression-numerique.jpg";
 import imgGrandFormat from "@/assets/services/grand-format.jpg";
@@ -38,6 +39,12 @@ export default function Index() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [callbackOpen, setCallbackOpen] = useState(false);
   const [callbackSent, setCallbackSent] = useState(false);
+
+  useSEO({
+    title: "J2L Print – Imprimerie en ligne | Impression & supports publicitaires",
+    description: "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. Devis gratuit, nous livrons partout.",
+    canonical: "https://j2lprint.fr/",
+  });
 
   useEffect(() => {
     const handler = () => setCallbackOpen(true);

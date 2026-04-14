@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { getCatalogProducts, type CatalogProduct } from "@/lib/printcom";
 import { supabase } from "@/integrations/supabase/client";
 import { useCategoryBySlug, useCategories, useSkusForCategory } from "@/hooks/useCategories";
+import { useSEO } from "@/hooks/useSEO";
 
 interface Product extends CatalogProduct {}
 
@@ -65,6 +66,13 @@ export default function CategoryProducts() {
   }, [subCategories]);
 
   const loading = catLoading || skusLoading || productsLoading;
+
+  useSEO({
+    title: category ? `${category.name} – Impression en ligne` : "Catégorie – J2L Print",
+    description: category
+      ? `Découvrez notre gamme ${category.name} : impression professionnelle, devis gratuit et livraison rapide partout en France. J2L Print, votre imprimerie en ligne.`
+      : "Catégorie de produits J2L Print.",
+  });
 
   const categoryProducts = useMemo(() => {
     if (skus.length === 0) return [];

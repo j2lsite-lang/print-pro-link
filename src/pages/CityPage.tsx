@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowRight, MapPin, Phone, Mail, Printer, Truck, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSEO } from "@/hooks/useSEO";
 
 const cities = [
   { slug: "epinal", name: "Épinal", region: "Grand Est (Vosges)", cp: "88000" },
@@ -47,6 +48,11 @@ export default function CityPage() {
   }
 
   const otherCities = cities.filter((c) => c.slug !== slug).slice(0, 12);
+
+  useSEO({
+    title: `Imprimerie en ligne à ${city.name} (${city.cp}) – Livraison rapide`,
+    description: `J2L Print, votre imprimerie en ligne pour ${city.name}. Flyers, cartes de visite, affiches, bâches, objets publicitaires. Livraison à ${city.name} en 3-5 jours.`,
+  });
 
   return (
     <section className="py-12">

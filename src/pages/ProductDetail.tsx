@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import OptionSelector from "@/components/product/OptionSelector";
 import PriceSummary from "@/components/product/PriceSummary";
 import ProductGallery from "@/components/product/ProductGallery";
+import { useSEO } from "@/hooks/useSEO";
 
 interface ProductOption {
   slug: string;
@@ -161,6 +162,14 @@ export default function ProductDetail() {
 
   const [productImages, setProductImages] = useState<string[]>([]);
 
+  const productName = product?.titleSingle || product?.name || sku || "Produit";
+  useSEO({
+    title: `${productName} – Impression personnalisée`,
+    description: product?.description
+      ? product.description.slice(0, 155)
+      : `Commandez ${productName} en ligne chez J2L Print. Impression professionnelle, devis gratuit et livraison rapide en France.`,
+    ogType: "product",
+  });
   useEffect(() => {
     if (!sku) return;
 
