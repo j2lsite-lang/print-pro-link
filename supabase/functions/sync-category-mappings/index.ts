@@ -121,6 +121,7 @@ Deno.serve(async (req: Request) => {
       "signs-banners": "stop-trottoirs-panneaux",
       "pavement-signs": "stop-trottoirs-panneaux",
       "accessories-for-panels": "panneaux-accessoires-ext",
+      "outdoor-furniture": "tonnelles-mobilier-exterieur",
       "deckchairs": "tonnelles-mobilier-exterieur",
       // Grand format
       "textile": "toiles-textiles",
@@ -140,7 +141,7 @@ Deno.serve(async (req: Request) => {
       "brochures-magazines": "brochures-magazines",
       "softcovers": "brochures-magazines",
       "calendars": "calendriers",
-      "courriers-creatifs": "courriers-creatifs",
+      "direct-mail-activation": "courriers-creatifs",
       // Autocollants
       "on-roll": "autocollants-rouleaux",
       "loose-stickers": "petits-autocollants",
