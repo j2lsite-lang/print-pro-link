@@ -42,6 +42,25 @@ export default function CategoryProducts() {
       .finally(() => setProductsLoading(false));
   }, []);
 
+  // Fetch CMS thumbnails for SKUs in this category
+  useEffect(() => {
+    if (skus.length === 0) return;
+    supabase
+      .from("product_images")
+      .select("sku, thumbnail_url")
+      .in("sku", skus)
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, string> = {};
+        for (const row of data) {
+          if (!map[row.sku] && row.thumbnail_url) {
+            map[row.sku] = row.thumbnail_url;
+          }
+        }
+        setCmsThumbnails(map);
+      });
+  }, [skus]);
+
   const loading = catLoading || skusLoading || productsLoading;
 
   const categoryProducts = useMemo(() => {
