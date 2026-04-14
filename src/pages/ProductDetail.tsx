@@ -120,6 +120,17 @@ export default function ProductDetail() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 
+    // Fetch product images from DB (CMS)
+    supabase
+      .from("product_images")
+      .select("image_url")
+      .eq("sku", sku)
+      .then(({ data: imgs }) => {
+        if (imgs && imgs.length > 0) {
+          setProductImages(imgs.map((i) => i.image_url));
+        }
+      });
+
     // Fetch category image fallback
     supabase
       .from("product_category_mappings")
