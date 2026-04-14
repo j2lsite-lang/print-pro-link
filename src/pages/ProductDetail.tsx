@@ -4,7 +4,7 @@ import { Loader2, ChevronRight, CheckCircle } from "lucide-react";
 import { getProductSEOData } from "@/lib/product-seo";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { getProduct, getPrice } from "@/lib/printcom";
+import { getProduct, getPrice, getShippingPossibilities } from "@/lib/printcom";
 import { supabase } from "@/integrations/supabase/client";
 import { getResalePrice, DESIGN_FEE_BASE } from "@/lib/pricing";
 import { useCart } from "@/hooks/useCart";
@@ -161,6 +161,8 @@ export default function ProductDetail() {
   const [priceResult, setPriceResult] = useState<any>(null);
   const [priceLoading, setPriceLoading] = useState(false);
   const [priceError, setPriceError] = useState<string | null>(null);
+  const [shippingOptions, setShippingOptions] = useState<any[]>([]);
+  const [shippingLoading, setShippingLoading] = useState(false);
 
   const [productImages, setProductImages] = useState<string[]>([]);
 
@@ -265,6 +267,25 @@ export default function ProductDetail() {
     });
   }, [product]);
 
+  // Fetch shipping estimate
+  const fetchShipping = useCallback(async (copies: number) => {
+    if (!sku) return;
+    setShippingLoading(true);
+    try {
+      const body = {
+        items: [{ sku, copies }],
+        destination: { country: "FR" },
+      };
+      const data = await getShippingPossibilities(body);
+      const options = Array.isArray(data) ? data : data?.shippingOptions || data?.options || [];
+      setShippingOptions(options);
+    } catch {
+      setShippingOptions([]);
+    } finally {
+      setShippingLoading(false);
+    }
+  }, [sku]);
+
   // Fetch price
   const fetchPrice = useCallback(async () => {
     if (!sku || !product) return;
@@ -306,6 +327,8 @@ export default function ProductDetail() {
         setPriceResult(null);
       } else {
         setPriceResult(data);
+        // Fetch shipping estimate for France
+        fetchShipping(copies);
       }
     } catch (err: any) {
       console.error("[price] error:", err);
@@ -589,6 +612,8 @@ export default function ProductDetail() {
             configurableProps={configurableProps}
             includeDesignFee={includeDesignFee}
             onToggleDesignFee={setIncludeDesignFee}
+            shippingOptions={shippingOptions}
+            shippingLoading={shippingLoading}
           />
         </div>
       </div>
