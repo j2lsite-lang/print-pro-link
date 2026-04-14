@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Loader2, ChevronRight } from "lucide-react";
+import { Loader2, ChevronRight, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { getProduct, getPrice } from "@/lib/printcom";
