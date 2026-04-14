@@ -60,6 +60,24 @@ export default function ImpressionNumerique() {
           ))}
         </div>
 
+        {/* Galerie visuelle */}
+        <div className="grid gap-4 sm:grid-cols-2 mb-10">
+          <div className="glass-card overflow-hidden">
+            <img src={imgCartes} alt="Impression de cartes de visite et flyers professionnels" className="w-full h-48 object-cover" loading="lazy" width={1280} height={720} />
+            <div className="p-4">
+              <h3 className="font-display text-sm font-semibold text-foreground">Cartes de visite & flyers</h3>
+              <p className="text-xs text-muted-foreground mt-1">Impression HD sur papiers premium, finitions luxe disponibles.</p>
+            </div>
+          </div>
+          <div className="glass-card overflow-hidden">
+            <img src={imgBrochures} alt="Brochures et catalogues imprimés" className="w-full h-48 object-cover" loading="lazy" width={1280} height={720} />
+            <div className="p-4">
+              <h3 className="font-display text-sm font-semibold text-foreground">Brochures & catalogues</h3>
+              <p className="text-xs text-muted-foreground mt-1">Piqûre à cheval, dos carré collé, reliure spirale jusqu'à 200 pages.</p>
+            </div>
+          </div>
+        </div>
+
         {/* Avantages */}
         <div className="glass-card p-6 mb-8 space-y-4">
           <h2 className="font-display text-xl font-bold text-foreground">

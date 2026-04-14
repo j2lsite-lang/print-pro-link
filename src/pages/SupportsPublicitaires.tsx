@@ -57,6 +57,15 @@ export default function SupportsPublicitaires() {
           ))}
         </div>
 
+        {/* Visuel salon */}
+        <div className="glass-card overflow-hidden mb-10">
+          <img src={imgSalon} alt="Stand salon professionnel avec roll-ups, drapeaux et supports publicitaires" className="w-full h-56 object-cover" loading="lazy" width={1280} height={720} />
+          <div className="p-4">
+            <h3 className="font-display text-base font-semibold text-foreground">Équipez votre stand de salon</h3>
+            <p className="text-sm text-muted-foreground mt-1">Roll-ups, drapeaux, comptoirs, tentes — tout pour un stand professionnel et impactant.</p>
+          </div>
+        </div>
+
         {/* Contenu SEO */}
         <div className="glass-card p-6 mb-8 space-y-4">
           <h2 className="font-display text-xl font-bold text-foreground">

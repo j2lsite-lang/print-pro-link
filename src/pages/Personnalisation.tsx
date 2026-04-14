@@ -57,6 +57,15 @@ export default function Personnalisation() {
           ))}
         </div>
 
+        {/* Visuel objets */}
+        <div className="glass-card overflow-hidden mb-10">
+          <img src={imgObjets} alt="Objets publicitaires personnalisés : t-shirts, mugs, goodies" className="w-full h-56 object-cover" loading="lazy" width={1280} height={720} />
+          <div className="p-4">
+            <h3 className="font-display text-base font-semibold text-foreground">Vos goodies sur mesure</h3>
+            <p className="text-sm text-muted-foreground mt-1">T-shirts, mugs, stylos, sacs — tout personnalisé à votre image pour vos équipes et clients.</p>
+          </div>
+        </div>
+
         {/* Techniques */}
         <div className="glass-card p-6 mb-8 space-y-4">
           <h2 className="font-display text-xl font-bold text-foreground">

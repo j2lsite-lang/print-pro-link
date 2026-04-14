@@ -57,6 +57,15 @@ export default function GrandFormat() {
           ))}
         </div>
 
+        {/* Visuel atelier */}
+        <div className="glass-card overflow-hidden mb-10">
+          <img src={imgBache} alt="Impression grand format sur imprimante professionnelle" className="w-full h-56 object-cover" loading="lazy" width={1280} height={720} />
+          <div className="p-4">
+            <h3 className="font-display text-base font-semibold text-foreground">Notre atelier grand format</h3>
+            <p className="text-sm text-muted-foreground mt-1">Imprimantes Roland & Mimaki, largeur jusqu'à 3,20 m, résolution 1440 dpi.</p>
+          </div>
+        </div>
+
         {/* Contenu SEO */}
         <div className="glass-card p-6 mb-8 space-y-4">
           <h2 className="font-display text-xl font-bold text-foreground">
