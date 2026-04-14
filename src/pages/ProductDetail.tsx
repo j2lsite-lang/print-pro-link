@@ -38,7 +38,9 @@ interface PrintComProduct {
   customsDescription?: string;
   images?: string[];
   thumbnailUrl?: string;
+  properties?: ConfigurableProperty[];
   configurableProperties?: ConfigurableProperty[];
+  propertyGroups?: Array<{ slug: string; columnWidth?: Record<string, string>; properties: string[] }>;
   excludes?: Array<Array<{ property: string; options: string[] }>>;
 }
 
@@ -91,7 +93,8 @@ export default function ProductDetail() {
 
         // Set defaults: first option for each required property
         const defaults: Record<string, string> = {};
-        for (const prop of data.configurableProperties || []) {
+        const allProps = data.properties || data.configurableProperties || [];
+        for (const prop of allProps) {
           if (prop.locked && prop.options.length > 0) {
             // Use the non-nullable option or first
             const nonNull = prop.options.find((o) => !o.nullable);
@@ -176,11 +179,20 @@ export default function ProductDetail() {
 
   // Build configurable props
   const configurableProps: ConfigurableProp[] = useMemo(() => {
-    if (!product?.configurableProperties) return [];
+    const allProps = product?.properties || product?.configurableProperties || [];
+    if (allProps.length === 0) return [];
 
-    return product.configurableProperties
+    // Determine hidden property slugs from propertyGroups
+    const hiddenSlugs = new Set<string>();
+    for (const group of product?.propertyGroups || []) {
+      if (group.columnWidth?.reseller === "hidden") {
+        group.properties.forEach((s) => hiddenSlugs.add(s));
+      }
+    }
+
+    return allProps
+      .filter((prop) => !hiddenSlugs.has(prop.slug))
       .filter((prop) => !prop.locked || prop.options.length > 1)
-      .filter((prop) => prop.group !== "hidden")
       .map((prop) => {
         const isBooleanToggle =
           prop.options.length === 2 &&
@@ -195,7 +207,7 @@ export default function ProductDetail() {
           isQuantity: prop.slug === "copies" || prop.slug === "quantity",
           isBoolean: isBooleanToggle,
           inputType: prop.options.length > 0 ? "select" : "text",
-          options: prop.options.map((o) => ({ slug: o.slug, name: o.name })),
+          options: prop.options.map((o) => ({ slug: String(o.slug), name: o.name })),
         };
       })
       .filter((p) => p.options.length > 0);
