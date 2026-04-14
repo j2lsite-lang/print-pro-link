@@ -19,10 +19,10 @@ import imgPdf from "@/assets/services/verification-pdf.jpg";
 
 /* ─── Data ─── */
 const services = [
-  { icon: FileText, title: "Impression numérique", desc: "Cartes de visite, flyers, dépliants, affiches en petite et grande série. Qualité professionnelle offset et numérique, livrée partout en France.", img: imgImpression, link: "/products" },
-  { icon: Image, title: "Grand format", desc: "Bâches, banderoles, adhésifs, kakémonos et enseignes sur mesure. Impression haute résolution jusqu'à 1440 dpi pour une communication visuelle percutante.", img: imgGrandFormat, link: "/products" },
-  { icon: Layers, title: "Supports publicitaires", desc: "Roll-ups, totems, PLV, comptoirs d'accueil et signalétique intérieure/extérieure. Idéal pour salons, événements et points de vente.", img: imgSupports, link: "/products" },
-  { icon: Printer, title: "Personnalisation", desc: "Marquage textile (t-shirts, polos, sweats), objets publicitaires (mugs, stylos, clés USB) et goodies personnalisés pour votre entreprise.", img: imgPerso, link: "/products" },
+  { icon: FileText, title: "Impression numérique", desc: "Cartes de visite, flyers, dépliants, affiches en petite et grande série. Qualité professionnelle offset et numérique, livrée partout en France.", img: imgImpression, link: "/impression-numerique" },
+  { icon: Image, title: "Grand format", desc: "Bâches, banderoles, adhésifs, kakémonos et enseignes sur mesure. Impression haute résolution jusqu'à 1440 dpi pour une communication visuelle percutante.", img: imgGrandFormat, link: "/grand-format" },
+  { icon: Layers, title: "Supports publicitaires", desc: "Roll-ups, totems, PLV, comptoirs d'accueil et signalétique intérieure/extérieure. Idéal pour salons, événements et points de vente.", img: imgSupports, link: "/supports-publicitaires" },
+  { icon: Printer, title: "Personnalisation", desc: "Marquage textile (t-shirts, polos, sweats), objets publicitaires (mugs, stylos, clés USB) et goodies personnalisés pour votre entreprise.", img: imgPerso, link: "/personnalisation" },
   { icon: Truck, title: "Livraison rapide France", desc: "Expédition en 3 à 5 jours ouvrés dans toute la France : Paris, Lyon, Marseille, Lille, Strasbourg, Bordeaux, Nantes et toutes les villes.", img: imgLivraison, link: "/livraison" },
   { icon: CheckCircle, title: "Vérification PDF", desc: "Contrôle automatique de vos fichiers avant impression : résolution, fonds perdus, colorimétrie CMJN. Évitez les mauvaises surprises.", img: imgPdf, link: "/blog" },
 ];
