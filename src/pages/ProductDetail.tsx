@@ -27,6 +27,9 @@ interface ConfigurableProperty {
   locked?: boolean;
   options: ProductOption[];
   group?: string;
+  optionsInSummary?: number[];
+  rangeSets?: Array<{ options: Array<{ min: number; max: number; steps: number }>; summary?: number[] }>;
+  type?: string;
 }
 
 interface PrintComProduct {
