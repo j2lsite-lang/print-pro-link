@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { Search, Loader2, ChevronRight, ArrowUpRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { listProducts } from "@/lib/printcom";
+import { supabase } from "@/integrations/supabase/client";
 import { useCategoryBySlug, useCategories, useSkusForCategory } from "@/hooks/useCategories";
 
 interface Product {
