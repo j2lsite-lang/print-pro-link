@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowRight, MapPin, Phone, Mail, Printer, Truck, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSEO } from "@/hooks/useSEO";
 
 const cities = [
   { slug: "epinal", name: "Épinal", region: "Grand Est (Vosges)", cp: "88000" },

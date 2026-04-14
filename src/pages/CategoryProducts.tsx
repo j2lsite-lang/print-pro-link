@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { getCatalogProducts, type CatalogProduct } from "@/lib/printcom";
 import { supabase } from "@/integrations/supabase/client";
 import { useCategoryBySlug, useCategories, useSkusForCategory } from "@/hooks/useCategories";
+import { useSEO } from "@/hooks/useSEO";
 
 interface Product extends CatalogProduct {}
 
