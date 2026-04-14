@@ -94,7 +94,10 @@ Deno.serve(async (req: Request) => {
         if (!rawBody) return jsonError("body required for get-price");
 
         const { urgency, ...options } = rawBody;
-        // copies stays inside options as Print.com expects it there
+        // Ensure copies is a number
+        if (options.copies !== undefined) {
+          options.copies = Number(options.copies);
+        }
         const priceBody = {
           sku,
           options,

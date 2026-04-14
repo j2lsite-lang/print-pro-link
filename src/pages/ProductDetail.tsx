@@ -28,8 +28,10 @@ interface ConfigurableProperty {
   options: ProductOption[];
   group?: string;
   optionsInSummary?: number[];
-  rangeSets?: Array<{ options: Array<{ min: number; max: number; steps: number }>; summary?: number[] }>;
+  rangeSets?: Array<{ options: Array<{ min: number; max: number; steps: number }>; printingmethod?: string; summary?: number[] }>;
   type?: string;
+  copiesInSummary?: Record<string, number[]>;
+  copyLimit?: Record<string, number>;
 }
 
 interface PrintComProduct {
@@ -117,43 +119,7 @@ export default function ProductDetail() {
 
         setSelectedOptions(defaults);
 
-        // Build quantity options from rangeSets or optionsInSummary or options
-        if (copiesProp) {
-          let qtyOpts: { slug: string; name: string }[] = [];
-
-          if (copiesProp.optionsInSummary?.length) {
-            // Use optionsInSummary as suggested quantities
-            qtyOpts = (copiesProp.optionsInSummary as number[]).map((n: number) => ({
-              slug: String(n),
-              name: String(n),
-            }));
-          } else if ((copiesProp as any).rangeSets?.length) {
-            // Generate from rangeSets
-            const rangeSet = (copiesProp as any).rangeSets[0];
-            if (rangeSet.summary?.length) {
-              qtyOpts = rangeSet.summary.map((n: number) => ({
-                slug: String(n),
-                name: String(n),
-              }));
-            } else if (rangeSet.options?.length) {
-              const r = rangeSet.options[0];
-              const step = r.steps || 1;
-              const max = Math.min(r.max || 10, 20);
-              for (let i = r.min || 1; i <= max; i += step) {
-                qtyOpts.push({ slug: String(i), name: String(i) });
-              }
-            }
-          } else if (copiesProp.options?.length) {
-            qtyOpts = copiesProp.options
-              .filter((o: any) => o.slug != null)
-              .map((o: any) => ({ slug: String(o.slug), name: o.name || String(o.slug) }));
-          }
-
-          setQuantityOptions(qtyOpts);
-          if (qtyOpts.length > 0) {
-            setQuantity(qtyOpts[0].slug);
-          }
-        }
+        // Initial quantity will be set by the reactive effect below
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -238,6 +204,49 @@ export default function ProductDetail() {
       setPriceLoading(false);
     }
   }, [sku, product, selectedOptions, quantity]);
+
+  // Build quantity options reactively based on selected printingmethod
+  useEffect(() => {
+    if (!product) return;
+    const allProps = product.properties || product.configurableProperties || [];
+    const copiesProp = allProps.find((p) => p.slug === "copies");
+    if (!copiesProp) return;
+
+    const selectedMethod = selectedOptions["printingmethod"] || "";
+    let qtyOpts: { slug: string; name: string }[] = [];
+
+    if (copiesProp.rangeSets?.length) {
+      const matchingSet = copiesProp.rangeSets.find((rs) => rs.printingmethod === selectedMethod)
+        || copiesProp.rangeSets[0];
+      if (matchingSet.summary?.length) {
+        qtyOpts = matchingSet.summary.map((n: number) => ({
+          slug: String(n),
+          name: String(n),
+        }));
+      } else if (matchingSet.options?.length) {
+        const r = matchingSet.options[0];
+        const step = r.steps || 1;
+        const max = Math.min(r.max || 10, 20);
+        for (let i = r.min || 1; i <= max; i += step) {
+          qtyOpts.push({ slug: String(i), name: String(i) });
+        }
+      }
+    } else if (copiesProp.optionsInSummary?.length) {
+      qtyOpts = copiesProp.optionsInSummary.map((n: number) => ({
+        slug: String(n),
+        name: String(n),
+      }));
+    } else if (copiesProp.options?.length) {
+      qtyOpts = copiesProp.options
+        .filter((o) => o.slug != null)
+        .map((o) => ({ slug: String(o.slug), name: o.name || String(o.slug) }));
+    }
+
+    setQuantityOptions(qtyOpts);
+    if (qtyOpts.length > 0 && !qtyOpts.some((o) => o.slug === quantity)) {
+      setQuantity(qtyOpts[0].slug);
+    }
+  }, [product, selectedOptions, quantity]);
 
   useEffect(() => {
     if (!sku || !product) return;
