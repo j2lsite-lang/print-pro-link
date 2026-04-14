@@ -23,6 +23,7 @@ export default function CategoryProducts() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [cmsThumbnails, setCmsThumbnails] = useState<Record<string, string>>({});
+  const [subCategoryCounts, setSubCategoryCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     listProducts()
