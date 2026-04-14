@@ -28,8 +28,10 @@ interface ConfigurableProperty {
   options: ProductOption[];
   group?: string;
   optionsInSummary?: number[];
-  rangeSets?: Array<{ options: Array<{ min: number; max: number; steps: number }>; summary?: number[] }>;
+  rangeSets?: Array<{ options: Array<{ min: number; max: number; steps: number }>; printingmethod?: string; summary?: number[] }>;
   type?: string;
+  copiesInSummary?: Record<string, number[]>;
+  copyLimit?: Record<string, number>;
 }
 
 interface PrintComProduct {
