@@ -18,7 +18,7 @@ Deno.serve(async (req: Request) => {
     const printcomApiKey = Deno.env.get("PRINTCOM_API_KEY");
     if (!printcomApiKey) throw new Error("PRINTCOM_API_KEY not configured");
 
-    const apiBase = Deno.env.get("PRINTCOM_API_BASE") || "https://api.print.com";
+    const apiBase = "https://api.print.com";
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
