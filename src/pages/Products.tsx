@@ -94,50 +94,58 @@ export default function Products() {
 
   return (
     <div className="container py-10">
-      <p className="text-sm font-medium text-muted-foreground">Catalogue</p>
-      <h1 className="mt-1 font-display text-3xl font-bold text-foreground">Categories</h1>
+      <p className="text-sm font-medium text-primary tracking-wide uppercase">Catalogue</p>
+      <h1 className="mt-2 font-display text-4xl font-bold text-foreground">Catégories</h1>
+
+      {catLoading && (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      )}
 
       {!catLoading && categories.length > 0 && (
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((cat) => (
             <Link
               key={cat.id}
               to={`/products/category/${cat.slug}`}
-              className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all hover:shadow-elevated hover:border-primary/30"
+              className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:border-primary/40 hover:shadow-elevated"
             >
-              {cat.image_url ? (
-                <div className="aspect-[4/3] overflow-hidden bg-muted">
+              <div className="aspect-[4/3] overflow-hidden bg-muted/50">
+                {cat.image_url ? (
                   <img
                     src={cat.image_url}
                     alt={cat.name}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                     loading="lazy"
                   />
-                </div>
-              ) : (
-                <div className="flex aspect-[4/3] items-center justify-center bg-muted">
-                  <div className="text-4xl text-muted-foreground/20">📦</div>
-                </div>
-              )}
-              <div className="px-4 py-3">
-                <h3 className="font-display text-sm font-semibold text-card-foreground transition-colors group-hover:text-primary">
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <span className="text-5xl opacity-20">📦</span>
+                  </div>
+                )}
+              </div>
+              <div className="px-4 py-3.5 flex items-baseline justify-between gap-2">
+                <h3 className="font-display text-sm font-semibold text-card-foreground transition-colors group-hover:text-primary truncate">
                   {cat.name}
-                  {categoryCounts[cat.id] != null && (
-                    <span className="ml-2 font-normal text-muted-foreground">
-                      ({categoryCounts[cat.id]})
-                    </span>
-                  )}
                 </h3>
+                {categoryCounts[cat.id] != null && (
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    ({categoryCounts[cat.id]})
+                  </span>
+                )}
               </div>
             </Link>
           ))}
         </div>
       )}
 
-      <div className="mt-8">
+      <div className="mt-10">
         <Button
           variant={showAllProducts ? "default" : "outline"}
+          size="lg"
           onClick={() => setShowAllProducts(!showAllProducts)}
+          className="rounded-full"
         >
           {showAllProducts ? "Masquer tous les produits" : "Voir tous les produits"}
         </Button>
