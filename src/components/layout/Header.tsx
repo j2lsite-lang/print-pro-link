@@ -4,30 +4,72 @@ import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/hooks/useCart";
 import { getCatalogProducts } from "@/lib/printcom";
 import logoJ2L from "@/assets/logo-j2l.png";
-...
-    getCatalogProducts().then((items) => {
-      cachedProducts = items.map((p) => ({
-        id: p.sku,
-        name: p.name,
-      }));
+
+const navLinks = [
+  { to: "/products", label: "Catalogue" },
+  { to: "/#services", label: "Services" },
+  { to: "/#devis", label: "Devis" },
+  { to: "/blog", label: "Blog" },
+];
+
+interface QuickProduct {
+  id: string;
+  name: string;
+}
+
+let cachedProducts: QuickProduct[] | null = null;
+
+export default function Header() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { itemCount } = useCart();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleHashLink = (e: React.MouseEvent, to: string) => {
+    const [path, hash] = to.split("#");
+    if (hash && (location.pathname === "/" || location.pathname === path)) {
+      e.preventDefault();
+      const el = document.getElementById(hash);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<QuickProduct[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const [allProducts, setAllProducts] = useState<QuickProduct[]>([]);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (cachedProducts) {
       setAllProducts(cachedProducts);
-    }).catch(() => {});
+      return;
+    }
+
+    getCatalogProducts()
+      .then((items) => {
+        cachedProducts = items.map((p) => ({
+          id: p.sku,
+          name: p.name,
+        }));
+        setAllProducts(cachedProducts);
+      })
+      .catch(() => {});
   }, []);
 
-  // Filter on query change
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
       return;
     }
+
     const q = query.toLowerCase();
-    const matched = allProducts.filter((p) => {
-      return p.name.toLowerCase().includes(q) || p.id.includes(q);
-    }).slice(0, 8);
+    const matched = allProducts
+      .filter((p) => p.name.toLowerCase().includes(q) || p.id.includes(q))
+      .slice(0, 8);
     setResults(matched);
   }, [query, allProducts]);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -56,7 +98,6 @@ import logoJ2L from "@/assets/logo-j2l.png";
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/82 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between gap-2">
-        {/* Brand */}
         <Link to="/" className="flex items-center gap-3 shrink-0">
           <img src={logoJ2L} alt="J2L Print" className="h-10 w-10 rounded-xl object-contain bg-primary/10 p-0.5" />
           <span className="font-display text-base font-bold tracking-wide text-foreground hidden sm:inline">
@@ -64,7 +105,6 @@ import logoJ2L from "@/assets/logo-j2l.png";
           </span>
         </Link>
 
-        {/* Search bar - desktop */}
         <div ref={searchRef} className="relative hidden md:block flex-1 max-w-md mx-4">
           <form onSubmit={handleSubmit}>
             <div className="relative">
@@ -73,7 +113,10 @@ import logoJ2L from "@/assets/logo-j2l.png";
                 type="text"
                 placeholder="Rechercher un produit… (tampons, flyers, bâches…)"
                 value={query}
-                onChange={(e) => { setQuery(e.target.value); setShowResults(true); }}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setShowResults(true);
+                }}
                 onFocus={() => setShowResults(true)}
                 className="w-full rounded-full border border-border bg-muted/50 py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
               />
@@ -108,7 +151,6 @@ import logoJ2L from "@/assets/logo-j2l.png";
           )}
         </div>
 
-        {/* Desktop nav */}
         <nav className="hidden items-center gap-1.5 md:flex flex-wrap justify-end shrink-0">
           {navLinks.map((l) => (
             <Link key={l.to} to={l.to} onClick={(e) => handleHashLink(e, l.to)} className="pill px-3 py-1.5 text-[13px] text-foreground/90">
@@ -125,17 +167,17 @@ import logoJ2L from "@/assets/logo-j2l.png";
           </Link>
         </nav>
 
-        {/* Mobile toggle */}
         <button className="md:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div className="border-t border-border bg-background p-4 md:hidden">
-          {/* Mobile search */}
-          <form onSubmit={(e) => { handleSubmit(e); setMobileOpen(false); }} className="mb-3">
+          <form onSubmit={(e) => {
+            handleSubmit(e);
+            setMobileOpen(false);
+          }} className="mb-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -149,7 +191,10 @@ import logoJ2L from "@/assets/logo-j2l.png";
           </form>
           <nav className="flex flex-col gap-2">
             {navLinks.map((l) => (
-              <Link key={l.to} to={l.to} onClick={(e) => { handleHashLink(e, l.to); setMobileOpen(false); }} className="pill text-sm">
+              <Link key={l.to} to={l.to} onClick={(e) => {
+                handleHashLink(e, l.to);
+                setMobileOpen(false);
+              }} className="pill text-sm">
                 {l.label}
               </Link>
             ))}

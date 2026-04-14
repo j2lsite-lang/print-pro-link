@@ -8,7 +8,57 @@ import { useCategories } from "@/hooks/useCategories";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Product extends CatalogProduct {}
-...
+
+interface CategoryCount {
+  [categoryId: string]: number;
+}
+
+export default function Products() {
+  const { categories, loading: catLoading } = useCategories();
+  const [categoryCounts, setCategoryCounts] = useState<CategoryCount>({});
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [showAllProducts, setShowAllProducts] = useState(false);
+
+  useEffect(() => {
+    if (categories.length === 0) return;
+
+    async function fetchCounts() {
+      const { data: allCats } = await supabase
+        .from("product_categories")
+        .select("id, parent_id");
+
+      const subCatMap: Record<string, string[]> = {};
+      allCats?.forEach((c) => {
+        if (c.parent_id) {
+          if (!subCatMap[c.parent_id]) subCatMap[c.parent_id] = [];
+          subCatMap[c.parent_id].push(c.id);
+        }
+      });
+
+      const { data: mappings } = await supabase
+        .from("product_category_mappings")
+        .select("sku, category_id");
+
+      if (!mappings) return;
+
+      const counts: CategoryCount = {};
+      for (const cat of categories) {
+        const relatedIds = [cat.id, ...(subCatMap[cat.id] || [])];
+        const uniqueSkus = new Set(
+          mappings.filter((m) => relatedIds.includes(m.category_id)).map((m) => m.sku)
+        );
+        counts[cat.id] = uniqueSkus.size;
+      }
+      setCategoryCounts(counts);
+    }
+
+    fetchCounts();
+  }, [categories]);
+
   useEffect(() => {
     getCatalogProducts()
       .then(setProducts)
