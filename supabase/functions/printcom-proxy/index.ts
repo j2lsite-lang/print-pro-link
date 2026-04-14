@@ -25,21 +25,36 @@ async function proxyRequest(
   const baseUrl = isPlatform ? platformBase : apiBase;
   const url = `${baseUrl}${path}`;
 
+  // Use Basic auth if username/password are available, otherwise PrintApiKey
+  const username = Deno.env.get("PRINTCOM_USERNAME");
+  const password = Deno.env.get("PRINTCOM_PASSWORD");
+  let authHeader: string;
+  if (username && password) {
+    authHeader = `Basic ${btoa(`${username}:${password}`)}`;
+  } else {
+    authHeader = `PrintApiKey ${apiKey}`;
+  }
+
   const headers: Record<string, string> = {
-    Authorization: `PrintApiKey ${apiKey}`,
+    Authorization: authHeader,
     "Accept-Language": lang,
     "Content-Type": "application/json",
   };
 
   const fetchOptions: RequestInit = { method, headers };
   if (body && method !== "GET") {
-    fetchOptions.body = JSON.stringify(body);
+    const bodyStr = JSON.stringify(body);
+    console.log(`[PrintCom] Body: ${bodyStr.substring(0, 500)}`);
+    fetchOptions.body = bodyStr;
   }
 
   console.log(`[PrintCom] ${method} ${url}`);
   const res = await fetch(url, fetchOptions);
   const responseBody = await res.text();
   console.log(`[PrintCom] ${res.status} (${responseBody.length} bytes)`);
+  if (res.status >= 400) {
+    console.log(`[PrintCom] Error response: ${responseBody.substring(0, 500)}`);
+  }
 
   return new Response(responseBody, {
     status: res.status,
