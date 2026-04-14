@@ -66,8 +66,8 @@ Deno.serve(async (req: Request) => {
 
     console.log(`[map-categories] ${activeProducts.length} products, ${targetCategories.length} target categories`);
 
-    // 2b. Delete all old mappings only on first run (startFrom === 0)
-    if (startFrom === 0) {
+    // 2b. Delete old mappings only on full run (not subcategories-only, not resume)
+    if (startFrom === 0 && !subcategoriesOnly) {
       const { error: delErr } = await supabase
         .from("product_category_mappings")
         .delete()
@@ -75,7 +75,7 @@ Deno.serve(async (req: Request) => {
       if (delErr) console.error("[map-categories] Delete old mappings error:", delErr.message);
       else console.log("[map-categories] Cleared old mappings");
     } else {
-      console.log("[map-categories] Resuming from", startFrom, "- skipping delete");
+      console.log("[map-categories] Keeping existing mappings (subcategoriesOnly=" + subcategoriesOnly + ", startFrom=" + startFrom + ")");
     }
 
     // 3. Process in batches
