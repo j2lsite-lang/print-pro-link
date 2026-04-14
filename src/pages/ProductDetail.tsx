@@ -76,6 +76,8 @@ export default function ProductDetail() {
   const [priceError, setPriceError] = useState<string | null>(null);
 
   // Load product
+  const [productImages, setProductImages] = useState<string[]>([]);
+
   useEffect(() => {
     if (!sku) return;
 
@@ -86,6 +88,7 @@ export default function ProductDetail() {
     setQuantity("");
     setPriceResult(null);
     setPriceError(null);
+    setProductImages([]);
 
     getProduct(sku)
       .then((data: PrintComProduct) => {
@@ -116,6 +119,17 @@ export default function ProductDetail() {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+
+    // Fetch product images from DB (CMS)
+    supabase
+      .from("product_images")
+      .select("image_url")
+      .eq("sku", sku)
+      .then(({ data: imgs }) => {
+        if (imgs && imgs.length > 0) {
+          setProductImages(imgs.map((i) => i.image_url));
+        }
+      });
 
     // Fetch category image fallback
     supabase
@@ -249,8 +263,8 @@ export default function ProductDetail() {
     toast.success("Produit ajouté au panier !");
   };
 
-  // Images from Print.com
-  const images = product?.images || [];
+  // Images: prefer CMS images from DB, fallback to Print.com API
+  const images = productImages.length > 0 ? productImages : (product?.images || []);
   const thumbnailUrl = product?.thumbnailUrl || null;
 
   if (loading) {

@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { Search, Loader2, ChevronRight, ArrowUpRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { listProducts } from "@/lib/printcom";
+import { supabase } from "@/integrations/supabase/client";
 import { useCategoryBySlug, useCategories, useSkusForCategory } from "@/hooks/useCategories";
 
 interface Product {
@@ -21,6 +22,7 @@ export default function CategoryProducts() {
   const [productsLoading, setProductsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [cmsThumbnails, setCmsThumbnails] = useState<Record<string, string>>({});
 
   useEffect(() => {
     listProducts()
@@ -39,6 +41,25 @@ export default function CategoryProducts() {
       .catch((err) => setError(err.message))
       .finally(() => setProductsLoading(false));
   }, []);
+
+  // Fetch CMS thumbnails for SKUs in this category
+  useEffect(() => {
+    if (skus.length === 0) return;
+    supabase
+      .from("product_images")
+      .select("sku, thumbnail_url")
+      .in("sku", skus)
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, string> = {};
+        for (const row of data) {
+          if (!map[row.sku] && row.thumbnail_url) {
+            map[row.sku] = row.thumbnail_url;
+          }
+        }
+        setCmsThumbnails(map);
+      });
+  }, [skus]);
 
   const loading = catLoading || skusLoading || productsLoading;
 
@@ -134,9 +155,9 @@ export default function CategoryProducts() {
                 to={`/products/${product.sku}`}
                 className="group rounded-2xl border border-border bg-card p-5 shadow-card transition-all hover:border-primary/30 hover:shadow-elevated"
               >
-                {product.thumbnailUrl && (
+                {(cmsThumbnails[product.sku] || product.thumbnailUrl) && (
                   <div className="aspect-[4/3] mb-3 rounded-lg overflow-hidden bg-muted">
-                    <img src={product.thumbnailUrl} alt={product.name} className="h-full w-full object-contain p-2" loading="lazy" />
+                    <img src={cmsThumbnails[product.sku] || product.thumbnailUrl} alt={product.name} className="h-full w-full object-contain p-2" loading="lazy" />
                   </div>
                 )}
                 <div className="flex items-start justify-between gap-4">
