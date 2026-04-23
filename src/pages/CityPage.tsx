@@ -66,6 +66,16 @@ export default function CityPage() {
   }
 
   if (!city) {
+    // Signal noindex to crawlers for unknown cities
+    if (typeof document !== "undefined") {
+      let robots = document.querySelector('meta[name="robots"]');
+      if (!robots) {
+        robots = document.createElement("meta");
+        robots.setAttribute("name", "robots");
+        document.head.appendChild(robots);
+      }
+      robots.setAttribute("content", "noindex, follow");
+    }
     return (
       <div className="container py-20 text-center">
         <h1 className="font-display text-2xl font-bold text-foreground mb-4">Ville non trouvée</h1>
