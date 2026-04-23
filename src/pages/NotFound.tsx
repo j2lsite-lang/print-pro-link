@@ -6,6 +6,18 @@ const NotFound = () => {
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    // Mark page as noindex for crawlers (avoids soft-404 reports in Search Console)
+    let robots = document.querySelector('meta[name="robots"]');
+    if (!robots) {
+      robots = document.createElement("meta");
+      robots.setAttribute("name", "robots");
+      document.head.appendChild(robots);
+    }
+    robots.setAttribute("content", "noindex, follow");
+    document.title = "Page introuvable (404) | J2L Print";
+    return () => {
+      if (robots) robots.setAttribute("content", "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1");
+    };
   }, [location.pathname]);
 
   return (
