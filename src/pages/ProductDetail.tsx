@@ -290,10 +290,13 @@ export default function ProductDetail() {
   const fetchPrice = useCallback(async () => {
     if (!sku || !product) return;
 
-    // Don't fetch if current combination is excluded
-    if (isExcludedCombination(selectedOptions, product.excludes)) {
+    // Don't fetch if current combination (including copies) is excluded
+    const checkSelection = { ...selectedOptions, copies: String(quantity) };
+    if (isExcludedCombination(checkSelection, product.excludes)) {
       setPriceResult(null);
-      setPriceError("Cette combinaison d'options n'est pas disponible. Modifiez vos sélections.");
+      setPriceError(
+        "Cette combinaison (options + quantité) n'est pas disponible. Modifiez la quantité ou une option."
+      );
       return;
     }
 
