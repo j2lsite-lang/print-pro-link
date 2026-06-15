@@ -30,6 +30,7 @@ import GrandFormat from "./pages/GrandFormat";
 import SupportsPublicitaires from "./pages/SupportsPublicitaires";
 import Personnalisation from "./pages/Personnalisation";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import SeoRoute from "./pages/SeoRoute";
 
 const queryClient = new QueryClient();
 
