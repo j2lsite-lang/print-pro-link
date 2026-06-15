@@ -1,0 +1,580 @@
+[
+  {
+    "slug": "carnet-en-papier-ensemence",
+    "sku": "grass-paper-notebook",
+    "name": " Carnet en papier ensemencé",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/4Bl1Ylqcr1fFbbkBy5gDaT/5f231f0222cb4cb5b59a471fc65ac171/Notebooks_grass_paper_screen_printing_detail_1.jpg",
+    "description": "",
+    "parentSlug": "objets-publicitaires-cadeaux",
+    "parentName": "Objets publicitaires & Cadeaux",
+    "subSlug": "articles-papeterie",
+    "subName": "Articles de papeterie",
+    "features": [
+      {
+        "title": "Impression",
+        "values": [
+          "1/0 Pantone",
+          "2/0 Pantone",
+          "3/0 Pantone",
+          "4/0 Pantone",
+          "Non imprimé"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Sérigraphie",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 167,
+    "shippingOk": false,
+    "bucket": "papeterie"
+  },
+  {
+    "slug": "sac-luxe-en-papier-recycle-avec-goujons",
+    "sku": "luxury-paper-bag-studs",
+    "name": " Sac luxe en papier - recyclé avec goujons",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/6mJZ13MNq9S5ga806Wt4tH/71491e6bcd474bc016493ce679cc0829/luxury-paper-bag-studs-3.jpg",
+    "description": "",
+    "parentSlug": "emballages-sacs",
+    "parentName": "Emballages & Sacs",
+    "subSlug": "sacs-tote-bags",
+    "subName": "Sacs et Tote bags",
+    "features": [
+      {
+        "title": "Format (largeur x profondeur x hauteur)",
+        "values": [
+          "16 x 8 x 16 cm",
+          "20 x 8 x 26 cm",
+          "30 x 10 x 40 cm",
+          "40 x 10 x 35 cm"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "Non imprimé",
+          "1/0 Pantone",
+          "2/0 Pantone",
+          "3/0 Pantone",
+          "4/0 Pantone",
+          "1/1 Pantone",
+          "2/2 Pantone",
+          "3/3 Pantone"
+        ]
+      },
+      {
+        "title": "Position de l'impression",
+        "values": [
+          "Face avant",
+          "Faces avant et arrière, impressions identiques",
+          "Faces avant et arrière, impressions différentes"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Sérigraphie",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 109.8,
+    "shippingOk": false,
+    "bucket": "sacs"
+  },
+  {
+    "slug": "affiche-auto-adhesive",
+    "sku": "self-adhesive-posters",
+    "name": "Affiche auto-adhésive",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/6QuUnkQEDKmd92MUUte0mD/5a0f22a9c97f6fea6607c95eefff2f8b/Selfadhesive_Poster_Dot.jpg",
+    "description": "",
+    "parentSlug": "impression-papier",
+    "parentName": "Impression papier",
+    "subSlug": "flyers-depliants-affiches",
+    "subName": "Flyers, dépliants & affiches",
+    "features": [
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "Abri - 1185 x 1750 mm",
+          "A0 - 840 x 1189 mm",
+          "A1 - 594 x 840 mm",
+          "A2 - 420 x 594 mm",
+          "A3 - 297 x 420 mm",
+          "A4 - 210 x 297 mm",
+          "B0 - 1000 x 1400 mm",
+          "B1 - 700 x 1000 mm"
+        ]
+      },
+      {
+        "title": "Support",
+        "values": [
+          "Feuille DOT (blanc mat)",
+          "Easy DOT (transparent)"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "HP Latex 800",
+          "Numérique - Canon Colorado M5"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "4/0 quadri recto",
+          "5/0 quadri + blanc"
+        ]
+      }
+    ],
+    "priceComputed": 31.9,
+    "shippingOk": false,
+    "bucket": "affiches"
+  },
+  {
+    "slug": "autocollant-mural",
+    "sku": "wall-graphics",
+    "name": "Autocollant mural",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/2qgUPlYzPX0RiJ2kxAgikr/a944e9755acc657a7ea9562b814b9d33/stickers-dot-folie-wall-detail.jpg",
+    "description": "",
+    "parentSlug": "etiquettes-stickers",
+    "parentName": "Etiquettes & Stickers",
+    "subSlug": "autocollants-grand-format",
+    "subName": "Autocollants grand format",
+    "features": [
+      {
+        "title": "Support",
+        "values": [
+          "Feuille DOT (blanc mat)",
+          "Polymère blanc mat - Roughmark™ 285",
+          "Textile auto-adhésif Gekkotex"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "Non imprimé",
+          "4/0 quadri recto"
+        ]
+      },
+      {
+        "title": "Pelliculage",
+        "values": [
+          "Pelliculage polymère brillant - Oraguard® 215",
+          "Pelliculage polymère mat - Oraguard® 215",
+          "Lamination anti-graffiti brillante GF108 Tedlar"
+        ]
+      },
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "30 x 20 cm",
+          "40 x 30 cm",
+          "60 x 40 cm",
+          "90 x 60 cm",
+          "100 x 100 cm",
+          "A4 - 210 x 297 mm",
+          "A3 - 297 x 420 mm",
+          "A2 - 420 x 594 mm"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "HP Latex 800",
+          "Numérique - Canon Colorado M5"
+        ]
+      },
+      {
+        "title": "Coupe et découpe",
+        "values": [
+          "Coupe droite",
+          "Découpe à la forme",
+          "Découpe Mi-chair (contours multiples)",
+          "Mi-chair, découpe à la forme, avec film d'application"
+        ]
+      }
+    ],
+    "priceComputed": 6,
+    "shippingOk": false,
+    "bucket": "autocollants"
+  },
+  {
+    "slug": "autocollant-pour-voiture",
+    "sku": "car-stickers",
+    "name": "Autocollant pour voiture",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/15Tz0cVNKp4MzoxoN1f4Fj/6896e0a9ffcc6eea252ffffc69f9c551/stickers-carsticker-detail.jpg",
+    "description": "",
+    "parentSlug": "etiquettes-stickers",
+    "parentName": "Etiquettes & Stickers",
+    "subSlug": "autocollants-grand-format",
+    "subName": "Autocollants grand format",
+    "features": [
+      {
+        "title": "Support",
+        "values": [
+          "Monomère blanc brillant - Orajet® 3162",
+          "Monomère transparent brillant - Orajet® 3162",
+          "Monomère blanc brillant - 3M™ Scotchcal™ IJ20-10R",
+          "Polymère blanc brillant - Orajet®  3551",
+          "Polymère transparent brillant - Orajet® 3551",
+          "Polymère blanc brillant RapidAir - Orajet® 3551RA",
+          "Polymère blanc brillant Controltac™ and Comply™ - 3M™ Envision™ 40C-10",
+          "Monomère blanc brillant sans pvc - Orajet® 3174"
+        ]
+      },
+      {
+        "title": "Pelliculage ou vernis",
+        "values": [
+          "Sans",
+          "Pelliculage monomère brillant - Oraguard® 200",
+          "Pelliculage monomère mat - Oraguard 200",
+          "Pelliculage polymère brillant - Oraguard® 215",
+          "Pelliculage polymère mat - Oraguard® 215",
+          "Pelliculage monomère brillant sans pvc - Oraguard 236",
+          "3M™ 8428G",
+          "Stratifié mat coulé 3M™ 8550M"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "Non imprimé",
+          "4/0 quadri recto",
+          "5/0 quadri + blanc"
+        ]
+      },
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "100 x 100 cm",
+          "custom"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "HP Latex 800",
+          "Numérique - Canon Colorado M5",
+          "Impression au solvant"
+        ]
+      },
+      {
+        "title": "Utilisation",
+        "values": [
+          "Surface plane",
+          "Surface légèrement arrondie",
+          "Surface arrondie "
+        ]
+      }
+    ],
+    "priceComputed": 7.2,
+    "shippingOk": false,
+    "bucket": "autocollants"
+  },
+  {
+    "slug": "autocollant-vinyle",
+    "sku": "sticker-vinyl",
+    "name": "Autocollant vinyle",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/1dJlWgbrv9KiERNuRDFPVv/bac5cae6b01ac61ef938ad990bb48e2a/stickers-vinyl-vierkant-detail.jpg",
+    "description": "",
+    "parentSlug": "etiquettes-stickers",
+    "parentName": "Etiquettes & Stickers",
+    "subSlug": "autocollants-grand-format",
+    "subName": "Autocollants grand format",
+    "features": [
+      {
+        "title": "Support",
+        "values": [
+          "Monomère blanc brillant - Orajet® 3162",
+          "Monomère transparent brillant - Orajet® 3162",
+          "Monomère blanc brillant - 3M™ Scotchcal™ IJ20-10R",
+          "Monomer white gloss - Avery® MPI3001",
+          "Lintec E-2200ZC",
+          "Clearview brillant - 3M™ Scotchcal™ IJ8150",
+          "One way vision - Orajet® 3676",
+          "Feuille DOT (blanc mat)"
+        ]
+      },
+      {
+        "title": "Pelliculage",
+        "values": [
+          "Sans",
+          "Pelliculage monomère brillant - Oraguard® 200",
+          "Pelliculage monomère mat - Oraguard 200",
+          "Pelliculage polymère brillant - Oraguard® 215",
+          "Pelliculage polymère mat - Oraguard® 215",
+          "Pelliculage One way vision - Oraguard® 297GF",
+          "Pelliculage sol monomère mat 120 µm R10 - Oraguard 250AS",
+          "Lamination pour sol sans PVC - GF 213 Traffic Graffic"
+        ]
+      },
+      {
+        "title": "Coupe et découpe",
+        "values": [
+          "Coupe droite",
+          "Découpe à la forme",
+          "Découpe Mi-chair (contours multiples)",
+          "Mi-chair, découpe à la forme, avec film d'application"
+        ]
+      },
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "30 x 20 cm",
+          "40 x 30 cm",
+          "60 x 40 cm",
+          "90 x 60 cm",
+          "100 x 100 cm",
+          "A4 - 21 x 29,7 cm",
+          "A3 - 29,7 x 42 cm",
+          "A2 - 42 x 59,4 cm"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "HP Latex 800",
+          "Numérique - Canon Colorado M5",
+          "Impression au solvant"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "Non imprimé",
+          "4/0 quadri recto",
+          "5/0 quadri + blanc"
+        ]
+      }
+    ],
+    "priceComputed": 3.7,
+    "shippingOk": false,
+    "bucket": "autocollants"
+  },
+  {
+    "slug": "boite-a-bonbons",
+    "sku": "chocolate-boxes",
+    "name": "Boite à bonbons",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/7ye6Qy22vxaW4gvPIRzskn/ba2bec0a37695b507d571d1c303b90ed/Bonbondoosjes_open_2.jpg",
+    "description": "",
+    "parentSlug": "emballages-sacs",
+    "parentName": "Emballages & Sacs",
+    "subSlug": "emballages-alimentaires",
+    "subName": "Emballages alimentaires",
+    "features": [
+      {
+        "title": "Impression",
+        "values": [
+          "4/0 quadri recto",
+          "Non imprimé"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Canon Colorado 1640",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 268.9,
+    "shippingOk": false,
+    "bucket": "emballages"
+  },
+  {
+    "slug": "boite-a-frites",
+    "sku": "french-fries-boxes",
+    "name": "Boîte à frites",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/1eScwVVr4VzOAF2KySwGMf/75dd3266fa09912b9139eb4ab8fda8ca/frietbox_wit_klein.jpg",
+    "description": "",
+    "parentSlug": "emballages-sacs",
+    "parentName": "Emballages & Sacs",
+    "subSlug": "emballages-alimentaires",
+    "subName": "Emballages alimentaires",
+    "features": [
+      {
+        "title": "Format (largeur x profondeur x hauteur)",
+        "values": [
+          "Bas 8 x 4 x 10 cm | Haut 10 x 5 x 11.3 cm",
+          "Bas 9.5 x 4.7 x 12 cm | Haut 12 x 5.9 x 13.5 cm"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "4/0 quadri recto",
+          "Non imprimé"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Canon Colorado 1640",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 213.7,
+    "shippingOk": false,
+    "bucket": "emballages"
+  },
+  {
+    "slug": "boite-a-hamburger",
+    "sku": "burger-boxes",
+    "name": "Boîte à hamburger",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/3PGKx0IqxW1yWnMiy65DfE/7eaaaa0a52550842bd733f47e840f084/Doosje_Hamburger_klein.jpg",
+    "description": "",
+    "parentSlug": "emballages-sacs",
+    "parentName": "Emballages & Sacs",
+    "subSlug": "emballages-alimentaires",
+    "subName": "Emballages alimentaires",
+    "features": [
+      {
+        "title": "Format (largeur x profondeur x hauteur)",
+        "values": [
+          "8 x 9.2 x 4.2 cm",
+          "11.5 x 10.8 x 8 cm"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "4/0 quadri recto",
+          "Non imprimé"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Canon Colorado 1640",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 237.9,
+    "shippingOk": false,
+    "bucket": "emballages"
+  },
+  {
+    "slug": "boite-a-patisseries-carree",
+    "sku": "cube-boxes",
+    "name": "Boîte à pâtisseries - carrée",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/2TbBpTTYrKDH3ZkZQYHAUv/229c58df6bc2e6a63d21a8cd1c013ffe/Kubus_doosje_rood_middel.jpg",
+    "description": "",
+    "parentSlug": "emballages-sacs",
+    "parentName": "Emballages & Sacs",
+    "subSlug": "emballages-alimentaires",
+    "subName": "Emballages alimentaires",
+    "features": [
+      {
+        "title": "Format (longueur x largeur x hauteur)",
+        "values": [
+          "3.2 x 3.2 x 3.4 cm",
+          "4.8 x 4.8 x 4.8 cm",
+          "6.8 x 6.8 x 6.8 cm"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "4/0 quadri recto",
+          "Non imprimé"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Canon Colorado 1640",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 231.7,
+    "shippingOk": false,
+    "bucket": "emballages"
+  },
+  {
+    "slug": "boite-a-pop-corn",
+    "sku": "popcorn-boxes",
+    "name": "Boîte à pop-corn",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/4giv7QhH5h0dlI8H6rapCn/f17a525497b75414eb081799865fb0ef/snackbox_wit_klein.jpg",
+    "description": "",
+    "parentSlug": "emballages-sacs",
+    "parentName": "Emballages & Sacs",
+    "subSlug": "emballages-alimentaires",
+    "subName": "Emballages alimentaires",
+    "features": [
+      {
+        "title": "Format (largeur x profondeur x hauteur)",
+        "values": [
+          "Bas 8 x 8 x 17.2 cm | Haut 9.4 x 9.4 x 17.2 cm - ca 1.3 litre",
+          "Bas 9.5 x 9.5 x 19.8 cm | Haut 12 x 12 x 19.8 cm - ca 2.3 litre",
+          "Bas 13.8 x 13.8 x 21.2 cm | Haut 17.2 x 17.2 x 21.2 cm - ca 5 litre"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "4/0 quadri recto",
+          "Non imprimé"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Canon Colorado 1640",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 196.1,
+    "shippingOk": false,
+    "bucket": "emballages"
+  },
+  {
+    "slug": "boite-cadeau-non-imprime",
+    "sku": "pillow-packs-kraft",
+    "name": "Boîte cadeau - non imprimé",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/5pS5bMGwsN33jHzNEHr3wZ/b3b85e0a7d7fb2cb8a898cb7f05a1166/pillow-packs-kraft-XL.jpg",
+    "description": "",
+    "parentSlug": "objets-publicitaires-cadeaux",
+    "parentName": "Objets publicitaires & Cadeaux",
+    "subSlug": "saisonnalite",
+    "subName": "Saisonnalité",
+    "features": [
+      {
+        "title": "Format (largeur x profondeur x hauteur)",
+        "values": [
+          "85 x 85 x 30 mm",
+          "130 x 150 x 40 mm",
+          "180 x 190 x 50 mm",
+          "200 x 250 x 50 mm",
+          "280 x 335 x 65 mm"
+        ]
+      },
+      {
+        "title": "Couleur",
+        "values": [
+          "Blanc",
+          "Kraft",
+          "Noir"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Sans impression",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 30.9,
+    "shippingOk": false,
+    "bucket": "emballages"
+  }
+]
