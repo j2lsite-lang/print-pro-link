@@ -123,6 +123,9 @@ export function injectIntoShell(shell: string, page: SeoPage): string {
     .replace(/<link\s+rel="canonical"[^>]*>/i, "")
     .replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, "")
     .replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, "");
+  // Remove the static <noscript> fallback: prerendered pages now carry real
+  // crawlable content inside #root, so the fallback would duplicate the H1.
+  html = html.replace(/<noscript>[\s\S]*?<\/noscript>/i, "");
   const head = renderHead(page);
   html = html.replace(/<\/head>/i, `    ${head}\n  </head>`);
   // Inject prerendered content inside the (empty) #root div.
