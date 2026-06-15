@@ -23,25 +23,25 @@ export default function ProductGallery({ images, productName, fallbackImage }: P
 
   return (
     <>
-      <div className="w-full sm:w-72 shrink-0 space-y-2">
+      <div className="w-full lg:w-[460px] xl:w-[520px] shrink-0 space-y-3">
         {/* Main image */}
         {currentImage ? (
           <div
-            className="aspect-square overflow-hidden rounded-xl bg-muted cursor-pointer relative group"
+            className="aspect-square overflow-hidden rounded-2xl border border-border bg-product-surface cursor-pointer relative group shadow-sm"
             onClick={() => setZoom(true)}
           >
             <img
               src={currentImage}
               alt={productName}
-              className="h-full w-full object-contain p-2"
+              className="h-full w-full object-contain p-6"
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors">
-              <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/10 transition-colors">
+              <ZoomIn className="h-7 w-7 text-foreground/70 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           </div>
         ) : (
-          <div className="aspect-square overflow-hidden rounded-xl bg-muted flex items-center justify-center">
-            <Package className="h-16 w-16 text-muted-foreground/30" />
+          <div className="aspect-square overflow-hidden rounded-2xl border border-border bg-product-surface flex items-center justify-center">
+            <Package className="h-16 w-16 text-muted-foreground/40" />
           </div>
         )}
 
@@ -53,11 +53,11 @@ export default function ProductGallery({ images, productName, fallbackImage }: P
                 key={i}
                 onClick={() => setSelectedIndex(i)}
                 className={cn(
-                  "w-14 h-14 rounded-lg border-2 overflow-hidden shrink-0 transition-colors bg-muted",
+                  "w-16 h-16 rounded-xl border-2 overflow-hidden shrink-0 transition-colors bg-product-surface",
                   i === selectedIndex ? "border-primary" : "border-border hover:border-primary/40"
                 )}
               >
-                <img src={img} alt="" className="h-full w-full object-contain p-0.5" />
+                <img src={img} alt="" className="h-full w-full object-contain p-1" />
               </button>
             ))}
           </div>
