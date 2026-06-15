@@ -27,32 +27,27 @@
  *
  *  ROUTES GÉRÉES (servies via l'origine, HTML pré-rendu préservé)
  *  -------------------------------------------------------------
- *    /                                  accueil
- *    /catalogue                         catalogue
- *    /categorie/{slug}                  8 catégories principales
- *    /categorie/{parent}/{enfant}       sous-catégories
- *    /products/{sku}                    fiche produit + configurateur Print.com
- *    /ville/{slug}                      16 villes publiées
- *    /departement/{slug}                10 départements publiés
- *    /imprimerie , /imprimerie/{slug}   pages imprimerie historiques
- *    /impression-numerique              service
- *    /grand-format                      service
- *    /supports-publicitaires            service
- *    /personnalisation                  service
- *    /blog , /livraison , pages légales
- *    /sitemap.xml
- *    /sitemaps/static.xml
- *    /sitemaps/categories.xml
- *    /sitemaps/subcategories.xml
- *    /sitemaps/cities.xml
- *    /sitemaps/departments.xml
- *    /robots.txt
+ *    6 routes statiques SEO        : /, /catalogue, /impression-numerique,
+ *                                    /grand-format, /supports-publicitaires,
+ *                                    /personnalisation
+ *    8 catégories principales      : voir CATEGORIES
+ *    47 sous-catégories            : voir SUBCATEGORIES
+ *    16 villes publiées            : voir CITIES
+ *    10 départements publiés       : voir DEPARTMENTS
+ *    2 régions administratives     : uniquement documentées via départements,
+ *                                    aucune route /region publiée
+ *    8 familles produits SEO       : voir PRODUCT_FAMILIES
+ *    Produits Print.com réels      : /products/{sku}, proxifié uniquement ;
+ *                                    aucun SKU n'est créé, réécrit ou caché côté API
+ *    Routes app publiques          : /products, /products/category/{slug},
+ *                                    /blog, /livraison, pages légales
+ *    Sitemaps / robots             : /sitemap.xml, /sitemaps/*.xml, /robots.txt
  *
- *  ROUTES NON IMPLÉMENTÉES (donc NI gérées NI advertised) :
+ *  ROUTES NON ADVERTISÉES EN SEO :
  *    /produit/{slug}              -> n'existe pas (route réelle = /products/{sku})
- *    /region/{slug}              -> aucune page région pré-rendue
- *    /sitemaps/regions.xml       -> aucun sitemap région
- *    /sitemaps/products.xml      -> aucun sitemap produit
+ *    /region/{slug}               -> aucune page région pré-rendue
+ *    /sitemaps/regions.xml        -> aucun sitemap région
+ *    /sitemaps/products.xml       -> aucun sitemap produit/SKU
  *  (Elles passent quand même à l'origine ; le SPA renvoie 404 si absente.)
  *
  *  ROUTES EXCLUES DU CACHE (toujours proxifiées, jamais mises en cache)
