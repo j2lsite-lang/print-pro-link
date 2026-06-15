@@ -14,6 +14,12 @@ export const MARGIN_COEFFICIENT = 1.5;
 export const DESIGN_FEE_BASE = 65;
 
 /**
+ * Forfait de livraison fixe appliqué une seule fois par demande de devis.
+ * Montant en EUR HT.
+ */
+export const FLAT_SHIPPING_HT = 11.9;
+
+/**
  * Round a price up to the nearest 0.10 € for clean display
  */
 function roundUp10(value: number): number {
