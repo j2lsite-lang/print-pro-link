@@ -865,7 +865,7 @@ export default function ProductDetail() {
         <span className="text-foreground">{product.titleSingle || product.name || sku}</span>
       </nav>
 
-      <div className="mb-8 flex flex-col sm:flex-row gap-6 items-start">
+      <div className="mb-8 flex flex-col lg:flex-row gap-8 items-start">
         <ProductGallery
           images={images}
           productName={product.titleSingle || product.name || sku}
