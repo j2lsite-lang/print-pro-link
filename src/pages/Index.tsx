@@ -106,7 +106,7 @@ export default function Index() {
   return (
     <>
       {/* ─── HERO ─── */}
-      <section className="relative overflow-hidden py-16 md:py-24">
+      <section className="relative overflow-hidden py-10 md:py-14">
         {/* Ambient glow */}
         <div className="pointer-events-none absolute -top-32 -right-24 h-[500px] w-[500px] rounded-full bg-primary opacity-[0.10] blur-[160px]" />
         <div className="pointer-events-none absolute -bottom-32 -left-24 h-[400px] w-[400px] rounded-full bg-primary opacity-[0.06] blur-[140px]" />
@@ -162,7 +162,7 @@ export default function Index() {
             </div>
 
             {/* Right visual */}
-            <div className="relative hidden h-[600px] lg:col-span-5 lg:block">
+            <div className="relative hidden h-[480px] lg:col-span-5 lg:block">
               <div className="absolute inset-0 overflow-hidden rounded-2xl border border-border bg-gradient-to-tr from-primary/20 to-transparent shadow-2xl">
                 {/* Dotted print texture */}
                 <div
@@ -178,7 +178,7 @@ export default function Index() {
                     <div className="h-1.5 w-1/2 rounded-full bg-foreground/20" />
                   </div>
                   <div className="relative">
-                    <div className="-ml-8 select-none font-display text-[180px] font-bold leading-none text-foreground/5">
+                    <div className="-ml-8 select-none font-display text-[140px] font-bold leading-none text-foreground/5">
                       CMYK
                     </div>
                     <div className="absolute bottom-0 right-0 p-8">
@@ -211,7 +211,7 @@ export default function Index() {
       </section>
 
       {/* ─── SERVICES ─── */}
-      <section id="services" className="py-12">
+      <section id="services" className="py-8">
         <div className="container">
           <h2 className="font-display text-2xl font-bold text-foreground text-center mb-8">
             Nos services
@@ -226,8 +226,8 @@ export default function Index() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 mb-3">
                     <s.icon className="h-5 w-5 text-primary" />
                   </div>
-                  <h3 className="font-display text-base font-semibold text-foreground">{s.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
+                  <h3 className="font-display text-[1.0625rem] font-semibold text-foreground">{s.title}</h3>
+                  <p className="mt-1 text-[0.9375rem] text-muted-foreground">{s.desc}</p>
                   <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
                     En savoir plus <ArrowRight className="h-3 w-3" />
                   </span>
