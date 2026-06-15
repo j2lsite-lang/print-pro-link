@@ -435,11 +435,14 @@ export default function ProductDetail() {
     if (!sku) return;
     setShippingLoading(true);
     try {
-      // Print.com expects item.options to carry the full configuration
-      // (including copies). A flat { sku, copies } triggers a 500
-      // "Cannot read properties of undefined (reading 'copies')".
+      // Reuse the exact machine options that produced a valid price (includes
+      // hidden required props like printingmethod). Falls back to the visible
+      // selection if a price hasn't resolved yet.
+      const resolved = resolvedOptionsRef.current;
+      const source =
+        resolved && Object.keys(resolved).length > 0 ? resolved : selectedOptions;
       const cleanOptions: Record<string, any> = {};
-      for (const [key, value] of Object.entries(selectedOptions)) {
+      for (const [key, value] of Object.entries(source)) {
         if (value !== undefined && value !== null && value !== "") {
           cleanOptions[key] = value;
         }
@@ -463,6 +466,33 @@ export default function ProductDetail() {
   const fetchPrice = useCallback(async () => {
     if (!sku || !product) return;
 
+    const allProps = product.properties || product.configurableProperties || [];
+
+    // Hidden property groups (reseller === "hidden") are not shown to the user
+    // but may still be REQUIRED by the API (e.g. printingmethod). We compute
+    // them here so they can be injected into the payload with their real value.
+    const hiddenSlugs = new Set<string>();
+    for (const group of product.propertyGroups || []) {
+      if (group.columnWidth?.reseller === "hidden") {
+        group.properties.forEach((s) => hiddenSlugs.add(s));
+      }
+    }
+
+    // Validation: block the call if a required VISIBLE option is missing,
+    // instead of sending an invalid payload.
+    for (const prop of allProps) {
+      if (prop.slug === "copies") continue;
+      if (hiddenSlugs.has(prop.slug)) continue;
+      if (!prop.required) continue;
+      if (!prop.options?.length) continue;
+      const hasNonNullable = prop.options.some((o) => !o.nullable);
+      if (hasNonNullable && !selectedOptions[prop.slug]) {
+        setPriceResult(null);
+        setPriceError(`Veuillez sélectionner « ${prop.title} ».`);
+        return;
+      }
+    }
+
     // Don't fetch if current combination (including copies) is excluded
     const checkSelection = { ...selectedOptions, copies: String(quantity) };
     if (isExcludedCombination(checkSelection, product.excludes)) {
@@ -484,6 +514,7 @@ export default function ProductDetail() {
         return;
       }
 
+      // Visible user selection.
       const cleanOptions: Record<string, any> = {};
       for (const [key, value] of Object.entries(selectedOptions)) {
         if (value !== undefined && value !== null && value !== "") {
@@ -491,28 +522,46 @@ export default function ProductDetail() {
         }
       }
 
-      const body: Record<string, any> = {
-        ...cleanOptions,
-        copies,
-      };
-
-      const data = await getPrice(sku, body);
-
-      if (data.error || data.message) {
-        setPriceError(data.error || data.message);
-        setPriceResult(null);
-      } else {
-        setPriceResult(data);
-        // Fetch shipping estimate for France
-        fetchShipping(copies);
+      // Inject hidden REQUIRED properties with the real value provided by
+      // Print.com (e.g. printingmethod). User selection takes precedence.
+      const hiddenRequired: Record<string, any> = {};
+      for (const prop of allProps) {
+        if (!hiddenSlugs.has(prop.slug)) continue;
+        if (!prop.required) continue;
+        const v = realOptionValue(prop);
+        if (v !== undefined) hiddenRequired[prop.slug] = v;
       }
+
+      const baseOptions = { ...hiddenRequired, ...cleanOptions };
+
+      console.log("[price] request context:", {
+        sku,
+        product: product.titleSingle || product.name || sku,
+        availableProps: allProps.map((p) => p.slug),
+        hiddenRequired: Object.keys(hiddenRequired),
+        selectedOptions: cleanOptions,
+        copies,
+      });
+
+      const { data, options } = await resolvePrice(
+        sku,
+        product,
+        baseOptions,
+        copies,
+        touchedKeysRef.current,
+      );
+
+      resolvedOptionsRef.current = options;
+      setPriceResult(data);
+      // Fetch shipping estimate for France with the resolved config.
+      fetchShipping(copies);
     } catch (err: any) {
-      console.error("[price] error:", err);
+      console.error("[price] error:", err?.message || err);
       setPriceResult(null);
-      // Show a more specific error from the API if available
+      resolvedOptionsRef.current = {};
       const msg = err?.message || "";
-      if (msg.includes("validate")) {
-        setPriceError("Configuration invalide. Vérifiez vos options.");
+      if (msg.includes("validate") || msg.includes("required") || msg.includes("excluded")) {
+        setPriceError("Configuration invalide pour ce produit. Modifiez vos options.");
       } else {
         setPriceError("Impossible de calculer le prix pour le moment.");
       }
