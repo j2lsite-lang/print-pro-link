@@ -52,27 +52,33 @@ export default function PriceSummary({
 }: PriceSummaryProps) {
   const summaryItems = configurableProps
     .filter((p) => selectedOptions[p.slug])
-    .slice(0, 8);
+    .slice(0, 10);
 
   const designFee = includeDesignFee ? DESIGN_FEE_BASE : 0;
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 space-y-4 sticky top-24">
+    <div className="rounded-xl border border-border bg-card/90 backdrop-blur-sm p-5 lg:p-6 space-y-5">
       <h3 className="font-display text-lg font-bold text-foreground">Récapitulatif</h3>
 
-      <div className="space-y-2 text-sm">
-        {summaryItems.map((prop) => (
-          <div key={prop.slug} className="flex justify-between gap-4">
-            <span className="text-muted-foreground truncate">{prop.title}</span>
-            <span className="text-primary font-medium text-right truncate max-w-[55%]">
-              {getOptionLabel(prop, selectedOptions[prop.slug])}
-            </span>
-          </div>
-        ))}
-      </div>
+      {/* Options list — one line per option, label left, full value right */}
+      {summaryItems.length > 0 && (
+        <div className="space-y-0">
+          {summaryItems.map((prop) => (
+            <div
+              key={prop.slug}
+              className="grid grid-cols-[1fr_auto] gap-3 py-2.5 border-b border-border/50 last:border-b-0"
+            >
+              <span className="text-sm text-muted-foreground">{prop.title}</span>
+              <span className="text-sm text-foreground font-medium text-right break-words max-w-[200px]">
+                {getOptionLabel(prop, selectedOptions[prop.slug])}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Design fee toggle */}
-      <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/50 p-3">
+      <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-3">
         <Checkbox
           id="design-fee"
           checked={includeDesignFee}
@@ -90,7 +96,8 @@ export default function PriceSummary({
         </label>
       </div>
 
-      <div className="border-t border-border pt-4">
+      {/* Price block */}
+      <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
         {priceLoading ? (
           <div className="flex items-center justify-center gap-2 py-3 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -108,10 +115,10 @@ export default function PriceSummary({
           </div>
         ) : priceResult ? (
           <div className="space-y-3">
-            <div className="space-y-1 text-sm">
+            <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Impression</span>
-                <span className="text-foreground">{getResalePrice(priceResult).toFixed(2)} €</span>
+                <span className="text-foreground font-medium">{getResalePrice(priceResult).toFixed(2)} €</span>
               </div>
               {priceResult?.deliveryDays && (
                 <p className="text-xs text-muted-foreground">
@@ -123,7 +130,7 @@ export default function PriceSummary({
                   <span className="text-muted-foreground flex items-center gap-1">
                     <Palette className="h-3 w-3" /> Maquette
                   </span>
-                  <span className="text-foreground">{DESIGN_FEE_BASE.toFixed(2)} €</span>
+                  <span className="text-foreground font-medium">{DESIGN_FEE_BASE.toFixed(2)} €</span>
                 </div>
               )}
 
@@ -159,11 +166,13 @@ export default function PriceSummary({
               ) : null}
             </div>
 
-            <div className="border-t border-border pt-2">
-              <p className="text-xs text-muted-foreground">Total HT (hors livraison)</p>
-              <p className="text-3xl font-bold text-foreground font-display">
+            {/* Total */}
+            <div className="border-t border-border pt-3 space-y-1">
+              <p className="text-xs text-muted-foreground">Prix estimatif HT</p>
+              <p className="text-3xl lg:text-4xl font-bold text-foreground font-display">
                 {(getResalePrice(priceResult) + designFee).toFixed(2)} €
               </p>
+              <p className="text-xs text-muted-foreground">Hors livraison</p>
             </div>
           </div>
         ) : (
@@ -180,7 +189,7 @@ export default function PriceSummary({
         size="lg"
       >
         <ShoppingCart className="mr-2 h-4 w-4" />
-        Ajouter au panier
+        Ajouter au devis
       </Button>
     </div>
   );
