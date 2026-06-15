@@ -499,13 +499,16 @@ export type Database = {
           currency: string
           email: string
           estimated_total: number | null
+          estimated_total_ht: number | null
           id: string
           items: Json
           message: string | null
           name: string
           phone: string | null
           postal_code: string | null
+          products_total_ht: number | null
           reference: string
+          shipping_amount_ht: number
           shipping_cost: number | null
           status: string
         }
@@ -517,13 +520,16 @@ export type Database = {
           currency?: string
           email: string
           estimated_total?: number | null
+          estimated_total_ht?: number | null
           id?: string
           items?: Json
           message?: string | null
           name: string
           phone?: string | null
           postal_code?: string | null
+          products_total_ht?: number | null
           reference: string
+          shipping_amount_ht?: number
           shipping_cost?: number | null
           status?: string
         }
@@ -535,13 +541,16 @@ export type Database = {
           currency?: string
           email?: string
           estimated_total?: number | null
+          estimated_total_ht?: number | null
           id?: string
           items?: Json
           message?: string | null
           name?: string
           phone?: string | null
           postal_code?: string | null
+          products_total_ht?: number | null
           reference?: string
+          shipping_amount_ht?: number
           shipping_cost?: number | null
           status?: string
         }
