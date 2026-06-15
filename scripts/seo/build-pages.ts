@@ -190,7 +190,9 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     const content = CATEGORY_CONTENT[slug];
     const cat = cats.find((c) => c.slug === slug && !c.parent_id);
     const subs = (cat && childrenOf.get(cat.id)) || [];
-    const nonEmptySubs = subs.filter((s) => (skuByCat.get(s.id)?.size || 0) > 0);
+    // A subcategory is "non-empty" only when it has real, resolvable products.
+    const nonEmptySubs = subs.filter((s) => productsForCat(s.id).length > 0);
+    const emptySubs = subs.filter((s) => productsForCat(s.id).length === 0);
     const crumb = [home, { name: "Catalogue", path: "/catalogue" }, { name: content.name, path: `/categorie/${slug}` }];
     const subLinks: LinkItem[] = nonEmptySubs.map((s) => ({ label: s.name, path: `/categorie/${slug}/${s.slug}` }));
     const relatedCats: LinkItem[] = CATEGORY_SLUGS.filter((s) => s !== slug).slice(0, 4)
@@ -222,9 +224,10 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       ],
     });
 
-    // ── ALL non-empty subcategories ──
+    // ── ALL non-empty subcategories (with real product listings) ──
     nonEmptySubs.forEach((sub, si) => {
       const subCrumb = [...crumb, { name: sub.name, path: `/categorie/${slug}/${sub.slug}` }];
+      const products = productsForCat(sub.id);
       const angles = [
         `Découvrez la sélection « ${sub.name} » de J2L Print, au sein de l'univers ${content.name}. Configurez votre produit en ligne — format, matière et finitions — et recevez votre commande partout en France.`,
         `Pour vos besoins en « ${sub.name} », J2L Print propose une gamme professionnelle dans la catégorie ${content.name}, avec un rendu fidèle et des finitions au choix.`,
@@ -238,6 +241,8 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         h1: sub.name,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
+        products,
+        productsHeading: `Nos produits ${sub.name.toLowerCase()}`,
         internalLinks: [
           { heading: "Catégorie", links: [{ label: content.name, path: `/categorie/${slug}` }] },
           ...(near.length ? [{ heading: "Sous-catégories proches", links: near }] : []),
@@ -245,8 +250,36 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         ],
         jsonLd: [
           breadcrumbLd(subCrumb),
-          collectionPageLd({ name: sub.name, description: `${sub.name} dans ${content.name}.`, path: `/categorie/${slug}/${sub.slug}`, items: [] }),
+          collectionPageLd({
+            name: sub.name,
+            description: `${sub.name} dans ${content.name}.`,
+            path: `/categorie/${slug}/${sub.slug}`,
+            items: products.map((p) => ({ name: p.name, path: `/products/${p.sku}` })),
+          }),
         ],
+      });
+    });
+
+    // ── Empty subcategories: keep reachable but noindex,follow and out of the
+    // sitemap (no products → thin page). Not linked from the parent category.
+    emptySubs.forEach((sub) => {
+      const subCrumb = [...crumb, { name: sub.name, path: `/categorie/${slug}/${sub.slug}` }];
+      pages.push({
+        path: `/categorie/${slug}/${sub.slug}`,
+        title: `${sub.name} — ${content.name}`,
+        description: `${sub.name} (${content.name.toLowerCase()}) : sélection en cours de constitution chez J2L Print. Découvrez nos autres produits ${content.name.toLowerCase()}.`,
+        h1: sub.name,
+        intro: [
+          `La sélection « ${sub.name} » est en cours de constitution. En attendant, découvrez l'ensemble de notre gamme ${content.name.toLowerCase()} et configurez votre produit en ligne.`,
+        ],
+        breadcrumb: subCrumb,
+        noindex: true,
+        internalLinks: [
+          { heading: "Catégorie", links: [{ label: content.name, path: `/categorie/${slug}` }] },
+          ...(subLinks.length ? [{ heading: "Sous-catégories disponibles", links: subLinks.slice(0, 6) }] : []),
+          { heading: "Nos services", links: SERVICE_LINKS },
+        ],
+        jsonLd: [breadcrumbLd(subCrumb)],
       });
     });
   }
