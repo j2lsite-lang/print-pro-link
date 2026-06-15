@@ -4,15 +4,29 @@ import { useCities } from "@/hooks/useCities";
 import { useSEO } from "@/hooks/useSEO";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// The only cities currently published as real, indexable pages (/ville/{slug}).
+// Keep this list in sync with PRIORITY_CITIES in scripts/seo/build-pages.ts.
+const PUBLISHED_CITY_SLUGS = new Set([
+  "epinal", "nancy", "metz", "strasbourg", "colmar", "mulhouse", "reims",
+  "troyes", "saint-die-des-vosges", "remiremont", "neufchateau", "luneville",
+  "thionville", "sarreguemines", "verdun", "chaumont",
+]);
+
 export default function CitiesIndex() {
-  const { data: cities, isLoading } = useCities();
+  const { data: allCities, isLoading } = useCities();
+
+  // Only show cities that have a real, published page — never link to weak,
+  // duplicated or noindex local pages.
+  const cities = (allCities || []).filter((c) => PUBLISHED_CITY_SLUGS.has(c.slug));
 
   useSEO({
-    title: "Imprimerie en ligne partout en France – Zones de livraison",
-    description: "J2L Print livre vos impressions dans toute la France : Paris, Lyon, Marseille, Strasbourg, Nancy, Épinal et plus de 270 villes. Imprimerie en ligne avec livraison rapide.",
+    title: "Nos villes desservies – Imprimerie en ligne J2L Print",
+    description:
+      "Découvrez les villes desservies par J2L Print : impression professionnelle livrée à Épinal, Nancy, Metz, Strasbourg, Mulhouse, Reims et dans le Grand Est.",
+    canonical: "https://j2lprint.fr/imprimerie",
   });
 
-  const regions = cities
+  const regions = cities.length
     ? [...new Set(cities.map((c) => c.region))].sort()
     : [];
 
@@ -20,12 +34,13 @@ export default function CitiesIndex() {
     <section className="py-12">
       <div className="container max-w-4xl">
         <h1 className="font-display text-3xl font-bold text-foreground mb-4">
-          Imprimerie en ligne partout en France
+          Nos villes desservies
         </h1>
         <p className="text-muted-foreground leading-relaxed mb-10">
-          J2L Print livre vos impressions dans toute la France. Retrouvez ci-dessous nos {cities?.length || ""} zones de livraison. 
-          Que vous soyez à Paris, Lyon, Marseille ou dans les Vosges, nous vous accompagnons avec la même 
-          qualité de service et des délais rapides.
+          J2L Print imprime et livre vos supports de communication partout en France.
+          Retrouvez ci-dessous les villes pour lesquelles nous avons préparé une page
+          dédiée. Votre ville n'y figure pas&nbsp;? Nous livrons malgré tout l'ensemble
+          du territoire&nbsp;: demandez simplement un devis.
         </p>
 
         {isLoading ? (
@@ -46,12 +61,12 @@ export default function CitiesIndex() {
             <div key={region} className="mb-8">
               <h2 className="font-display text-lg font-semibold text-foreground mb-3">{region}</h2>
               <div className="grid gap-2 sm:grid-cols-3 md:grid-cols-4">
-                {cities!
+                {cities
                   .filter((c) => c.region === region)
                   .map((city) => (
                     <Link
                       key={city.slug}
-                      to={`/imprimerie/${city.slug}`}
+                      to={`/ville/${city.slug}`}
                       className="glass-card px-4 py-3 text-sm text-muted-foreground hover:text-primary hover:shadow-elevated transition-all flex items-center gap-2"
                     >
                       <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
@@ -68,7 +83,7 @@ export default function CitiesIndex() {
             Votre ville n'est pas listée ?
           </h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Pas de panique ! Nous livrons dans toute la France métropolitaine. 
+            Pas de panique ! Nous livrons dans toute la France métropolitaine.
             Contactez-nous pour obtenir un devis personnalisé.
           </p>
           <div className="flex flex-wrap gap-3">
