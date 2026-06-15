@@ -92,3 +92,36 @@ export function faqLd(faq: FaqItem[]) {
     })),
   };
 }
+
+export function productLd(opts: {
+  name: string;
+  description: string;
+  sku: string;
+  path: string;
+  image?: string | null;
+  /** Real "starting from" price computed from the default configuration. */
+  fromPrice?: number | null;
+}) {
+  const ld: Record<string, any> = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: opts.name,
+    sku: opts.sku,
+    description: opts.description,
+    url: `${SITE_URL}${opts.path}`,
+    brand: { "@type": "Brand", name: SITE_NAME },
+  };
+  if (opts.image) ld.image = opts.image;
+  // Use AggregateOffer with lowPrice ("à partir de") — the price varies with the
+  // chosen options, so we never assert a single fixed price.
+  if (opts.fromPrice && opts.fromPrice > 0) {
+    ld.offers = {
+      "@type": "AggregateOffer",
+      priceCurrency: "EUR",
+      lowPrice: opts.fromPrice,
+      availability: "https://schema.org/InStock",
+      seller: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+    };
+  }
+  return ld;
+}
