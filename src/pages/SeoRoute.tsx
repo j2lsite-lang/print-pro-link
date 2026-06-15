@@ -64,6 +64,37 @@ export default function SeoRoute() {
           </section>
         ))}
 
+        {page.products && page.products.length > 0 && (
+          <section className="space-y-4">
+            <h2 className="text-xl font-semibold">{page.productsHeading || "Nos produits"}</h2>
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {page.products.map((p) => (
+                <li key={p.sku}>
+                  <Link
+                    to={`/products/${p.sku}`}
+                    className="group block rounded-2xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-elevated"
+                  >
+                    {p.image && (
+                      <div className="aspect-[4/3] mb-3 overflow-hidden rounded-lg bg-muted">
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          loading="lazy"
+                          className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                    )}
+                    <h3 className="font-display text-sm font-semibold text-card-foreground transition-colors group-hover:text-primary">
+                      {p.name}
+                    </h3>
+                    <span className="mt-1 block text-xs text-muted-foreground">Réf. {p.sku}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {page.faq && page.faq.length > 0 && (
           <section className="space-y-3">
             <h2 className="text-xl font-semibold">Questions fréquentes</h2>
