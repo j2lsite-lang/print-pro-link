@@ -44,15 +44,24 @@ const ANON = ENV.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 async function rest<T = any>(path: string): Promise<T[]> {
   if (!SUPABASE_URL || !ANON) return [];
+  const PAGE = 1000;
+  const out: T[] = [];
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-      headers: { apikey: ANON, Authorization: `Bearer ${ANON}` },
-    });
-    if (!res.ok) return [];
-    return (await res.json()) as T[];
+    for (let offset = 0; ; offset += PAGE) {
+      const sep = path.includes("?") ? "&" : "?";
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/${path}${sep}limit=${PAGE}&offset=${offset}`,
+        { headers: { apikey: ANON, Authorization: `Bearer ${ANON}` } },
+      );
+      if (!res.ok) break;
+      const rows = (await res.json()) as T[];
+      out.push(...rows);
+      if (rows.length < PAGE) break;
+    }
   } catch {
-    return [];
+    /* network failure → return whatever we have */
   }
+  return out;
 }
 
 interface Entry { path: string; priority: string; changefreq: string }
