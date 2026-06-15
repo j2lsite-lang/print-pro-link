@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
+// The Supabase client is imported dynamically inside the effect so it is fetched
+// after first paint and never weighs on the initial bundle / Total Blocking Time.
 
 interface AuthCtx {
   user: User | null;
