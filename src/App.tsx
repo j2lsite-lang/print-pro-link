@@ -73,6 +73,7 @@ const App = () => (
                 <Route path="/categorie/:parent/:child" element={<SeoRoute />} />
                 <Route path="/ville/:slug" element={<SeoRoute />} />
                 <Route path="/departement/:slug" element={<SeoRoute />} />
+                <Route path="/unsubscribe" element={<Unsubscribe />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
