@@ -9,7 +9,7 @@ import {
 } from "../../src/seo/content/locations";
 import { article } from "../../src/seo/content/fr";
 import {
-  ORGANIZATION, breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
+  breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
 } from "../../src/seo/schema";
 
 function readEnv(): Record<string, string> {
