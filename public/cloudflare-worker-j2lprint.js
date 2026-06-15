@@ -3,7 +3,9 @@
  *  J2L PRINT — Worker Cloudflare SEO complet
  * =============================================================================
  *  Date              : 2026-06-15
- *  Version           : 2.0.0  (remplace le proxy minimal « j2lprint-router »)
+ *  Version           : 2.1.0  (référentiel SEO explicite : villes, départements,
+ *                               régions documentées, catégories, sous-catégories,
+ *                               familles produits)
  *  Origine Lovable   : https://print-pro-link.lovable.app
  *  Domaine canonique : https://j2lprint.fr   (apex, sans www)
  *  Domaines publics  : https://j2lprint.fr , https://www.j2lprint.fr
@@ -27,32 +29,27 @@
  *
  *  ROUTES GÉRÉES (servies via l'origine, HTML pré-rendu préservé)
  *  -------------------------------------------------------------
- *    /                                  accueil
- *    /catalogue                         catalogue
- *    /categorie/{slug}                  8 catégories principales
- *    /categorie/{parent}/{enfant}       sous-catégories
- *    /products/{sku}                    fiche produit + configurateur Print.com
- *    /ville/{slug}                      16 villes publiées
- *    /departement/{slug}                10 départements publiés
- *    /imprimerie , /imprimerie/{slug}   pages imprimerie historiques
- *    /impression-numerique              service
- *    /grand-format                      service
- *    /supports-publicitaires            service
- *    /personnalisation                  service
- *    /blog , /livraison , pages légales
- *    /sitemap.xml
- *    /sitemaps/static.xml
- *    /sitemaps/categories.xml
- *    /sitemaps/subcategories.xml
- *    /sitemaps/cities.xml
- *    /sitemaps/departments.xml
- *    /robots.txt
+ *    6 routes statiques SEO        : /, /catalogue, /impression-numerique,
+ *                                    /grand-format, /supports-publicitaires,
+ *                                    /personnalisation
+ *    8 catégories principales      : voir CATEGORIES
+ *    47 sous-catégories            : voir SUBCATEGORIES
+ *    16 villes publiées            : voir CITIES
+ *    10 départements publiés       : voir DEPARTMENTS
+ *    2 régions administratives     : uniquement documentées via départements,
+ *                                    aucune route /region publiée
+ *    8 familles produits SEO       : voir PRODUCT_FAMILIES
+ *    Produits Print.com réels      : /products/{sku}, proxifié uniquement ;
+ *                                    aucun SKU n'est créé, réécrit ou caché côté API
+ *    Routes app publiques          : /products, /products/category/{slug},
+ *                                    /blog, /livraison, pages légales
+ *    Sitemaps / robots             : /sitemap.xml, /sitemaps/*.xml, /robots.txt
  *
- *  ROUTES NON IMPLÉMENTÉES (donc NI gérées NI advertised) :
+ *  ROUTES NON ADVERTISÉES EN SEO :
  *    /produit/{slug}              -> n'existe pas (route réelle = /products/{sku})
- *    /region/{slug}              -> aucune page région pré-rendue
- *    /sitemaps/regions.xml       -> aucun sitemap région
- *    /sitemaps/products.xml      -> aucun sitemap produit
+ *    /region/{slug}               -> aucune page région pré-rendue
+ *    /sitemaps/regions.xml        -> aucun sitemap région
+ *    /sitemaps/products.xml       -> aucun sitemap produit/SKU
  *  (Elles passent quand même à l'origine ; le SPA renvoie 404 si absente.)
  *
  *  ROUTES EXCLUES DU CACHE (toujours proxifiées, jamais mises en cache)
@@ -96,12 +93,92 @@ const CATEGORIES = [
   "textiles-accessoires", "panneaux-baches-vinyles-toiles",
 ]; // 8 catégories principales (+ sous-catégories /categorie/{parent}/{enfant})
 
+const SUBCATEGORIES = [
+  "emballages-sacs/emballages-alimentaires",
+  "emballages-sacs/emballages-cadeaux",
+  "emballages-sacs/emballages-expedition",
+  "emballages-sacs/sacs-tote-bags",
+  "etiquettes-stickers/accessoires-autocollants",
+  "etiquettes-stickers/autocollants-grand-format",
+  "etiquettes-stickers/autocollants-rouleaux",
+  "etiquettes-stickers/films-adhesifs-type",
+  "etiquettes-stickers/petits-autocollants",
+  "etiquettes-stickers/rubans-adhesifs",
+  "impression-papier/brochures-magazines",
+  "impression-papier/calendriers",
+  "impression-papier/cartes-visite-enveloppes",
+  "impression-papier/catering-restaurants",
+  "impression-papier/courriers-creatifs",
+  "impression-papier/flyers-depliants-affiches",
+  "impression-papier/papeterie",
+  "objets-publicitaires-cadeaux/articles-papeterie",
+  "objets-publicitaires-cadeaux/bien-etre",
+  "objets-publicitaires-cadeaux/gadgets",
+  "objets-publicitaires-cadeaux/general",
+  "objets-publicitaires-cadeaux/nourriture-boissons",
+  "objets-publicitaires-cadeaux/saisonnalite",
+  "objets-publicitaires-cadeaux/verrerie-vaisselle-gourdes",
+  "panneaux-baches-vinyles-toiles/baches-banderoles",
+  "panneaux-baches-vinyles-toiles/films-adhesifs",
+  "panneaux-baches-vinyles-toiles/lookbooks",
+  "panneaux-baches-vinyles-toiles/panneaux-accessoires",
+  "panneaux-baches-vinyles-toiles/toiles-textiles",
+  "publicite-exterieure/bannieres-structures-fixation",
+  "publicite-exterieure/drapeaux-beachflags-accessoires",
+  "publicite-exterieure/panneaux-accessoires-ext",
+  "publicite-exterieure/stop-trottoirs-panneaux",
+  "publicite-exterieure/tonnelles-mobilier-exterieur",
+  "publicite-interieure/mobilier-interieur",
+  "publicite-interieure/panneaux-accessoires-int",
+  "publicite-interieure/presentoirs-materiel-plv",
+  "publicite-interieure/roll-ups",
+  "publicite-interieure/stands-materiel-expo",
+  "publicite-interieure/toiles-textiles-deco-interieure",
+  "textiles-accessoires/accessoires",
+  "textiles-accessoires/cuisine-sejour",
+  "textiles-accessoires/marquage-transferts-textiles",
+  "textiles-accessoires/produits-bebes",
+  "textiles-accessoires/textiles-bain",
+  "textiles-accessoires/textiles-sport",
+  "textiles-accessoires/vetements",
+]; // 47 sous-catégories publiées dans /sitemaps/subcategories.xml
+
 const SERVICES = [
   "impression-numerique", "grand-format", "supports-publicitaires", "personnalisation",
 ];
 
-/* Aucune page région ni route /produit : on n'en advertise aucune. */
-const REGIONS = []; // 0 région publiée
+const REGIONS = [
+  "grand-est", "bourgogne-franche-comte",
+]; // 2 régions documentées via départements ; 0 route /region publiée
+
+const PRODUCT_FAMILIES = [
+  "flyers-et-depliants",
+  "cartes-de-visite",
+  "affiches-et-panneaux",
+  "baches-et-banderoles",
+  "objets-publicitaires",
+  "textiles-personnalises",
+  "plv-et-supports-evenementiels",
+  "stickers-et-autocollants",
+]; // Familles SEO éditoriales ; pas de liste SKU, pas de modification API Print.com
+
+const STATIC_SEO_PATHS = [
+  "/", "/catalogue", "/impression-numerique", "/grand-format",
+  "/supports-publicitaires", "/personnalisation",
+];
+
+const APP_PUBLIC_PATH_PREFIXES = [
+  "/products", "/products/category/", "/blog", "/livraison", "/mentions-legales",
+  "/cgv", "/politique-retours", "/politique-confidentialite", "/imprimerie",
+];
+
+const MANAGED_SEO_PATHS = new Set([
+  ...STATIC_SEO_PATHS,
+  ...CATEGORIES.map((slug) => `/categorie/${slug}`),
+  ...SUBCATEGORIES.map((slug) => `/categorie/${slug}`),
+  ...CITIES.map((slug) => `/ville/${slug}`),
+  ...DEPARTMENTS.map((slug) => `/departement/${slug}`),
+]);
 
 /* ---------------------------------------------------------------------------
  *  Helpers
@@ -168,7 +245,7 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/2.0.0");
+  headers.set("X-Worker", "j2lprint-seo/2.1.0");
 }
 
 /* ---------------------------------------------------------------------------
