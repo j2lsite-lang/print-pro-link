@@ -106,29 +106,105 @@ export default function Index() {
   return (
     <>
       {/* ─── HERO ─── */}
-      <section className="py-10 md:py-16">
-        <div className="container max-w-3xl">
-          {/* Left card */}
-          <div className="glass-card p-6 md:p-8 flex flex-col justify-center">
-            <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight text-foreground">
-              <span className="text-primary">J2L Print</span> — Votre imprimerie en ligne
-            </h1>
-            <p className="mt-4 text-muted-foreground leading-relaxed max-w-lg">
-              Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires.
-              Commandez en ligne, nous livrons partout. Devis gratuit sous 24h.
-            </p>
-            <div className="flex flex-wrap gap-2 mt-6">
-              <span className="tag">🖨️ Offset & numérique</span>
-              <span className="tag">🚚 Livraison partout</span>
-              <span className="tag">📐 Sur mesure</span>
-              <span className="tag">✅ Vérif. PDF</span>
-            </div>
-            <div className="flex flex-wrap gap-3 mt-8">
-              <Button asChild className="rounded-full bg-primary text-primary-foreground font-bold hover:brightness-95">
+      <section className="relative overflow-hidden py-16 md:py-24">
+        {/* Ambient glow */}
+        <div className="pointer-events-none absolute -top-32 -right-24 h-[500px] w-[500px] rounded-full bg-primary opacity-[0.10] blur-[160px]" />
+        <div className="pointer-events-none absolute -bottom-32 -left-24 h-[400px] w-[400px] rounded-full bg-primary opacity-[0.06] blur-[140px]" />
+
+        <div className="container relative z-10">
+          <div className="grid items-center gap-12 lg:grid-cols-12">
+            {/* Left content */}
+            <div className="flex flex-col items-start lg:col-span-7">
+              {/* Feature chips */}
+              <div className="mb-8 flex flex-wrap gap-2">
+                <span className="flex items-center gap-2 rounded-2xl border border-border bg-foreground/5 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-primary">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
+                  Offset & numérique
+                </span>
+                <span className="rounded-2xl border border-border bg-foreground/5 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Livraison partout
+                </span>
+                <span className="rounded-2xl border border-border bg-foreground/5 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Sur mesure
+                </span>
+                <span className="rounded-2xl border border-border bg-foreground/5 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Vérif. PDF
+                </span>
+              </div>
+
+              {/* Headline */}
+              <h1 className="mb-8 font-display text-4xl font-bold leading-[0.95] tracking-tight text-foreground sm:text-5xl lg:text-7xl">
+                <span className="text-primary">J2L Print</span>
+                <br />
+                Votre imprimerie
+                <br />
+                <span className="relative inline-block">
+                  en ligne
+                  <span className="absolute bottom-1 left-0 h-1 w-full rounded-full bg-primary/30" />
+                </span>
+              </h1>
+
+              {/* Subtext */}
+              <p className="mb-10 max-w-xl text-lg leading-relaxed text-muted-foreground">
+                Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires.{" "}
+                <span className="text-foreground/90">Commandez en ligne, nous livrons partout.</span> Devis gratuit sous 24h.
+              </p>
+
+              {/* CTA */}
+              <Button
+                asChild
+                className="rounded-2xl bg-primary px-8 py-6 text-lg font-bold text-primary-foreground transition-all duration-300 hover:scale-105 hover:brightness-95"
+              >
                 <Link to="/products">
-                  Voir le catalogue <ArrowRight className="ml-2 h-4 w-4" />
+                  Voir le catalogue <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
+            </div>
+
+            {/* Right visual */}
+            <div className="relative hidden h-[600px] lg:col-span-5 lg:block">
+              <div className="absolute inset-0 overflow-hidden rounded-2xl border border-border bg-gradient-to-tr from-primary/20 to-transparent shadow-2xl">
+                {/* Dotted print texture */}
+                <div
+                  className="absolute inset-0 opacity-20 mix-blend-overlay"
+                  style={{
+                    backgroundImage: "radial-gradient(hsl(var(--primary)) 1px, transparent 1px)",
+                    backgroundSize: "16px 16px",
+                  }}
+                />
+                <div className="absolute inset-12 flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <div className="h-1.5 w-1/3 rounded-full bg-primary" />
+                    <div className="h-1.5 w-1/2 rounded-full bg-foreground/20" />
+                  </div>
+                  <div className="relative">
+                    <div className="-ml-8 select-none font-display text-[180px] font-bold leading-none text-foreground/5">
+                      CMYK
+                    </div>
+                    <div className="absolute bottom-0 right-0 p-8">
+                      <div className="flex gap-2">
+                        <span className="h-8 w-8 rounded-full opacity-60 mix-blend-screen" style={{ background: "#00FFFF" }} />
+                        <span className="h-8 w-8 rounded-full opacity-60 mix-blend-screen" style={{ background: "#FF00FF" }} />
+                        <span className="h-8 w-8 rounded-full opacity-60 mix-blend-screen" style={{ background: "#FFFF00" }} />
+                        <span className="h-8 w-8 rounded-full border border-border opacity-60 mix-blend-screen" style={{ background: "#000000" }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating accent card */}
+              <div className="absolute -bottom-6 -left-12 max-w-[280px] rounded-2xl border border-border bg-foreground/5 p-6 shadow-2xl backdrop-blur-xl">
+                <div className="mb-3 flex items-center gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    <CheckCircle className="h-5 w-5" />
+                  </div>
+                  <span className="font-medium text-foreground">Qualité Pro</span>
+                </div>
+                <p className="text-sm leading-snug text-muted-foreground">
+                  Contrôle manuel de chaque fichier avant impression.
+                </p>
+              </div>
             </div>
           </div>
         </div>
