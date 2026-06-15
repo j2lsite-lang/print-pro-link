@@ -122,6 +122,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       "Parcourez l'ensemble de nos univers d'impression. Du flyer à la bâche grand format, chaque produit se configure en ligne avec ses formats, matières et finitions.",
     ],
     breadcrumb: [home, { name: "Catalogue", path: "/catalogue" }],
+    productGrid: {
+      heading: "Supports les plus demandés",
+      intro: "Un aperçu des produits les plus commandés. Cliquez pour configurer le vôtre.",
+      cards: PRODUCT_CARDS,
+    },
     internalLinks: [
       { heading: "Catégories", links: CATEGORY_SLUGS.map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` })) },
     ],
