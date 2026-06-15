@@ -64,7 +64,7 @@ function renderBreadcrumb(items: SeoPage["breadcrumb"]): string {
   return `<nav aria-label="Fil d'Ariane" class="seo-breadcrumb"><ol>${lis}</ol></nav>`;
 }
 
-function renderLinkGroup(g: SeoPage["internalLinks"] extends (infer T)[] ? T : never): string {
+function renderLinkGroup(g: LinkGroup): string {
   const links = g.links
     .map((l) =>
       l.external
