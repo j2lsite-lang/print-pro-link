@@ -30,14 +30,6 @@ export interface ContentSection {
   bullets?: string[];
 }
 
-export interface ProductItem {
-  /** real Print.com SKU — links to the live configurator at /products/{sku} */
-  sku: string;
-  name: string;
-  /** real catalog thumbnail (CMS), never a placeholder/fake */
-  image?: string | null;
-}
-
 export interface SeoPage {
   /** canonical path, e.g. "/categorie/impression-papier" */
   path: string;
@@ -48,10 +40,11 @@ export interface SeoPage {
   intro: string[];
   breadcrumb: BreadcrumbItem[];
   sections?: ContentSection[];
-  /** real catalog products shown on the page (e.g. a subcategory listing) */
-  products?: ProductItem[];
-  /** heading shown above the products grid */
-  productsHeading?: string;
+  /**
+   * Optional call-to-action button toward the existing Print.com catalog.
+   * SEO pages never fetch or embed the catalog themselves — they only link to it.
+   */
+  cta?: { label: string; path: string };
   internalLinks?: LinkGroup[];
   faq?: FaqItem[];
   /** JSON-LD blocks already shaped for schema.org */
