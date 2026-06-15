@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSEO } from "@/hooks/useSEO";
-import { supabase } from "@/integrations/supabase/client";
+// Supabase is loaded on demand (only when a form is actually submitted) so its
+// client never weighs on the homepage's initial JavaScript / Total Blocking Time.
 import { useToast } from "@/hooks/use-toast";
 import imgImpression from "@/assets/services/impression-numerique.jpg";
 import imgGrandFormat from "@/assets/services/grand-format.jpg";
@@ -63,6 +64,7 @@ export default function Index() {
     setDevisLoading(true);
     const form = devisFormRef.current!;
     const formData = new FormData(form);
+    const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase.from("devis_requests").insert({
       name: formData.get("name") as string,
       email: formData.get("email") as string,
@@ -84,6 +86,7 @@ export default function Index() {
     setCallbackLoading(true);
     const form = callbackFormRef.current!;
     const formData = new FormData(form);
+    const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase.from("callback_requests").insert({
       name: formData.get("cb_name") as string,
       phone: formData.get("cb_phone") as string,
