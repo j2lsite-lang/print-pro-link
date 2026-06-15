@@ -3,7 +3,7 @@
 // static HTML shell, and to build per-route <head>. Output must be valid,
 // crawler-readable HTML present in "view source" without executing JS.
 
-import type { SeoPage } from "./types";
+import type { SeoPage, LinkGroup } from "./types";
 
 export const SITE_URL = "https://j2lprint.fr";
 export const SITE_NAME = "J2L Print";
@@ -64,7 +64,7 @@ function renderBreadcrumb(items: SeoPage["breadcrumb"]): string {
   return `<nav aria-label="Fil d'Ariane" class="seo-breadcrumb"><ol>${lis}</ol></nav>`;
 }
 
-function renderLinkGroup(g: SeoPage["internalLinks"] extends (infer T)[] ? T : never): string {
+function renderLinkGroup(g: LinkGroup): string {
   const links = g.links
     .map((l) =>
       l.external
@@ -123,6 +123,9 @@ export function injectIntoShell(shell: string, page: SeoPage): string {
     .replace(/<link\s+rel="canonical"[^>]*>/i, "")
     .replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, "")
     .replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, "");
+  // Remove the static <noscript> fallback: prerendered pages now carry real
+  // crawlable content inside #root, so the fallback would duplicate the H1.
+  html = html.replace(/<noscript>[\s\S]*?<\/noscript>/i, "");
   const head = renderHead(page);
   html = html.replace(/<\/head>/i, `    ${head}\n  </head>`);
   // Inject prerendered content inside the (empty) #root div.

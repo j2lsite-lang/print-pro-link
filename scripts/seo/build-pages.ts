@@ -9,7 +9,7 @@ import {
 } from "../../src/seo/content/locations";
 import { article } from "../../src/seo/content/fr";
 import {
-  ORGANIZATION, breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
+  breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
 } from "../../src/seo/schema";
 
 function readEnv(): Record<string, string> {
@@ -99,10 +99,12 @@ export async function buildAllPages(): Promise<SeoPage[]> {
   // ── Homepage ──
   pages.push({
     path: "/",
-    title: "J2L Print — Imprimerie en ligne professionnelle",
+    // Must match the runtime homepage (src/pages/Index.tsx useSEO + H1) so the
+    // prerendered head/H1 is identical to what React renders — no divergence.
+    title: "J2L Print – Imprimerie en ligne | Impression & supports publicitaires",
     description:
-      "Imprimerie en ligne : flyers, cartes de visite, banderoles, panneaux et goodies personnalisés. Configuration en ligne, prix transparents, livraison partout en France.",
-    h1: "Votre imprimerie en ligne professionnelle",
+      "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. Devis gratuit, nous livrons partout.",
+    h1: "J2L Print — Votre imprimerie en ligne",
     intro: [
       "J2L Print imprime tous vos supports de communication et vous livre partout en France. Configurez votre produit en ligne, validez votre fichier, recevez votre commande.",
     ],
@@ -111,7 +113,9 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       { heading: "Nos univers", links: CATEGORY_SLUGS.map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` })) },
       { heading: "Nos services", links: SERVICE_LINKS },
     ],
-    jsonLd: [ORGANIZATION],
+    // Organization JSON-LD lives once in the static index.html shell (sitewide);
+    // don't re-emit it here or the homepage would carry a duplicate.
+    jsonLd: [],
   });
 
   // ── Catalogue ──
