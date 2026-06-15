@@ -284,6 +284,44 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     });
   }
 
+  // ── Service landing pages (4) ──
+  // Mirror the published React routes so the prerendered HTML carries the
+  // exact title/description/H1, a self-referencing canonical, real content,
+  // a visible breadcrumb, internal links and WebPage + BreadcrumbList +
+  // Service JSON-LD.
+  for (const svc of SERVICE_CONTENT) {
+    const path = `/${svc.slug}`;
+    const crumb = [home, { name: svc.name, path }];
+    const otherServices: LinkItem[] = SERVICE_CONTENT
+      .filter((s) => s.slug !== svc.slug)
+      .map((s) => ({ label: s.name, path: `/${s.slug}` }));
+    pages.push({
+      path,
+      title: svc.title,
+      description: svc.description,
+      h1: svc.h1,
+      intro: svc.intro,
+      breadcrumb: crumb,
+      sections: [
+        { heading: svc.solutionsHeading, bullets: svc.solutions },
+        ...(svc.closing ? [{ heading: "Bon à savoir", paragraphs: svc.closing }] : []),
+      ],
+      faq: svc.faq,
+      internalLinks: [
+        { heading: "Nos univers", links: CATEGORY_SLUGS.slice(0, 6).map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` })) },
+        { heading: "Nos autres services", links: otherServices },
+        { heading: "Catalogue", links: [{ label: "Voir tout le catalogue", path: "/catalogue" }] },
+      ],
+      jsonLd: [
+        breadcrumbLd(crumb),
+        webPageLd({ name: svc.h1, description: svc.description, path }),
+        serviceLd({ name: svc.h1, description: svc.description, areaServed: "France" }),
+        ...(svc.faq && svc.faq.length ? [faqLd(svc.faq)] : []),
+      ],
+      ogType: "website",
+    });
+  }
+
   return pages;
 }
 
