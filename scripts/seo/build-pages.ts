@@ -232,8 +232,9 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     });
   }
 
-  // ── Cities (priority) ──
-  const cityNameBySlug = new Map(cityRows.map((c) => [c.slug, c.name]));
+  // ── Geographic pages (599 cities / 101 departments / 18 regions) ──
+  const cityBySlug = new Map(geo.cities.map((c) => [c.slug, c]));
+  const deptBySlug = new Map(geo.departments.map((d) => [d.slug, d]));
   const variedCats = () => CATEGORY_LINKS_VARIED.map((l) => ({ label: l.anchor, path: l.path }));
   const variedServices = () => SERVICE_LINKS_VARIED.map((l) => ({ label: l.anchor, path: l.path }));
   const actionLinks = [
@@ -241,162 +242,219 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     { label: "voir tout le catalogue", path: "/catalogue" },
   ];
 
-  for (const c of cityRows) {
+  // ── Cities ──
+  for (const gc of geo.cities) {
+    const profile = CITY_PROFILES[gc.slug];
+    const neighbors: NeighborRef[] = (gc.nearbyCitySlugs || [])
+      .filter((s) => cityBySlug.has(s))
+      .slice(0, 6)
+      .map((s) => ({ name: cityBySlug.get(s)!.name, slug: s }));
+    const gen: GenCity = {
+      name: gc.name,
+      slug: gc.slug,
+      cp: gc.postalCodes[0] || "",
+      department: gc.departmentName,
+      departmentSlug: gc.departmentSlug,
+      region: gc.regionName,
+      regionSlug: gc.regionSlug,
+      neighbors,
+      economy: profile?.economy,
+      sectors: profile?.sectors,
+      audiences: profile?.audiences,
+      events: profile?.events,
+    };
+    const copy = cityCopy(gen);
+    const heroVariant = (profile?.hero ?? ((seedOf(gc.slug) % 3) + 1)) as 1 | 2 | 3;
     const crumb = [
       home,
       { name: "Zones desservies", path: "/imprimerie" },
-      { name: c.region, path: `/departement/${slugify(c.region)}` },
-      { name: c.department, path: `/departement/${slugify(c.department)}` },
-      { name: c.name, path: `/ville/${c.slug}` },
+      { name: gc.regionName, path: `/region/${gc.regionSlug}` },
+      { name: gc.departmentName, path: `/departement/${gc.departmentSlug}` },
+      { name: gc.name, path: `/ville/${gc.slug}` },
     ];
-    const cart = article(c.department);
-    const faq = cityFaq(c);
-    const profile = CITY_PROFILES[c.slug];
-    const heroImg = HERO_CITY_IMAGES[profile?.hero ?? 1];
-    const deptSlug = slugify(c.department);
-    const neighborLinks = (profile?.neighbors || [])
-      .filter((s) => cityNameBySlug.has(s))
-      .slice(0, 6)
-      .map((s) => ({ label: cityNameBySlug.get(s)!, path: `/ville/${s}` }));
-    const official = CITY_OFFICIAL[c.slug];
+    const dep = article(gc.departmentName);
+    const reg = article(gc.regionName);
+    const official = CITY_OFFICIAL[gc.slug];
+    const ext: LinkItem[] = [];
+    if (official) ext.push({ label: official.label, path: official.url, external: true });
+    if (gc.regionSlug === "grand-est") ext.push(CCI_GRAND_EST);
 
     pages.push({
-      path: `/ville/${c.slug}`,
-      title: `Imprimerie en ligne à ${c.name} — livraison ${cart.de}`,
-      description: `Impression professionnelle livrée à ${c.name} (${c.cp}) : flyers, cartes de visite, banderoles et PLV. Commande en ligne, livraison ${cart.dans}.`,
-      h1: `Imprimerie en ligne pour les professionnels à ${c.name}`,
+      path: `/ville/${gc.slug}`,
+      title: copy.title,
+      description: copy.description,
+      h1: copy.h1,
       hero: {
-        image: heroImg,
-        imageAlt: `Impression et supports de communication livrés à ${c.name}`,
-        eyebrow: "Imprimerie en ligne",
-        tagline: `Configurez vos supports en ligne et recevez votre devis personnalisé pour une livraison à ${c.name} et ${cart.dans}.`,
+        image: HERO_CITY_IMAGES[heroVariant],
+        imageAlt: `Impression et supports de communication livrés à ${gc.name}`,
+        eyebrow: copy.heroEyebrow,
+        tagline: copy.heroTagline,
         ctas: [
           { label: "Voir le catalogue", path: "/catalogue", variant: "primary" },
           { label: "Demander un devis", path: "/#devis", variant: "secondary" },
         ],
       },
-      intro: cityIntro(c),
+      intro: copy.intro,
       breadcrumb: crumb,
-      sections: citySections(c),
-      productGrid: {
-        heading: `Produits les plus demandés à ${c.name}`,
-        intro: `Les supports les plus commandés par les professionnels ${de(c.name)}. Cliquez pour configurer le vôtre dans le catalogue.`,
-        cards: PRODUCT_CARDS,
-      },
+      sections: copy.sections,
+      productGrid: { heading: copy.productGridHeading, intro: copy.productGridIntro, cards: PRODUCT_CARDS },
       cta: { label: "Voir le catalogue", path: "/catalogue" },
-      faq,
+      faq: copy.faq,
       internalLinks: [
-        ...(neighborLinks.length ? [{ heading: "Villes proches desservies", links: neighborLinks }] : []),
+        ...(neighbors.length
+          ? [{ heading: "Villes proches desservies", links: neighbors.map((n) => ({ label: n.name, path: `/ville/${n.slug}` })) }]
+          : []),
         { heading: "Nos univers d'impression", links: variedCats() },
         { heading: "Nos services", links: variedServices() },
-        { heading: "Votre département", links: [{ label: `Impression ${cart.dans}`, path: `/departement/${deptSlug}` }] },
+        {
+          heading: "Votre territoire",
+          links: [
+            { label: `Impression ${dep.dans}`, path: `/departement/${gc.departmentSlug}` },
+            { label: `Impression ${reg.dans}`, path: `/region/${gc.regionSlug}` },
+          ],
+        },
         { heading: "Passez à l'action", links: actionLinks },
       ],
-      externalLinks: [
-        ...(official ? [{ label: official.label, path: official.url, external: true }] : []),
-        CCI_GRAND_EST,
-      ],
+      ...(ext.length ? { externalLinks: ext } : {}),
       jsonLd: [
         breadcrumbLd(crumb),
-        webPageLd({ name: `Impression à ${c.name}`, description: `Impression en ligne livrée à ${c.name}.`, path: `/ville/${c.slug}` }),
-        serviceLd({ name: `Impression pour les professionnels à ${c.name}`, description: `Impression en ligne avec livraison à ${c.name} et ${cart.dans}.`, areaServed: c.name }),
-        faqLd(faq),
+        webPageLd({ name: `Impression à ${gc.name}`, description: `Impression en ligne livrée à ${gc.name}.`, path: `/ville/${gc.slug}` }),
+        serviceLd({ name: `Impression pour les professionnels à ${gc.name}`, description: `Impression en ligne avec livraison à ${gc.name} et ${dep.dans}.`, areaServed: gc.name }),
+        faqLd(copy.faq),
       ],
     });
   }
 
-  // ── Departments (priority) ──
-  for (const d of PRIORITY_DEPARTMENTS) {
+  // ── Departments ──
+  for (const gd of geo.departments) {
+    const dp = DEPT_PROFILES[gd.slug];
+    const cityLinks = gd.citySlugs
+      .filter((s) => cityBySlug.has(s))
+      .map((s) => ({ label: cityBySlug.get(s)!.name, path: `/ville/${s}` }));
+    const gen: GenDept = {
+      name: gd.name,
+      slug: gd.slug,
+      code: gd.code,
+      region: gd.regionName,
+      regionSlug: gd.regionSlug,
+      cityNames: cityLinks.map((l) => l.label),
+      economy: dp?.economy,
+      sectors: dp?.sectors,
+    };
+    const copy = deptCopy(gen);
     const crumb = [
       home,
       { name: "Zones desservies", path: "/imprimerie" },
-      { name: d.region, path: `/departement/${slugify(d.region)}` },
-      { name: d.name, path: `/departement/${d.slug}` },
+      { name: gd.regionName, path: `/region/${gd.regionSlug}` },
+      { name: gd.name, path: `/departement/${gd.slug}` },
     ];
-    const citiesHere = cityRows.filter((c) => slugify(c.department) === d.slug);
-    const art = article(d.name);
-    const dp = DEPT_PROFILES[d.slug];
-    const neighborDepts = (dp?.neighbors || [])
-      .filter((s) => PRIORITY_DEPARTMENTS.some((x) => x.slug === s))
-      .map((s) => {
-        const nd = PRIORITY_DEPARTMENTS.find((x) => x.slug === s)!;
-        return { label: nd.name, path: `/departement/${s}` };
-      });
-    const official = DEPT_OFFICIAL[d.slug];
-    const deptFaq = [
-      {
-        q: `Livrez-vous partout ${art.dans} ?`,
-        a: `Oui. J2L Print livre l'ensemble du département ${d.name}, des grandes villes aux communes rurales, directement à votre adresse.`,
-      },
-      {
-        q: "Faut-il se déplacer pour commander ?",
-        a: `Non. Tout se fait en ligne : configuration, validation du fichier et suivi. J2L Print n'a pas d'imprimerie physique ${art.dans}.`,
-      },
-      {
-        q: "Quels professionnels accompagnez-vous ?",
-        a: `${(dp?.sectors || ["Commerces", "Artisans", "Associations", "Collectivités"]).slice(0, 4).join(", ")} et toutes les organisations ${art.de}.`,
-      },
-      {
-        q: "Comment obtenir un devis ?",
-        a: "Décrivez votre besoin dans le formulaire de devis en ligne : nous vous répondons avec une proposition personnalisée.",
-      },
-    ];
+    const neighborDepts = (gd.neighborDepartmentSlugs || [])
+      .filter((s) => deptBySlug.has(s))
+      .map((s) => ({ label: deptBySlug.get(s)!.name, path: `/departement/${s}` }));
+    const reg = article(gd.regionName);
+    const official = DEPT_OFFICIAL[gd.slug];
+    const ext: LinkItem[] = [];
+    if (official) ext.push({ label: official.label, path: official.url, external: true });
+    if (gd.regionSlug === "grand-est") ext.push(CCI_GRAND_EST);
 
     pages.push({
-      path: `/departement/${d.slug}`,
-      title: `Impression en ligne ${art.dans} (${d.region})`,
-      description: `Imprimerie en ligne livrant ${art.dans} : supports professionnels, prix transparents, commande à distance et livraison locale.`,
-      h1: `Impression professionnelle et supports personnalisés ${art.dans}`,
+      path: `/departement/${gd.slug}`,
+      title: copy.title,
+      description: copy.description,
+      h1: copy.h1,
       hero: {
-        image: deptHero(d.slug),
-        imageAlt: `Impression et supports de communication livrés ${art.dans}`,
-        eyebrow: `Imprimerie en ligne · ${d.region}`,
-        tagline: `Commandez vos supports en ligne et faites-vous livrer ${art.dans}, des grandes villes aux communes rurales.`,
+        image: deptHero(gd.slug),
+        imageAlt: `Impression et supports de communication livrés ${article(gd.name).dans}`,
+        eyebrow: copy.heroEyebrow,
+        tagline: copy.heroTagline,
         ctas: [
           { label: "Voir le catalogue", path: "/catalogue", variant: "primary" },
           { label: "Demander un devis", path: "/#devis", variant: "secondary" },
         ],
       },
-      intro: [
-        `${dp?.economy || `Le département ${d.name} réunit un tissu varié de professionnels.`} J2L Print accompagne les professionnels ${art.de} (${d.region}) avec une imprimerie en ligne complète : vous commandez à distance et nous livrons sur place.`,
-        `Aucune boutique physique n'est nécessaire : la configuration, la validation du fichier et la livraison se font en ligne ${art.dans}.`,
-      ],
+      intro: copy.intro,
       breadcrumb: crumb,
-      sections: [
-        {
-          heading: `Secteurs professionnels accompagnés ${art.dans}`,
-          paragraphs: ["Nos supports s'adaptent aux principaux secteurs du département :"],
-          bullets: dp?.sectors || [],
-        },
-        {
-          heading: `Principales villes desservies ${art.dans}`,
-          paragraphs: ["Nous livrons l'ensemble du département, notamment :"],
-          bullets: citiesHere.map((c) => c.name),
-        },
-      ],
-      productGrid: {
-        heading: "Produits recommandés pour votre activité",
-        intro: `Les supports les plus utiles aux professionnels ${art.de}. Configurez le vôtre dans le catalogue.`,
-        cards: PRODUCT_CARDS,
-      },
+      sections: copy.sections,
+      productGrid: { heading: copy.productGridHeading, intro: copy.productGridIntro, cards: PRODUCT_CARDS },
       cta: { label: "Voir le catalogue", path: "/catalogue" },
-      faq: deptFaq,
+      faq: copy.faq,
       internalLinks: [
-        ...(citiesHere.length ? [{ heading: "Villes du département", links: citiesHere.map((c) => ({ label: c.name, path: `/ville/${c.slug}` })) }] : []),
+        ...(cityLinks.length ? [{ heading: "Villes du département", links: cityLinks }] : []),
         ...(neighborDepts.length ? [{ heading: "Départements voisins", links: neighborDepts }] : []),
+        { heading: "Votre région", links: [{ label: `Impression ${reg.dans}`, path: `/region/${gd.regionSlug}` }] },
         { heading: "Nos univers d'impression", links: variedCats() },
         { heading: "Nos services", links: variedServices() },
         { heading: "Passez à l'action", links: actionLinks },
       ],
-      externalLinks: [
-        ...(official ? [{ label: official.label, path: official.url, external: true }] : []),
-        CCI_GRAND_EST,
+      ...(ext.length ? { externalLinks: ext } : {}),
+      jsonLd: [
+        breadcrumbLd(crumb),
+        webPageLd({ name: `Impression ${article(gd.name).dans}`, description: `Impression en ligne livrée ${article(gd.name).dans}.`, path: `/departement/${gd.slug}` }),
+        serviceLd({ name: `Impression ${article(gd.name).dans}`, description: `Impression en ligne avec livraison ${article(gd.name).dans}.`, areaServed: gd.name }),
+        faqLd(copy.faq),
+      ],
+    });
+  }
+
+  // ── Regions ──
+  for (const gr of geo.regions) {
+    const deptLinks = gr.departmentSlugs
+      .filter((s) => deptBySlug.has(s))
+      .map((s) => ({ label: deptBySlug.get(s)!.name, path: `/departement/${s}` }));
+    const regionCities = geo.cities.filter((c) => c.regionSlug === gr.slug);
+    const cityLinks = regionCities.slice(0, 24).map((c) => ({ label: c.name, path: `/ville/${c.slug}` }));
+    const gen: GenRegion = {
+      name: gr.name,
+      slug: gr.slug,
+      departmentNames: deptLinks.map((l) => l.label),
+      cityNames: regionCities.map((c) => c.name),
+    };
+    const copy = regionCopy(gen);
+    const art = article(gr.name);
+    const crumb = [
+      home,
+      { name: "Zones desservies", path: "/imprimerie" },
+      { name: gr.name, path: `/region/${gr.slug}` },
+    ];
+
+    pages.push({
+      path: `/region/${gr.slug}`,
+      title: copy.title,
+      description: copy.description,
+      h1: copy.h1,
+      hero: {
+        image: deptHero(gr.slug),
+        imageAlt: `Impression et supports de communication livrés ${art.dans}`,
+        eyebrow: copy.heroEyebrow,
+        tagline: copy.heroTagline,
+        ctas: [
+          { label: "Voir le catalogue", path: "/catalogue", variant: "primary" },
+          { label: "Demander un devis", path: "/#devis", variant: "secondary" },
+        ],
+      },
+      intro: copy.intro,
+      breadcrumb: crumb,
+      sections: copy.sections,
+      productGrid: { heading: copy.productGridHeading, intro: copy.productGridIntro, cards: PRODUCT_CARDS },
+      cta: { label: "Voir le catalogue", path: "/catalogue" },
+      faq: copy.faq,
+      internalLinks: [
+        ...(deptLinks.length ? [{ heading: "Départements de la région", links: deptLinks }] : []),
+        ...(cityLinks.length ? [{ heading: "Villes desservies", links: cityLinks }] : []),
+        { heading: "Nos univers d'impression", links: variedCats() },
+        { heading: "Nos services", links: variedServices() },
+        { heading: "Passez à l'action", links: actionLinks },
       ],
       jsonLd: [
         breadcrumbLd(crumb),
-        webPageLd({ name: `Impression ${art.dans}`, description: `Impression en ligne livrée ${art.dans}.`, path: `/departement/${d.slug}` }),
-        serviceLd({ name: `Impression ${art.dans}`, description: `Impression en ligne avec livraison ${art.dans}.`, areaServed: d.name }),
-        faqLd(deptFaq),
+        collectionPageLd({
+          name: `Impression ${art.dans}`,
+          description: copy.description,
+          path: `/region/${gr.slug}`,
+          items: deptLinks.map((l) => ({ name: l.label, path: l.path })),
+        }),
+        serviceLd({ name: `Impression ${art.dans}`, description: `Impression en ligne avec livraison ${art.dans}.`, areaServed: gr.name }),
+        faqLd(copy.faq),
       ],
     });
   }
