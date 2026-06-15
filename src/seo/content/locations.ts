@@ -73,7 +73,7 @@ export function cityFaq(c: CityData): FaqItem[] {
     },
     {
       q: `Livrez-vous les professionnels ${de(c.name)} ?`,
-      a: `Oui, nous livrons les entreprises, commerces, artisans et associations ${de(c.name)} et ${article(c.region).de.replace(/^de /, "de la ").replace(/^du /, "du ")}.`,
+      a: `Oui, nous livrons les entreprises, commerces, artisans et associations ${de(c.name)} et ${article(c.region).de}.`,
     },
     {
       q: "Comment passer commande ?",
