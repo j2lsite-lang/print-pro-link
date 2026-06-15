@@ -21,6 +21,19 @@ export default function CategoryProducts() {
   const [search, setSearch] = useState("");
   const [cmsThumbnails, setCmsThumbnails] = useState<Record<string, string>>({});
   const [subCategoryCounts, setSubCategoryCounts] = useState<Record<string, number>>({});
+  const [parentSlug, setParentSlug] = useState<string | null>(null);
+
+  // Resolve the parent category slug so subcategory pages can point their
+  // canonical at the matching new SEO URL (/categorie/{parent}/{child}).
+  useEffect(() => {
+    if (!category?.parent_id) { setParentSlug(null); return; }
+    supabase
+      .from("product_categories")
+      .select("slug")
+      .eq("id", category.parent_id)
+      .maybeSingle()
+      .then(({ data }) => setParentSlug(data?.slug ?? null));
+  }, [category?.parent_id]);
 
   useEffect(() => {
     getCatalogProducts()
