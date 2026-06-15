@@ -81,37 +81,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
   const cats = await rest<{ id: string; slug: string; name: string; parent_id: string | null }>(
     "product_categories?select=id,slug,name,parent_id",
   );
-  const mappings = await rest<{ sku: string; category_id: string }>(
-    "product_category_mappings?select=sku,category_id",
-  );
-  const skuByCat = new Map<string, Set<string>>();
-  for (const m of mappings) {
-    if (!skuByCat.has(m.category_id)) skuByCat.set(m.category_id, new Set());
-    skuByCat.get(m.category_id)!.add(m.sku);
-  }
-  const byId = new Map(cats.map((c) => [c.id, c]));
   const childrenOf = new Map<string, typeof cats>();
   for (const c of cats) if (c.parent_id) {
     if (!childrenOf.has(c.parent_id)) childrenOf.set(c.parent_id, []);
     childrenOf.get(c.parent_id)!.push(c);
   }
-
-  // Real catalog data so subcategory pages list actual products
-  // (name + image + live configurator link) instead of just text.
-  const nameBySku = await fetchProductNames();
-  const imgRows = await rest<{ sku: string; thumbnail_url: string | null }>(
-    "product_images?select=sku,thumbnail_url&order=sort_order.asc",
-  );
-  const imgBySku = new Map<string, string>();
-  for (const row of imgRows) {
-    if (row.thumbnail_url && !imgBySku.has(row.sku)) imgBySku.set(row.sku, row.thumbnail_url);
-  }
-  // Only SKUs that resolve to a real, active product are listed/linked.
-  const productsForCat = (catId: string): ProductItem[] =>
-    [...(skuByCat.get(catId) || [])]
-      .filter((sku) => nameBySku.has(sku))
-      .map((sku) => ({ sku, name: nameBySku.get(sku)!, image: imgBySku.get(sku) || null }))
-      .sort((a, b) => a.name.localeCompare(b.name, "fr"));
 
   const cityRows = await rest<CityData>(
     `cities?select=slug,name,department,region,cp&slug=in.(${PRIORITY_CITIES.join(",")})`,
