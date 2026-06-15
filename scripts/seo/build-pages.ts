@@ -73,6 +73,7 @@ const SERVICE_LINKS: LinkItem[] = [
 ];
 
 export async function buildAllPages(): Promise<SeoPage[]> {
+  const geo = loadGeo();
   const cats = await rest<{ id: string; slug: string; name: string; parent_id: string | null }>(
     "product_categories?select=id,slug,name,parent_id",
   );
