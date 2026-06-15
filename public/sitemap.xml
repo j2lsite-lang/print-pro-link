@@ -20,4 +20,8 @@
     <loc>https://j2lprint.fr/sitemaps/departments.xml</loc>
     <lastmod>2026-06-15</lastmod>
   </sitemap>
+  <sitemap>
+    <loc>https://j2lprint.fr/sitemaps/regions.xml</loc>
+    <lastmod>2026-06-15</lastmod>
+  </sitemap>
 </sitemapindex>
