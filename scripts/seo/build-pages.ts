@@ -8,6 +8,7 @@ import {
   cityIntro, citySections, cityFaq, type CityData,
 } from "../../src/seo/content/locations";
 import { article } from "../../src/seo/content/fr";
+import { SERVICE_CONTENT } from "../../src/seo/content/services";
 import {
   breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
 } from "../../src/seo/schema";
