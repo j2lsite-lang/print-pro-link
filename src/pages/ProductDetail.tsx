@@ -105,12 +105,17 @@ function wouldBeExcluded(
 function buildValidDefaults(
   allProps: ConfigurableProperty[],
   excludes: ExcludeGroup[] | undefined,
+  hiddenSlugs: Set<string> = new Set(),
 ): Record<string, string> {
   const defaults: Record<string, string> = {};
 
-  // First pass: set all defaults naively
+  // First pass: set all defaults naively.
+  // Hidden properties (columnWidth.reseller === "hidden") are optional per the
+  // Print.com API: omit them entirely instead of guessing the first slug, which
+  // previously produced invalid configurations (400 "failed to validate").
   for (const prop of allProps) {
     if (prop.slug === "copies") continue;
+    if (hiddenSlugs.has(prop.slug)) continue;
     if (!prop.options?.length) continue;
     const nonNullable = prop.options.filter((o) => !o.nullable);
     if (nonNullable.length === 0) continue;
@@ -125,6 +130,7 @@ function buildValidDefaults(
     let fixed = false;
     for (const prop of allProps) {
       if (prop.slug === "copies" || !prop.options?.length) continue;
+      if (hiddenSlugs.has(prop.slug)) continue;
       if (!defaults[prop.slug]) continue;
 
       const nonNullable = prop.options.filter((o) => !o.nullable);
