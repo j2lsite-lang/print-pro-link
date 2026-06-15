@@ -245,19 +245,20 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       { name: d.name, path: `/departement/${d.slug}` },
     ];
     const citiesHere = cityRows.filter((c) => slugify(c.department) === d.slug);
+    const art = article(d.name);
     pages.push({
       path: `/departement/${d.slug}`,
-      title: `Impression en ligne dans le ${d.name} (${d.region})`,
-      description: `Imprimerie en ligne livrant dans le département ${d.name} : supports professionnels, prix transparents, commande à distance et livraison locale.`,
-      h1: `Impression pour les entreprises du ${d.name}`,
+      title: `Impression en ligne ${art.dans} (${d.region})`,
+      description: `Imprimerie en ligne livrant ${art.dans} : supports professionnels, prix transparents, commande à distance et livraison locale.`,
+      h1: `Impression pour les entreprises ${art.de}`,
       intro: [
-        `J2L Print accompagne les professionnels du département ${d.name} (${d.region}) avec une imprimerie en ligne complète : vous commandez à distance et nous livrons sur place.`,
-        `Aucune boutique physique n'est nécessaire : la configuration, le paiement et la livraison se font en ligne pour l'ensemble du ${d.name}.`,
+        `J2L Print accompagne les professionnels du département ${art.de} (${d.region}) avec une imprimerie en ligne complète : vous commandez à distance et nous livrons sur place.`,
+        `Aucune boutique physique n'est nécessaire : la configuration, le paiement et la livraison se font en ligne ${art.dans}.`,
       ],
       breadcrumb: crumb,
       sections: [
         {
-          heading: `Villes desservies dans le ${d.name}`,
+          heading: `Villes desservies ${art.dans}`,
           paragraphs: ["Nous livrons l'ensemble du département, notamment :"],
           bullets: citiesHere.map((c) => c.name),
         },
@@ -268,8 +269,8 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       ],
       jsonLd: [
         breadcrumbLd(crumb),
-        webPageLd({ name: `Impression dans le ${d.name}`, description: `Impression en ligne livrée dans le ${d.name}.`, path: `/departement/${d.slug}` }),
-        serviceLd({ name: `Impression dans le ${d.name}`, description: `Impression en ligne avec livraison dans le ${d.name}.`, areaServed: d.name }),
+        webPageLd({ name: `Impression ${art.dans}`, description: `Impression en ligne livrée ${art.dans}.`, path: `/departement/${d.slug}` }),
+        serviceLd({ name: `Impression ${art.dans}`, description: `Impression en ligne avec livraison ${art.dans}.`, areaServed: d.name }),
       ],
     });
   }
