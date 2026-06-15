@@ -64,6 +64,7 @@ export default function Index() {
     setDevisLoading(true);
     const form = devisFormRef.current!;
     const formData = new FormData(form);
+    const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase.from("devis_requests").insert({
       name: formData.get("name") as string,
       email: formData.get("email") as string,
