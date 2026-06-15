@@ -2,7 +2,7 @@
 // registry with live catalog/location data from the database.
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
-import type { SeoPage, LinkItem } from "../../src/seo/types";
+import type { SeoPage, LinkItem, ProductItem } from "../../src/seo/types";
 import { CATEGORY_CONTENT, CATEGORY_SLUGS } from "../../src/seo/content/categories";
 import {
   cityIntro, citySections, cityFaq, type CityData,
