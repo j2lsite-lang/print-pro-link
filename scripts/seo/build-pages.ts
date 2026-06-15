@@ -111,6 +111,24 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     if (!childrenOf.has(c.parent_id)) childrenOf.set(c.parent_id, []);
     childrenOf.get(c.parent_id)!.push(c);
   }
+
+  // Real catalog data so subcategory pages list actual products
+  // (name + image + live configurator link) instead of just text.
+  const nameBySku = await fetchProductNames();
+  const imgRows = await rest<{ sku: string; thumbnail_url: string | null }>(
+    "product_images?select=sku,thumbnail_url&order=sort_order.asc",
+  );
+  const imgBySku = new Map<string, string>();
+  for (const row of imgRows) {
+    if (row.thumbnail_url && !imgBySku.has(row.sku)) imgBySku.set(row.sku, row.thumbnail_url);
+  }
+  // Only SKUs that resolve to a real, active product are listed/linked.
+  const productsForCat = (catId: string): ProductItem[] =>
+    [...(skuByCat.get(catId) || [])]
+      .filter((sku) => nameBySku.has(sku))
+      .map((sku) => ({ sku, name: nameBySku.get(sku)!, image: imgBySku.get(sku) || null }))
+      .sort((a, b) => a.name.localeCompare(b.name, "fr"));
+
   const cityRows = await rest<CityData>(
     `cities?select=slug,name,department,region,cp&slug=in.(${PRIORITY_CITIES.join(",")})`,
   );
