@@ -3,7 +3,9 @@
  *  J2L PRINT — Worker Cloudflare SEO complet
  * =============================================================================
  *  Date              : 2026-06-15
- *  Version           : 2.0.0  (remplace le proxy minimal « j2lprint-router »)
+ *  Version           : 2.1.0  (référentiel SEO explicite : villes, départements,
+ *                               régions documentées, catégories, sous-catégories,
+ *                               familles produits)
  *  Origine Lovable   : https://print-pro-link.lovable.app
  *  Domaine canonique : https://j2lprint.fr   (apex, sans www)
  *  Domaines publics  : https://j2lprint.fr , https://www.j2lprint.fr
@@ -243,7 +245,7 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/2.0.0");
+  headers.set("X-Worker", "j2lprint-seo/2.1.0");
 }
 
 /* ---------------------------------------------------------------------------
