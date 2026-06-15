@@ -873,38 +873,33 @@ export default function ProductDetail() {
             fallbackImage={categoryImageUrl || thumbnailUrl}
           />
         </div>
-        <div className="w-full lg:w-[55%] space-y-4">
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
-            {product.titleSingle || product.name || sku}
-          </h1>
+        <div className="w-full lg:w-[55%]">
+          <div className="rounded-xl border border-border bg-card p-5 lg:p-6 space-y-4">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
+              {product.titleSingle || product.name || sku}
+            </h1>
 
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {getProductSEOData(productName, sku).intro}
-          </p>
-
-          {product.description && (
             <p className="text-sm text-muted-foreground leading-relaxed">
-              {product.description}
+              {getProductSEOData(productName, sku).intro}
             </p>
-          )}
 
-          <h2 className="font-display text-lg font-semibold text-foreground pt-2">
-            À quoi sert {/^[aeiouyàâéèêëïîôùûüÿæœ]/i.test(productName) ? "un " : "un "}{productName.toLowerCase()} ?
-          </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {getProductSEOData(productName, sku).useCases}
-          </p>
+            {product.description && (
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {product.description}
+              </p>
+            )}
 
-          <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-1">
-            <span className="flex items-center gap-1.5">
-              <CheckCircle className="h-3.5 w-3.5 text-primary" /> Livraison 3-5 jours
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle className="h-3.5 w-3.5 text-primary" /> Vérification fichiers
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle className="h-3.5 w-3.5 text-primary" /> Devis sous 24h
-            </span>
+            <div className="flex flex-wrap gap-3 text-xs text-muted-foreground pt-1">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
+                <CheckCircle className="h-3.5 w-3.5 text-primary" /> Livraison 3-5 jours
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
+                <CheckCircle className="h-3.5 w-3.5 text-primary" /> Vérification fichiers
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
+                <CheckCircle className="h-3.5 w-3.5 text-primary" /> Devis sous 24h
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -937,7 +932,7 @@ export default function ProductDetail() {
       )}
 
       {/* Main layout */}
-      <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
+      <div className="grid gap-6 lg:gap-8 lg:grid-cols-[1fr_380px]">
         <div className="space-y-5">
           {mainProps.map((prop) => (
             <OptionSelector
@@ -978,7 +973,7 @@ export default function ProductDetail() {
           )}
         </div>
 
-        <div className="hidden lg:block">
+        <div className="space-y-4">
           <PriceSummary
             priceResult={priceResult}
             priceLoading={priceLoading}
@@ -994,6 +989,16 @@ export default function ProductDetail() {
             shippingLoading={shippingLoading}
           />
         </div>
+      </div>
+
+      {/* Use cases — moved below configurator */}
+      <div className="mt-10 space-y-4">
+        <h2 className="font-display text-xl font-semibold text-foreground">
+          À quoi sert {productName.toLowerCase()} ?
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          {getProductSEOData(productName, sku).useCases}
+        </p>
       </div>
 
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card p-4">
@@ -1015,7 +1020,7 @@ export default function ProductDetail() {
             )}
           </div>
           <Button onClick={handleAddToCart} disabled={!priceResult} size="lg">
-            Ajouter au panier
+            Ajouter au devis
           </Button>
         </div>
       </div>
