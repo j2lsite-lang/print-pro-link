@@ -2,15 +2,16 @@ import { Link } from "react-router-dom";
 import { Facebook, ExternalLink, MapPin } from "lucide-react";
 import logoJ2L from "@/assets/logo-j2l.png";
 
+// Only published cities with a real, indexable /ville/{slug} page.
 const cityLinks = [
   { slug: "epinal", name: "Épinal" },
   { slug: "nancy", name: "Nancy" },
   { slug: "metz", name: "Metz" },
   { slug: "strasbourg", name: "Strasbourg" },
-  { slug: "paris", name: "Paris" },
-  { slug: "lyon", name: "Lyon" },
-  { slug: "marseille", name: "Marseille" },
-  { slug: "lille", name: "Lille" },
+  { slug: "mulhouse", name: "Mulhouse" },
+  { slug: "reims", name: "Reims" },
+  { slug: "troyes", name: "Troyes" },
+  { slug: "colmar", name: "Colmar" },
 ];
 
 export default function Footer() {
