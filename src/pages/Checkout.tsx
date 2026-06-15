@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Loader2, Upload, CheckCircle, Truck, Package, CreditCard } from "lucide-react";
+import { Loader2, Upload, CheckCircle, Truck, Package, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/hooks/useCart";
-import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { getShippingPossibilities } from "@/lib/printcom";
 import { toast } from "sonner";
@@ -19,15 +18,18 @@ interface ShippingOption {
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
-  const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Unique request id generated up-front so uploads land in this request's folder.
+  const requestIdRef = useRef<string>(crypto.randomUUID());
+  const requestId = requestIdRef.current;
 
   const [address, setAddress] = useState({
     firstName: "", lastName: "", company: "", street: "", houseNumber: "",
-    city: "", postalCode: "", country: "FR", phone: "", email: "",
+    city: "", postalCode: "", country: "FR", phone: "", email: "", message: "",
   });
 
-  const [fileUploads, setFileUploads] = useState<Record<string, { url: string; name: string }>>({});
+  const [fileUploads, setFileUploads] = useState<Record<string, { url: string; name: string; path: string }>>({});
   const [submitting, setSubmitting] = useState(false);
 
   // Shipping state
@@ -46,7 +48,6 @@ export default function Checkout() {
     setSelectedShipping(null);
 
     try {
-      // Call shipping-possibilities for each item and merge results
       const allOptions = new Map<string, ShippingOption>();
 
       for (const item of items) {
@@ -54,13 +55,11 @@ export default function Checkout() {
         const itemOptions: Record<string, unknown> = {};
         for (const [key, val] of Object.entries(opts)) {
           if (val !== undefined && val !== null && val !== "") {
-            // Extract slug from object options
             itemOptions[key] = typeof val === "object" && val !== null && "slug" in val
               ? (val as any).slug
               : val;
           }
         }
-        // Ensure copies is set
         if (!itemOptions.copies) {
           itemOptions.copies = item.copies;
         }
@@ -89,10 +88,6 @@ export default function Checkout() {
                   deliveryDays: r.deliveryDays || r.deliveryTimeInDays,
                   carrier: r.carrier,
                 });
-              } else {
-                // Add prices for combined shipment
-                const existing = allOptions.get(key)!;
-                existing.price += r.price?.salesPrice || r.price?.normalPrice || 0;
               }
             }
           }
@@ -128,84 +123,16 @@ export default function Checkout() {
   const grandTotal = total + shippingCost;
 
   const handleFileUpload = async (itemId: string, file: File) => {
-    const userId = user?.id || "guest";
-    const path = `${userId}/${crypto.randomUUID()}-${file.name}`;
+    // Upload only into this request's folder: quotes/<requestId>/...
+    const path = `quotes/${requestId}/${crypto.randomUUID()}-${file.name}`;
     const { error } = await supabase.storage.from("print-files").upload(path, file);
     if (error) { toast.error("Erreur upload: " + error.message); return; }
 
-    const { data: urlData } = supabase.storage.from("print-files").getPublicUrl(path);
-    setFileUploads(prev => ({ ...prev, [itemId]: { url: urlData.publicUrl, name: file.name } }));
-    toast.success("Fichier uploadé !");
+    setFileUploads(prev => ({ ...prev, [itemId]: { url: path, name: file.name, path } }));
+    toast.success("Fichier ajouté !");
   };
 
-  const handlePayOnline = async () => {
-    if (!address.email || !address.firstName || !address.lastName) {
-      toast.error("Veuillez remplir au minimum votre nom, prénom et email.");
-      return;
-    }
-    if (!grandTotal || grandTotal <= 0) {
-      toast.error("Le montant total doit être supérieur à 0 €.");
-      return;
-    }
-    setSubmitting(true);
-    try {
-      // Save order first
-      const { data: addrData } = await supabase.from("addresses").insert({
-        user_id: user?.id || null,
-        first_name: address.firstName, last_name: address.lastName,
-        company: address.company, street: address.street, house_number: address.houseNumber,
-        city: address.city, postal_code: address.postalCode, country: address.country,
-        phone: address.phone, email: address.email,
-      }).select().single();
-
-      const { data: order, error: orderErr } = await supabase.from("orders").insert({
-        user_id: user?.id || null, status: "awaiting_payment",
-        total: grandTotal, currency: "EUR", deduplication_id: crypto.randomUUID(),
-        po_number: `J2L-${Date.now()}`, customer_reference: `REF-${address.email}`,
-        shipping_address_id: addrData?.id, billing_address_id: addrData?.id,
-        shipping_cost: shippingCost,
-        shipping_method: selectedShipping ? JSON.parse(JSON.stringify(selectedShipping)) : null,
-      }).select().single();
-      if (orderErr) throw orderErr;
-
-      await supabase.from("order_items").insert(
-        items.map(i => ({
-          order_id: order.id, sku: i.sku, product_name: i.productName,
-          options: JSON.parse(JSON.stringify(i.options)),
-          quantity: i.quantity, copies: i.copies,
-          file_url: fileUploads[i.id]?.url || i.fileUrl || null,
-          price_breakdown: JSON.parse(JSON.stringify({ unitPrice: i.unitPrice, total: (i.unitPrice || 0) * i.quantity })),
-        }))
-      );
-
-      // Create Stripe payment link
-      const { data: paymentData, error: paymentErr } = await supabase.functions.invoke("create-payment-link", {
-        body: {
-          orderId: order.id,
-          amount: grandTotal,
-          customerEmail: address.email,
-          items: items.map(i => ({ productName: i.productName, copies: i.copies })),
-        },
-      });
-
-      if (paymentErr || paymentData?.error) {
-        throw new Error(paymentData?.error || paymentErr?.message || "Erreur de paiement");
-      }
-
-      if (paymentData?.url) {
-        clearCart();
-        window.location.href = paymentData.url;
-      } else {
-        throw new Error("URL de paiement non reçue");
-      }
-    } catch (err: any) {
-      toast.error("Erreur paiement: " + err.message);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleSubmitOrder = async () => {
+  const handleSubmitQuote = async () => {
     if (!address.email || !address.firstName || !address.lastName) {
       toast.error("Veuillez remplir au minimum votre nom, prénom et email.");
       return;
@@ -213,55 +140,44 @@ export default function Checkout() {
     setSubmitting(true);
 
     try {
-      const { data: addrData } = await supabase.from("addresses").insert({
-        user_id: user?.id || null,
-        first_name: address.firstName,
-        last_name: address.lastName,
-        company: address.company,
-        street: address.street,
-        house_number: address.houseNumber,
-        city: address.city,
-        postal_code: address.postalCode,
-        country: address.country,
-        phone: address.phone,
-        email: address.email,
-      }).select().single();
+      const fullAddress = [address.houseNumber, address.street].filter(Boolean).join(" ");
 
-      const deduplicationId = crypto.randomUUID();
-      const { data: order, error: orderErr } = await supabase.from("orders").insert({
-        user_id: user?.id || null,
-        status: "pending",
-        total: grandTotal,
-        currency: "EUR",
-        deduplication_id: deduplicationId,
-        po_number: `J2L-${Date.now()}`,
-        customer_reference: `REF-${address.email}`,
-        shipping_address_id: addrData?.id,
-        billing_address_id: addrData?.id,
-        shipping_cost: shippingCost,
-        shipping_method: selectedShipping ? JSON.parse(JSON.stringify(selectedShipping)) : null,
-      }).select().single();
-
-      if (orderErr) throw orderErr;
-
-      const orderItems = items.map(i => ({
-        order_id: order.id,
-        sku: i.sku,
+      const quoteItems = items.map(i => ({
         product_name: i.productName,
-        options: JSON.parse(JSON.stringify(i.options)),
+        sku: i.sku,
         quantity: i.quantity,
         copies: i.copies,
+        options: i.options,
+        unit_price: i.unitPrice,
+        line_total: i.unitPrice != null ? i.unitPrice * i.quantity : null,
+        currency: i.currency,
         file_url: fileUploads[i.id]?.url || i.fileUrl || null,
-        price_breakdown: JSON.parse(JSON.stringify({ unitPrice: i.unitPrice, total: (i.unitPrice || 0) * i.quantity })),
+        file_name: fileUploads[i.id]?.name || i.originalFileName || null,
       }));
 
-      await supabase.from("order_items").insert(orderItems);
+      const { error } = await supabase.from("quote_requests").insert({
+        reference: `DEVIS-${requestId.slice(0, 8).toUpperCase()}`,
+        name: `${address.firstName} ${address.lastName}`.trim(),
+        company: address.company || null,
+        email: address.email,
+        phone: address.phone || null,
+        address: fullAddress || null,
+        postal_code: address.postalCode || null,
+        city: address.city || null,
+        message: address.message || null,
+        items: JSON.parse(JSON.stringify(quoteItems)),
+        estimated_total: grandTotal || null,
+        shipping_cost: shippingCost || null,
+        currency: "EUR",
+      });
+
+      if (error) throw error;
 
       clearCart();
-      toast.success("Demande de devis envoyée avec succès !");
+      toast.success("Demande de devis envoyée avec succès ! Nous vous recontactons rapidement.");
       navigate("/");
     } catch (err: any) {
-      toast.error("Erreur commande: " + err.message);
+      toast.error("Erreur: " + err.message);
     } finally {
       setSubmitting(false);
     }
@@ -275,6 +191,9 @@ export default function Checkout() {
   return (
     <div className="container max-w-4xl py-10">
       <h1 className="font-display text-3xl font-bold text-foreground">Demande de devis</h1>
+      <p className="mt-2 text-muted-foreground">
+        Renseignez vos coordonnées et joignez vos fichiers. Nous vous envoyons un devis personnalisé sans aucun paiement en ligne.
+      </p>
 
       <section className="mt-8">
         <h2 className="font-display text-xl font-semibold text-foreground">Vos coordonnées</h2>
@@ -282,12 +201,18 @@ export default function Checkout() {
           <Input placeholder="Prénom *" value={address.firstName} onChange={e => setAddress(p => ({ ...p, firstName: e.target.value }))} />
           <Input placeholder="Nom *" value={address.lastName} onChange={e => setAddress(p => ({ ...p, lastName: e.target.value }))} />
           <Input placeholder="Email *" type="email" value={address.email} onChange={e => setAddress(p => ({ ...p, email: e.target.value }))} className="sm:col-span-2" />
-          <Input placeholder="Entreprise (optionnel)" value={address.company} onChange={e => setAddress(p => ({ ...p, company: e.target.value }))} className="sm:col-span-2" />
+          <Input placeholder="Société (optionnel)" value={address.company} onChange={e => setAddress(p => ({ ...p, company: e.target.value }))} className="sm:col-span-2" />
           <Input placeholder="Rue" value={address.street} onChange={e => setAddress(p => ({ ...p, street: e.target.value }))} />
           <Input placeholder="N°" value={address.houseNumber} onChange={e => setAddress(p => ({ ...p, houseNumber: e.target.value }))} />
           <Input placeholder="Code postal *" value={address.postalCode} onChange={e => setAddress(p => ({ ...p, postalCode: e.target.value }))} />
           <Input placeholder="Ville" value={address.city} onChange={e => setAddress(p => ({ ...p, city: e.target.value }))} />
-          <Input placeholder="Téléphone" value={address.phone} onChange={e => setAddress(p => ({ ...p, phone: e.target.value }))} />
+          <Input placeholder="Téléphone" value={address.phone} onChange={e => setAddress(p => ({ ...p, phone: e.target.value }))} className="sm:col-span-2" />
+          <textarea
+            placeholder="Votre message (optionnel)"
+            value={address.message}
+            onChange={e => setAddress(p => ({ ...p, message: e.target.value }))}
+            className="sm:col-span-2 flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          />
         </div>
       </section>
 
@@ -300,10 +225,10 @@ export default function Checkout() {
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-input px-4 py-2 text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors">
                   <Upload className="h-4 w-4" />
-                  {fileUploads[item.id] ? fileUploads[item.id].name : "Uploader un fichier"}
+                  {fileUploads[item.id] ? fileUploads[item.id].name : "Joindre un fichier"}
                   <input
                     type="file"
-                    accept=".pdf,.jpg,.jpeg,.tif,.tiff"
+                    accept=".pdf,.jpg,.jpeg,.tif,.tiff,.png,.ai,.eps"
                     className="hidden"
                     onChange={e => e.target.files?.[0] && handleFileUpload(item.id, e.target.files[0])}
                   />
@@ -324,7 +249,7 @@ export default function Checkout() {
         <div className="rounded-lg border border-border bg-card p-6">
           <div className="flex items-center gap-3 mb-4">
             <Truck className="h-5 w-5 text-primary shrink-0" />
-            <h2 className="font-display text-lg font-semibold text-foreground">Livraison</h2>
+            <h2 className="font-display text-lg font-semibold text-foreground">Livraison (estimation)</h2>
           </div>
 
           {shippingLoading ? (
@@ -366,7 +291,7 @@ export default function Checkout() {
           ) : (
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">
-                Renseignez votre code postal pour calculer automatiquement les frais de livraison.
+                Renseignez votre code postal pour estimer automatiquement les frais de livraison.
               </p>
               <Link to="/livraison" className="text-sm text-primary hover:underline inline-block">
                 Consulter nos informations de livraison →
@@ -379,11 +304,11 @@ export default function Checkout() {
       <div className="mt-10 rounded-xl border border-border bg-card p-6">
         <div className="space-y-2 mb-4">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Produits HT</span>
+            <span className="text-muted-foreground">Produits HT (estimation)</span>
             <span className="text-foreground">{total.toFixed(2)} €</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Livraison</span>
+            <span className="text-muted-foreground">Livraison (estimation)</span>
             <span className="text-foreground">
               {shippingLoading ? "…" : shippingCost > 0 ? `${shippingCost.toFixed(2)} €` : selectedShipping ? "Gratuit" : "À calculer"}
             </span>
@@ -395,29 +320,16 @@ export default function Checkout() {
             </span>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Button size="lg" className="flex-1" onClick={handleSubmitOrder} disabled={submitting}>
-            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Demander un devis
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="flex-1"
-            onClick={handlePayOnline}
-            disabled={submitting || !total}
-          >
-            {submitting ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <CreditCard className="mr-2 h-4 w-4" />
-            )}
-            Payer en ligne
-          </Button>
-        </div>
-        <p className="text-xs text-muted-foreground text-center mt-2">
-          « Demander un devis » : nous vous recontactons avec un lien de paiement.
-          « Payer en ligne » : règlement immédiat par carte bancaire.
+        <Button size="lg" className="w-full" onClick={handleSubmitQuote} disabled={submitting}>
+          {submitting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <FileText className="mr-2 h-4 w-4" />
+          )}
+          Demander un devis
+        </Button>
+        <p className="text-xs text-muted-foreground text-center mt-3">
+          Demande sans engagement et sans paiement en ligne. Nous vous recontactons avec votre devis personnalisé.
         </p>
       </div>
     </div>

@@ -490,6 +490,63 @@ export type Database = {
         }
         Relationships: []
       }
+      quote_requests: {
+        Row: {
+          address: string | null
+          city: string | null
+          company: string | null
+          created_at: string
+          currency: string
+          email: string
+          estimated_total: number | null
+          id: string
+          items: Json
+          message: string | null
+          name: string
+          phone: string | null
+          postal_code: string | null
+          reference: string
+          shipping_cost: number | null
+          status: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          company?: string | null
+          created_at?: string
+          currency?: string
+          email: string
+          estimated_total?: number | null
+          id?: string
+          items?: Json
+          message?: string | null
+          name: string
+          phone?: string | null
+          postal_code?: string | null
+          reference: string
+          shipping_cost?: number | null
+          status?: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          company?: string | null
+          created_at?: string
+          currency?: string
+          email?: string
+          estimated_total?: number | null
+          id?: string
+          items?: Json
+          message?: string | null
+          name?: string
+          phone?: string | null
+          postal_code?: string | null
+          reference?: string
+          shipping_cost?: number | null
+          status?: string
+        }
+        Relationships: []
+      }
       uploads: {
         Row: {
           created_at: string
