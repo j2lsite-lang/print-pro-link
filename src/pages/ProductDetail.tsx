@@ -144,29 +144,137 @@ function parseExcludedGroups(message: string): Array<{ property: string; value: 
   return groups;
 }
 
+/** Real, allowed copies values provided by Print.com for the current method. */
+function copiesCandidates(cp: ConfigurableProperty | undefined, method: string | undefined): string[] {
+  if (!cp) return [];
+  if (cp.rangeSets?.length) {
+    const set = cp.rangeSets.find((r) => r.printingmethod === method) || cp.rangeSets[0];
+    if (set.summary?.length) return set.summary.map(String);
+    if (set.options?.length) {
+      const out: string[] = [];
+      for (const r of set.options) {
+        for (let i = r.min || 1; i <= (r.max || 1); i += r.steps || 1) {
+          out.push(String(i));
+          if (out.length > 40) break;
+        }
+      }
+      return out;
+    }
+  }
+  if (cp.optionsInSummary?.length) return cp.optionsInSummary.map(String);
+  if (cp.options?.length) return cp.options.filter((o) => o.slug != null).map((o) => String(o.slug));
+  return [];
+}
+
+/**
+ * Locally resolve excluded combinations using Print.com's own `excludes` rules,
+ * verifying each candidate fully resolves the whole config (options + copies).
+ * User's size/material and explicitly-touched options are changed last; an
+ * extras property whose every value is excluded is omitted so Print.com
+ * auto-derives it (e.g. flyers "bundle"). Only real Print.com values are used.
+ */
+function resolveLocally(
+  props: ConfigurableProperty[],
+  copiesProp: ConfigurableProperty | undefined,
+  options: Record<string, any>,
+  copies: number,
+  excludes: ExcludeGroup[],
+  protectedKeys: Set<string>,
+): { options: Record<string, any>; copies: number } {
+  const find = (s: string) => props.find((p) => p.slug === s);
+  const rank = (s: string) =>
+    s === "size" || s === "material" ? 4 : s === "copies" ? 3 : protectedKeys.has(s) ? 2 : 1;
+  let it = 60;
+  while (it-- > 0) {
+    const sel = { ...options, copies: String(copies) };
+    if (!isExcludedCombination(sel, excludes)) break;
+    let acted = false;
+    for (const g of excludes) {
+      const violated = g.every((c) => {
+        const v = sel[c.property];
+        return v !== undefined && c.options.includes(v);
+      });
+      if (!violated) continue;
+      const ordered = [...g].sort((a, b) => rank(a.property) - rank(b.property));
+      for (const c of ordered) {
+        if (c.property === "copies") {
+          for (const cc of copiesCandidates(copiesProp, options.printingmethod)) {
+            if (!isExcludedCombination({ ...options, copies: cc }, excludes)) {
+              copies = Number(cc);
+              acted = true;
+              break;
+            }
+          }
+        } else {
+          const prop = find(c.property);
+          if (!prop) continue;
+          const cands = (prop.options || [])
+            .filter((o) => !o.nullable && o.slug != null)
+            .map((o) => String(o.slug));
+          for (const cand of cands) {
+            if (cand === options[c.property]) continue;
+            if (!isExcludedCombination({ ...options, [c.property]: cand, copies: String(copies) }, excludes)) {
+              options[c.property] = cand;
+              acted = true;
+              break;
+            }
+          }
+        }
+        if (acted) break;
+      }
+      if (acted) break;
+    }
+    if (!acted) {
+      // Last resort: drop an extras property whose every value is excluded.
+      const sel2 = { ...options, copies: String(copies) };
+      let dropped = false;
+      for (const g of excludes) {
+        const violated = g.every((c) => {
+          const v = sel2[c.property];
+          return v !== undefined && c.options.includes(v);
+        });
+        if (!violated) continue;
+        const cand = [...g]
+          .sort((a, b) => rank(a.property) - rank(b.property))
+          .find((c) => rank(c.property) === 1 && options[c.property] !== undefined);
+        if (cand) {
+          console.log(`[price] dropping fully-excluded extras prop '${cand.property}' (Print.com auto-fills it)`);
+          delete options[cand.property];
+          dropped = true;
+          break;
+        }
+      }
+      if (!dropped) break;
+    }
+  }
+  return { options, copies };
+}
+
 /**
  * Self-correcting price request. Starts from the user's selection plus any
  * hidden REQUIRED properties (e.g. printingmethod) filled with their real
- * Print.com value, then reacts to the API's own validation errors:
+ * Print.com value, locally resolves excludes, then reacts to the API's own
+ * validation errors:
  *  - "missing required property: X"  → add X using a real Print.com option
- *  - "excluded configuration ..."    → switch an offending property to another
- *                                      real Print.com option (user choices last)
+ *  - "excluded configuration ..."    → switch/omit an offending property
  * No printing method or value is ever invented or hardcoded.
  */
 async function resolvePrice(
   sku: string,
   product: PrintComProduct,
   baseOptions: Record<string, any>,
-  copies: number,
+  copies0: number,
   protectedKeys: Set<string>,
-): Promise<{ data: any; options: Record<string, any> }> {
+  copiesProp: ConfigurableProperty | undefined,
+): Promise<{ data: any; options: Record<string, any>; copies: number }> {
   const props = product.properties || product.configurableProperties || [];
+  const excludes = product.excludes || [];
   const findProp = (slug: string) => props.find((p) => p.slug === slug);
-  const options: Record<string, any> = { ...baseOptions };
+  let { options, copies } = resolveLocally(props, copiesProp, { ...baseOptions }, copies0, excludes, protectedKeys);
   const seen = new Set<string>();
   let lastError = "";
 
-  for (let attempt = 0; attempt < 12; attempt++) {
+  for (let attempt = 0; attempt < 14; attempt++) {
     const body = { ...options, copies };
     const stateKey = JSON.stringify(body);
     if (seen.has(stateKey)) break;
@@ -179,7 +287,7 @@ async function resolvePrice(
       if (data?.error || data?.errorMessage) {
         lastError = data.errorMessage || data.error;
       } else {
-        return { data, options };
+        return { data, options, copies };
       }
     } catch (err: any) {
       lastError = err?.message || String(err);
@@ -199,37 +307,48 @@ async function resolvePrice(
           console.log(`[price] added missing required '${slug}' = '${v}' (real Print.com value)`);
         }
       }
-      if (added) continue;
+      if (added) {
+        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys));
+        continue;
+      }
     }
 
-    // 2. Resolve excluded combinations by switching an offending property.
+    // 2. Resolve excluded combinations the API reports but we couldn't see locally.
     const groups = parseExcludedGroups(lastError);
     if (groups.length) {
-      const changeRank = (slug: string) => {
-        if (slug === "size" || slug === "material") return 3; // primary user choices: change last
-        if (protectedKeys.has(slug)) return 2; // explicitly touched by user
-        return 1; // hidden/auto/extra props: change first
-      };
+      const rank = (s: string) =>
+        s === "size" || s === "material" ? 4 : s === "copies" ? 3 : protectedKeys.has(s) ? 2 : 1;
       let changed = false;
       for (const pairs of groups) {
-        const ordered = [...pairs].sort((a, b) => changeRank(a.property) - changeRank(b.property));
+        const ordered = [...pairs].sort((a, b) => rank(a.property) - rank(b.property));
         for (const pair of ordered) {
-          const prop = findProp(pair.property);
-          if (!prop) continue;
-          const forbidden = pairs
-            .filter((p) => p.property === pair.property)
-            .map((p) => p.value);
-          const alt = realOptionValue(prop, [...forbidden, options[pair.property]]);
-          if (alt !== undefined && alt !== options[pair.property]) {
-            console.log(`[price] excluded combo, switching '${pair.property}' -> '${alt}'`);
-            options[pair.property] = alt;
-            changed = true;
-            break;
+          if (pair.property === "copies") {
+            for (const cc of copiesCandidates(copiesProp, options.printingmethod)) {
+              if (cc !== String(copies)) {
+                copies = Number(cc);
+                changed = true;
+                break;
+              }
+            }
+          } else {
+            const prop = findProp(pair.property);
+            if (!prop) continue;
+            const forbidden = pairs.filter((p) => p.property === pair.property).map((p) => p.value);
+            const alt = realOptionValue(prop, [...forbidden, options[pair.property]]);
+            if (alt !== undefined && alt !== options[pair.property]) {
+              console.log(`[price] excluded combo, switching '${pair.property}' -> '${alt}'`);
+              options[pair.property] = alt;
+              changed = true;
+            }
           }
+          if (changed) break;
         }
         if (changed) break;
       }
-      if (changed) continue;
+      if (changed) {
+        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys));
+        continue;
+      }
     }
 
     break; // Unrecognised / unresolvable error
