@@ -46,9 +46,8 @@ export const SERVICE_CONTENT: ServiceContent[] = [
       { q: "Quel délai de livraison pour une impression numérique ?", a: "La production standard est de 3 à 5 jours ouvrés selon le produit et la quantité. Une option express est disponible sur devis pour les besoins urgents." },
       { q: "Puis-je recevoir un bon à tirer avant production ?", a: "Oui. Un BAT numérique est envoyé systématiquement par email pour validation avant lancement de l'impression. Un BAT physique est possible sur demande." },
     ],
+  },
   {
-    slug: "grand-format",
-    name: "Grand format",
     title:
       "Impression grand format – Bâches, banderoles, adhésifs, kakémonos | J2L Print",
     description:
