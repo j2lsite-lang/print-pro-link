@@ -83,9 +83,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     childrenOf.get(c.parent_id)!.push(c);
   }
 
-  const cityRows = await rest<CityData>(
-    `cities?select=slug,name,department,region,cp&slug=in.(${PRIORITY_CITIES.join(",")})`,
-  );
+
 
   const pages: SeoPage[] = [];
   const home: BreadcrumbItemLite = { name: "Accueil", path: "/" };
