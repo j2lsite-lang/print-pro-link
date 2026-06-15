@@ -1,66 +1,72 @@
 /**
  * =============================================================================
- *  J2L PRINT — Worker Cloudflare SEO complet
+ *  J2L PRINT — Worker Cloudflare SEO COMPLET
  * =============================================================================
  *  Date              : 2026-06-15
- *  Version           : 2.2.0  (référentiel SEO réduit : villes, départements,
- *                               régions documentées, services ; SANS produits,
- *                               catégories ni sous-catégories)
+ *  Version           : 3.0.0  (référentiel SEO COMPLET : produits, catégories,
+ *                               sous-catégories, villes, départements, services,
+ *                               sitemaps, robots ; cache sélectif strict)
  *  Origine Lovable   : https://print-pro-link.lovable.app
  *  Domaine canonique : https://j2lprint.fr   (apex, sans www)
  *  Domaines publics  : https://j2lprint.fr , https://www.j2lprint.fr
  *
  *  RÔLE
  *  ----
- *  Le site Lovable reste l'ORIGINE. Ce Worker se contente de :
- *    1. forcer le domaine canonique (www -> apex en 301, http -> https) ;
- *    2. proxifier toutes les requêtes vers l'origine Lovable, sans rien casser ;
- *    3. préserver le HTML pré-rendu (title, meta, canonical, OG/Twitter, H1,
- *       JSON-LD BreadcrumbList/WebPage/Service/FAQPage, Organization unique
- *       du siège) déjà généré au build ;
- *    4. normaliser le domaine dans le HTML (origine -> canonique) ;
- *    5. appliquer une stratégie de cache sûre (SEO/assets oui, API/devis non) ;
- *    6. servir les sitemaps & robots.txt tels quels (XML non transformé).
+ *  Le site Lovable reste l'ORIGINE (SPA React pré-rendue au build). Ce Worker :
+ *    1. force le domaine canonique (www -> apex en 301, http -> https) ;
+ *    2. proxifie toutes les requêtes vers l'origine Lovable, sans rien casser ;
+ *    3. préserve le HTML pré-rendu (title, meta, canonical, OG/Twitter, H1,
+ *       JSON-LD BreadcrumbList/WebPage/Service/FAQPage, Organization du siège)
+ *       déjà généré au build — AUCUN SEO artificiel, AUCUN faux LocalBusiness ;
+ *    4. normalise le domaine dans le HTML (origine -> canonique) ;
+ *    5. applique un cache SÉLECTIF (SEO/assets/sitemaps OUI ; dynamique NON) ;
+ *    6. sert les sitemaps & robots.txt tels quels (XML/texte non transformés).
  *
- *  Le Worker NE génère PAS de SEO artificiel et NE crée JAMAIS de faux
- *  LocalBusiness par ville : le siège réel reste la seule Organization.
- *  Il NE met JAMAIS en cache une réponse API, un prix, une configuration
- *  produit, un devis, un upload, un panier ou une requête authentifiée.
+ *  PRODUITS — /products/{sku}
+ *  --------------------------
+ *  Le configurateur produit est 100 % CLIENT-SIDE : la page /products/{sku}
+ *  charge dynamiquement l'API Print.com (via printcom-proxy / Supabase) depuis
+ *  le NAVIGATEUR. Ces appels NE transitent PAS par ce Worker. Le Worker :
+ *    - laisse fonctionner l'API Print.com, les images, les options, le calcul
+ *      des prix, le panier et le devis (aucune interception) ;
+ *    - NE met JAMAIS en cache une réponse de configuration / prix / SKU ;
+ *    - NE modifie JAMAIS un SKU ni un payload ;
+ *    - NE pré-rend JAMAIS artificiellement un produit ;
+ *    - conserve les canonicals réels servis par l'origine.
+ *  => TOUT /products/* est exclu du cache (passthrough strict).
  *
- *  AUCUNE liste de produits, catégories ou sous-catégories n'est gérée par ce
- *  Worker : ces routes restent simplement proxifiées vers l'origine, qui sert
- *  son propre HTML pré-rendu. Le Worker NE touche JAMAIS à l'API Print.com,
- *  au configurateur, aux SKU, aux prix, au panier ou aux devis.
+ *  ROUTES GÉRÉES (SEO public, HTML pré-rendu préservé, cache court autorisé)
+ *  -----------------------------------------------------------------------
+ *    Statiques (6)        : /, /catalogue, /impression-numerique,
+ *                           /grand-format, /supports-publicitaires,
+ *                           /personnalisation
+ *    Services (4)         : impression-numerique, grand-format,
+ *                           supports-publicitaires, personnalisation
+ *    Catégories (8)       : /categorie/{slug}                — voir CATEGORIES
+ *    Sous-catégories (47) : /categorie/{parent}/{enfant}     — voir SUBCATEGORIES
+ *    Villes (16)          : /ville/{slug} (+ /imprimerie/{slug}) — voir CITIES
+ *    Départements (10)    : /departement/{slug}              — voir DEPARTMENTS
+ *    Index local          : /imprimerie
+ *    Éditorial / légal    : /blog, /livraison, /mentions-legales, /cgv,
+ *                           /politique-retours, /politique-confidentialite
+ *    Sitemaps / robots    : /sitemap.xml, /sitemaps/*.xml, /robots.txt
  *
- *  ROUTES GÉRÉES (servies via l'origine, HTML pré-rendu préservé)
- *  -------------------------------------------------------------
- *    6 routes statiques SEO        : /, /catalogue, /impression-numerique,
- *                                    /grand-format, /supports-publicitaires,
- *                                    /personnalisation
- *    16 villes publiées            : voir CITIES
- *    10 départements publiés       : voir DEPARTMENTS
- *    2 régions administratives     : uniquement documentées via départements,
- *                                    aucune route /region publiée
- *    Routes app publiques          : /products, /products/category/{slug},
- *                                    /blog, /livraison, pages légales,
- *                                    proxifiées sans gestion SEO spécifique
- *    Sitemaps / robots             : /sitemap.xml, /sitemaps/*.xml, /robots.txt
- *
- *  ROUTES NON GÉRÉES EN SEO (proxifiées telles quelles) :
- *    /produit/{slug} , /products/{sku}  -> proxy uniquement, aucun SKU créé,
- *                                          réécrit ou caché côté API
- *    /categorie/*                       -> proxy uniquement, aucune liste
- *                                          catégorie/sous-catégorie embarquée
- *    /region/{slug}                     -> aucune page région pré-rendue
+ *  RÉGIONS
+ *  -------
+ *  Le code (src/App.tsx) NE déclare AUCUNE route /region/{slug} et aucune page
+ *  région n'est pré-rendue. Les 2 régions administratives (Grand Est,
+ *  Bourgogne-Franche-Comté) ne sont couvertes qu'INDIRECTEMENT via les
+ *  départements. => 0 route /region gérée. Documenté dans REGIONS.
  *
  *  ROUTES EXCLUES DU CACHE (toujours proxifiées, jamais mises en cache)
  *  -------------------------------------------------------------------
+ *    /products , /products/*  (configurateur, SKU, prix, catégories produits)
  *    /cart , /checkout , /payment-success
- *    /auth , /account/* , /admin/*
+ *    /auth , /auth/* , /account/* , /admin/*
  *    /unsubscribe
+ *    /api/* , /rest/* , /functions/*   (Supabase / printcom-proxy)
  *    toute requête POST/PUT/PATCH/DELETE/OPTIONS
  *    toute requête portant un cookie de session / en-tête Authorization
- *    tout appel API (Supabase, printcom-proxy, /functions/*, /rest/*, /api/*)
  *  Les appels Print.com / Supabase partent directement du navigateur vers
  *  *.supabase.co et ne transitent normalement pas par ce Worker ; les filtres
  *  ci-dessous sont une sécurité supplémentaire.
@@ -76,60 +82,140 @@ const HTML_TTL = 300; // 5 min — pages SEO publiques (public, max-age=300)
 const ASSET_TTL = 31536000; // 1 an — assets versionnés (immutable)
 const XML_TTL = 3600; // 1 h — sitemaps / robots
 
-/* --- Référentiel des données réellement publiées (documentation + contrôle) --- */
+/* =============================================================================
+ *  RÉFÉRENTIEL SEO RÉEL (synchronisé avec src/App.tsx + public/sitemaps/*.xml)
+ * ========================================================================== */
+
+/* --- 16 villes publiées (/ville/{slug} et /imprimerie/{slug}) -------------- */
 const CITIES = [
   "chaumont", "colmar", "epinal", "luneville", "metz", "mulhouse", "nancy",
   "neufchateau", "reims", "remiremont", "saint-die-des-vosges", "sarreguemines",
   "strasbourg", "thionville", "troyes", "verdun",
-]; // 16 villes
+]; // 16
 
+/* --- 10 départements publiés (/departement/{slug}) ------------------------ */
 const DEPARTMENTS = [
   "vosges", "meurthe-et-moselle", "moselle", "bas-rhin", "haut-rhin",
   "haute-saone", "meuse", "marne", "aube", "haute-marne",
-]; // 10 départements
+]; // 10
 
-const SERVICES = [
-  "impression-numerique", "grand-format", "supports-publicitaires", "personnalisation",
-];
-
+/* --- 2 régions administratives : AUCUNE route /region publiée -------------- */
 const REGIONS = [
   "grand-est", "bourgogne-franche-comte",
-]; // 2 régions documentées via départements ; 0 route /region publiée
+]; // documentées via départements uniquement ; 0 route /region
 
+/* --- 4 services (routes statiques dédiées) -------------------------------- */
+const SERVICES = [
+  "impression-numerique", "grand-format", "supports-publicitaires", "personnalisation",
+]; // 4
+
+/* --- 8 catégories publiées (/categorie/{slug}) --------------------------- */
+const CATEGORIES = [
+  "impression-papier",
+  "publicite-exterieure",
+  "publicite-interieure",
+  "etiquettes-stickers",
+  "emballages-sacs",
+  "objets-publicitaires-cadeaux",
+  "textiles-accessoires",
+  "panneaux-baches-vinyles-toiles",
+]; // 8
+
+/* --- 47 sous-catégories publiées (/categorie/{parent}/{enfant}) ----------- */
+const SUBCATEGORIES = {
+  "impression-papier": [
+    "cartes-visite-enveloppes", "papeterie", "catering-restaurants",
+    "brochures-magazines", "flyers-depliants-affiches", "calendriers",
+    "courriers-creatifs",
+  ], // 7
+  "publicite-exterieure": [
+    "stop-trottoirs-panneaux", "panneaux-accessoires-ext",
+    "tonnelles-mobilier-exterieur", "drapeaux-beachflags-accessoires",
+    "bannieres-structures-fixation",
+  ], // 5
+  "publicite-interieure": [
+    "toiles-textiles-deco-interieure", "presentoirs-materiel-plv",
+    "panneaux-accessoires-int", "stands-materiel-expo", "mobilier-interieur",
+    "roll-ups",
+  ], // 6
+  "etiquettes-stickers": [
+    "accessoires-autocollants", "petits-autocollants", "autocollants-grand-format",
+    "rubans-adhesifs", "films-adhesifs-type", "autocollants-rouleaux",
+  ], // 6
+  "emballages-sacs": [
+    "sacs-tote-bags", "emballages-alimentaires", "emballages-expedition",
+    "emballages-cadeaux",
+  ], // 4
+  "objets-publicitaires-cadeaux": [
+    "saisonnalite", "gadgets", "bien-etre", "nourriture-boissons",
+    "articles-papeterie", "verrerie-vaisselle-gourdes", "general",
+  ], // 7
+  "textiles-accessoires": [
+    "marquage-transferts-textiles", "accessoires", "textiles-bain",
+    "cuisine-sejour", "vetements", "produits-bebes", "textiles-sport",
+  ], // 7
+  "panneaux-baches-vinyles-toiles": [
+    "toiles-textiles", "films-adhesifs", "lookbooks", "panneaux-accessoires",
+    "baches-banderoles",
+  ], // 5
+}; // total = 47
+
+/* --- 6 routes statiques SEO ----------------------------------------------- */
 const STATIC_SEO_PATHS = [
   "/", "/catalogue", "/impression-numerique", "/grand-format",
   "/supports-publicitaires", "/personnalisation",
 ];
 
-const APP_PUBLIC_PATH_PREFIXES = [
-  "/products", "/products/category/", "/blog", "/livraison", "/mentions-legales",
-  "/cgv", "/politique-retours", "/politique-confidentialite", "/imprimerie",
+/* --- HTML éditorial/légal proxifié, cacheable (pas de données dynamiques) -- */
+const EDITORIAL_PATHS = [
+  "/blog", "/imprimerie", "/livraison", "/mentions-legales", "/cgv",
+  "/politique-retours", "/politique-confidentialite",
 ];
 
+/* --- Sitemaps réellement existants ---------------------------------------- */
+const KNOWN_SITEMAPS = [
+  "/sitemap.xml",
+  "/sitemaps/static.xml",
+  "/sitemaps/categories.xml",
+  "/sitemaps/subcategories.xml",
+  "/sitemaps/cities.xml",
+  "/sitemaps/departments.xml",
+];
+
+/* --- Registre des chemins SEO exacts (documentation + contrôle de cache) --- */
 const MANAGED_SEO_PATHS = new Set([
   ...STATIC_SEO_PATHS,
-  ...CITIES.map((slug) => `/ville/${slug}`),
-  ...DEPARTMENTS.map((slug) => `/departement/${slug}`),
+  ...EDITORIAL_PATHS,
+  ...CITIES.map((s) => `/ville/${s}`),
+  ...CITIES.map((s) => `/imprimerie/${s}`),
+  ...DEPARTMENTS.map((s) => `/departement/${s}`),
+  ...CATEGORIES.map((s) => `/categorie/${s}`),
+  ...Object.entries(SUBCATEGORIES).flatMap(([parent, children]) =>
+    children.map((child) => `/categorie/${parent}/${child}`),
+  ),
 ]);
 
-/* ---------------------------------------------------------------------------
+/* =============================================================================
  *  Helpers
- * ------------------------------------------------------------------------- */
+ * ========================================================================== */
 
-/** Chemins jamais mis en cache (dynamiques / sensibles). */
+/** Chemins dynamiques / sensibles : JAMAIS mis en cache.
+ *  Inclut TOUT /products/* (configurateur, SKU, prix, catégories produits). */
 function isNoCachePath(pathname) {
   return (
+    pathname === "/products" ||
+    pathname.startsWith("/products/") ||
     pathname === "/cart" ||
     pathname === "/checkout" ||
     pathname === "/payment-success" ||
     pathname === "/auth" ||
     pathname === "/unsubscribe" ||
+    pathname.startsWith("/auth/") ||
     pathname.startsWith("/account") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/api/") ||
     pathname.startsWith("/rest/") ||
-    pathname.startsWith("/functions/") ||
-    pathname.startsWith("/auth/")
+    pathname.startsWith("/functions/")
   );
 }
 
@@ -150,14 +236,25 @@ function isXmlOrRobots(pathname) {
   );
 }
 
-/** HTML public éligible au cache court (toute page non exclue). */
+/** Catégorie ou sous-catégorie SEO réellement publiée. */
+function isManagedCategoryPath(pathname) {
+  const parts = pathname.split("/").filter(Boolean); // ["categorie", parent, child?]
+  if (parts[0] !== "categorie") return false;
+  if (parts.length === 2) return CATEGORIES.includes(parts[1]);
+  if (parts.length === 3) {
+    const children = SUBCATEGORIES[parts[1]];
+    return Array.isArray(children) && children.includes(parts[2]);
+  }
+  return false;
+}
+
+/** HTML SEO public éligible au cache court (5 min). */
 function isCacheableHtml(pathname) {
-  if (isNoCachePath(pathname)) return false;
+  if (isNoCachePath(pathname)) return false; // exclut /products/*, /cart, etc.
   if (isImmutableAsset(pathname)) return false;
   if (isXmlOrRobots(pathname)) return false;
-  // Les fiches produits restent proxifiées : la page HTML elle-même reste
-  // cacheable (5 min) car elle ne contient ni prix ni configuration ; seules
-  // les réponses API (hors Worker) portent ces données dynamiques.
+  // Tout autre HTML public pré-rendu (statiques, services, villes,
+  // départements, catégories, sous-catégories, éditorial/légal) est cacheable.
   return true;
 }
 
@@ -175,12 +272,12 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/2.2.0");
+  headers.set("X-Worker", "j2lprint-seo/3.0.0");
 }
 
-/* ---------------------------------------------------------------------------
+/* =============================================================================
  *  Worker principal
- * ------------------------------------------------------------------------- */
+ * ========================================================================== */
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -205,8 +302,8 @@ export default {
     originRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
     originRequest.headers.set("X-Forwarded-Proto", "https");
 
-    // 3) Requêtes non-cacheables (méthodes mutantes, sessions, API, dynamiques)
-    //    -> simple passthrough sans cache.
+    // 3) Requêtes non-cacheables (méthodes mutantes, sessions, API, /products,
+    //    routes dynamiques/sensibles) -> passthrough strict sans cache.
     const hasSession =
       request.headers.has("Authorization") ||
       /(?:sb-[^=]+-auth-token|sb-access-token|sb-refresh-token)/.test(
@@ -227,7 +324,7 @@ export default {
     // 4) Cache edge (caches.default) pour SEO / assets / XML.
     const cache = caches.default;
     const cacheKey = new Request(url.toString(), { method: "GET" });
-    let cached = await cache.match(cacheKey);
+    const cached = await cache.match(cacheKey);
     if (cached) {
       const hit = new Response(cached.body, cached);
       hit.headers.set("X-Cache", "HIT");
@@ -235,7 +332,7 @@ export default {
     }
 
     // 5) Récupération origine.
-    let response = await fetch(originRequest);
+    const response = await fetch(originRequest);
     const contentType = response.headers.get("Content-Type") || "";
 
     // 5a) Sitemaps & robots : servis tels quels, jamais transformés en HTML.
@@ -272,18 +369,23 @@ export default {
 
       const headers = new Headers(response.headers);
       headers.delete("Content-Length");
-      if (isCacheableHtml(pathname) && response.status === 200) {
+
+      const cacheable = isCacheableHtml(pathname) && response.status === 200;
+      if (cacheable) {
         headers.set("Cache-Control", `public, max-age=${HTML_TTL}`);
       } else {
         headers.set("Cache-Control", "no-store");
       }
+      // Marqueur de couverture SEO (diagnostic, sans impact fonctionnel).
+      headers.set(
+        "X-SEO-Managed",
+        MANAGED_SEO_PATHS.has(pathname) || isManagedCategoryPath(pathname) ? "1" : "0",
+      );
       headers.set("X-Cache", "MISS");
       applySecurityHeaders(headers);
 
       const out = new Response(body, { status: response.status, headers });
-      if (isCacheableHtml(pathname) && response.status === 200) {
-        ctx.waitUntil(cache.put(cacheKey, out.clone()));
-      }
+      if (cacheable) ctx.waitUntil(cache.put(cacheKey, out.clone()));
       return out;
     }
 
