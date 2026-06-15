@@ -4,9 +4,10 @@
 //     so the runtime render is byte-for-byte the prerendered content)
 //  3. writes the multi-file sitemap containing ONLY these live pages
 //     (no old URLs, no products yet, no noindex pages).
-import { writeFileSync, mkdirSync } from "fs";
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 import { buildAllPages } from "./build-pages";
+import { loadGeo } from "./geo-data";
 import type { SeoPage } from "../../src/seo/types";
 
 const BASE_URL = "https://j2lprint.fr";
@@ -54,7 +55,28 @@ function group(pages: SeoPage[]) {
     subcategories: indexable.filter((p) => is(p, (s) => s[0] === "categorie" && s.length === 3)).map((p) => p.path),
     cities: indexable.filter((p) => is(p, (s) => s[0] === "ville")).map((p) => p.path),
     departments: indexable.filter((p) => is(p, (s) => s[0] === "departement")).map((p) => p.path),
+    regions: indexable.filter((p) => is(p, (s) => s[0] === "region")).map((p) => p.path),
   };
+}
+
+/** Regenerate the geographic arrays in the Cloudflare worker from the merged
+ *  national reference (no manually limited arrays). Leaves all worker logic
+ *  untouched — only the data lines are replaced. */
+function syncWorker() {
+  const wp = resolve("public/cloudflare-worker-j2lprint.js");
+  if (!existsSync(wp)) return;
+  const geo = loadGeo();
+  const arr = (xs: string[]) => `[${xs.slice().sort().map((s) => `"${s}"`).join(",")}]`;
+  const cities = arr(geo.cities.map((c) => c.slug));
+  const departments = arr(geo.departments.map((d) => d.slug));
+  const regions = arr(geo.regions.map((r) => r.slug));
+  let src = readFileSync(wp, "utf8");
+  src = src
+    .replace(/const CITIES=\[[^\]]*\];/, `const CITIES=${cities};`)
+    .replace(/const DEPARTMENTS=\[[^\]]*\];/, `const DEPARTMENTS=${departments};`)
+    .replace(/const REGIONS=\[[^\]]*\];/, `const REGIONS=${regions};`);
+  writeFileSync(wp, src);
+  console.log(`Worker synced: cities=${geo.cities.length} departments=${geo.departments.length} regions=${geo.regions.length}`);
 }
 
 async function main() {
@@ -82,10 +104,14 @@ async function main() {
   write("subcategories.xml", g.subcategories, "0.7", "weekly");
   write("cities.xml", g.cities, "0.6", "monthly");
   write("departments.xml", g.departments, "0.5", "monthly");
+  write("regions.xml", g.regions, "0.6", "monthly");
   writeFileSync(resolve("public/sitemap.xml"), index(files));
 
+  // 3. keep the Cloudflare worker geographic arrays in sync
+  syncWorker();
+
   console.log(`SEO build: ${pages.length} pages → pages.json`);
-  console.log(`Sitemaps: static=${g.static.length} categories=${g.categories.length} subcategories=${g.subcategories.length} cities=${g.cities.length} departments=${g.departments.length}`);
+  console.log(`Sitemaps: static=${g.static.length} categories=${g.categories.length} subcategories=${g.subcategories.length} cities=${g.cities.length} departments=${g.departments.length} regions=${g.regions.length}`);
 }
 
 main();

@@ -18,6 +18,7 @@ const SUB_SITEMAPS = [
   "subcategories.xml",
   "cities.xml",
   "departments.xml",
+  "regions.xml",
 ];
 
 function extractLocs(xml: string): string[] {
