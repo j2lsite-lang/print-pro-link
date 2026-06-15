@@ -216,11 +216,12 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       { name: c.department, path: `/departement/${slugify(c.department)}` },
       { name: c.name, path: `/ville/${c.slug}` },
     ];
+    const cart = article(c.department);
     const faq = cityFaq(c);
     pages.push({
       path: `/ville/${c.slug}`,
-      title: `Imprimerie en ligne à ${c.name} — livraison ${c.department}`,
-      description: `Impression professionnelle livrée à ${c.name} (${c.cp}) : flyers, cartes de visite, banderoles et PLV. Commande en ligne, livraison dans le ${c.department}.`,
+      title: `Imprimerie en ligne à ${c.name} — livraison ${cart.de}`,
+      description: `Impression professionnelle livrée à ${c.name} (${c.cp}) : flyers, cartes de visite, banderoles et PLV. Commande en ligne, livraison ${cart.dans}.`,
       h1: `Imprimerie en ligne pour ${c.name}`,
       intro: cityIntro(c),
       breadcrumb: crumb,
@@ -233,7 +234,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       jsonLd: [
         breadcrumbLd(crumb),
         webPageLd({ name: `Impression à ${c.name}`, description: `Impression en ligne livrée à ${c.name}.`, path: `/ville/${c.slug}` }),
-        serviceLd({ name: `Impression pour les professionnels de ${c.name}`, description: `Impression en ligne avec livraison à ${c.name} et dans le ${c.department}.`, areaServed: c.name }),
+        serviceLd({ name: `Impression pour les professionnels à ${c.name}`, description: `Impression en ligne avec livraison à ${c.name} et ${cart.dans}.`, areaServed: c.name }),
         faqLd(faq),
       ],
     });
