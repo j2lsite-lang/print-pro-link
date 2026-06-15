@@ -99,6 +99,146 @@ function wouldBeExcluded(
 }
 
 /**
+ * Pick a real, non-nullable option value provided by Print.com for a property,
+ * skipping any values in `exclude`. Never invents a value — returns undefined
+ * when Print.com offers no usable option.
+ */
+function realOptionValue(
+  prop: ConfigurableProperty | undefined,
+  exclude: (string | undefined)[] = [],
+): string | undefined {
+  if (!prop?.options?.length) return undefined;
+  const candidates = prop.options
+    .filter((o) => !o.nullable && o.slug != null)
+    .map((o) => String(o.slug));
+  return candidates.find((c) => !exclude.includes(c)) ?? candidates[0];
+}
+
+/** Parse "missing required property: X" occurrences from a Print.com error. */
+function parseMissingProps(message: string): string[] {
+  const out: string[] = [];
+  const re = /missing required property:\s*([a-zA-Z0-9_.]+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(message))) {
+    if (!out.includes(m[1])) out.push(m[1]);
+  }
+  return out;
+}
+
+/** Parse excluded-configuration groups (key:value pairs) from a Print.com error. */
+function parseExcludedGroups(message: string): Array<{ property: string; value: string }[]> {
+  const groups: Array<{ property: string; value: string }[]> = [];
+  const re = /excluded configuration was provided:\s*([a-zA-Z0-9_:,.]+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(message))) {
+    const pairs = m[1]
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s.includes(":"))
+      .map((s) => {
+        const idx = s.indexOf(":");
+        return { property: s.slice(0, idx), value: s.slice(idx + 1) };
+      });
+    if (pairs.length) groups.push(pairs);
+  }
+  return groups;
+}
+
+/**
+ * Self-correcting price request. Starts from the user's selection plus any
+ * hidden REQUIRED properties (e.g. printingmethod) filled with their real
+ * Print.com value, then reacts to the API's own validation errors:
+ *  - "missing required property: X"  → add X using a real Print.com option
+ *  - "excluded configuration ..."    → switch an offending property to another
+ *                                      real Print.com option (user choices last)
+ * No printing method or value is ever invented or hardcoded.
+ */
+async function resolvePrice(
+  sku: string,
+  product: PrintComProduct,
+  baseOptions: Record<string, any>,
+  copies: number,
+  protectedKeys: Set<string>,
+): Promise<{ data: any; options: Record<string, any> }> {
+  const props = product.properties || product.configurableProperties || [];
+  const findProp = (slug: string) => props.find((p) => p.slug === slug);
+  const options: Record<string, any> = { ...baseOptions };
+  const seen = new Set<string>();
+  let lastError = "";
+
+  for (let attempt = 0; attempt < 12; attempt++) {
+    const body = { ...options, copies };
+    const stateKey = JSON.stringify(body);
+    if (seen.has(stateKey)) break;
+    seen.add(stateKey);
+
+    console.log(`[price] attempt ${attempt + 1} payload:`, body);
+
+    try {
+      const data = await getPrice(sku, body);
+      if (data?.error || data?.errorMessage) {
+        lastError = data.errorMessage || data.error;
+      } else {
+        return { data, options };
+      }
+    } catch (err: any) {
+      lastError = err?.message || String(err);
+    }
+
+    console.log(`[price] attempt ${attempt + 1} error:`, lastError);
+
+    // 1. Add any missing required properties using real Print.com values.
+    const missing = parseMissingProps(lastError);
+    if (missing.length) {
+      let added = false;
+      for (const slug of missing) {
+        const v = realOptionValue(findProp(slug));
+        if (v !== undefined && options[slug] !== v) {
+          options[slug] = v;
+          added = true;
+          console.log(`[price] added missing required '${slug}' = '${v}' (real Print.com value)`);
+        }
+      }
+      if (added) continue;
+    }
+
+    // 2. Resolve excluded combinations by switching an offending property.
+    const groups = parseExcludedGroups(lastError);
+    if (groups.length) {
+      const changeRank = (slug: string) => {
+        if (slug === "size" || slug === "material") return 3; // primary user choices: change last
+        if (protectedKeys.has(slug)) return 2; // explicitly touched by user
+        return 1; // hidden/auto/extra props: change first
+      };
+      let changed = false;
+      for (const pairs of groups) {
+        const ordered = [...pairs].sort((a, b) => changeRank(a.property) - changeRank(b.property));
+        for (const pair of ordered) {
+          const prop = findProp(pair.property);
+          if (!prop) continue;
+          const forbidden = pairs
+            .filter((p) => p.property === pair.property)
+            .map((p) => p.value);
+          const alt = realOptionValue(prop, [...forbidden, options[pair.property]]);
+          if (alt !== undefined && alt !== options[pair.property]) {
+            console.log(`[price] excluded combo, switching '${pair.property}' -> '${alt}'`);
+            options[pair.property] = alt;
+            changed = true;
+            break;
+          }
+        }
+        if (changed) break;
+      }
+      if (changed) continue;
+    }
+
+    break; // Unrecognised / unresolvable error
+  }
+
+  throw new Error(lastError || "Price resolution failed");
+}
+
+/**
  * Set defaults that avoid excluded combinations.
  * Try each option; if the first creates an exclusion, try others.
  */
