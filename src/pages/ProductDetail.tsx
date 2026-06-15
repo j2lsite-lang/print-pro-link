@@ -932,7 +932,7 @@ export default function ProductDetail() {
       )}
 
       {/* Main layout */}
-      <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
+      <div className="grid gap-6 lg:gap-8 lg:grid-cols-[1fr_380px]">
         <div className="space-y-5">
           {mainProps.map((prop) => (
             <OptionSelector
@@ -973,7 +973,7 @@ export default function ProductDetail() {
           )}
         </div>
 
-        <div className="hidden lg:block">
+        <div className="space-y-4">
           <PriceSummary
             priceResult={priceResult}
             priceLoading={priceLoading}
@@ -989,6 +989,16 @@ export default function ProductDetail() {
             shippingLoading={shippingLoading}
           />
         </div>
+      </div>
+
+      {/* Use cases — moved below configurator */}
+      <div className="mt-10 space-y-4">
+        <h2 className="font-display text-xl font-semibold text-foreground">
+          À quoi sert {productName.toLowerCase()} ?
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          {getProductSEOData(productName, sku).useCases}
+        </p>
       </div>
 
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card p-4">
@@ -1010,7 +1020,7 @@ export default function ProductDetail() {
             )}
           </div>
           <Button onClick={handleAddToCart} disabled={!priceResult} size="lg">
-            Ajouter au panier
+            Ajouter au devis
           </Button>
         </div>
       </div>
