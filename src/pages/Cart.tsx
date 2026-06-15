@@ -2,9 +2,11 @@ import { Link } from "react-router-dom";
 import { Trash2, ShoppingBag, ArrowRight, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
+import { FLAT_SHIPPING_HT } from "@/lib/pricing";
 
 export default function Cart() {
   const { items, removeItem, total, clearCart } = useCart();
+  const grandTotal = total + FLAT_SHIPPING_HT;
 
   if (items.length === 0) {
     return (
