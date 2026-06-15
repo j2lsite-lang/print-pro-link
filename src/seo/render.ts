@@ -97,22 +97,75 @@ function renderCta(page: SeoPage): string {
   return `<section class="seo-cta"><a class="seo-cta-button" href="${page.cta.path}">${esc(page.cta.label)}</a></section>`;
 }
 
+function renderHero(page: SeoPage): string {
+  const h = page.hero;
+  if (!h) return "";
+  const ctas = (h.ctas || [])
+    .map(
+      (c) =>
+        `<a class="seo-hero-cta ${c.variant === "secondary" ? "is-secondary" : "is-primary"}" href="${c.path}">${esc(c.label)}</a>`,
+    )
+    .join("");
+  return [
+    `<section class="seo-hero">`,
+    `  <img class="seo-hero-img" src="${h.image}" alt="${esc(h.imageAlt)}" loading="eager" width="1280" height="720" />`,
+    `  <div class="seo-hero-overlay">`,
+    h.eyebrow ? `    <p class="seo-hero-eyebrow">${esc(h.eyebrow)}</p>` : "",
+    `    <h1>${esc(page.h1)}</h1>`,
+    `    <p class="seo-hero-tagline">${esc(h.tagline)}</p>`,
+    ctas ? `    <div class="seo-hero-ctas">${ctas}</div>` : "",
+    `  </div>`,
+    `</section>`,
+  ].filter(Boolean).join("\n");
+}
+
+function renderProductGrid(page: SeoPage): string {
+  const g = page.productGrid;
+  if (!g) return "";
+  const cards = g.cards
+    .map(
+      (c) =>
+        `<a class="seo-product-card" href="${c.path}"><h3>${esc(c.label)}</h3><p>${esc(c.description)}</p></a>`,
+    )
+    .join("");
+  return [
+    `<section class="seo-products">`,
+    `  <h2>${esc(g.heading)}</h2>`,
+    g.intro ? `  <p>${esc(g.intro)}</p>` : "",
+    `  <div class="seo-product-grid">${cards}</div>`,
+    `</section>`,
+  ].filter(Boolean).join("\n");
+}
+
+function renderExternalLinks(page: SeoPage): string {
+  if (!page.externalLinks || !page.externalLinks.length) return "";
+  const links = page.externalLinks
+    .map(
+      (l) =>
+        `<li><a href="${l.path}" target="_blank" rel="noopener noreferrer">${esc(l.label)}</a></li>`,
+    )
+    .join("");
+  return `<section class="seo-links"><h2>Ressources officielles</h2><ul>${links}</ul></section>`;
+}
+
 /** Build the body content injected inside #root (real, crawlable content). */
 export function renderBody(page: SeoPage): string {
   const intro = page.intro.map((p) => `<p>${esc(p)}</p>`).join("");
   const sections = (page.sections || []).map(renderSection).join("");
   const links = (page.internalLinks || []).map(renderLinkGroup).join("");
+  const header = page.hero
+    ? [renderBreadcrumb(page.breadcrumb), renderHero(page)].join("\n")
+    : `<header>\n    ${renderBreadcrumb(page.breadcrumb)}\n    <h1>${esc(page.h1)}</h1>\n  </header>`;
   return [
     `<div class="seo-prerender">`,
-    `  <header>`,
-    `    ${renderBreadcrumb(page.breadcrumb)}`,
-    `    <h1>${esc(page.h1)}</h1>`,
-    `  </header>`,
+    header,
     `  <div class="seo-intro">${intro}</div>`,
     sections,
+    renderProductGrid(page),
     renderCta(page),
     renderFaq(page.faq),
     links,
+    renderExternalLinks(page),
     `</div>`,
   ].join("\n");
 }
