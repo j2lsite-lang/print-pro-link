@@ -104,10 +104,14 @@ async function main() {
   write("subcategories.xml", g.subcategories, "0.7", "weekly");
   write("cities.xml", g.cities, "0.6", "monthly");
   write("departments.xml", g.departments, "0.5", "monthly");
+  write("regions.xml", g.regions, "0.6", "monthly");
   writeFileSync(resolve("public/sitemap.xml"), index(files));
 
+  // 3. keep the Cloudflare worker geographic arrays in sync
+  syncWorker();
+
   console.log(`SEO build: ${pages.length} pages → pages.json`);
-  console.log(`Sitemaps: static=${g.static.length} categories=${g.categories.length} subcategories=${g.subcategories.length} cities=${g.cities.length} departments=${g.departments.length}`);
+  console.log(`Sitemaps: static=${g.static.length} categories=${g.categories.length} subcategories=${g.subcategories.length} cities=${g.cities.length} departments=${g.departments.length} regions=${g.regions.length}`);
 }
 
 main();
