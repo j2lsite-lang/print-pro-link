@@ -32,8 +32,12 @@ export const DEPT_ARTICLE: Record<string, Article> = {
 };
 
 /** Fallback that guesses an article when a name is not in the map. */
+import { DEPT_ARTICLE_FULL, REGION_ARTICLE } from "./articles";
+
 export function article(name: string): Article {
   if (DEPT_ARTICLE[name]) return DEPT_ARTICLE[name];
+  if (DEPT_ARTICLE_FULL[name]) return DEPT_ARTICLE_FULL[name];
+  if (REGION_ARTICLE[name]) return REGION_ARTICLE[name];
   return VOWEL.test(name)
     ? { dans: `dans l'${name}`, de: `de l'${name}` }
     : { dans: `dans le ${name}`, de: `du ${name}` };
