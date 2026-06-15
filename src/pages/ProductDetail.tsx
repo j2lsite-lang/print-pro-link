@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Loader2, ChevronRight, CheckCircle } from "lucide-react";
 import { getProductSEOData } from "@/lib/product-seo";
