@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSEO } from "@/hooks/useSEO";
-import { supabase } from "@/integrations/supabase/client";
+// Supabase is loaded on demand (only when a form is actually submitted) so its
+// client never weighs on the homepage's initial JavaScript / Total Blocking Time.
 import { useToast } from "@/hooks/use-toast";
 import imgImpression from "@/assets/services/impression-numerique.jpg";
 import imgGrandFormat from "@/assets/services/grand-format.jpg";
