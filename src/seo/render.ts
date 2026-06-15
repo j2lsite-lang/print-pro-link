@@ -3,7 +3,7 @@
 // static HTML shell, and to build per-route <head>. Output must be valid,
 // crawler-readable HTML present in "view source" without executing JS.
 
-import type { SeoPage } from "./types";
+import type { SeoPage, LinkGroup } from "./types";
 
 export const SITE_URL = "https://j2lprint.fr";
 export const SITE_NAME = "J2L Print";
