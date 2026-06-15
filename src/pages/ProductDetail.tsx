@@ -286,8 +286,8 @@ export default function ProductDetail() {
     setShippingLoading(true);
     try {
       const body = {
-        items: [{ sku, copies }],
-        destination: { country: "FR" },
+        address: { country: "FR" },
+        item: { sku, copies },
       };
       const data = await getShippingPossibilities(body);
       const options = Array.isArray(data) ? data : data?.shippingOptions || data?.options || [];
