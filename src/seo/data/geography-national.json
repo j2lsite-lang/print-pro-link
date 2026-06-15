@@ -8,9 +8,9 @@
     "totalCities": 502,
     "totalDepartments": 101,
     "totalRegions": 18,
-    "conflictsResolved": 21,
-    "citiesWithoutDepartment": 6,
-    "citiesWithoutRegion": 6,
+    "conflictsResolved": 26,
+    "citiesWithoutDepartment": 0,
+    "citiesWithoutRegion": 0,
     "departmentsWithoutRegion": 0,
     "fromPrintOnly": 7
   },
@@ -1499,14 +1499,16 @@
       "source": "j2l-print"
     },
     {
-      "name": "Chateau Gontier",
+      "name": "Château-Gontier-sur-Mayenne",
       "slug": "chateau-gontier",
-      "postalCodes": [],
-      "departmentCode": null,
-      "departmentName": null,
-      "departmentSlug": null,
-      "regionName": null,
-      "regionSlug": null,
+      "postalCodes": [
+        "53200"
+      ],
+      "departmentCode": "53",
+      "departmentName": "Mayenne",
+      "departmentSlug": "mayenne",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
       "source": "j2l-publicite"
     },
     {
@@ -2426,14 +2428,16 @@
       "source": "j2l-publicite"
     },
     {
-      "name": "Florac",
+      "name": "Florac Trois Rivières",
       "slug": "florac",
-      "postalCodes": [],
-      "departmentCode": null,
-      "departmentName": null,
-      "departmentSlug": null,
-      "regionName": null,
-      "regionSlug": null,
+      "postalCodes": [
+        "48400"
+      ],
+      "departmentCode": "48",
+      "departmentName": "Lozère",
+      "departmentSlug": "lozere",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
       "source": "j2l-publicite"
     },
     {
@@ -2997,14 +3001,16 @@
       "source": "j2l-print"
     },
     {
-      "name": "La Defense",
+      "name": "La Défense",
       "slug": "la-defense",
-      "postalCodes": [],
-      "departmentCode": null,
-      "departmentName": null,
-      "departmentSlug": null,
-      "regionName": null,
-      "regionSlug": null,
+      "postalCodes": [
+        "92800"
+      ],
+      "departmentCode": "92",
+      "departmentName": "Hauts-de-Seine",
+      "departmentSlug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
       "source": "j2l-publicite"
     },
     {
@@ -3298,14 +3304,18 @@
       "source": "j2l-publicite"
     },
     {
-      "name": "Les Sables Dolonne",
+      "name": "Les Sables-d'Olonne",
       "slug": "les-sables-dolonne",
-      "postalCodes": [],
-      "departmentCode": null,
-      "departmentName": null,
-      "departmentSlug": null,
-      "regionName": null,
-      "regionSlug": null,
+      "postalCodes": [
+        "85100",
+        "85180",
+        "85340"
+      ],
+      "departmentCode": "85",
+      "departmentName": "Vendée",
+      "departmentSlug": "vendee",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
       "source": "j2l-publicite"
     },
     {
@@ -3740,14 +3750,16 @@
       "source": "j2l-print"
     },
     {
-      "name": "Mayenne Ville",
+      "name": "Mayenne",
       "slug": "mayenne-ville",
-      "postalCodes": [],
-      "departmentCode": null,
-      "departmentName": null,
-      "departmentSlug": null,
-      "regionName": null,
-      "regionSlug": null,
+      "postalCodes": [
+        "53100"
+      ],
+      "departmentCode": "53",
+      "departmentName": "Mayenne",
+      "departmentSlug": "mayenne",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
       "source": "j2l-publicite"
     },
     {
@@ -5644,14 +5656,16 @@
       "source": "j2l-print"
     },
     {
-      "name": "Schoelcher",
+      "name": "Schœlcher",
       "slug": "schoelcher",
-      "postalCodes": [],
-      "departmentCode": null,
-      "departmentName": null,
-      "departmentSlug": null,
-      "regionName": null,
-      "regionSlug": null,
+      "postalCodes": [
+        "97233"
+      ],
+      "departmentCode": "972",
+      "departmentName": "Martinique",
+      "departmentSlug": "martinique",
+      "regionName": "Martinique",
+      "regionSlug": "martinique",
       "source": "j2l-publicite"
     },
     {
@@ -7169,6 +7183,7 @@
       "regionName": "Occitanie",
       "regionSlug": "occitanie",
       "citySlugs": [
+        "florac",
         "marvejols",
         "mende",
         "saint-chely-d-apcher"
@@ -7242,7 +7257,9 @@
       "regionName": "Pays de la Loire",
       "regionSlug": "pays-de-la-loire",
       "citySlugs": [
-        "laval"
+        "laval",
+        "chateau-gontier",
+        "mayenne-ville"
       ]
     },
     {
@@ -7738,7 +7755,8 @@
       "citySlugs": [
         "challans",
         "la-roche-sur-yon",
-        "les-sables-d-olonne"
+        "les-sables-d-olonne",
+        "les-sables-dolonne"
       ]
     },
     {
@@ -7848,7 +7866,8 @@
         "levallois-perret",
         "nanterre",
         "neuilly-sur-seine",
-        "rueil-malmaison"
+        "rueil-malmaison",
+        "la-defense"
       ]
     },
     {
@@ -7916,7 +7935,8 @@
       "regionSlug": "martinique",
       "citySlugs": [
         "fort-de-france",
-        "le-lamentin"
+        "le-lamentin",
+        "schoelcher"
       ]
     },
     {
@@ -8249,8 +8269,8 @@
         "65",
         "31",
         "32",
-        "09",
-        "48"
+        "48",
+        "09"
       ],
       "departmentSlugs": [
         "tarn",
@@ -8264,8 +8284,8 @@
         "hautes-pyrenees",
         "haute-garonne",
         "gers",
-        "ariege",
-        "lozere"
+        "lozere",
+        "ariege"
       ]
     },
     {
