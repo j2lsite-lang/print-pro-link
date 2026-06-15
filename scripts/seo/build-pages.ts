@@ -10,7 +10,7 @@ import {
 import { article } from "../../src/seo/content/fr";
 import { SERVICE_CONTENT } from "../../src/seo/content/services";
 import {
-  breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
+  breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd, productLd,
 } from "../../src/seo/schema";
 
 function readEnv(): Record<string, string> {
@@ -394,7 +394,88 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     });
   }
 
+  // ── Priority products (30) ──
+  // Each entry in products.json was auto-selected from the live Print.com
+  // catalog and validated (active, real image, working configurator, computable
+  // price). We prerender a real, crawlable page per SKU at /products/{sku} —
+  // the same path the live configurator (ProductDetail) serves at runtime.
+  for (const p of loadSelectedProducts()) {
+    const path = `/products/${p.sku}`;
+    const parentContent = CATEGORY_CONTENT[p.parentSlug as keyof typeof CATEGORY_CONTENT];
+    const parentName = parentContent?.name || p.parentName;
+    const crumb = [
+      home,
+      { name: "Catalogue", path: "/catalogue" },
+      { name: parentName, path: `/categorie/${p.parentSlug}` },
+      { name: p.subName, path: `/categorie/${p.parentSlug}/${p.subSlug}` },
+      { name: p.name, path },
+    ];
+    const cleanDesc = (p.description || "").replace(/\s+/g, " ").trim();
+    const description = cleanDesc
+      ? cleanDesc.slice(0, 155)
+      : `${p.name} à imprimer en ligne chez J2L Print : configuration sur mesure (format, matière, finitions), tarifs dégressifs et livraison partout en France.`;
+    const intro = [
+      cleanDesc ||
+        `${p.name} : configurez votre impression en ligne (format, matière, finitions) et obtenez votre prix instantanément. J2L Print vous livre partout en France.`,
+    ];
+    if (p.priceComputed > 0) {
+      intro.push(`Tarif à partir de ${p.priceComputed.toFixed(2)} € selon la configuration choisie.`);
+    }
+    const sections: ContentSectionLike[] = (p.features || [])
+      .filter((f) => f && f.title && f.values?.length)
+      .slice(0, 6)
+      .map((f) => ({ heading: f.title, bullets: f.values }));
+
+    pages.push({
+      path,
+      title: `${p.name} — impression en ligne`,
+      description,
+      h1: p.name,
+      intro,
+      breadcrumb: crumb,
+      sections,
+      internalLinks: [
+        { heading: "Sous-catégorie", links: [{ label: p.subName, path: `/categorie/${p.parentSlug}/${p.subSlug}` }] },
+        { heading: "Catégorie", links: [{ label: parentName, path: `/categorie/${p.parentSlug}` }] },
+        { heading: "Nos services", links: SERVICE_LINKS },
+      ],
+      jsonLd: [
+        breadcrumbLd(crumb),
+        productLd({
+          name: p.name,
+          description,
+          sku: p.sku,
+          path,
+          image: p.image,
+          fromPrice: p.priceComputed,
+        }),
+      ],
+      ogType: "product",
+    });
+  }
+
   return pages;
+}
+
+type ContentSectionLike = { heading: string; paragraphs?: string[]; bullets?: string[] };
+
+interface SelectedProduct {
+  slug: string; sku: string; name: string; image: string | null;
+  description?: string; parentSlug: string; parentName: string;
+  subSlug: string; subName: string; priceComputed: number;
+  features?: { title: string; values: string[] }[];
+}
+
+// Read the auto-selected, validated product set (scripts/seo/select-products.ts).
+function loadSelectedProducts(): SelectedProduct[] {
+  const p = resolve("src/seo/generated/products.json");
+  if (!existsSync(p)) return [];
+  try {
+    const arr = JSON.parse(readFileSync(p, "utf8"));
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
 }
 
 type BreadcrumbItemLite = { name: string; path: string };

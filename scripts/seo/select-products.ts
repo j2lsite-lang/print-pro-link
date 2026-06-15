@@ -83,22 +83,59 @@ function bucketFor(name: string): string | null {
   return null;
 }
 
-// Build a minimal valid default configuration (mirrors ProductDetail logic).
+type ExcludeGroup = { property: string; options: string[] }[];
+
+// Is the current selection inside any exclude group?
+function isExcluded(sel: Record<string, string>, excludes?: ExcludeGroup[]): boolean {
+  if (!excludes?.length) return false;
+  return excludes.some((group) =>
+    group.every((c) => { const v = sel[c.property]; return v !== undefined && c.options.includes(v); })
+  );
+}
+
+/**
+ * Build a valid default configuration that the Print.com price API accepts.
+ * Key rule: include EVERY required/locked property — even those hidden in the
+ * reseller UI (columnWidth.reseller === "hidden"). The price endpoint validates
+ * these server-side; omitting them returns "missing required property". Only
+ * hidden props that are NOT required are dropped.
+ * After building, resolve any excluded combination group by group.
+ */
 function buildDefaults(product: any): { defaults: Record<string, string>; copies: number | null } {
   const props = product.properties || product.configurableProperties || [];
-  const hidden = new Set<string>();
-  for (const g of product.propertyGroups || []) {
-    if (g.columnWidth?.reseller === "hidden") (g.properties || []).forEach((s: string) => hidden.add(s));
-  }
+  const excludes: ExcludeGroup[] | undefined = product.excludes || product.excludeGroups;
+
   const defaults: Record<string, string> = {};
   for (const prop of props) {
     if (prop.slug === "copies" || prop.slug === "summary_image") continue;
-    if (hidden.has(prop.slug)) continue;
     const nonNull = (prop.options || []).filter((o: any) => !o.nullable);
     if (!nonNull.length) continue;
     if (prop.locked || prop.required) defaults[prop.slug] = String(nonNull[0].slug);
   }
-  // copies
+
+  // Resolve excluded combinations: for each violated group, switch one of its
+  // properties to an option outside the group's excluded list (and not nullable).
+  let guard = 40;
+  while (guard-- > 0 && isExcluded(defaults, excludes)) {
+    let fixed = false;
+    for (const group of excludes || []) {
+      const violated = group.every((c) => { const v = defaults[c.property]; return v !== undefined && c.options.includes(v); });
+      if (!violated) continue;
+      for (const c of group) {
+        const prop = props.find((p: any) => p.slug === c.property);
+        if (!prop) continue;
+        const alt = (prop.options || [])
+          .filter((o: any) => !o.nullable)
+          .map((o: any) => String(o.slug))
+          .find((s: string) => !c.options.includes(s) && !isExcluded({ ...defaults, [c.property]: s }, excludes));
+        if (alt) { defaults[c.property] = alt; fixed = true; break; }
+      }
+      if (fixed) break;
+    }
+    if (!fixed) break; // unresolvable — caller rejects on price failure
+  }
+
+  // copies: pick the first valid quantity tied to the selected printing method.
   let copies: number | null = null;
   const cp = props.find((p: any) => p.slug === "copies");
   if (cp) {
@@ -217,7 +254,7 @@ async function main() {
   // Two passes: pass 1 enforces balance + 1 product per intent bucket; pass 2 fills remaining.
   const queue = [...candidates];
   let attempts = 0;
-  const MAX_ATTEMPTS = 90;
+  const MAX_ATTEMPTS = 300;
 
   for (const c of queue) {
     if (selected.length >= TARGET) break;
