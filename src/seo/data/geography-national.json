@@ -996,6 +996,24 @@
       "nearbyCitySlugs": []
     },
     {
+      "name": "La Vôge-les-Bains",
+      "slug": "bains-les-bains",
+      "postalCodes": [
+        "88240"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "sourceSites": [
+        "baguettpub",
+        "j2lpublicite",
+        "pizzpub"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
       "name": "Bandol",
       "slug": "bandol",
       "postalCodes": [
@@ -1791,6 +1809,26 @@
       "nearbyCitySlugs": []
     },
     {
+      "name": "Val de Briey",
+      "slug": "briey",
+      "postalCodes": [
+        "54150",
+        "54790"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "sourceSites": [
+        "baguettpub",
+        "j2lprint",
+        "j2lpublicite",
+        "pizzpub"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
       "name": "Brioude",
       "slug": "brioude",
       "postalCodes": [
@@ -2070,6 +2108,24 @@
         "j2lprint",
         "j2lpublicite",
         "j2ltextiles",
+        "pizzpub"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Thaon-les-Vosges",
+      "slug": "capavenir-vosges",
+      "postalCodes": [
+        "88150"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "sourceSites": [
+        "baguettpub",
+        "j2lpublicite",
         "pizzpub"
       ],
       "nearbyCitySlugs": []
@@ -2509,6 +2565,23 @@
     },
     {
       "name": "Château-Gontier-sur-Mayenne",
+      "slug": "chateau-gontier",
+      "postalCodes": [
+        "53200"
+      ],
+      "departmentCode": "53",
+      "departmentName": "Mayenne",
+      "departmentSlug": "mayenne",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "sourceSites": [
+        "j2lpublicite",
+        "j2ltextiles"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Château-Gontier-sur-Mayenne",
       "slug": "chateau-gontier-sur-mayenne",
       "postalCodes": [
         "53200"
@@ -2687,6 +2760,31 @@
       "regionSlug": "bourgogne-franche-comte",
       "sourceSites": [
         "baguettpub",
+        "j2lpublicite",
+        "j2ltextiles",
+        "pizzpub"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Cherbourg-en-Cotentin",
+      "slug": "cherbourg",
+      "postalCodes": [
+        "50100",
+        "50110",
+        "50120",
+        "50130",
+        "50460",
+        "50470"
+      ],
+      "departmentCode": "50",
+      "departmentName": "Manche",
+      "departmentSlug": "manche",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "sourceSites": [
+        "baguettpub",
+        "j2lprint",
         "j2lpublicite",
         "j2ltextiles",
         "pizzpub"
@@ -4040,6 +4138,22 @@
       "nearbyCitySlugs": []
     },
     {
+      "name": "Florac Trois Rivières",
+      "slug": "florac",
+      "postalCodes": [
+        "48400"
+      ],
+      "departmentCode": "48",
+      "departmentName": "Lozère",
+      "departmentSlug": "lozere",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "sourceSites": [
+        "j2lpublicite"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
       "name": "Florange",
       "slug": "florange",
       "postalCodes": [
@@ -4652,6 +4766,22 @@
       "nearbyCitySlugs": []
     },
     {
+      "name": "Hœnheim",
+      "slug": "hoenheim",
+      "postalCodes": [
+        "67800"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "sourceSites": [
+        "pizzpub"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
       "name": "Homécourt",
       "slug": "homecourt",
       "postalCodes": [
@@ -4824,6 +4954,25 @@
       "slug": "jarville-la-malgrange",
       "postalCodes": [
         "54140"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "sourceSites": [
+        "baguettpub",
+        "j2lprint",
+        "j2lpublicite",
+        "pizzpub"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Jœuf",
+      "slug": "joeuf",
+      "postalCodes": [
+        "54240"
       ],
       "departmentCode": "54",
       "departmentName": "Meurthe-et-Moselle",
@@ -5617,6 +5766,24 @@
       "nearbyCitySlugs": []
     },
     {
+      "name": "Les Sables-d'Olonne",
+      "slug": "les-sables-dolonne",
+      "postalCodes": [
+        "85100",
+        "85180",
+        "85340"
+      ],
+      "departmentCode": "85",
+      "departmentName": "Vendée",
+      "departmentSlug": "vendee",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "sourceSites": [
+        "j2lpublicite"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
       "name": "Levallois-Perret",
       "slug": "levallois-perret",
       "postalCodes": [
@@ -6399,6 +6566,22 @@
         "baguettpub",
         "j2lpublicite",
         "j2ltextiles"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Mayenne",
+      "slug": "mayenne-ville",
+      "postalCodes": [
+        "53100"
+      ],
+      "departmentCode": "53",
+      "departmentName": "Mayenne",
+      "departmentSlug": "mayenne",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "sourceSites": [
+        "j2lpublicite"
       ],
       "nearbyCitySlugs": []
     },
@@ -7220,6 +7403,25 @@
         "j2lprint",
         "j2lpublicite",
         "j2ltextiles",
+        "pizzpub"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Nogent",
+      "slug": "nogent-haute-marne",
+      "postalCodes": [
+        "52800"
+      ],
+      "departmentCode": "52",
+      "departmentName": "Haute-Marne",
+      "departmentSlug": "haute-marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "sourceSites": [
+        "baguettpub",
+        "j2lprint",
+        "j2lpublicite",
         "pizzpub"
       ],
       "nearbyCitySlugs": []
@@ -9590,6 +9792,23 @@
       "nearbyCitySlugs": []
     },
     {
+      "name": "Schœlcher",
+      "slug": "schoelcher",
+      "postalCodes": [
+        "97233"
+      ],
+      "departmentCode": "972",
+      "departmentName": "Martinique",
+      "departmentSlug": "martinique",
+      "regionName": "Martinique",
+      "regionSlug": "martinique",
+      "sourceSites": [
+        "j2lpublicite",
+        "j2ltextiles"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
       "name": "Sedan",
       "slug": "sedan",
       "postalCodes": [
@@ -10377,6 +10596,26 @@
       "departmentSlug": "nord",
       "regionName": "Hauts-de-France",
       "regionSlug": "hauts-de-france",
+      "sourceSites": [
+        "baguettpub",
+        "j2lprint",
+        "j2lpublicite",
+        "j2ltextiles",
+        "pizzpub"
+      ],
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Vandœuvre-lès-Nancy",
+      "slug": "vandoeuvre-les-nancy",
+      "postalCodes": [
+        "54500"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
       "sourceSites": [
         "baguettpub",
         "j2lprint",
@@ -12178,6 +12417,7 @@
       "regionName": "Occitanie",
       "regionSlug": "occitanie",
       "citySlugs": [
+        "florac",
         "marvejols",
         "mende",
         "saint-chely-d-apcher"
@@ -12219,6 +12459,7 @@
       "regionName": "Normandie",
       "regionSlug": "normandie",
       "citySlugs": [
+        "cherbourg",
         "cherbourg-en-cotentin",
         "granville",
         "saint-lo"
@@ -12271,6 +12512,7 @@
         "chaumont",
         "joinville",
         "langres",
+        "nogent-haute-marne",
         "saint-dizier",
         "wassy"
       ],
@@ -12290,9 +12532,11 @@
       "regionName": "Pays de la Loire",
       "regionSlug": "pays-de-la-loire",
       "citySlugs": [
+        "chateau-gontier",
         "chateau-gontier-sur-mayenne",
         "laval",
-        "mayenne"
+        "mayenne",
+        "mayenne-ville"
       ],
       "neighborDepartmentSlugs": [],
       "sourceSites": [
@@ -12311,12 +12555,14 @@
       "regionSlug": "grand-est",
       "citySlugs": [
         "baccarat",
+        "briey",
         "champigneulles",
         "dombasle-sur-meurthe",
         "frouard",
         "heillecourt",
         "homecourt",
         "jarville-la-malgrange",
+        "joeuf",
         "laxou",
         "liverdun",
         "longwy",
@@ -12332,6 +12578,7 @@
         "saint-nicolas-de-port",
         "tomblaine",
         "toul",
+        "vandoeuvre-les-nancy",
         "villers-les-nancy",
         "villerupt"
       ],
@@ -12656,6 +12903,7 @@
         "erstein",
         "geispolsheim",
         "haguenau",
+        "hoenheim",
         "illkirch-graffenstaden",
         "lingolsheim",
         "molsheim",
@@ -13077,7 +13325,8 @@
       "citySlugs": [
         "challans",
         "la-roche-sur-yon",
-        "les-sables-d-olonne"
+        "les-sables-d-olonne",
+        "les-sables-dolonne"
       ],
       "neighborDepartmentSlugs": [],
       "sourceSites": [
@@ -13137,8 +13386,10 @@
       "regionName": "Grand Est",
       "regionSlug": "grand-est",
       "citySlugs": [
+        "bains-les-bains",
         "bruyeres",
         "bulgneville",
+        "capavenir-vosges",
         "charmes",
         "chatel-sur-moselle",
         "contrexeville",
@@ -13373,7 +13624,8 @@
       "citySlugs": [
         "fort-de-france",
         "le-lamentin",
-        "le-robert"
+        "le-robert",
+        "schoelcher"
       ],
       "neighborDepartmentSlugs": [],
       "sourceSites": [
