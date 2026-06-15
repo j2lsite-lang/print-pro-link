@@ -23,31 +23,31 @@ export default function ProductGallery({ images, productName, fallbackImage }: P
 
   return (
     <>
-      <div className="w-full lg:w-[460px] xl:w-[520px] shrink-0 space-y-3">
+      <div className="w-full shrink-0 space-y-3">
         {/* Main image */}
         {currentImage ? (
           <div
-            className="aspect-square overflow-hidden rounded-2xl border border-border bg-product-surface cursor-pointer relative group shadow-sm"
+            className="relative w-full max-h-[480px] lg:max-h-[520px] min-h-[280px] overflow-hidden rounded-2xl border border-border bg-product-surface cursor-pointer group shadow-sm flex items-center justify-center p-4 lg:p-6"
             onClick={() => setZoom(true)}
           >
             <img
               src={currentImage}
               alt={productName}
-              className="h-full w-full object-contain p-6"
+              className="max-h-full max-w-full object-contain object-center"
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/10 transition-colors">
               <ZoomIn className="h-7 w-7 text-foreground/70 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           </div>
         ) : (
-          <div className="aspect-square overflow-hidden rounded-2xl border border-border bg-product-surface flex items-center justify-center">
+          <div className="w-full max-h-[480px] lg:max-h-[520px] min-h-[280px] overflow-hidden rounded-2xl border border-border bg-product-surface flex items-center justify-center">
             <Package className="h-16 w-16 text-muted-foreground/40" />
           </div>
         )}
 
         {/* Thumbnails */}
         {allImages.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="flex gap-2 overflow-x-auto pb-1 justify-center">
             {allImages.map((img, i) => (
               <button
                 key={i}
@@ -57,7 +57,7 @@ export default function ProductGallery({ images, productName, fallbackImage }: P
                   i === selectedIndex ? "border-primary" : "border-border hover:border-primary/40"
                 )}
               >
-                <img src={img} alt="" className="h-full w-full object-contain p-1" />
+                <img src={img} alt="" className="h-full w-full object-contain object-center p-1" />
               </button>
             ))}
           </div>
