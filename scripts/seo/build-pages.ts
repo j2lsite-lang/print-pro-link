@@ -16,7 +16,7 @@ import {
 } from "../../src/seo/schema";
 import { loadGeo } from "./geo-data";
 import {
-  cityCopy, deptCopy, type GenCity, type GenDept, type NeighborRef,
+  cityCopy, deptCopy, seedOf, type GenCity, type GenDept, type NeighborRef,
 } from "../../src/seo/content/geo-cities";
 import { regionCopy, type GenRegion } from "../../src/seo/content/regions";
 
