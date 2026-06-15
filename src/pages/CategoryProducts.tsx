@@ -80,11 +80,44 @@ export default function CategoryProducts() {
 
   const loading = catLoading || skusLoading || productsLoading;
 
+  // Canonical points to the new SEO URL that supersedes this legacy page:
+  // top categories -> /categorie/{slug}, subcategories -> /categorie/{parent}/{slug}
+  const BASE_URL = "https://j2lprint.fr";
+  const newPath = category
+    ? category.parent_id
+      ? parentSlug
+        ? `/categorie/${parentSlug}/${category.slug}`
+        : null
+      : `/categorie/${category.slug}`
+    : null;
+
   useSEO({
     title: category ? `${category.name} – Impression en ligne` : "Catégorie – J2L Print",
     description: category
       ? `Découvrez notre gamme ${category.name} : impression professionnelle, devis gratuit et livraison rapide partout en France. J2L Print, votre imprimerie en ligne.`
       : "Catégorie de produits J2L Print.",
+    canonical: newPath ? `${BASE_URL}${newPath}` : undefined,
+    jsonLd: category && newPath
+      ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Accueil", item: `${BASE_URL}/` },
+              { "@type": "ListItem", position: 2, name: "Catalogue", item: `${BASE_URL}/catalogue` },
+              { "@type": "ListItem", position: 3, name: category.name, item: `${BASE_URL}${newPath}` },
+            ],
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: `${category.name} – J2L Print`,
+            description: `Impression professionnelle : ${category.name}.`,
+            url: `${BASE_URL}${newPath}`,
+            isPartOf: { "@type": "WebSite", name: "J2L Print", url: BASE_URL },
+          },
+        ]
+      : undefined,
   });
 
   const categoryProducts = useMemo(() => {
