@@ -7,8 +7,13 @@ import { CATEGORY_CONTENT, CATEGORY_SLUGS } from "../../src/seo/content/categori
 import {
   cityIntro, citySections, cityFaq, type CityData,
 } from "../../src/seo/content/locations";
-import { article } from "../../src/seo/content/fr";
+import { article, de } from "../../src/seo/content/fr";
 import { SERVICE_CONTENT } from "../../src/seo/content/services";
+import {
+  CITY_PROFILES, DEPT_PROFILES, CITY_OFFICIAL, DEPT_OFFICIAL, CCI_GRAND_EST,
+  PRODUCT_CARDS, CATEGORY_LINKS_VARIED, SERVICE_LINKS_VARIED,
+  HERO_CITY_IMAGES, deptHero,
+} from "../../src/seo/content/local";
 import {
   breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
 } from "../../src/seo/schema";
