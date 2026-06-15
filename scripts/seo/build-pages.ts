@@ -2,7 +2,7 @@
 // registry with live catalog/location data from the database.
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
-import type { SeoPage, LinkItem, ProductItem } from "../../src/seo/types";
+import type { SeoPage, LinkItem } from "../../src/seo/types";
 import { CATEGORY_CONTENT, CATEGORY_SLUGS } from "../../src/seo/content/categories";
 import {
   cityIntro, citySections, cityFaq, type CityData,
@@ -10,8 +10,12 @@ import {
 import { article } from "../../src/seo/content/fr";
 import { SERVICE_CONTENT } from "../../src/seo/content/services";
 import {
-  breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd, productLd,
+  breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
 } from "../../src/seo/schema";
+
+// Catalog CTA used on category/subcategory SEO pages. SEO pages NEVER fetch or
+// embed the Print.com catalog/configurator — they only link to the existing one.
+const CATALOG_CTA = { label: "Voir les produits dans le catalogue", path: "/products" };
 
 function readEnv(): Record<string, string> {
   const env: Record<string, string> = { ...process.env } as Record<string, string>;
@@ -47,26 +51,6 @@ async function rest<T = any>(path: string): Promise<T[]> {
   return out;
 }
 
-// Real, active product names from the live Print.com catalog (via the
-// printcom-proxy edge function). Only SKUs returned here are linkable, so
-// product links never point to a 404 / inactive configurator.
-async function fetchProductNames(): Promise<Map<string, string>> {
-  const map = new Map<string, string>();
-  if (!SB || !ANON) return map;
-  try {
-    const r = await fetch(`${SB}/functions/v1/printcom-proxy?action=list-products&lang=fr-FR`, {
-      headers: { apikey: ANON, Authorization: `Bearer ${ANON}` },
-    });
-    if (r.ok) {
-      const arr = await r.json();
-      for (const p of Array.isArray(arr) ? arr : []) {
-        const sku = p?.sku;
-        if (sku && p?.active !== false) map.set(sku, p?.titleSingle || p?.name || sku);
-      }
-    }
-  } catch { /* keep partial */ }
-  return map;
-}
 
 const PRIORITY_CITIES = [
   "epinal", "nancy", "metz", "strasbourg", "colmar", "mulhouse", "reims",
@@ -97,37 +81,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
   const cats = await rest<{ id: string; slug: string; name: string; parent_id: string | null }>(
     "product_categories?select=id,slug,name,parent_id",
   );
-  const mappings = await rest<{ sku: string; category_id: string }>(
-    "product_category_mappings?select=sku,category_id",
-  );
-  const skuByCat = new Map<string, Set<string>>();
-  for (const m of mappings) {
-    if (!skuByCat.has(m.category_id)) skuByCat.set(m.category_id, new Set());
-    skuByCat.get(m.category_id)!.add(m.sku);
-  }
-  const byId = new Map(cats.map((c) => [c.id, c]));
   const childrenOf = new Map<string, typeof cats>();
   for (const c of cats) if (c.parent_id) {
     if (!childrenOf.has(c.parent_id)) childrenOf.set(c.parent_id, []);
     childrenOf.get(c.parent_id)!.push(c);
   }
-
-  // Real catalog data so subcategory pages list actual products
-  // (name + image + live configurator link) instead of just text.
-  const nameBySku = await fetchProductNames();
-  const imgRows = await rest<{ sku: string; thumbnail_url: string | null }>(
-    "product_images?select=sku,thumbnail_url&order=sort_order.asc",
-  );
-  const imgBySku = new Map<string, string>();
-  for (const row of imgRows) {
-    if (row.thumbnail_url && !imgBySku.has(row.sku)) imgBySku.set(row.sku, row.thumbnail_url);
-  }
-  // Only SKUs that resolve to a real, active product are listed/linked.
-  const productsForCat = (catId: string): ProductItem[] =>
-    [...(skuByCat.get(catId) || [])]
-      .filter((sku) => nameBySku.has(sku))
-      .map((sku) => ({ sku, name: nameBySku.get(sku)!, image: imgBySku.get(sku) || null }))
-      .sort((a, b) => a.name.localeCompare(b.name, "fr"));
 
   const cityRows = await rest<CityData>(
     `cities?select=slug,name,department,region,cp&slug=in.(${PRIORITY_CITIES.join(",")})`,
@@ -190,11 +148,8 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     const content = CATEGORY_CONTENT[slug];
     const cat = cats.find((c) => c.slug === slug && !c.parent_id);
     const subs = (cat && childrenOf.get(cat.id)) || [];
-    // A subcategory is "non-empty" only when it has real, resolvable products.
-    const nonEmptySubs = subs.filter((s) => productsForCat(s.id).length > 0);
-    const emptySubs = subs.filter((s) => productsForCat(s.id).length === 0);
     const crumb = [home, { name: "Catalogue", path: "/catalogue" }, { name: content.name, path: `/categorie/${slug}` }];
-    const subLinks: LinkItem[] = nonEmptySubs.map((s) => ({ label: s.name, path: `/categorie/${slug}/${s.slug}` }));
+    const subLinks: LinkItem[] = subs.map((s) => ({ label: s.name, path: `/categorie/${slug}/${s.slug}` }));
     const relatedCats: LinkItem[] = CATEGORY_SLUGS.filter((s) => s !== slug).slice(0, 4)
       .map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` }));
 
@@ -207,6 +162,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       breadcrumb: crumb,
       sections: content.sections,
       faq: content.faq,
+      cta: CATALOG_CTA,
       internalLinks: [
         ...(subLinks.length ? [{ heading: "Sous-catégories", links: subLinks }] : []),
         { heading: "Catégories associées", links: relatedCats },
@@ -218,16 +174,17 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           name: content.name,
           description: content.description,
           path: `/categorie/${slug}`,
-          items: nonEmptySubs.map((s) => ({ name: s.name, path: `/categorie/${slug}/${s.slug}` })),
+          items: subs.map((s) => ({ name: s.name, path: `/categorie/${slug}/${s.slug}` })),
         }),
         faqLd(content.faq),
       ],
     });
 
-    // ── ALL non-empty subcategories (with real product listings) ──
-    nonEmptySubs.forEach((sub, si) => {
+    // ── Subcategories: editorial text + internal links + a button toward the
+    //    existing catalog. They never fetch, embed, rebuild or intercept the
+    //    Print.com catalog/configurator — they only link to /products.
+    subs.forEach((sub, si) => {
       const subCrumb = [...crumb, { name: sub.name, path: `/categorie/${slug}/${sub.slug}` }];
-      const products = productsForCat(sub.id);
       const angles = [
         `Découvrez la sélection « ${sub.name} » de J2L Print, au sein de l'univers ${content.name}. Configurez votre produit en ligne — format, matière et finitions — et recevez votre commande partout en France.`,
         `Pour vos besoins en « ${sub.name} », J2L Print propose une gamme professionnelle dans la catégorie ${content.name}, avec un rendu fidèle et des finitions au choix.`,
@@ -241,8 +198,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         h1: sub.name,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
-        products,
-        productsHeading: `Nos produits ${sub.name.toLowerCase()}`,
+        cta: CATALOG_CTA,
         internalLinks: [
           { heading: "Catégorie", links: [{ label: content.name, path: `/categorie/${slug}` }] },
           ...(near.length ? [{ heading: "Sous-catégories proches", links: near }] : []),
@@ -250,36 +206,12 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         ],
         jsonLd: [
           breadcrumbLd(subCrumb),
-          collectionPageLd({
+          webPageLd({
             name: sub.name,
             description: `${sub.name} dans ${content.name}.`,
             path: `/categorie/${slug}/${sub.slug}`,
-            items: products.map((p) => ({ name: p.name, path: `/products/${p.sku}` })),
           }),
         ],
-      });
-    });
-
-    // ── Empty subcategories: keep reachable but noindex,follow and out of the
-    // sitemap (no products → thin page). Not linked from the parent category.
-    emptySubs.forEach((sub) => {
-      const subCrumb = [...crumb, { name: sub.name, path: `/categorie/${slug}/${sub.slug}` }];
-      pages.push({
-        path: `/categorie/${slug}/${sub.slug}`,
-        title: `${sub.name} — ${content.name}`,
-        description: `${sub.name} (${content.name.toLowerCase()}) : sélection en cours de constitution chez J2L Print. Découvrez nos autres produits ${content.name.toLowerCase()}.`,
-        h1: sub.name,
-        intro: [
-          `La sélection « ${sub.name} » est en cours de constitution. En attendant, découvrez l'ensemble de notre gamme ${content.name.toLowerCase()} et configurez votre produit en ligne.`,
-        ],
-        breadcrumb: subCrumb,
-        noindex: true,
-        internalLinks: [
-          { heading: "Catégorie", links: [{ label: content.name, path: `/categorie/${slug}` }] },
-          ...(subLinks.length ? [{ heading: "Sous-catégories disponibles", links: subLinks.slice(0, 6) }] : []),
-          { heading: "Nos services", links: SERVICE_LINKS },
-        ],
-        jsonLd: [breadcrumbLd(subCrumb)],
       });
     });
   }
@@ -393,90 +325,9 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       ogType: "website",
     });
   }
-
-  // ── Priority products (30) ──
-  // Each entry in products.json was auto-selected from the live Print.com
-  // catalog and validated (active, real image, working configurator, computable
-  // price). We prerender a real, crawlable page per SKU at /products/{sku} —
-  // the same path the live configurator (ProductDetail) serves at runtime.
-  for (const p of loadSelectedProducts()) {
-    const path = `/products/${p.sku}`;
-    const parentContent = CATEGORY_CONTENT[p.parentSlug as keyof typeof CATEGORY_CONTENT];
-    const parentName = parentContent?.name || p.parentName;
-    const crumb = [
-      home,
-      { name: "Catalogue", path: "/catalogue" },
-      { name: parentName, path: `/categorie/${p.parentSlug}` },
-      { name: p.subName, path: `/categorie/${p.parentSlug}/${p.subSlug}` },
-      { name: p.name, path },
-    ];
-    const cleanDesc = (p.description || "").replace(/\s+/g, " ").trim();
-    const description = cleanDesc
-      ? cleanDesc.slice(0, 155)
-      : `${p.name} à imprimer en ligne chez J2L Print : configuration sur mesure (format, matière, finitions), tarifs dégressifs et livraison partout en France.`;
-    const intro = [
-      cleanDesc ||
-        `${p.name} : configurez votre impression en ligne (format, matière, finitions) et obtenez votre prix instantanément. J2L Print vous livre partout en France.`,
-    ];
-    if (p.priceComputed > 0) {
-      intro.push(`Tarif à partir de ${p.priceComputed.toFixed(2)} € selon la configuration choisie.`);
-    }
-    const sections: ContentSectionLike[] = (p.features || [])
-      .filter((f) => f && f.title && f.values?.length)
-      .slice(0, 6)
-      .map((f) => ({ heading: f.title, bullets: f.values }));
-
-    pages.push({
-      path,
-      title: `${p.name} — impression en ligne`,
-      description,
-      h1: p.name,
-      intro,
-      breadcrumb: crumb,
-      sections,
-      internalLinks: [
-        { heading: "Sous-catégorie", links: [{ label: p.subName, path: `/categorie/${p.parentSlug}/${p.subSlug}` }] },
-        { heading: "Catégorie", links: [{ label: parentName, path: `/categorie/${p.parentSlug}` }] },
-        { heading: "Nos services", links: SERVICE_LINKS },
-      ],
-      jsonLd: [
-        breadcrumbLd(crumb),
-        productLd({
-          name: p.name,
-          description,
-          sku: p.sku,
-          path,
-          image: p.image,
-          fromPrice: p.priceComputed,
-        }),
-      ],
-      ogType: "product",
-    });
-  }
-
   return pages;
 }
 
-type ContentSectionLike = { heading: string; paragraphs?: string[]; bullets?: string[] };
-
-interface SelectedProduct {
-  slug: string; sku: string; name: string; image: string | null;
-  description?: string; parentSlug: string; parentName: string;
-  subSlug: string; subName: string; priceComputed: number;
-  features?: { title: string; values: string[] }[];
-}
-
-// Read the auto-selected, validated product set (scripts/seo/select-products.ts).
-function loadSelectedProducts(): SelectedProduct[] {
-  const p = resolve("src/seo/generated/products.json");
-  if (!existsSync(p)) return [];
-  try {
-    const arr = JSON.parse(readFileSync(p, "utf8"));
-    return Array.isArray(arr) ? arr : [];
-  } catch {
-    return [];
-  }
-}
 
 type BreadcrumbItemLite = { name: string; path: string };
 
