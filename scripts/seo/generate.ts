@@ -52,7 +52,6 @@ function group(pages: SeoPage[]) {
       .concat(SERVICE_PATHS),
     categories: indexable.filter((p) => is(p, (s) => s[0] === "categorie" && s.length === 2)).map((p) => p.path),
     subcategories: indexable.filter((p) => is(p, (s) => s[0] === "categorie" && s.length === 3)).map((p) => p.path),
-    products: indexable.filter((p) => is(p, (s) => s[0] === "products" && s.length === 2)).map((p) => p.path),
     cities: indexable.filter((p) => is(p, (s) => s[0] === "ville")).map((p) => p.path),
     departments: indexable.filter((p) => is(p, (s) => s[0] === "departement")).map((p) => p.path),
   };
@@ -81,13 +80,12 @@ async function main() {
   write("static.xml", g.static, "0.9", "weekly");
   write("categories.xml", g.categories, "0.8", "weekly");
   write("subcategories.xml", g.subcategories, "0.7", "weekly");
-  write("products.xml", g.products, "0.8", "weekly");
   write("cities.xml", g.cities, "0.6", "monthly");
   write("departments.xml", g.departments, "0.5", "monthly");
   writeFileSync(resolve("public/sitemap.xml"), index(files));
 
   console.log(`SEO build: ${pages.length} pages → pages.json`);
-  console.log(`Sitemaps: static=${g.static.length} categories=${g.categories.length} subcategories=${g.subcategories.length} products=${g.products.length} cities=${g.cities.length} departments=${g.departments.length}`);
+  console.log(`Sitemaps: static=${g.static.length} categories=${g.categories.length} subcategories=${g.subcategories.length} cities=${g.cities.length} departments=${g.departments.length}`);
 }
 
 main();
