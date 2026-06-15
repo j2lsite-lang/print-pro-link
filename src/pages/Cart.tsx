@@ -126,7 +126,7 @@ export default function Cart() {
           </div>
           <Button asChild className="mt-6 w-full" size="lg">
             <Link to="/checkout">
-              Passer commande
+              Demander un devis
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
