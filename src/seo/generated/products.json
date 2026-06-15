@@ -1,5 +1,64 @@
 [
   {
+    "slug": "carnet-avec-couverture-en-rpet",
+    "sku": "notebook-rpet-cover",
+    "name": " Carnet avec couverture en rpet",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/4gnCbPXjCe3g5enibtFvPn/a36c0982aaf61f9db4b6a721a44f51ed/Notebooks_r_pet_cover_screen_printing_detail_1.jpg",
+    "description": "",
+    "parentSlug": "objets-publicitaires-cadeaux",
+    "parentName": "Objets publicitaires & Cadeaux",
+    "subSlug": "articles-papeterie",
+    "subName": "Articles de papeterie",
+    "features": [
+      {
+        "title": "Format produit (largeur x hauteur x épaisseur)",
+        "values": [
+          "140 x 210 x 9 mm",
+          "140 x 210 x 9 mm",
+          "140 x 210 mm"
+        ]
+      },
+      {
+        "title": "Couleurs",
+        "values": [
+          "Rouge",
+          "Noir",
+          "Bleu",
+          "Blanc"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "1/0 Pantone",
+          "2/0 Pantone",
+          "3/0 Pantone",
+          "4/0 Pantone",
+          "Non imprimé"
+        ]
+      },
+      {
+        "title": "Format d'impression (largeur x hauteur)",
+        "values": [
+          "Aucun ",
+          "Face avant (110 x 190 mm)",
+          "Face avant (80 x 40 mm)"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Tamponnage",
+          "Sérigraphie",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 262.8,
+    "shippingOk": false,
+    "bucket": "papeterie"
+  },
+  {
     "slug": "carnet-en-papier-ensemence",
     "sku": "grass-paper-notebook",
     "name": " Carnet en papier ensemencé",
@@ -28,9 +87,260 @@
         ]
       }
     ],
-    "priceComputed": 167,
+    "priceComputed": 376.8,
     "shippingOk": false,
     "bucket": "papeterie"
+  },
+  {
+    "slug": "gourde-avec-infuseur-de-fruits",
+    "sku": "water-bottle-infuser",
+    "name": " Gourde avec infuseur de fruits",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/6wzoyKCPDSwb4z1WFuMzdH/fb1acaa7e396637db8b1805f3d07f82c/Bottle_water_infuser_tampon_logo.jpg",
+    "description": "",
+    "parentSlug": "objets-publicitaires-cadeaux",
+    "parentName": "Objets publicitaires & Cadeaux",
+    "subSlug": "verrerie-vaisselle-gourdes",
+    "subName": "Verrerie, vaisselle & gourdes",
+    "features": [
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "ø 227 x 60 mm",
+          "ø 227 x 60 mm"
+        ]
+      },
+      {
+        "title": "Couleur du couvercle",
+        "values": [
+          "Bleu",
+          "Vert",
+          "Orange"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "Non imprimé",
+          "1/0 Pantone",
+          "2/0 Pantone",
+          "3/0 Pantone",
+          "4/0 Pantone"
+        ]
+      },
+      {
+        "title": "Position de l'impression",
+        "values": [
+          "En haut",
+          "Centrée",
+          "En bas",
+          "Tout autour"
+        ]
+      },
+      {
+        "title": "Format d'impression (largeur x hauteur)",
+        "values": [
+          "Aucun ",
+          "Face avant (25 x 80 mm)",
+          "Face avant (190 x 130 mm)"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Tamponnage",
+          "Sérigraphie",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 9.7,
+    "shippingOk": false,
+    "bucket": "objets-publicitaires"
+  },
+  {
+    "slug": "gourde-camelbak",
+    "sku": "camelbak-chute",
+    "name": " Gourde Camelbak",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/2J2UMg3rA9RYjSPmqmzqoQ/a912baab408439e6e70728ade61c4bee/Bottle_new_camelback_chute_detail_2.jpg",
+    "description": "",
+    "parentSlug": "objets-publicitaires-cadeaux",
+    "parentName": "Objets publicitaires & Cadeaux",
+    "subSlug": "verrerie-vaisselle-gourdes",
+    "subName": "Verrerie, vaisselle & gourdes",
+    "features": [
+      {
+        "title": "Format (diamètre x hauteur)",
+        "values": [
+          "ø 98 x 245 mm",
+          "ø 98 x 245 mm"
+        ]
+      },
+      {
+        "title": "Couleurs",
+        "values": [
+          "Transparent",
+          " Turquoise",
+          "Bleu",
+          "Noir"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "Non imprimé",
+          "1/0 Pantone",
+          "2/0 Pantone",
+          "3/0 Pantone",
+          "4/0 Pantone"
+        ]
+      },
+      {
+        "title": "Format d'impression (largeur x hauteur)",
+        "values": [
+          "Face avant (45 x 40 mm)",
+          "Aucun "
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Tamponnage",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 491.4,
+    "shippingOk": false,
+    "bucket": "objets-publicitaires"
+  },
+  {
+    "slug": "gourde-glacier",
+    "sku": "glacier-drinking-bottle",
+    "name": " Gourde Glacier",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/5PZ5Zxc06K808ZubdtVZI8/c18f760f77ed775bcadfc8543a6a2baf/Bottle_glacier_drinking_tampon_logo__1_.jpg",
+    "description": "",
+    "parentSlug": "objets-publicitaires-cadeaux",
+    "parentName": "Objets publicitaires & Cadeaux",
+    "subSlug": "verrerie-vaisselle-gourdes",
+    "subName": "Verrerie, vaisselle & gourdes",
+    "features": [
+      {
+        "title": "Format (diamètre x hauteur)",
+        "values": [
+          "ø 60 x 230 mm",
+          "ø 60 x 230 mm",
+          "ø 60 x 230 mm"
+        ]
+      },
+      {
+        "title": "Couleurs",
+        "values": [
+          "Rouge",
+          "Orange",
+          "Vert citron",
+          "Bleu clair",
+          "Bleu roi",
+          "Blanc",
+          "Gris"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "Non imprimé",
+          "1/0 Pantone",
+          "4/0 quadri recto"
+        ]
+      },
+      {
+        "title": "Format d'impression (largeur x hauteur)",
+        "values": [
+          "Aucun ",
+          "Tout autour (214 x 140 mm)",
+          "Face avant (30 x 80 mm)"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Tamponnage",
+          "Digital à 360°",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 3.1,
+    "shippingOk": false,
+    "bucket": "objets-publicitaires"
+  },
+  {
+    "slug": "gourde-isotherme-en-inox",
+    "sku": "insulated-stainless-steel-bottle",
+    "name": " Gourde isotherme en inox ",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/4ttowHnZhiKvOw3IiZhdzd/b84a4b137bce536a84f6a4f069b00821/Bottle_insulation_stainless_steel_white_logo.jpg",
+    "description": "",
+    "parentSlug": "objets-publicitaires-cadeaux",
+    "parentName": "Objets publicitaires & Cadeaux",
+    "subSlug": "verrerie-vaisselle-gourdes",
+    "subName": "Verrerie, vaisselle & gourdes",
+    "features": [
+      {
+        "title": "Format produit (diamètre x hauteur)",
+        "values": [
+          "ø 258 x 67 mm ",
+          "ø 258 x 67 mm ",
+          "ø 258 x 67 mm "
+        ]
+      },
+      {
+        "title": "Couleurs",
+        "values": [
+          "Blanc",
+          "Vert",
+          "Gris",
+          "Bleu",
+          "Noir"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "Non imprimé",
+          "1/0 Pantone",
+          "2/0 Pantone",
+          "3/0 Pantone",
+          "4/0 Pantone",
+          "1/0 gravure laser",
+          "Gravure 1/1"
+        ]
+      },
+      {
+        "title": "Position de l'impression",
+        "values": [
+          "Centrée",
+          "En bas"
+        ]
+      },
+      {
+        "title": "Format d'impression (largeur x hauteur)",
+        "values": [
+          "Aucun ",
+          "Face avant (25 x 70 mm)",
+          "Face avant (25 x 100 mm)"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Tamponnage",
+          "Gravure",
+          "Échantillon non imprimé"
+        ]
+      }
+    ],
+    "priceComputed": 12.1,
+    "shippingOk": false,
+    "bucket": "objets-publicitaires"
   },
   {
     "slug": "sac-luxe-en-papier-recycle-avec-goujons",
@@ -86,6 +396,106 @@
     "bucket": "sacs"
   },
   {
+    "slug": "a-board-textile-frame",
+    "sku": "textile-stretcher-a-boards",
+    "name": "A-board textile frame",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/MfclIqhjFNqriNiNsiqOe/a4b8ad7f5883bdd1a646ce114472dac4/A-bord__frame_detail_1.jpg",
+    "description": "",
+    "parentSlug": "panneaux-baches-vinyles-toiles",
+    "parentName": "Panneaux, Bâches, Vinyles & Toiles",
+    "subSlug": "panneaux-accessoires",
+    "subName": "Panneaux & accessoires",
+    "features": [],
+    "priceComputed": 99.9,
+    "shippingOk": false,
+    "bucket": "textiles"
+  },
+  {
+    "slug": "affiche-qualite-photo",
+    "sku": "photo-poster",
+    "name": "Affiche 'qualité photo’ ",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/ltxaJl1adaeioUCSioYEi/dc1ddbb8dde8162821905dd11ddd240d/posters.svg",
+    "description": "",
+    "parentSlug": "panneaux-baches-vinyles-toiles",
+    "parentName": "Panneaux, Bâches, Vinyles & Toiles",
+    "subSlug": "panneaux-accessoires",
+    "subName": "Panneaux & accessoires",
+    "features": [
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "A0 - 840 x 1189 mm",
+          "A1 - 594 x 840 mm",
+          "A2 - 420 x 594 mm",
+          "A3 - 297 x 420 mm",
+          "A4 - 210 x 297 mm",
+          "B0 - 1000 x 1400 mm",
+          "B1 - 700 x 1000 mm",
+          "B2 - 500 x 700 mm"
+        ]
+      },
+      {
+        "title": "Support",
+        "values": [
+          "Couché brillant 130 g/m²",
+          "Couché brillant 250 g/m²",
+          "Couché demi-mat (silk) 170 g/m²",
+          "Couché demi-mat (silk) 250 g/m²",
+          "Papier non couché premium blanc 160 g/m² ",
+          "Couché mat premium 230 g/m²"
+        ]
+      },
+      {
+        "title": "Impression",
+        "values": [
+          "4/0 quadri recto",
+          "4/4 quadri recto/verso"
+        ]
+      },
+      {
+        "title": "Finition",
+        "values": [
+          "Pelliculage brillant recto seul",
+          "Pelliculage mat recto seul"
+        ]
+      }
+    ],
+    "priceComputed": 5,
+    "shippingOk": false,
+    "bucket": "affiches"
+  },
+  {
+    "slug": "affiche-abribus",
+    "sku": "abri-posters",
+    "name": "Affiche Abribus",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/9s8Xk700CiBxnqEhOwafa/a93b84aa3ad35f9c429553f721e45112/Abri_Poster_Citylight.jpg",
+    "description": "",
+    "parentSlug": "impression-papier",
+    "parentName": "Impression papier",
+    "subSlug": "flyers-depliants-affiches",
+    "subName": "Flyers, dépliants & affiches",
+    "features": [
+      {
+        "title": "Support",
+        "values": [
+          "Dos Bleu 115 g/m²",
+          "Couché brillant 130 g/m²",
+          "Citylight 150 g/m²"
+        ]
+      },
+      {
+        "title": "Emballage",
+        "values": [
+          "Roulé, en boîte",
+          "A plat sur palette (voir les frais de livraison)"
+        ]
+      }
+    ],
+    "priceComputed": 14.4,
+    "shippingOk": false,
+    "bucket": "affiches"
+  },
+  {
     "slug": "affiche-auto-adhesive",
     "sku": "self-adhesive-posters",
     "name": "Affiche auto-adhésive",
@@ -131,7 +541,225 @@
         ]
       }
     ],
-    "priceComputed": 31.9,
+    "priceComputed": 48,
+    "shippingOk": false,
+    "bucket": "affiches"
+  },
+  {
+    "slug": "affiche-avec-dorure",
+    "sku": "foil-posters",
+    "name": "Affiche avec dorure",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/4VWN6bBCnDPv1sAp8wucrZ/a30c6f8242c1aac597af77b794d789c8/Foilstamping_Silver.jpg",
+    "description": "",
+    "parentSlug": "impression-papier",
+    "parentName": "Impression papier",
+    "subSlug": "flyers-depliants-affiches",
+    "subName": "Flyers, dépliants & affiches",
+    "features": [
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "A2 - 420 x 594 mm",
+          "A3 - 297 x 420 mm",
+          "A4 - 210 x 297 mm",
+          "B2 - 500 x 700 mm",
+          "B3 - 350 x 500 mm",
+          "A3 large - 210 x 597 mm",
+          "A4 large - 148 x 420 mm",
+          "B3 large - 250 x 700 mm"
+        ]
+      },
+      {
+        "title": "Support",
+        "values": [
+          "Couché demi-mat (silk) 250 g/m²",
+          "300 g/m² King board"
+        ]
+      },
+      {
+        "title": "Vernis 3D et Dorure 3D",
+        "values": [
+          "Dorure or",
+          "Dorure argent",
+          "Dorure or rosé",
+          "Dorure cuivre"
+        ]
+      },
+      {
+        "title": "Epreuve / Échantillon d'impression",
+        "values": [
+          "Epreuve avec bon de réduction",
+          "Epreuve avec filigrane"
+        ]
+      }
+    ],
+    "priceComputed": 69.9,
+    "shippingOk": false,
+    "bucket": "affiches"
+  },
+  {
+    "slug": "affiche-fluo",
+    "sku": "neon-posters",
+    "name": "Affiche fluo",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/2p9KDyBrUViq0AdOqD45M7/5c0201cdc33d7740a57d10cf31053ea3/Neon_Green.jpg",
+    "description": "",
+    "parentSlug": "impression-papier",
+    "parentName": "Impression papier",
+    "subSlug": "flyers-depliants-affiches",
+    "subName": "Flyers, dépliants & affiches",
+    "features": [
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "A0 - 840 x 1189 mm",
+          "A1 - 594 x 840 mm",
+          "A2 - 420 x 594 mm",
+          "A3 - 297 x 420 mm",
+          "A4 - 210 x 297 mm",
+          "B1 - 700 x 1000 mm",
+          "B2 - 500 x 700 mm",
+          "B3 - 350 x 500 mm"
+        ]
+      },
+      {
+        "title": "Support",
+        "values": [
+          "Papier fluo 95 g/m² magenta",
+          "Papier fluo 95 g/m² vert",
+          "Papier orange fluo 95 g/m² ",
+          "Papier jaune fluo 95 g/m²"
+        ]
+      },
+      {
+        "title": "Choisir soi-même l'emballage",
+        "values": [
+          "Roulé, en boîte",
+          "A plat en boîte"
+        ]
+      }
+    ],
+    "priceComputed": 9.2,
+    "shippingOk": false,
+    "bucket": "affiches"
+  },
+  {
+    "slug": "affiche-magnetique",
+    "sku": "magnet-posters",
+    "name": "Affiche magnétique",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/6BujIpUeRjqQOkMQw38hL3/fb6daa3e62933e2be71331f8491afff3/Magnet_Poster.jpg",
+    "description": "",
+    "parentSlug": "impression-papier",
+    "parentName": "Impression papier",
+    "subSlug": "flyers-depliants-affiches",
+    "subName": "Flyers, dépliants & affiches",
+    "features": [
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "A0 - 840 x 1189 mm",
+          "A1 - 594 x 840 mm",
+          "A2 - 420 x 594 mm",
+          "A3 - 297 x 420 mm",
+          "A4 - 210 x 297 mm",
+          "B0 - 1000 x 1400 mm",
+          "B1 - 700 x 1000 mm",
+          "B2 - 500 x 700 mm"
+        ]
+      },
+      {
+        "title": "Support",
+        "values": [
+          "Feuille magnet 0,3 mm",
+          "Feuille Magnet 0,85 mm"
+        ]
+      }
+    ],
+    "priceComputed": 40.8,
+    "shippingOk": false,
+    "bucket": "affiches"
+  },
+  {
+    "slug": "affiche-pour-jardin",
+    "sku": "garden-poster",
+    "name": "Affiche pour jardin",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/1S6gLFyCogIrOQSTZ3e3VU/5644cdc5db6b8aef186726f2d097b6e4/garden_poster_-_side_-_1x1.jpg",
+    "description": "",
+    "parentSlug": "publicite-exterieure",
+    "parentName": "Publicité extérieure",
+    "subSlug": "bannieres-structures-fixation",
+    "subName": "Bannières & structures de fixation",
+    "features": [
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "60 x 40 cm",
+          "90 x 60 cm",
+          "120 x 80 cm",
+          "180 x 120 cm",
+          "custom"
+        ]
+      },
+      {
+        "title": "Finition bord",
+        "values": [
+          "oeillets aux coins",
+          "Œillets tous les 30 cm",
+          "Œillets tous les 50 cm",
+          "Ourlet, oeillets tous les 30 cm"
+        ]
+      },
+      {
+        "title": "Support",
+        "values": [
+          "Frontlit M1 - 510 g/m² (pvc)",
+          "PES Outdoor 280 g/m² (recyclable)"
+        ]
+      }
+    ],
+    "priceComputed": 12,
+    "shippingOk": false,
+    "bucket": "affiches"
+  },
+  {
+    "slug": "affiche-pour-stop-trottoir",
+    "sku": "pavement-sign-posters",
+    "name": "Affiche pour stop-trottoir",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/FB3AjyFIqpsR5I6Qnz5Xn/bbf9a7a5113954900d681aad03dcb4ab/Synaps_Porchsign.jpg",
+    "description": "",
+    "parentSlug": "impression-papier",
+    "parentName": "Impression papier",
+    "subSlug": "flyers-depliants-affiches",
+    "subName": "Flyers, dépliants & affiches",
+    "features": [
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "Abri - 1185 x 1750 mm",
+          "A0 - 840 x 1189 mm",
+          "A1 - 594 x 840 mm",
+          "A2 - 420 x 594 mm",
+          "B1 - 700 x 1000 mm",
+          "B2 - 500 x 700 mm",
+          "custom"
+        ]
+      },
+      {
+        "title": "Support",
+        "values": [
+          "Dos Bleu 115 g/m²",
+          "Synapse® 170 g/m² - résistant à l'eau et aux déchirures"
+        ]
+      },
+      {
+        "title": "Méthode d'impression",
+        "values": [
+          "Numérique - HP Indigo",
+          "Numérique - Canon Colorado M5",
+          "Offset"
+        ]
+      }
+    ],
+    "priceComputed": 19.7,
     "shippingOk": false,
     "bucket": "affiches"
   },
@@ -199,7 +827,7 @@
         ]
       }
     ],
-    "priceComputed": 6,
+    "priceComputed": 15,
     "shippingOk": false,
     "bucket": "autocollants"
   },
@@ -272,7 +900,7 @@
         ]
       }
     ],
-    "priceComputed": 7.2,
+    "priceComputed": 17.9,
     "shippingOk": false,
     "bucket": "autocollants"
   },
@@ -352,229 +980,612 @@
         ]
       }
     ],
-    "priceComputed": 3.7,
+    "priceComputed": 12.7,
     "shippingOk": false,
     "bucket": "autocollants"
   },
   {
-    "slug": "boite-a-bonbons",
-    "sku": "chocolate-boxes",
-    "name": "Boite à bonbons",
-    "image": "https://images.ctfassets.net/ez9mp376cw6o/7ye6Qy22vxaW4gvPIRzskn/ba2bec0a37695b507d571d1c303b90ed/Bonbondoosjes_open_2.jpg",
+    "slug": "autocollant-vitrine",
+    "sku": "window-sticker",
+    "name": "Autocollant vitrine",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/4f60EFMC3oKUwlWwkhiemn/36d7705b672bfdc77f1f29c6a7e31ef3/stickers-one-way-vision-detail.jpg",
     "description": "",
-    "parentSlug": "emballages-sacs",
-    "parentName": "Emballages & Sacs",
-    "subSlug": "emballages-alimentaires",
-    "subName": "Emballages alimentaires",
+    "parentSlug": "etiquettes-stickers",
+    "parentName": "Etiquettes & Stickers",
+    "subSlug": "autocollants-grand-format",
+    "subName": "Autocollants grand format",
     "features": [
       {
-        "title": "Impression",
+        "title": "Support",
         "values": [
-          "4/0 quadri recto",
-          "Non imprimé"
-        ]
-      },
-      {
-        "title": "Méthode d'impression",
-        "values": [
-          "Canon Colorado 1640",
-          "Échantillon non imprimé"
-        ]
-      }
-    ],
-    "priceComputed": 268.9,
-    "shippingOk": false,
-    "bucket": "emballages"
-  },
-  {
-    "slug": "boite-a-frites",
-    "sku": "french-fries-boxes",
-    "name": "Boîte à frites",
-    "image": "https://images.ctfassets.net/ez9mp376cw6o/1eScwVVr4VzOAF2KySwGMf/75dd3266fa09912b9139eb4ab8fda8ca/frietbox_wit_klein.jpg",
-    "description": "",
-    "parentSlug": "emballages-sacs",
-    "parentName": "Emballages & Sacs",
-    "subSlug": "emballages-alimentaires",
-    "subName": "Emballages alimentaires",
-    "features": [
-      {
-        "title": "Format (largeur x profondeur x hauteur)",
-        "values": [
-          "Bas 8 x 4 x 10 cm | Haut 10 x 5 x 11.3 cm",
-          "Bas 9.5 x 4.7 x 12 cm | Haut 12 x 5.9 x 13.5 cm"
+          "Lintec E-2200ZC",
+          "One way vision - Orajet® 3676",
+          "Clearview brillant - 3M™ Scotchcal™ IJ8150",
+          "Polymère transparent brillant - Orajet® 3551",
+          "Polymère blanc brillant - Orajet®  3551",
+          "Polymère blanc brillant RapidAir - Orajet® 3551RA",
+          "Feuille DOT (blanc mat)",
+          "Easy DOT (transparent)"
         ]
       },
       {
         "title": "Impression",
         "values": [
+          "Non imprimé",
           "4/0 quadri recto",
-          "Non imprimé"
+          "5/0 quadri + blanc"
+        ]
+      },
+      {
+        "title": "Pelliculage",
+        "values": [
+          "Pelliculage One way vision - Oraguard® 297GF",
+          "Pelliculage polymère brillant - Oraguard® 215",
+          "Pelliculage polymère mat - Oraguard® 215",
+          "Clearview brillant - 3M™ Scotchcal™ IJ8150"
+        ]
+      },
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "30 x 20 cm",
+          "40 x 30 cm",
+          "60 x 40 cm",
+          "90 x 60 cm",
+          "100 x 100 cm",
+          "A4 - 21 x 29,7 cm",
+          "A3 - 29,7 x 42 cm",
+          "A2 - 42 x 59,4 cm"
         ]
       },
       {
         "title": "Méthode d'impression",
         "values": [
-          "Canon Colorado 1640",
-          "Échantillon non imprimé"
-        ]
-      }
-    ],
-    "priceComputed": 213.7,
-    "shippingOk": false,
-    "bucket": "emballages"
-  },
-  {
-    "slug": "boite-a-hamburger",
-    "sku": "burger-boxes",
-    "name": "Boîte à hamburger",
-    "image": "https://images.ctfassets.net/ez9mp376cw6o/3PGKx0IqxW1yWnMiy65DfE/7eaaaa0a52550842bd733f47e840f084/Doosje_Hamburger_klein.jpg",
-    "description": "",
-    "parentSlug": "emballages-sacs",
-    "parentName": "Emballages & Sacs",
-    "subSlug": "emballages-alimentaires",
-    "subName": "Emballages alimentaires",
-    "features": [
-      {
-        "title": "Format (largeur x profondeur x hauteur)",
-        "values": [
-          "8 x 9.2 x 4.2 cm",
-          "11.5 x 10.8 x 8 cm"
+          "HP Latex 800",
+          "Numérique - Canon Colorado M5",
+          "Impression au solvant"
         ]
       },
       {
-        "title": "Impression",
+        "title": "Face de collage",
         "values": [
-          "4/0 quadri recto",
-          "Non imprimé"
-        ]
-      },
-      {
-        "title": "Méthode d'impression",
-        "values": [
-          "Canon Colorado 1640",
-          "Échantillon non imprimé"
+          "Face intérieure (fournir le visuel en miroir)",
+          "Face extérieure"
         ]
       }
     ],
-    "priceComputed": 237.9,
+    "priceComputed": 30.3,
     "shippingOk": false,
-    "bucket": "emballages"
+    "bucket": "autocollants"
   },
   {
-    "slug": "boite-a-patisseries-carree",
-    "sku": "cube-boxes",
-    "name": "Boîte à pâtisseries - carrée",
-    "image": "https://images.ctfassets.net/ez9mp376cw6o/2TbBpTTYrKDH3ZkZQYHAUv/229c58df6bc2e6a63d21a8cd1c013ffe/Kubus_doosje_rood_middel.jpg",
+    "slug": "autocollants-en-planche",
+    "sku": "sticker-sheets",
+    "name": "Autocollants en planche",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/6TKWUipyftrWhxzkm1tlku/4cd9771b7590200d9e94df1eda117451/Stickers.jpg",
     "description": "",
-    "parentSlug": "emballages-sacs",
-    "parentName": "Emballages & Sacs",
-    "subSlug": "emballages-alimentaires",
-    "subName": "Emballages alimentaires",
+    "parentSlug": "etiquettes-stickers",
+    "parentName": "Etiquettes & Stickers",
+    "subSlug": "films-adhesifs-type",
+    "subName": "Films adhésifs (par type)",
     "features": [
       {
-        "title": "Format (longueur x largeur x hauteur)",
+        "title": "Forme des autocollants",
         "values": [
-          "3.2 x 3.2 x 3.4 cm",
-          "4.8 x 4.8 x 4.8 cm",
-          "6.8 x 6.8 x 6.8 cm"
+          "Rectangulaire ou carré",
+          "Rond ou oval",
+          "Forme propre"
+        ]
+      },
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "A4 - 210 x 297 mm",
+          "Planche autocollants - 200 x 280 mm",
+          "A5 - 148 x 210 mm",
+          "Planche autocollants - 140 x 200 mm",
+          "A6 - 105 x 148 mm",
+          "Planche autocollants - 100 x 140  mm",
+          "Carré XL - 297 x 297 mm",
+          "Carré L - 210 x 210 mm"
         ]
       },
       {
         "title": "Impression",
         "values": [
           "4/0 quadri recto",
+          "5/0 quadri + blanc",
+          "1/0 Pantone noir",
           "Non imprimé"
         ]
       },
       {
-        "title": "Méthode d'impression",
+        "title": "Support",
         "values": [
-          "Canon Colorado 1640",
-          "Échantillon non imprimé"
+          "Papier autocollant non-couché offset 70 g/m² - Raflatac, Vellum",
+          "Papier mat 70 g/m²",
+          "Papier brillant 80 g/m²",
+          "Blanc antique 90 g/m²",
+          "Papier kraft brun 80 g/m²",
+          "PP blanc brillant 55 g/m²",
+          "PP blanc mat 55 g/m²",
+          "PP transparent 50 g/m²"
+        ]
+      },
+      {
+        "title": "Type de colle",
+        "values": [
+          "Permante",
+          "Enlevable"
+        ]
+      },
+      {
+        "title": "Nombre de lignes de découpe",
+        "values": [
+          "1 - 10",
+          "11 - 25",
+          "26 - 50",
+          "51 - 100"
         ]
       }
     ],
-    "priceComputed": 231.7,
+    "priceComputed": 54.5,
     "shippingOk": false,
-    "bucket": "emballages"
+    "bucket": "autocollants"
   },
   {
-    "slug": "boite-a-pop-corn",
-    "sku": "popcorn-boxes",
-    "name": "Boîte à pop-corn",
-    "image": "https://images.ctfassets.net/ez9mp376cw6o/4giv7QhH5h0dlI8H6rapCn/f17a525497b75414eb081799865fb0ef/snackbox_wit_klein.jpg",
+    "slug": "bache-blockout",
+    "sku": "pvc-610",
+    "name": "Bâche blockout",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/7jNZjyUyO8ZrT4f8o3SMac/17adcd77f362ffa121ef7c2ee6c5ce54/Textile-Banner-PVC-610.jpg",
     "description": "",
-    "parentSlug": "emballages-sacs",
-    "parentName": "Emballages & Sacs",
-    "subSlug": "emballages-alimentaires",
-    "subName": "Emballages alimentaires",
+    "parentSlug": "panneaux-baches-vinyles-toiles",
+    "parentName": "Panneaux, Bâches, Vinyles & Toiles",
+    "subSlug": "baches-banderoles",
+    "subName": "Bâches & Banderoles (par matériau)",
     "features": [
       {
-        "title": "Format (largeur x profondeur x hauteur)",
+        "title": "Finition des bords",
         "values": [
-          "Bas 8 x 8 x 17.2 cm | Haut 9.4 x 9.4 x 17.2 cm - ca 1.3 litre",
-          "Bas 9.5 x 9.5 x 19.8 cm | Haut 12 x 12 x 19.8 cm - ca 2.3 litre",
-          "Bas 13.8 x 13.8 x 21.2 cm | Haut 17.2 x 17.2 x 21.2 cm - ca 5 litre"
+          "Finition identique sur les 4 bords",
+          "Finition différente "
+        ]
+      },
+      {
+        "title": "Finition bord gauche",
+        "values": [
+          "Coupe au format",
+          "Découpe à la forme",
+          "oeillets aux coins",
+          "Œillets tous les 20 cm",
+          "Œillets tous les 25 cm",
+          "Œillets tous les 30 cm",
+          "Œillets tous les 50 cm",
+          "Fourreau 4 cm (plat)"
+        ]
+      },
+      {
+        "title": "Finition bord droit",
+        "values": [
+          "Coupe au format",
+          "Découpe à la forme",
+          "Oeillets aux coins",
+          "Œillets tous les 20 cm",
+          "Œillets tous les 25 cm",
+          "Œillets tous les 30 cm",
+          "Œillets tous les 50 cm",
+          "Fourreau 4 cm (plat)"
+        ]
+      },
+      {
+        "title": "Finition bord supérieur",
+        "values": [
+          "Coupe au format",
+          "Découpe à la forme",
+          "oeillets aux coins",
+          "Œillets tous les 20 cm",
+          "Œillets tous les 25 cm",
+          "Œillets tous les 30 cm",
+          "Œillets tous les 50 cm",
+          "Fourreau 4 cm (plat)"
+        ]
+      },
+      {
+        "title": "Finition bord inférieur",
+        "values": [
+          "Coupe au format",
+          "Découpe à la forme",
+          "Oeillets aux coins",
+          "Œillets tous les 50 cm",
+          "Œillets tous les 20 cm",
+          "Œillets tous les 25 cm",
+          "Œillets tous les 30 cm",
+          "Fourreau 4 cm (plat)"
+        ]
+      },
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "100 x 100 cm",
+          "custom"
+        ]
+      }
+    ],
+    "priceComputed": 27.2,
+    "shippingOk": false,
+    "bucket": "baches"
+  },
+  {
+    "slug": "bache-frontlit",
+    "sku": "pvc-510",
+    "name": "Bâche frontlit",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/42Sc6GOhTH36gdVM4JwPJt/d44c4762a8762ed9357e487071876865/Textile-Banner-PVC-510.jpg",
+    "description": "",
+    "parentSlug": "panneaux-baches-vinyles-toiles",
+    "parentName": "Panneaux, Bâches, Vinyles & Toiles",
+    "subSlug": "baches-banderoles",
+    "subName": "Bâches & Banderoles (par matériau)",
+    "features": [
+      {
+        "title": "Finition identique des 4 bords",
+        "values": [
+          "Finition identique sur les 4 bords",
+          "Finition différente "
+        ]
+      },
+      {
+        "title": "Finition bord gauche",
+        "values": [
+          "Coupe au format",
+          "oeillets aux coins",
+          "Œillets tous les 20 cm",
+          "Œillets tous les 25 cm",
+          "Œillets tous les 30 cm",
+          "Œillets tous les 50 cm",
+          "Ourlet, oeillets aux coins",
+          "Ourlet, oeillets tous les 20 cm"
+        ]
+      },
+      {
+        "title": "Finition bord droit",
+        "values": [
+          "Oeillets aux coins",
+          "Coupe au format",
+          "Œillets tous les 20 cm",
+          "Œillets tous les 25 cm",
+          "Œillets tous les 30 cm",
+          "Œillets tous les 50 cm",
+          "Ourlet de renfort",
+          "Fourreau 4 cm (plat)"
+        ]
+      },
+      {
+        "title": "Finition bord supérieur",
+        "values": [
+          "Coupe au format",
+          "oeillets aux coins",
+          "Œillets tous les 20 cm",
+          "Œillets tous les 25 cm",
+          "Œillets tous les 30 cm",
+          "Œillets tous les 50 cm",
+          "Ourlet de renfort",
+          "Fourreau 4 cm (plat)"
+        ]
+      },
+      {
+        "title": "Finition bord inférieur",
+        "values": [
+          "Coupe au format",
+          "Oeillets aux coins",
+          "Œillets tous les 20 cm",
+          "Œillets tous les 25 cm",
+          "Œillets tous les 30 cm",
+          "Œillets tous les 50 cm",
+          "Ourlet de renfort",
+          "Fourreau 4 cm (plat)"
+        ]
+      },
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "100 x 100 cm",
+          "custom"
+        ]
+      }
+    ],
+    "priceComputed": 13.6,
+    "shippingOk": false,
+    "bucket": "baches"
+  },
+  {
+    "slug": "bache-pour-barriere",
+    "sku": "site-fence-banners",
+    "name": "Bâche pour barrière",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/1Cr9xVHtlDKEbSPplbskrr/01d4dd43a8944ee18c72a39723b457ab/Construction_feence_banner.jpg",
+    "description": "",
+    "parentSlug": "publicite-exterieure",
+    "parentName": "Publicité extérieure",
+    "subSlug": "bannieres-structures-fixation",
+    "subName": "Bannières & structures de fixation",
+    "features": [
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "Barrière S - 190 x 73 cm - visibilité 1 face",
+          "Barrière M - 208 x 82 cm - visibilité 1 face",
+          "Barrière L - 215 x 73 cm - visibilité 1 face",
+          "Barrière S - 190 x 155 cm - housse - visibilité 2 faces",
+          "Barrière M - 208 x 174 cm - housse - visibilité 2 faces",
+          "Barrière L - 240 x 155 cm - housse - visibilité 2 faces",
+          "338 x 174 cm (clôture de chantier visibilité 1 face)"
+        ]
+      },
+      {
+        "title": "Support",
+        "values": [
+          "Mesh M1 270 g/m² (micro-perforé)",
+          "PES Outdoor 280 g/m² (recyclable)",
+          "Frontlit M1 - 510 g/m² (pvc)"
+        ]
+      },
+      {
+        "title": "Finition bord",
+        "values": [
+          "Œillets tous les 30 cm",
+          "Ourlet, oeillets tous les 30 cm"
+        ]
+      }
+    ],
+    "priceComputed": 23,
+    "shippingOk": false,
+    "bucket": "baches"
+  },
+  {
+    "slug": "bache-pour-barrieres-de-chantier",
+    "sku": "construction-fence-banners",
+    "name": "Bâche pour barrières de chantier",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/65BFtQ6noJT5X3yeWzxztI/49acbe0a0d9bc3f2e4bcd516774fdde7/Construction_feence_banner_mesh_detail_2.jpg",
+    "description": "",
+    "parentSlug": "publicite-exterieure",
+    "parentName": "Publicité extérieure",
+    "subSlug": "bannieres-structures-fixation",
+    "subName": "Bannières & structures de fixation",
+    "features": [
+      {
+        "title": "Support",
+        "values": [
+          "Mesh M1 270 g/m² (micro-perforé)",
+          "PES Outdoor 280 g/m² (recyclable)",
+          "Frontlit M1 - 510 g/m² (pvc)"
+        ]
+      },
+      {
+        "title": "Finition bord",
+        "values": [
+          "Œillets tous les 30 cm",
+          "Ourlet, oeillets tous les 30 cm"
+        ]
+      }
+    ],
+    "priceComputed": 95.1,
+    "shippingOk": false,
+    "bucket": "baches"
+  },
+  {
+    "slug": "bache-pour-barrieres-de-securite-vauban-nadar",
+    "sku": "crowd-fence-banners",
+    "name": "Bâche pour barrières de sécurité Vauban/Nadar",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/4vuHJkIglBzc9tzc6eLvgx/c791aeb2ea42ba4b47c19a6c7da3b05b/Crowd__fence_banner_2_detail_2.jpg",
+    "description": "",
+    "parentSlug": "publicite-exterieure",
+    "parentName": "Publicité extérieure",
+    "subSlug": "bannieres-structures-fixation",
+    "subName": "Bannières & structures de fixation",
+    "features": [
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "Barrière S - 190 x 73 cm - visibilité 1 face",
+          "Barrière M - 208 x 82 cm - visibilité 1 face",
+          "Barrière L - 215 x 73 cm - visibilité 1 face",
+          "Barrière S - 190 x 155 cm - housse - visibilité 2 faces",
+          "Barrière M - 208 x 174 cm - housse - visibilité 2 faces",
+          "Barrière L - 240 x 155 cm - housse - visibilité 2 faces"
+        ]
+      },
+      {
+        "title": "Support",
+        "values": [
+          "Mesh M1 270 g/m² (micro-perforé)",
+          "PES Outdoor 280 g/m² (recyclable)",
+          "Frontlit M1 - 510 g/m² (pvc)"
+        ]
+      },
+      {
+        "title": "Finition bord",
+        "values": [
+          "Œillets tous les 30 cm",
+          "Ourlet, oeillets tous les 30 cm"
+        ]
+      }
+    ],
+    "priceComputed": 23,
+    "shippingOk": false,
+    "bucket": "baches"
+  },
+  {
+    "slug": "bache-pour-cadre-a-fixation-invisible",
+    "sku": "blind-frame-banner",
+    "name": "Bâche pour cadre à fixation invisible",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/3olgUlcTE2QwcFV3jztIg3/9c6b35124ae5e8864eb0b20a17d83944/Blind_banner_frame_A_hk.jpg",
+    "description": "",
+    "parentSlug": "publicite-exterieure",
+    "parentName": "Publicité extérieure",
+    "subSlug": "bannieres-structures-fixation",
+    "subName": "Bannières & structures de fixation",
+    "features": [
+      {
+        "title": "Support",
+        "values": [
+          "Frontlit M1 - 510 g/m² (pvc)",
+          "PES Outdoor 280 g/m² (recyclable)"
+        ]
+      },
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "100 x 100 cm",
+          "custom"
+        ]
+      }
+    ],
+    "priceComputed": 17,
+    "shippingOk": false,
+    "bucket": "baches"
+  },
+  {
+    "slug": "bache-banner",
+    "sku": "banners",
+    "name": "Bâche/Banner",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/4F06Y7HfKeCfQZ08XhdCxB/4aefea0f09486af14feceaaf07f631fe/Hanging_banner_A_hk.jpg",
+    "description": "",
+    "parentSlug": "publicite-exterieure",
+    "parentName": "Publicité extérieure",
+    "subSlug": "bannieres-structures-fixation",
+    "subName": "Bannières & structures de fixation",
+    "features": [
+      {
+        "title": "Finition des bords",
+        "values": [
+          "Finition identique sur les 4 bords",
+          "Finition différente "
+        ]
+      },
+      {
+        "title": "Finition bord gauche",
+        "values": [
+          "Coupe au format",
+          "Découpe à la forme",
+          "oeillets aux coins",
+          "Œillets tous les 20 cm",
+          "Œillets tous les 25 cm",
+          "Œillets tous les 30 cm",
+          "Œillets tous les 50 cm",
+          "Ourlet, oeillets aux coins"
+        ]
+      },
+      {
+        "title": "Finition bord droit",
+        "values": [
+          "Coupe au format",
+          "Découpe à la forme",
+          "Oeillets aux coins",
+          "Œillets tous les 20 cm",
+          "Œillets tous les 25 cm",
+          "Œillets tous les 30 cm",
+          "Œillets tous les 50 cm",
+          "Ourlet de renfort"
+        ]
+      },
+      {
+        "title": "Finition bord supérieur",
+        "values": [
+          "Coupe au format",
+          "Découpe à la forme",
+          "oeillets aux coins",
+          "Œillets tous les 20 cm",
+          "Œillets tous les 25 cm",
+          "Œillets tous les 30 cm",
+          "Œillets tous les 50 cm",
+          "Ourlet de renfort"
+        ]
+      },
+      {
+        "title": "Finition bord inférieur",
+        "values": [
+          "Coupe au format",
+          "Découpe à la forme",
+          "Oeillets aux coins",
+          "Œillets tous les 20 cm",
+          "Œillets tous les 25 cm",
+          "Œillets tous les 30 cm",
+          "Œillets tous les 50 cm",
+          "Ourlet de renfort"
+        ]
+      },
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "100 x 100 cm",
+          "250 x 100 cm",
+          "300 x 100 cm",
+          "338 x 174 cm (clôture de chantier visibilité 1 face)",
+          "custom"
+        ]
+      }
+    ],
+    "priceComputed": 13.6,
+    "shippingOk": false,
+    "bucket": "baches"
+  },
+  {
+    "slug": "bache-banniere-x-tens",
+    "sku": "x-tens-banner",
+    "name": "Bâche/Bannière X-Tens®",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/6SkUuSvcNiL2r3nVg9BfQG/7189ba1c27d5f54fec11277756552ced/X-tens_A_hk.jpg",
+    "description": "",
+    "parentSlug": "panneaux-baches-vinyles-toiles",
+    "parentName": "Panneaux, Bâches, Vinyles & Toiles",
+    "subSlug": "panneaux-accessoires",
+    "subName": "Panneaux & accessoires",
+    "features": [
+      {
+        "title": "Support",
+        "values": [
+          "Frontlit M1 - 510 g/m² (pvc)",
+          "PES Outdoor 280 g/m² (recyclable)"
+        ]
+      },
+      {
+        "title": "Format (largeur x hauteur)",
+        "values": [
+          "100 x 100 cm",
+          "custom"
+        ]
+      }
+    ],
+    "priceComputed": 26.9,
+    "shippingOk": false,
+    "bucket": "baches"
+  },
+  {
+    "slug": "barriere-avec-housse-textile",
+    "sku": "zipper-barriers",
+    "name": "Barrière avec housse textile",
+    "image": "https://images.ctfassets.net/ez9mp376cw6o/4Nl9t9ouzlmjf2URoiXw1i/f5b7ad34d14a235d96b302a8083e01c4/Zipper-barrier_Frame_Total.jpg",
+    "description": "",
+    "parentSlug": "panneaux-baches-vinyles-toiles",
+    "parentName": "Panneaux, Bâches, Vinyles & Toiles",
+    "subSlug": "panneaux-accessoires",
+    "subName": "Panneaux & accessoires",
+    "features": [
+      {
+        "title": "Composition",
+        "values": [
+          "Structure + toile",
+          "Toile seule"
         ]
       },
       {
         "title": "Impression",
         "values": [
           "4/0 quadri recto",
-          "Non imprimé"
-        ]
-      },
-      {
-        "title": "Méthode d'impression",
-        "values": [
-          "Canon Colorado 1640",
-          "Échantillon non imprimé"
+          "4/4 quadri recto/verso"
         ]
       }
     ],
-    "priceComputed": 196.1,
+    "priceComputed": 197.8,
     "shippingOk": false,
-    "bucket": "emballages"
-  },
-  {
-    "slug": "boite-cadeau-non-imprime",
-    "sku": "pillow-packs-kraft",
-    "name": "Boîte cadeau - non imprimé",
-    "image": "https://images.ctfassets.net/ez9mp376cw6o/5pS5bMGwsN33jHzNEHr3wZ/b3b85e0a7d7fb2cb8a898cb7f05a1166/pillow-packs-kraft-XL.jpg",
-    "description": "",
-    "parentSlug": "objets-publicitaires-cadeaux",
-    "parentName": "Objets publicitaires & Cadeaux",
-    "subSlug": "saisonnalite",
-    "subName": "Saisonnalité",
-    "features": [
-      {
-        "title": "Format (largeur x profondeur x hauteur)",
-        "values": [
-          "85 x 85 x 30 mm",
-          "130 x 150 x 40 mm",
-          "180 x 190 x 50 mm",
-          "200 x 250 x 50 mm",
-          "280 x 335 x 65 mm"
-        ]
-      },
-      {
-        "title": "Couleur",
-        "values": [
-          "Blanc",
-          "Kraft",
-          "Noir"
-        ]
-      },
-      {
-        "title": "Méthode d'impression",
-        "values": [
-          "Sans impression",
-          "Échantillon non imprimé"
-        ]
-      }
-    ],
-    "priceComputed": 30.9,
-    "shippingOk": false,
-    "bucket": "emballages"
+    "bucket": "textiles"
   }
 ]
