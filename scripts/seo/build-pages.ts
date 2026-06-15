@@ -4,10 +4,7 @@ import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 import type { SeoPage, LinkItem } from "../../src/seo/types";
 import { CATEGORY_CONTENT, CATEGORY_SLUGS } from "../../src/seo/content/categories";
-import {
-  cityIntro, citySections, cityFaq, type CityData,
-} from "../../src/seo/content/locations";
-import { article, de } from "../../src/seo/content/fr";
+import { article } from "../../src/seo/content/fr";
 import { SERVICE_CONTENT } from "../../src/seo/content/services";
 import {
   CITY_PROFILES, DEPT_PROFILES, CITY_OFFICIAL, DEPT_OFFICIAL, CCI_GRAND_EST,
@@ -17,6 +14,11 @@ import {
 import {
   breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
 } from "../../src/seo/schema";
+import { loadGeo } from "./geo-data";
+import {
+  cityCopy, deptCopy, type GenCity, type GenDept, type NeighborRef,
+} from "../../src/seo/content/geo-cities";
+import { regionCopy, type GenRegion } from "../../src/seo/content/regions";
 
 // Catalog CTA used on category/subcategory SEO pages. SEO pages NEVER fetch or
 // embed the Print.com catalog/configurator — they only link to the existing one.
