@@ -41,7 +41,11 @@ export const SERVICE_CONTENT: ServiceContent[] = [
     closing: [
       "L'impression numérique est idéale pour les petites et moyennes séries (de 1 à 5 000 exemplaires) : mise en route rapide, pas de frais de plaque, personnalisation possible. Pour les grands tirages (5 000 exemplaires et plus), l'impression offset offre un coût unitaire dégressif et un large choix de papiers et finitions.",
     ],
-  },
+    faq: [
+      { q: "Quels formats et papiers sont disponibles pour l'impression numérique ?", a: "Nous proposons des formats du A7 au B0 sur papiers couchés mats, brillants, satinés, recyclés, texturés et premium. Les cartes de visite disposent également de finitions luxe : vernis sélectif, dorure, découpe laser." },
+      { q: "Quel délai de livraison pour une impression numérique ?", a: "La production standard est de 3 à 5 jours ouvrés selon le produit et la quantité. Une option express est disponible sur devis pour les besoins urgents." },
+      { q: "Puis-je recevoir un bon à tirer avant production ?", a: "Oui. Un BAT numérique est envoyé systématiquement par email pour validation avant lancement de l'impression. Un BAT physique est possible sur demande." },
+    ],
   {
     slug: "grand-format",
     name: "Grand format",
