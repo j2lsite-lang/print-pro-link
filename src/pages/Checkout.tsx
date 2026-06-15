@@ -1,20 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { Loader2, Upload, CheckCircle, Truck, Package, FileText } from "lucide-react";
+import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { Loader2, Upload, CheckCircle, Truck, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/hooks/useCart";
 import { supabase } from "@/integrations/supabase/client";
-import { getShippingPossibilities } from "@/lib/printcom";
+import { FLAT_SHIPPING_HT } from "@/lib/pricing";
 import { toast } from "sonner";
-
-interface ShippingOption {
-  name: string;
-  price: number;
-  currency: string;
-  deliveryDays?: number;
-  carrier?: string;
-}
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
@@ -32,95 +24,10 @@ export default function Checkout() {
   const [fileUploads, setFileUploads] = useState<Record<string, { url: string; name: string; path: string }>>({});
   const [submitting, setSubmitting] = useState(false);
 
-  // Shipping state
-  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
-  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
-  const [shippingLoading, setShippingLoading] = useState(false);
-  const [shippingError, setShippingError] = useState<string | null>(null);
-
-  // Fetch shipping when address postal code & country are filled
-  const fetchShipping = useCallback(async () => {
-    if (!address.postalCode || !address.country || items.length === 0) return;
-
-    setShippingLoading(true);
-    setShippingError(null);
-    setShippingOptions([]);
-    setSelectedShipping(null);
-
-    try {
-      const allOptions = new Map<string, ShippingOption>();
-
-      for (const item of items) {
-        const opts = item.options as Record<string, unknown>;
-        const itemOptions: Record<string, unknown> = {};
-        for (const [key, val] of Object.entries(opts)) {
-          if (val !== undefined && val !== null && val !== "") {
-            itemOptions[key] = typeof val === "object" && val !== null && "slug" in val
-              ? (val as any).slug
-              : val;
-          }
-        }
-        if (!itemOptions.copies) {
-          itemOptions.copies = item.copies;
-        }
-
-        try {
-          const result = await getShippingPossibilities({
-            address: {
-              country: address.country,
-              postalCode: address.postalCode,
-              city: address.city || undefined,
-            },
-            item: {
-              sku: item.sku,
-              options: itemOptions,
-            },
-          });
-
-          if (result?.results?.length) {
-            for (const r of result.results) {
-              const key = r.name || r.carrier || "standard";
-              if (!allOptions.has(key)) {
-                allOptions.set(key, {
-                  name: r.name || r.carrier || "Livraison standard",
-                  price: r.price?.salesPrice || r.price?.normalPrice || 0,
-                  currency: r.price?.currency || "EUR",
-                  deliveryDays: r.deliveryDays || r.deliveryTimeInDays,
-                  carrier: r.carrier,
-                });
-              }
-            }
-          }
-        } catch (err) {
-          console.warn(`[shipping] Could not get shipping for ${item.sku}:`, err);
-        }
-      }
-
-      const options = Array.from(allOptions.values()).sort((a, b) => a.price - b.price);
-
-      if (options.length > 0) {
-        setShippingOptions(options);
-        setSelectedShipping(options[0]);
-      } else {
-        setShippingError("Les frais de livraison seront calculés dans votre devis personnalisé.");
-      }
-    } catch (err: any) {
-      console.error("[shipping] error:", err);
-      setShippingError("Les frais de livraison seront calculés dans votre devis personnalisé.");
-    } finally {
-      setShippingLoading(false);
-    }
-  }, [address.postalCode, address.country, address.city, items]);
-
-  useEffect(() => {
-    if (address.postalCode.length >= 4 && address.country) {
-      const timer = setTimeout(fetchShipping, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [fetchShipping]);
-
-  const shippingCost = selectedShipping?.price || 0;
-  const grandTotal = total + shippingCost;
+  // Forfait de livraison fixe : 11,90 € HT, ajouté une seule fois par demande de devis.
+  const productsTotalHt = total;
+  const shippingHt = FLAT_SHIPPING_HT;
+  const grandTotal = productsTotalHt + shippingHt;
 
   const handleFileUpload = async (itemId: string, file: File) => {
     // Upload only into this request's folder: quotes/<requestId>/...
@@ -166,8 +73,11 @@ export default function Checkout() {
         city: address.city || null,
         message: address.message || null,
         items: JSON.parse(JSON.stringify(quoteItems)),
-        estimated_total: grandTotal || null,
-        shipping_cost: shippingCost || null,
+        products_total_ht: productsTotalHt,
+        shipping_amount_ht: shippingHt,
+        estimated_total_ht: grandTotal,
+        estimated_total: grandTotal,
+        shipping_cost: shippingHt,
         currency: "EUR",
       });
 
@@ -244,77 +154,35 @@ export default function Checkout() {
         </div>
       </section>
 
-      {/* Shipping section */}
+      {/* Livraison : forfait fixe */}
       <section className="mt-10">
         <div className="rounded-lg border border-border bg-card p-6">
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3">
             <Truck className="h-5 w-5 text-primary shrink-0" />
-            <h2 className="font-display text-lg font-semibold text-foreground">Livraison (estimation)</h2>
+            <h2 className="font-display text-lg font-semibold text-foreground">Livraison</h2>
           </div>
-
-          {shippingLoading ? (
-            <div className="flex items-center gap-2 py-3 text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Calcul des frais de livraison…</span>
-            </div>
-          ) : shippingOptions.length > 0 ? (
-            <div className="space-y-2">
-              {shippingOptions.map((opt, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedShipping(opt)}
-                  className={`w-full flex items-center justify-between rounded-lg border p-4 text-left transition-colors ${
-                    selectedShipping?.name === opt.name
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/50"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Package className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{opt.name}</p>
-                      {opt.deliveryDays && (
-                        <p className="text-xs text-muted-foreground">
-                          {opt.deliveryDays} jour{opt.deliveryDays > 1 ? "s" : ""} ouvré{opt.deliveryDays > 1 ? "s" : ""}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <span className="text-sm font-semibold text-foreground">
-                    {opt.price > 0 ? `${opt.price.toFixed(2)} €` : "Gratuit"}
-                  </span>
-                </button>
-              ))}
-            </div>
-          ) : shippingError ? (
-            <p className="text-sm text-muted-foreground">{shippingError}</p>
-          ) : (
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">
-                Renseignez votre code postal pour estimer automatiquement les frais de livraison.
-              </p>
-              <Link to="/livraison" className="text-sm text-primary hover:underline inline-block">
-                Consulter nos informations de livraison →
-              </Link>
-            </div>
-          )}
+          <div className="mt-4 flex items-center justify-between">
+            <span className="text-sm text-foreground">Forfait livraison HT</span>
+            <span className="text-sm font-semibold text-foreground">{shippingHt.toFixed(2)} €</span>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Forfait de livraison fixe appliqué une seule fois par commande.
+          </p>
         </div>
       </section>
 
       <div className="mt-10 rounded-xl border border-border bg-card p-6">
         <div className="space-y-2 mb-4">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Produits HT (estimation)</span>
-            <span className="text-foreground">{total.toFixed(2)} €</span>
+            <span className="text-muted-foreground">Sous-total produits HT</span>
+            <span className="text-foreground">{productsTotalHt.toFixed(2)} €</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Livraison (estimation)</span>
-            <span className="text-foreground">
-              {shippingLoading ? "…" : shippingCost > 0 ? `${shippingCost.toFixed(2)} €` : selectedShipping ? "Gratuit" : "À calculer"}
-            </span>
+            <span className="text-muted-foreground">Forfait livraison HT</span>
+            <span className="text-foreground">{shippingHt.toFixed(2)} €</span>
           </div>
           <div className="border-t border-border pt-2 flex justify-between">
-            <span className="text-sm font-medium text-foreground">Total estimé HT</span>
+            <span className="text-sm font-medium text-foreground">Total estimatif HT</span>
             <span className="text-2xl font-bold text-foreground font-display">
               {grandTotal.toFixed(2)} €
             </span>
