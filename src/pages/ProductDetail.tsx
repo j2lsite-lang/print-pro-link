@@ -662,18 +662,20 @@ export default function ProductDetail() {
         copies,
       });
 
-      const { data, options } = await resolvePrice(
+      const copiesProp = allProps.find((p) => p.slug === "copies");
+      const { data, options, copies: resolvedCopies } = await resolvePrice(
         sku,
         product,
         baseOptions,
         copies,
         touchedKeysRef.current,
+        copiesProp,
       );
 
       resolvedOptionsRef.current = options;
       setPriceResult(data);
       // Fetch shipping estimate for France with the resolved config.
-      fetchShipping(copies);
+      fetchShipping(resolvedCopies);
     } catch (err: any) {
       console.error("[price] error:", err?.message || err);
       setPriceResult(null);
