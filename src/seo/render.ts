@@ -92,18 +92,9 @@ function renderFaq(faq: SeoPage["faq"]): string {
   return `<section class="seo-faq"><h2>Questions fréquentes</h2>${items}</section>`;
 }
 
-function renderProducts(page: SeoPage): string {
-  if (!page.products || !page.products.length) return "";
-  const heading = esc(page.productsHeading || "Nos produits");
-  const cards = page.products
-    .map((p) => {
-      const img = p.image
-        ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" width="240" height="180" />`
-        : "";
-      return `<li class="seo-product"><a href="/products/${esc(p.sku)}">${img}<span class="seo-product-name">${esc(p.name)}</span><span class="seo-product-sku">Réf. ${esc(p.sku)}</span></a></li>`;
-    })
-    .join("");
-  return `<section class="seo-products"><h2>${heading}</h2><ul>${cards}</ul></section>`;
+function renderCta(page: SeoPage): string {
+  if (!page.cta) return "";
+  return `<section class="seo-cta"><a class="seo-cta-button" href="${page.cta.path}">${esc(page.cta.label)}</a></section>`;
 }
 
 /** Build the body content injected inside #root (real, crawlable content). */
@@ -119,7 +110,7 @@ export function renderBody(page: SeoPage): string {
     `  </header>`,
     `  <div class="seo-intro">${intro}</div>`,
     sections,
-    renderProducts(page),
+    renderCta(page),
     renderFaq(page.faq),
     links,
     `</div>`,
