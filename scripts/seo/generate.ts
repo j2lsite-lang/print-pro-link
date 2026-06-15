@@ -52,6 +52,7 @@ function group(pages: SeoPage[]) {
       .concat(SERVICE_PATHS),
     categories: indexable.filter((p) => is(p, (s) => s[0] === "categorie" && s.length === 2)).map((p) => p.path),
     subcategories: indexable.filter((p) => is(p, (s) => s[0] === "categorie" && s.length === 3)).map((p) => p.path),
+    products: indexable.filter((p) => is(p, (s) => s[0] === "products" && s.length === 2)).map((p) => p.path),
     cities: indexable.filter((p) => is(p, (s) => s[0] === "ville")).map((p) => p.path),
     departments: indexable.filter((p) => is(p, (s) => s[0] === "departement")).map((p) => p.path),
   };
