@@ -133,7 +133,7 @@ export default function Index() {
               </div>
 
               {/* Headline */}
-              <h1 className="mb-8 font-display text-4xl font-bold leading-[0.95] tracking-tight text-foreground sm:text-5xl lg:text-7xl">
+              <h1 className="mb-6 font-display text-4xl font-bold leading-[0.95] tracking-tight text-foreground sm:text-5xl lg:text-[3.5rem]">
                 <span className="text-primary">J2L Print</span>
                 <br />
                 Votre imprimerie
