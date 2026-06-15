@@ -55,7 +55,28 @@ function group(pages: SeoPage[]) {
     subcategories: indexable.filter((p) => is(p, (s) => s[0] === "categorie" && s.length === 3)).map((p) => p.path),
     cities: indexable.filter((p) => is(p, (s) => s[0] === "ville")).map((p) => p.path),
     departments: indexable.filter((p) => is(p, (s) => s[0] === "departement")).map((p) => p.path),
+    regions: indexable.filter((p) => is(p, (s) => s[0] === "region")).map((p) => p.path),
   };
+}
+
+/** Regenerate the geographic arrays in the Cloudflare worker from the merged
+ *  national reference (no manually limited arrays). Leaves all worker logic
+ *  untouched — only the data lines are replaced. */
+function syncWorker() {
+  const wp = resolve("public/cloudflare-worker-j2lprint.js");
+  if (!existsSync(wp)) return;
+  const geo = loadGeo();
+  const arr = (xs: string[]) => `[${xs.slice().sort().map((s) => `"${s}"`).join(",")}]`;
+  const cities = arr(geo.cities.map((c) => c.slug));
+  const departments = arr(geo.departments.map((d) => d.slug));
+  const regions = arr(geo.regions.map((r) => r.slug));
+  let src = readFileSync(wp, "utf8");
+  src = src
+    .replace(/const CITIES=\[[^\]]*\];/, `const CITIES=${cities};`)
+    .replace(/const DEPARTMENTS=\[[^\]]*\];/, `const DEPARTMENTS=${departments};`)
+    .replace(/const REGIONS=\[[^\]]*\];/, `const REGIONS=${regions};`);
+  writeFileSync(wp, src);
+  console.log(`Worker synced: cities=${geo.cities.length} departments=${geo.departments.length} regions=${geo.regions.length}`);
 }
 
 async function main() {
