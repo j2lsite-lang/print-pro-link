@@ -66,6 +66,12 @@ const App = () => (
                 <Route path="/personnalisation" element={<Personnalisation />} />
                 <Route path="/imprimerie" element={<CitiesIndex />} />
                 <Route path="/imprimerie/:slug" element={<CityPage />} />
+                {/* New SEO routes (prerendered content, shared model) */}
+                <Route path="/catalogue" element={<SeoRoute />} />
+                <Route path="/categorie/:slug" element={<SeoRoute />} />
+                <Route path="/categorie/:parent/:child" element={<SeoRoute />} />
+                <Route path="/ville/:slug" element={<SeoRoute />} />
+                <Route path="/departement/:slug" element={<SeoRoute />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

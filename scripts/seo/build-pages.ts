@@ -178,22 +178,25 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       ],
     });
 
-    // ── one sample subcategory per category (first non-empty) ──
-    const sub = nonEmptySubs[0];
-    if (sub) {
+    // ── ALL non-empty subcategories ──
+    nonEmptySubs.forEach((sub, si) => {
       const subCrumb = [...crumb, { name: sub.name, path: `/categorie/${slug}/${sub.slug}` }];
+      const angles = [
+        `Découvrez la sélection « ${sub.name} » de J2L Print, au sein de l'univers ${content.name}. Configurez votre produit en ligne — format, matière et finitions — et recevez votre commande partout en France.`,
+        `Pour vos besoins en « ${sub.name} », J2L Print propose une gamme professionnelle dans la catégorie ${content.name}, avec un rendu fidèle et des finitions au choix.`,
+        `La rubrique « ${sub.name} » regroupe nos produits ${content.name.toLowerCase()} adaptés à cet usage : choisissez vos options en ligne et profitez de tarifs dégressifs selon la quantité.`,
+      ];
+      const near = subLinks.filter((l) => !l.path.endsWith(`/${sub.slug}`)).slice(0, 6);
       pages.push({
         path: `/categorie/${slug}/${sub.slug}`,
         title: `${sub.name} — ${content.name}`,
-        description: `${sub.name} : impression professionnelle en ligne dans l'univers ${content.name.toLowerCase()}. Formats, matières et finitions au choix, livraison en France.`,
+        description: `${sub.name} : impression professionnelle en ligne (${content.name.toLowerCase()}). Formats, matières et finitions au choix, devis et livraison partout en France.`,
         h1: sub.name,
-        intro: [
-          `Découvrez nos solutions « ${sub.name} », au sein de l'univers ${content.name}. Configurez votre produit en ligne et choisissez le format, la matière et les finitions adaptés à votre projet.`,
-        ],
+        intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
         internalLinks: [
-          { heading: "Revenir à la catégorie", links: [{ label: content.name, path: `/categorie/${slug}` }] },
-          { heading: "Sous-catégories proches", links: subLinks.filter((l) => !l.path.endsWith(sub.slug)).slice(0, 5) },
+          { heading: "Catégorie", links: [{ label: content.name, path: `/categorie/${slug}` }] },
+          ...(near.length ? [{ heading: "Sous-catégories proches", links: near }] : []),
           { heading: "Nos services", links: SERVICE_LINKS },
         ],
         jsonLd: [
@@ -201,7 +204,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           collectionPageLd({ name: sub.name, description: `${sub.name} dans ${content.name}.`, path: `/categorie/${slug}/${sub.slug}`, items: [] }),
         ],
       });
-    }
+    });
   }
 
   // ── Cities (priority) ──
@@ -213,11 +216,12 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       { name: c.department, path: `/departement/${slugify(c.department)}` },
       { name: c.name, path: `/ville/${c.slug}` },
     ];
+    const cart = article(c.department);
     const faq = cityFaq(c);
     pages.push({
       path: `/ville/${c.slug}`,
-      title: `Imprimerie en ligne à ${c.name} — livraison ${c.department}`,
-      description: `Impression professionnelle livrée à ${c.name} (${c.cp}) : flyers, cartes de visite, banderoles et PLV. Commande en ligne, livraison dans le ${c.department}.`,
+      title: `Imprimerie en ligne à ${c.name} — livraison ${cart.de}`,
+      description: `Impression professionnelle livrée à ${c.name} (${c.cp}) : flyers, cartes de visite, banderoles et PLV. Commande en ligne, livraison ${cart.dans}.`,
       h1: `Imprimerie en ligne pour ${c.name}`,
       intro: cityIntro(c),
       breadcrumb: crumb,
@@ -230,7 +234,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       jsonLd: [
         breadcrumbLd(crumb),
         webPageLd({ name: `Impression à ${c.name}`, description: `Impression en ligne livrée à ${c.name}.`, path: `/ville/${c.slug}` }),
-        serviceLd({ name: `Impression pour les professionnels de ${c.name}`, description: `Impression en ligne avec livraison à ${c.name} et dans le ${c.department}.`, areaServed: c.name }),
+        serviceLd({ name: `Impression pour les professionnels à ${c.name}`, description: `Impression en ligne avec livraison à ${c.name} et ${cart.dans}.`, areaServed: c.name }),
         faqLd(faq),
       ],
     });
