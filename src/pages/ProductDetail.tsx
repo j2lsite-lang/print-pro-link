@@ -285,9 +285,18 @@ export default function ProductDetail() {
     if (!sku) return;
     setShippingLoading(true);
     try {
+      // Print.com expects item.options to carry the full configuration
+      // (including copies). A flat { sku, copies } triggers a 500
+      // "Cannot read properties of undefined (reading 'copies')".
+      const cleanOptions: Record<string, any> = {};
+      for (const [key, value] of Object.entries(selectedOptions)) {
+        if (value !== undefined && value !== null && value !== "") {
+          cleanOptions[key] = value;
+        }
+      }
       const body = {
         address: { country: "FR" },
-        item: { sku, copies },
+        item: { sku, options: { ...cleanOptions, copies } },
       };
       const data = await getShippingPossibilities(body);
       const options = Array.isArray(data) ? data : data?.shippingOptions || data?.options || [];
@@ -297,7 +306,8 @@ export default function ProductDetail() {
     } finally {
       setShippingLoading(false);
     }
-  }, [sku]);
+  }, [sku, selectedOptions]);
+
 
   // Fetch price
   const fetchPrice = useCallback(async () => {
