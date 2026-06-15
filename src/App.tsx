@@ -31,6 +31,7 @@ import SupportsPublicitaires from "./pages/SupportsPublicitaires";
 import Personnalisation from "./pages/Personnalisation";
 
 import SeoRoute from "./pages/SeoRoute";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
