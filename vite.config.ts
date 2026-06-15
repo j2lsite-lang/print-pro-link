@@ -28,22 +28,22 @@ export default defineConfig(({ mode }) => ({
       output: {
         // Split large third-party dependencies into stable, cacheable chunks
         // so the main entry stays small and parses faster (lower TBT).
+        //
+        // IMPORTANT: React (react / react-dom / scheduler) MUST stay in the SAME
+        // chunk as every library that calls React.createContext at module-init
+        // time (react-router, @radix-ui, react-helmet-async, react-hook-form…).
+        // Splitting React into its own chunk created a circular / out-of-order
+        // chunk evaluation where `React` was undefined when those libs ran
+        // ("Cannot read properties of undefined (reading 'createContext')"),
+        // crashing the whole app and leaving only the raw prerendered HTML.
+        // We therefore only peel off leaf libraries that depend on React in a
+        // strictly one-directional (acyclic) way and never feed it back.
         manualChunks(id) {
           if (!id.includes("node_modules")) return undefined;
-          if (id.includes("react-router")) return "router";
           if (id.includes("@supabase")) return "supabase";
           if (id.includes("@tanstack")) return "query";
-          if (id.includes("react-hook-form") || id.includes("@hookform") || id.includes("zod")) return "forms";
-          if (id.includes("@radix-ui")) return "radix";
           if (id.includes("lucide-react")) return "icons";
-          if (
-            id.includes("/react/") ||
-            id.includes("/react-dom/") ||
-            id.includes("/scheduler/") ||
-            id.includes("react-helmet-async")
-          ) {
-            return "react-vendor";
-          }
+          // React core + all its eager context consumers live together.
           return "vendor";
         },
       },
