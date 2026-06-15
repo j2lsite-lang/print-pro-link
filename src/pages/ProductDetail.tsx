@@ -338,6 +338,8 @@ export default function ProductDetail() {
     setPriceResult(null);
     setPriceError(null);
     setProductImages([]);
+    touchedKeysRef.current = new Set();
+    resolvedOptionsRef.current = {};
 
     getProduct(sku)
       .then((data: PrintComProduct) => {
