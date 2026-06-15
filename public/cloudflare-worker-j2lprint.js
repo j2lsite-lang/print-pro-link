@@ -91,12 +91,92 @@ const CATEGORIES = [
   "textiles-accessoires", "panneaux-baches-vinyles-toiles",
 ]; // 8 catégories principales (+ sous-catégories /categorie/{parent}/{enfant})
 
+const SUBCATEGORIES = [
+  "emballages-sacs/emballages-alimentaires",
+  "emballages-sacs/emballages-cadeaux",
+  "emballages-sacs/emballages-expedition",
+  "emballages-sacs/sacs-tote-bags",
+  "etiquettes-stickers/accessoires-autocollants",
+  "etiquettes-stickers/autocollants-grand-format",
+  "etiquettes-stickers/autocollants-rouleaux",
+  "etiquettes-stickers/films-adhesifs-type",
+  "etiquettes-stickers/petits-autocollants",
+  "etiquettes-stickers/rubans-adhesifs",
+  "impression-papier/brochures-magazines",
+  "impression-papier/calendriers",
+  "impression-papier/cartes-visite-enveloppes",
+  "impression-papier/catering-restaurants",
+  "impression-papier/courriers-creatifs",
+  "impression-papier/flyers-depliants-affiches",
+  "impression-papier/papeterie",
+  "objets-publicitaires-cadeaux/articles-papeterie",
+  "objets-publicitaires-cadeaux/bien-etre",
+  "objets-publicitaires-cadeaux/gadgets",
+  "objets-publicitaires-cadeaux/general",
+  "objets-publicitaires-cadeaux/nourriture-boissons",
+  "objets-publicitaires-cadeaux/saisonnalite",
+  "objets-publicitaires-cadeaux/verrerie-vaisselle-gourdes",
+  "panneaux-baches-vinyles-toiles/baches-banderoles",
+  "panneaux-baches-vinyles-toiles/films-adhesifs",
+  "panneaux-baches-vinyles-toiles/lookbooks",
+  "panneaux-baches-vinyles-toiles/panneaux-accessoires",
+  "panneaux-baches-vinyles-toiles/toiles-textiles",
+  "publicite-exterieure/bannieres-structures-fixation",
+  "publicite-exterieure/drapeaux-beachflags-accessoires",
+  "publicite-exterieure/panneaux-accessoires-ext",
+  "publicite-exterieure/stop-trottoirs-panneaux",
+  "publicite-exterieure/tonnelles-mobilier-exterieur",
+  "publicite-interieure/mobilier-interieur",
+  "publicite-interieure/panneaux-accessoires-int",
+  "publicite-interieure/presentoirs-materiel-plv",
+  "publicite-interieure/roll-ups",
+  "publicite-interieure/stands-materiel-expo",
+  "publicite-interieure/toiles-textiles-deco-interieure",
+  "textiles-accessoires/accessoires",
+  "textiles-accessoires/cuisine-sejour",
+  "textiles-accessoires/marquage-transferts-textiles",
+  "textiles-accessoires/produits-bebes",
+  "textiles-accessoires/textiles-bain",
+  "textiles-accessoires/textiles-sport",
+  "textiles-accessoires/vetements",
+]; // 47 sous-catégories publiées dans /sitemaps/subcategories.xml
+
 const SERVICES = [
   "impression-numerique", "grand-format", "supports-publicitaires", "personnalisation",
 ];
 
-/* Aucune page région ni route /produit : on n'en advertise aucune. */
-const REGIONS = []; // 0 région publiée
+const REGIONS = [
+  "grand-est", "bourgogne-franche-comte",
+]; // 2 régions documentées via départements ; 0 route /region publiée
+
+const PRODUCT_FAMILIES = [
+  "flyers-et-depliants",
+  "cartes-de-visite",
+  "affiches-et-panneaux",
+  "baches-et-banderoles",
+  "objets-publicitaires",
+  "textiles-personnalises",
+  "plv-et-supports-evenementiels",
+  "stickers-et-autocollants",
+]; // Familles SEO éditoriales ; pas de liste SKU, pas de modification API Print.com
+
+const STATIC_SEO_PATHS = [
+  "/", "/catalogue", "/impression-numerique", "/grand-format",
+  "/supports-publicitaires", "/personnalisation",
+];
+
+const APP_PUBLIC_PATH_PREFIXES = [
+  "/products", "/products/category/", "/blog", "/livraison", "/mentions-legales",
+  "/cgv", "/politique-retours", "/politique-confidentialite", "/imprimerie",
+];
+
+const MANAGED_SEO_PATHS = new Set([
+  ...STATIC_SEO_PATHS,
+  ...CATEGORIES.map((slug) => `/categorie/${slug}`),
+  ...SUBCATEGORIES.map((slug) => `/categorie/${slug}`),
+  ...CITIES.map((slug) => `/ville/${slug}`),
+  ...DEPARTMENTS.map((slug) => `/departement/${slug}`),
+]);
 
 /* ---------------------------------------------------------------------------
  *  Helpers
