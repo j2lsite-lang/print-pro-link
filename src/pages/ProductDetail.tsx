@@ -396,6 +396,7 @@ export default function ProductDetail() {
 
   // Handle option change with exclude validation
   const handleOptionChange = useCallback((propSlug: string, value: string) => {
+    touchedKeysRef.current.add(propSlug);
     setSelectedOptions((prev) => {
       const next = { ...prev, [propSlug]: value };
 
