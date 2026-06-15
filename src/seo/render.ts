@@ -114,15 +114,20 @@ export function renderBody(page: SeoPage): string {
 /** Inject head + body into the built index.html shell. */
 export function injectIntoShell(shell: string, page: SeoPage): string {
   let html = shell;
+  // Strip the shell's overridable, page-specific head tags so the
+  // per-route values are the only ones present (no duplicate og:*/canonical).
+  html = html
+    .replace(/<title>[\s\S]*?<\/title>/i, "")
+    .replace(/<meta\s+name="description"[^>]*>/i, "")
+    .replace(/<meta\s+name="robots"[^>]*>/i, "")
+    .replace(/<link\s+rel="canonical"[^>]*>/i, "")
+    .replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, "")
+    .replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, "");
   const head = renderHead(page);
-  // Remove the static <title> from the shell to avoid duplicates.
-  html = html.replace(/<title>[\s\S]*?<\/title>/i, "");
   html = html.replace(/<\/head>/i, `    ${head}\n  </head>`);
   // Inject prerendered content inside the (empty) #root div.
   const body = renderBody(page);
-  html = html.replace(
-    /<div id="root">\s*<\/div>/i,
-    `<div id="root">${body}</div>`,
-  );
+  html = html.replace(/<div id="root">\s*<\/div>/i, `<div id="root">${body}</div>`);
   return html;
 }
+
