@@ -12,42 +12,46 @@ export default function CityPage() {
 
   const otherCities = (allCities || []).filter((c) => c.slug !== slug).slice(0, 12);
 
+  const BASE_URL = "https://j2lprint.fr";
+  // This legacy /imprimerie/{slug} page is superseded by /ville/{slug}.
+  const canonicalPath = city ? `/ville/${city.slug}` : undefined;
+
   useSEO({
     title: city ? `Imprimerie en ligne à ${city.name} (${city.cp}) – Flyers, bâches, objets pub` : "Imprimerie en ligne",
     description: city
       ? `Imprimerie en ligne à ${city.name} (${city.cp}). Impression flyers, cartes de visite, bâches, roll-ups, objets publicitaires. Livraison rapide à ${city.name}. Devis gratuit J2L Print.`
       : "",
+    canonical: canonicalPath ? `${BASE_URL}${canonicalPath}` : undefined,
     jsonLd: city ? [
       {
         "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        name: `J2L Print – Imprimerie à ${city.name}`,
-        description: `Imprimerie en ligne livrant à ${city.name} (${city.cp}) : flyers, cartes de visite, bâches, roll-ups, objets publicitaires.`,
-        url: `https://j2lprint.fr/imprimerie/${city.slug}`,
-        telephone: "+33329304479",
-        email: "contact@j2lpublicite.fr",
+        "@type": "WebPage",
+        name: `Impression à ${city.name}`,
+        description: `Imprimerie en ligne livrant à ${city.name} (${city.cp}).`,
+        url: `${BASE_URL}/ville/${city.slug}`,
+        isPartOf: { "@type": "WebSite", name: "J2L Print", url: BASE_URL },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        serviceType: "Impression et supports de communication",
+        name: `Impression pour les professionnels à ${city.name}`,
+        description: `Impression en ligne avec livraison à ${city.name} (${city.cp}).`,
+        provider: { "@type": "Organization", name: "J2L Print", url: BASE_URL },
         areaServed: {
           "@type": "City",
           name: city.name,
           ...(city.cp ? { postalCode: city.cp } : {}),
           ...(city.region ? { containedInPlace: { "@type": "AdministrativeArea", name: city.region } } : {}),
         },
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: "22 B rue Robert Barret",
-          postalCode: "88390",
-          addressLocality: "Uxegney",
-          addressRegion: "Vosges",
-          addressCountry: "FR",
-        },
       },
       {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Accueil", item: "https://j2lprint.fr/" },
-          { "@type": "ListItem", position: 2, name: "Imprimerie en ligne", item: "https://j2lprint.fr/imprimerie" },
-          { "@type": "ListItem", position: 3, name: city.name, item: `https://j2lprint.fr/imprimerie/${city.slug}` },
+          { "@type": "ListItem", position: 1, name: "Accueil", item: `${BASE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Imprimerie en ligne", item: `${BASE_URL}/imprimerie` },
+          { "@type": "ListItem", position: 3, name: city.name, item: `${BASE_URL}/ville/${city.slug}` },
         ],
       },
     ] : undefined,
