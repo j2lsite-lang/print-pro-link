@@ -59,23 +59,11 @@ async function rest<T = any>(path: string): Promise<T[]> {
 }
 
 
-const PRIORITY_CITIES = [
-  "epinal", "nancy", "metz", "strasbourg", "colmar", "mulhouse", "reims",
-  "troyes", "saint-die-des-vosges", "remiremont", "neufchateau", "luneville",
-  "thionville", "sarreguemines", "verdun", "chaumont",
-];
-const PRIORITY_DEPARTMENTS: { slug: string; name: string; region: string }[] = [
-  { slug: "vosges", name: "Vosges", region: "Grand Est" },
-  { slug: "meurthe-et-moselle", name: "Meurthe-et-Moselle", region: "Grand Est" },
-  { slug: "moselle", name: "Moselle", region: "Grand Est" },
-  { slug: "bas-rhin", name: "Bas-Rhin", region: "Grand Est" },
-  { slug: "haut-rhin", name: "Haut-Rhin", region: "Grand Est" },
-  { slug: "haute-saone", name: "Haute-Saône", region: "Bourgogne-Franche-Comté" },
-  { slug: "meuse", name: "Meuse", region: "Grand Est" },
-  { slug: "marne", name: "Marne", region: "Grand Est" },
-  { slug: "aube", name: "Aube", region: "Grand Est" },
-  { slug: "haute-marne", name: "Haute-Marne", region: "Grand Est" },
-];
+// City/department/region pages are now generated from the merged national
+// geographic reference (src/seo/data/geography-national.json): 599 cities,
+// 101 departments, 18 regions. The PRIORITY_* editorial profiles in local.ts
+// still enrich the matching pages, but the page set is no longer limited to
+// them.
 
 const SERVICE_LINKS: LinkItem[] = [
   { label: "Impression numérique", path: "/impression-numerique" },
