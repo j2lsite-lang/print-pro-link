@@ -858,20 +858,22 @@ export default function ProductDetail() {
   }
 
   return (
-    <div className="container py-8">
+    <div className="container pt-12 pb-8 lg:pt-16">
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <Link to="/products" className="hover:text-primary transition-colors">Catalogue</Link>
         <ChevronRight className="h-3 w-3" />
         <span className="text-foreground">{product.titleSingle || product.name || sku}</span>
       </nav>
 
-      <div className="mb-8 flex flex-col lg:flex-row gap-8 items-start">
-        <ProductGallery
-          images={images}
-          productName={product.titleSingle || product.name || sku}
-          fallbackImage={categoryImageUrl || thumbnailUrl}
-        />
-        <div className="flex-1 space-y-4">
+      <div className="mb-8 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+        <div className="w-full lg:w-[45%] shrink-0">
+          <ProductGallery
+            images={images}
+            productName={product.titleSingle || product.name || sku}
+            fallbackImage={categoryImageUrl || thumbnailUrl}
+          />
+        </div>
+        <div className="w-full lg:w-[55%] space-y-4">
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
             {product.titleSingle || product.name || sku}
           </h1>
