@@ -196,7 +196,14 @@ export default function ProductDetail() {
       .then((data: PrintComProduct) => {
         setProduct(data);
         const allProps = data.properties || data.configurableProperties || [];
-        const defaults = buildValidDefaults(allProps, data.excludes);
+        // Hidden properties are optional per Print.com — omit them entirely.
+        const hiddenSlugs = new Set<string>();
+        for (const group of data.propertyGroups || []) {
+          if (group.columnWidth?.reseller === "hidden") {
+            group.properties.forEach((s) => hiddenSlugs.add(s));
+          }
+        }
+        const defaults = buildValidDefaults(allProps, data.excludes, hiddenSlugs);
         setSelectedOptions(defaults);
       })
       .catch((err) => setError(err.message))
