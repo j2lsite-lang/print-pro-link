@@ -30,6 +30,40 @@ export interface ContentSection {
   bullets?: string[];
 }
 
+export interface HeroCta {
+  label: string;
+  path: string;
+  /** "primary" = filled accent button, "secondary" = outlined */
+  variant?: "primary" | "secondary";
+}
+
+export interface SeoHero {
+  /** absolute public path, e.g. "/seo/hero-print-1.jpg" */
+  image: string;
+  imageAlt: string;
+  /** small uppercase label above the H1 */
+  eyebrow?: string;
+  /** local accroche shown under the H1 */
+  tagline: string;
+  ctas: HeroCta[];
+}
+
+export interface ProductCard {
+  /** rendered as an H3 */
+  label: string;
+  path: string;
+  /** lucide-react icon name (mapped at runtime) */
+  icon: string;
+  description: string;
+}
+
+export interface ProductGrid {
+  /** rendered as an H2 */
+  heading: string;
+  intro?: string;
+  cards: ProductCard[];
+}
+
 export interface SeoPage {
   /** canonical path, e.g. "/categorie/impression-papier" */
   path: string;
@@ -46,7 +80,13 @@ export interface SeoPage {
    */
   cta?: { label: string; path: string };
   internalLinks?: LinkGroup[];
+  /** Optional external links to official/useful resources (max 1-2 per page). */
+  externalLinks?: LinkItem[];
   faq?: FaqItem[];
+  /** Optional visual hero banner (city/department pages). */
+  hero?: SeoHero;
+  /** Optional product-cards grid linking to existing catalog categories. */
+  productGrid?: ProductGrid;
   /** JSON-LD blocks already shaped for schema.org */
   jsonLd: Record<string, unknown>[];
   noindex?: boolean;
