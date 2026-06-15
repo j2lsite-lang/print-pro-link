@@ -86,6 +86,7 @@ export default function Index() {
     setCallbackLoading(true);
     const form = callbackFormRef.current!;
     const formData = new FormData(form);
+    const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase.from("callback_requests").insert({
       name: formData.get("cb_name") as string,
       phone: formData.get("cb_phone") as string,
