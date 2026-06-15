@@ -185,6 +185,16 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         `La rubrique « ${sub.name} » regroupe nos produits ${content.name.toLowerCase()} adaptés à cet usage : choisissez vos options en ligne et profitez de tarifs dégressifs selon la quantité.`,
       ];
       const near = subLinks.filter((l) => !l.path.endsWith(`/${sub.slug}`)).slice(0, 6);
+      const subFaq = [
+        {
+          q: `Peut-on commander « ${sub.name} » en ligne ?`,
+          a: `Oui. La gamme « ${sub.name} » se configure entièrement en ligne — format, matière, finitions et quantité — puis est livrée partout en France.`,
+        },
+        {
+          q: "Comment obtenir un devis ?",
+          a: "Configurez votre produit dans le catalogue ou décrivez votre besoin dans le formulaire de devis : nous revenons vers vous avec une proposition personnalisée.",
+        },
+      ];
       pages.push({
         path: `/categorie/${slug}/${sub.slug}`,
         title: `${sub.name} — ${content.name}`,
@@ -192,7 +202,13 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         h1: sub.name,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
+        productGrid: {
+          heading: `Supports populaires dans « ${sub.name} »`,
+          intro: "Configurez votre produit dans le catalogue en ligne.",
+          cards: PRODUCT_CARDS,
+        },
         cta: CATALOG_CTA,
+        faq: subFaq,
         internalLinks: [
           { heading: "Catégorie", links: [{ label: content.name, path: `/categorie/${slug}` }] },
           ...(near.length ? [{ heading: "Sous-catégories proches", links: near }] : []),
@@ -205,6 +221,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
             description: `${sub.name} dans ${content.name}.`,
             path: `/categorie/${slug}/${sub.slug}`,
           }),
+          faqLd(subFaq),
         ],
       });
     });
