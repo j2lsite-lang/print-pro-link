@@ -80,7 +80,13 @@ export interface SeoPage {
    */
   cta?: { label: string; path: string };
   internalLinks?: LinkGroup[];
+  /** Optional external links to official/useful resources (max 1-2 per page). */
+  externalLinks?: LinkItem[];
   faq?: FaqItem[];
+  /** Optional visual hero banner (city/department pages). */
+  hero?: SeoHero;
+  /** Optional product-cards grid linking to existing catalog categories. */
+  productGrid?: ProductGrid;
   /** JSON-LD blocks already shaped for schema.org */
   jsonLd: Record<string, unknown>[];
   noindex?: boolean;
