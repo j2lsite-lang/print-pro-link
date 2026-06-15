@@ -577,7 +577,15 @@ export default function ProductDetail() {
     const copiesProp = allProps.find((p) => p.slug === "copies");
     if (!copiesProp) return;
 
-    const selectedMethod = selectedOptions["printingmethod"] || "";
+    // printingmethod is usually a hidden required prop, so it lives in the
+    // resolved options (not selectedOptions). Use whichever is available, then
+    // fall back to the real default value Print.com would pick.
+    const printingMethodProp = allProps.find((p) => p.slug === "printingmethod");
+    const selectedMethod =
+      selectedOptions["printingmethod"] ||
+      resolvedOptionsRef.current["printingmethod"] ||
+      realOptionValue(printingMethodProp) ||
+      "";
     let qtyOpts: { slug: string; name: string }[] = [];
 
     if (copiesProp.rangeSets?.length) {
