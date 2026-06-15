@@ -1,0 +1,5045 @@
+{
+  "source": "J2L Print",
+  "cities": [
+    {
+      "name": "Agen",
+      "slug": "agen",
+      "postalCodes": [
+        "47000"
+      ],
+      "departmentCode": "47",
+      "departmentName": "Lot-et-Garonne",
+      "departmentSlug": "lot-et-garonne",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Aix-en-Provence",
+      "slug": "aix-en-provence",
+      "postalCodes": [
+        "13100"
+      ],
+      "departmentCode": "13",
+      "departmentName": "Bouches-du-Rhône",
+      "departmentSlug": "bouches-du-rhone",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Ajaccio",
+      "slug": "ajaccio",
+      "postalCodes": [
+        "20000"
+      ],
+      "departmentCode": "2A",
+      "departmentName": "Corse-du-Sud",
+      "departmentSlug": "corse-du-sud",
+      "regionName": "Corse",
+      "regionSlug": "corse",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Albi",
+      "slug": "albi",
+      "postalCodes": [
+        "81000"
+      ],
+      "departmentCode": "81",
+      "departmentName": "Tarn",
+      "departmentSlug": "tarn",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Alençon",
+      "slug": "alencon",
+      "postalCodes": [
+        "61000"
+      ],
+      "departmentCode": "61",
+      "departmentName": "Orne",
+      "departmentSlug": "orne",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Altkirch",
+      "slug": "altkirch",
+      "postalCodes": [
+        "68130"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Amiens",
+      "slug": "amiens",
+      "postalCodes": [
+        "80000"
+      ],
+      "departmentCode": "80",
+      "departmentName": "Somme",
+      "departmentSlug": "somme",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Amnéville",
+      "slug": "amneville",
+      "postalCodes": [
+        "57360"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Angers",
+      "slug": "angers",
+      "postalCodes": [
+        "49000"
+      ],
+      "departmentCode": "49",
+      "departmentName": "Maine-et-Loire",
+      "departmentSlug": "maine-et-loire",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Angoulême",
+      "slug": "angouleme",
+      "postalCodes": [
+        "16000"
+      ],
+      "departmentCode": "16",
+      "departmentName": "Charente",
+      "departmentSlug": "charente",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Annecy",
+      "slug": "annecy",
+      "postalCodes": [
+        "74000"
+      ],
+      "departmentCode": "74",
+      "departmentName": "Haute-Savoie",
+      "departmentSlug": "haute-savoie",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Antibes",
+      "slug": "antibes",
+      "postalCodes": [
+        "06600"
+      ],
+      "departmentCode": "06",
+      "departmentName": "Alpes-Maritimes",
+      "departmentSlug": "alpes-maritimes",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Antony",
+      "slug": "antony",
+      "postalCodes": [
+        "92160"
+      ],
+      "departmentCode": "92",
+      "departmentName": "Hauts-de-Seine",
+      "departmentSlug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Argenteuil",
+      "slug": "argenteuil",
+      "postalCodes": [
+        "95100"
+      ],
+      "departmentCode": "95",
+      "departmentName": "Val-d'Oise",
+      "departmentSlug": "val-d-oise",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Arles",
+      "slug": "arles",
+      "postalCodes": [
+        "13200"
+      ],
+      "departmentCode": "13",
+      "departmentName": "Bouches-du-Rhône",
+      "departmentSlug": "bouches-du-rhone",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Arras",
+      "slug": "arras",
+      "postalCodes": [
+        "62000"
+      ],
+      "departmentCode": "62",
+      "departmentName": "Pas-de-Calais",
+      "departmentSlug": "pas-de-calais",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Asnières-sur-Seine",
+      "slug": "asnieres-sur-seine",
+      "postalCodes": [
+        "92600"
+      ],
+      "departmentCode": "92",
+      "departmentName": "Hauts-de-Seine",
+      "departmentSlug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Aubervilliers",
+      "slug": "aubervilliers",
+      "postalCodes": [
+        "93300"
+      ],
+      "departmentCode": "93",
+      "departmentName": "Seine-Saint-Denis",
+      "departmentSlug": "seine-saint-denis",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Aurillac",
+      "slug": "aurillac",
+      "postalCodes": [
+        "15000"
+      ],
+      "departmentCode": "15",
+      "departmentName": "Cantal",
+      "departmentSlug": "cantal",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Auxerre",
+      "slug": "auxerre",
+      "postalCodes": [
+        "89000"
+      ],
+      "departmentCode": "89",
+      "departmentName": "Yonne",
+      "departmentSlug": "yonne",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Avignon",
+      "slug": "avignon",
+      "postalCodes": [
+        "84000"
+      ],
+      "departmentCode": "84",
+      "departmentName": "Vaucluse",
+      "departmentSlug": "vaucluse",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Aÿ-Champagne",
+      "slug": "ay-champagne",
+      "postalCodes": [
+        "51160"
+      ],
+      "departmentCode": "51",
+      "departmentName": "Marne",
+      "departmentSlug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Baccarat",
+      "slug": "baccarat",
+      "postalCodes": [
+        "54120"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bandol",
+      "slug": "bandol",
+      "postalCodes": [
+        "83150"
+      ],
+      "departmentCode": "83",
+      "departmentName": "Var",
+      "departmentSlug": "var",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bar-le-Duc",
+      "slug": "bar-le-duc",
+      "postalCodes": [
+        "55000"
+      ],
+      "departmentCode": "55",
+      "departmentName": "Meuse",
+      "departmentSlug": "meuse",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bar-sur-Aube",
+      "slug": "bar-sur-aube",
+      "postalCodes": [
+        "10200"
+      ],
+      "departmentCode": "10",
+      "departmentName": "Aube",
+      "departmentSlug": "aube",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bar-sur-Seine",
+      "slug": "bar-sur-seine",
+      "postalCodes": [
+        "10110"
+      ],
+      "departmentCode": "10",
+      "departmentName": "Aube",
+      "departmentSlug": "aube",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Barr",
+      "slug": "barr",
+      "postalCodes": [
+        "67140"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bastia",
+      "slug": "bastia",
+      "postalCodes": [
+        "20200"
+      ],
+      "departmentCode": "2B",
+      "departmentName": "Haute-Corse",
+      "departmentSlug": "haute-corse",
+      "regionName": "Corse",
+      "regionSlug": "corse",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bayonne",
+      "slug": "bayonne",
+      "postalCodes": [
+        "64100"
+      ],
+      "departmentCode": "64",
+      "departmentName": "Pyrénées-Atlantiques",
+      "departmentSlug": "pyrenees-atlantiques",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Beauvais",
+      "slug": "beauvais",
+      "postalCodes": [
+        "60000"
+      ],
+      "departmentCode": "60",
+      "departmentName": "Oise",
+      "departmentSlug": "oise",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Behren-lès-Forbach",
+      "slug": "behren-les-forbach",
+      "postalCodes": [
+        "57460"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Belfort",
+      "slug": "belfort",
+      "postalCodes": [
+        "90000"
+      ],
+      "departmentCode": "90",
+      "departmentName": "Territoire de Belfort",
+      "departmentSlug": "territoire-de-belfort",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Besançon",
+      "slug": "besancon",
+      "postalCodes": [
+        "25000"
+      ],
+      "departmentCode": "25",
+      "departmentName": "Doubs",
+      "departmentSlug": "doubs",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bischheim",
+      "slug": "bischheim",
+      "postalCodes": [
+        "67800"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bischwiller",
+      "slug": "bischwiller",
+      "postalCodes": [
+        "67240"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Blois",
+      "slug": "blois",
+      "postalCodes": [
+        "41000"
+      ],
+      "departmentCode": "41",
+      "departmentName": "Loir-et-Cher",
+      "departmentSlug": "loir-et-cher",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bogny-sur-Meuse",
+      "slug": "bogny-sur-meuse",
+      "postalCodes": [
+        "08120"
+      ],
+      "departmentCode": "08",
+      "departmentName": "Ardennes",
+      "departmentSlug": "ardennes",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bordeaux",
+      "slug": "bordeaux",
+      "postalCodes": [
+        "33000"
+      ],
+      "departmentCode": "33",
+      "departmentName": "Gironde",
+      "departmentSlug": "gironde",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Boulay-Moselle",
+      "slug": "boulay-moselle",
+      "postalCodes": [
+        "57220"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Boulogne-Billancourt",
+      "slug": "boulogne-billancourt",
+      "postalCodes": [
+        "92100"
+      ],
+      "departmentCode": "92",
+      "departmentName": "Hauts-de-Seine",
+      "departmentSlug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Boulogne-sur-Mer",
+      "slug": "boulogne-sur-mer",
+      "postalCodes": [
+        "62200"
+      ],
+      "departmentCode": "62",
+      "departmentName": "Pas-de-Calais",
+      "departmentSlug": "pas-de-calais",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bourges",
+      "slug": "bourges",
+      "postalCodes": [
+        "18000"
+      ],
+      "departmentCode": "18",
+      "departmentName": "Cher",
+      "departmentSlug": "cher",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Brest",
+      "slug": "brest",
+      "postalCodes": [
+        "29200"
+      ],
+      "departmentCode": "29",
+      "departmentName": "Finistère",
+      "departmentSlug": "finistere",
+      "regionName": "Bretagne",
+      "regionSlug": "bretagne",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Briey",
+      "slug": "briey",
+      "postalCodes": [
+        "54150"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Brive-la-Gaillarde",
+      "slug": "brive-la-gaillarde",
+      "postalCodes": [
+        "19100"
+      ],
+      "departmentCode": "19",
+      "departmentName": "Corrèze",
+      "departmentSlug": "correze",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Brumath",
+      "slug": "brumath",
+      "postalCodes": [
+        "67170"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bruyères",
+      "slug": "bruyeres",
+      "postalCodes": [
+        "88600"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Bétheny",
+      "slug": "betheny",
+      "postalCodes": [
+        "51450"
+      ],
+      "departmentCode": "51",
+      "departmentName": "Marne",
+      "departmentSlug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Béziers",
+      "slug": "beziers",
+      "postalCodes": [
+        "34500"
+      ],
+      "departmentCode": "34",
+      "departmentName": "Hérault",
+      "departmentSlug": "herault",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Caen",
+      "slug": "caen",
+      "postalCodes": [
+        "14000"
+      ],
+      "departmentCode": "14",
+      "departmentName": "Calvados",
+      "departmentSlug": "calvados",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Cahors",
+      "slug": "cahors",
+      "postalCodes": [
+        "46000"
+      ],
+      "departmentCode": "46",
+      "departmentName": "Lot",
+      "departmentSlug": "lot",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Calais",
+      "slug": "calais",
+      "postalCodes": [
+        "62100"
+      ],
+      "departmentCode": "62",
+      "departmentName": "Pas-de-Calais",
+      "departmentSlug": "pas-de-calais",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Cannes",
+      "slug": "cannes",
+      "postalCodes": [
+        "06400"
+      ],
+      "departmentCode": "06",
+      "departmentName": "Alpes-Maritimes",
+      "departmentSlug": "alpes-maritimes",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Carcassonne",
+      "slug": "carcassonne",
+      "postalCodes": [
+        "11000"
+      ],
+      "departmentCode": "11",
+      "departmentName": "Aude",
+      "departmentSlug": "aude",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Castres",
+      "slug": "castres",
+      "postalCodes": [
+        "81100"
+      ],
+      "departmentCode": "81",
+      "departmentName": "Tarn",
+      "departmentSlug": "tarn",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Cergy",
+      "slug": "cergy",
+      "postalCodes": [
+        "95000"
+      ],
+      "departmentCode": "95",
+      "departmentName": "Val-d'Oise",
+      "departmentSlug": "val-d-oise",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Cernay",
+      "slug": "cernay",
+      "postalCodes": [
+        "68700"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Chalon-sur-Saône",
+      "slug": "chalon-sur-saone",
+      "postalCodes": [
+        "71100"
+      ],
+      "departmentCode": "71",
+      "departmentName": "Saône-et-Loire",
+      "departmentSlug": "saone-et-loire",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Chambéry",
+      "slug": "chambery",
+      "postalCodes": [
+        "73000"
+      ],
+      "departmentCode": "73",
+      "departmentName": "Savoie",
+      "departmentSlug": "savoie",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Champigny-sur-Marne",
+      "slug": "champigny-sur-marne",
+      "postalCodes": [
+        "94500"
+      ],
+      "departmentCode": "94",
+      "departmentName": "Val-de-Marne",
+      "departmentSlug": "val-de-marne",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Charleville-Mézières",
+      "slug": "charleville-mezieres",
+      "postalCodes": [
+        "08000"
+      ],
+      "departmentCode": "08",
+      "departmentName": "Ardennes",
+      "departmentSlug": "ardennes",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Charmes",
+      "slug": "charmes",
+      "postalCodes": [
+        "88130"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Chartres",
+      "slug": "chartres",
+      "postalCodes": [
+        "28000"
+      ],
+      "departmentCode": "28",
+      "departmentName": "Eure-et-Loir",
+      "departmentSlug": "eure-et-loir",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Chaumont",
+      "slug": "chaumont",
+      "postalCodes": [
+        "52000"
+      ],
+      "departmentCode": "52",
+      "departmentName": "Haute-Marne",
+      "departmentSlug": "haute-marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "troyes",
+        "neufchateau",
+        "reims",
+        "epinal"
+      ]
+    },
+    {
+      "name": "Cherbourg",
+      "slug": "cherbourg",
+      "postalCodes": [
+        "50100"
+      ],
+      "departmentCode": "50",
+      "departmentName": "Manche",
+      "departmentSlug": "manche",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Cholet",
+      "slug": "cholet",
+      "postalCodes": [
+        "49300"
+      ],
+      "departmentCode": "49",
+      "departmentName": "Maine-et-Loire",
+      "departmentSlug": "maine-et-loire",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Châlons-en-Champagne",
+      "slug": "chalons-en-champagne",
+      "postalCodes": [
+        "51000"
+      ],
+      "departmentCode": "51",
+      "departmentName": "Marne",
+      "departmentSlug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Châteauroux",
+      "slug": "chateauroux",
+      "postalCodes": [
+        "36000"
+      ],
+      "departmentCode": "36",
+      "departmentName": "Indre",
+      "departmentSlug": "indre",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Clermont-Ferrand",
+      "slug": "clermont-ferrand",
+      "postalCodes": [
+        "63000"
+      ],
+      "departmentCode": "63",
+      "departmentName": "Puy-de-Dôme",
+      "departmentSlug": "puy-de-dome",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Clichy",
+      "slug": "clichy",
+      "postalCodes": [
+        "92110"
+      ],
+      "departmentCode": "92",
+      "departmentName": "Hauts-de-Seine",
+      "departmentSlug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Clouange",
+      "slug": "clouange",
+      "postalCodes": [
+        "57185"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Colmar",
+      "slug": "colmar",
+      "postalCodes": [
+        "68000"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "mulhouse",
+        "strasbourg",
+        "remiremont",
+        "epinal"
+      ]
+    },
+    {
+      "name": "Colombes",
+      "slug": "colombes",
+      "postalCodes": [
+        "92700"
+      ],
+      "departmentCode": "92",
+      "departmentName": "Hauts-de-Seine",
+      "departmentSlug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Commercy",
+      "slug": "commercy",
+      "postalCodes": [
+        "55200"
+      ],
+      "departmentCode": "55",
+      "departmentName": "Meuse",
+      "departmentSlug": "meuse",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Compiègne",
+      "slug": "compiegne",
+      "postalCodes": [
+        "60200"
+      ],
+      "departmentCode": "60",
+      "departmentName": "Oise",
+      "departmentSlug": "oise",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Contrexéville",
+      "slug": "contrexeville",
+      "postalCodes": [
+        "88140"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Cormontreuil",
+      "slug": "cormontreuil",
+      "postalCodes": [
+        "51350"
+      ],
+      "departmentCode": "51",
+      "departmentName": "Marne",
+      "departmentSlug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Cornimont",
+      "slug": "cornimont",
+      "postalCodes": [
+        "88310"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Courbevoie",
+      "slug": "courbevoie",
+      "postalCodes": [
+        "92400"
+      ],
+      "departmentCode": "92",
+      "departmentName": "Hauts-de-Seine",
+      "departmentSlug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Creutzwald",
+      "slug": "creutzwald",
+      "postalCodes": [
+        "57150"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Créteil",
+      "slug": "creteil",
+      "postalCodes": [
+        "94000"
+      ],
+      "departmentCode": "94",
+      "departmentName": "Val-de-Marne",
+      "departmentSlug": "val-de-marne",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Descartes",
+      "slug": "descartes",
+      "postalCodes": [
+        "37160"
+      ],
+      "departmentCode": "37",
+      "departmentName": "Indre-et-Loire",
+      "departmentSlug": "indre-et-loire",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Dijon",
+      "slug": "dijon",
+      "postalCodes": [
+        "21000"
+      ],
+      "departmentCode": "21",
+      "departmentName": "Côte-d'Or",
+      "departmentSlug": "cote-d-or",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Dole",
+      "slug": "dole",
+      "postalCodes": [
+        "39100"
+      ],
+      "departmentCode": "39",
+      "departmentName": "Jura",
+      "departmentSlug": "jura",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Douai",
+      "slug": "douai",
+      "postalCodes": [
+        "59500"
+      ],
+      "departmentCode": "59",
+      "departmentName": "Nord",
+      "departmentSlug": "nord",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Drancy",
+      "slug": "drancy",
+      "postalCodes": [
+        "93700"
+      ],
+      "departmentCode": "93",
+      "departmentName": "Seine-Saint-Denis",
+      "departmentSlug": "seine-saint-denis",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Dunkerque",
+      "slug": "dunkerque",
+      "postalCodes": [
+        "59140"
+      ],
+      "departmentCode": "59",
+      "departmentName": "Nord",
+      "departmentSlug": "nord",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Ensisheim",
+      "slug": "ensisheim",
+      "postalCodes": [
+        "68190"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Erstein",
+      "slug": "erstein",
+      "postalCodes": [
+        "67150"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Fameck",
+      "slug": "fameck",
+      "postalCodes": [
+        "57290"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Faulquemont",
+      "slug": "faulquemont",
+      "postalCodes": [
+        "57380"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Fismes",
+      "slug": "fismes",
+      "postalCodes": [
+        "51170"
+      ],
+      "departmentCode": "51",
+      "departmentName": "Marne",
+      "departmentSlug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Florange",
+      "slug": "florange",
+      "postalCodes": [
+        "57190"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Forbach",
+      "slug": "forbach",
+      "postalCodes": [
+        "57600"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Fort-de-France",
+      "slug": "fort-de-france",
+      "postalCodes": [
+        "97200"
+      ],
+      "departmentCode": "972",
+      "departmentName": "Martinique",
+      "departmentSlug": "martinique",
+      "regionName": "Martinique",
+      "regionSlug": "martinique",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Freyming-Merlebach",
+      "slug": "freyming-merlebach",
+      "postalCodes": [
+        "57800"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Fréjus",
+      "slug": "frejus",
+      "postalCodes": [
+        "83600"
+      ],
+      "departmentCode": "83",
+      "departmentName": "Var",
+      "departmentSlug": "var",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Golbey",
+      "slug": "golbey",
+      "postalCodes": [
+        "88190"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Grenoble",
+      "slug": "grenoble",
+      "postalCodes": [
+        "38000"
+      ],
+      "departmentCode": "38",
+      "departmentName": "Isère",
+      "departmentSlug": "isere",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Guebwiller",
+      "slug": "guebwiller",
+      "postalCodes": [
+        "68500"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Guénange",
+      "slug": "guenange",
+      "postalCodes": [
+        "57310"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Gérardmer",
+      "slug": "gerardmer",
+      "postalCodes": [
+        "88400"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Hagondange",
+      "slug": "hagondange",
+      "postalCodes": [
+        "57300"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Haguenau",
+      "slug": "haguenau",
+      "postalCodes": [
+        "67500"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Homécourt",
+      "slug": "homecourt",
+      "postalCodes": [
+        "54310"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Illkirch-Graffenstaden",
+      "slug": "illkirch-graffenstaden",
+      "postalCodes": [
+        "67400"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Illzach",
+      "slug": "illzach",
+      "postalCodes": [
+        "68110"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Jarville-la-Malgrange",
+      "slug": "jarville-la-malgrange",
+      "postalCodes": [
+        "54140"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Joinville",
+      "slug": "joinville",
+      "postalCodes": [
+        "52300"
+      ],
+      "departmentCode": "52",
+      "departmentName": "Haute-Marne",
+      "departmentSlug": "haute-marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Jœuf",
+      "slug": "joeuf",
+      "postalCodes": [
+        "54240"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Kingersheim",
+      "slug": "kingersheim",
+      "postalCodes": [
+        "68260"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "La Bresse",
+      "slug": "la-bresse",
+      "postalCodes": [
+        "88250"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "La Chapelle-Saint-Luc",
+      "slug": "la-chapelle-saint-luc",
+      "postalCodes": [
+        "10600"
+      ],
+      "departmentCode": "10",
+      "departmentName": "Aube",
+      "departmentSlug": "aube",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "La Rochelle",
+      "slug": "la-rochelle",
+      "postalCodes": [
+        "17000"
+      ],
+      "departmentCode": "17",
+      "departmentName": "Charente-Maritime",
+      "departmentSlug": "charente-maritime",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "La Seyne-sur-Mer",
+      "slug": "la-seyne-sur-mer",
+      "postalCodes": [
+        "83500"
+      ],
+      "departmentCode": "83",
+      "departmentName": "Var",
+      "departmentSlug": "var",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Langres",
+      "slug": "langres",
+      "postalCodes": [
+        "52200"
+      ],
+      "departmentCode": "52",
+      "departmentName": "Haute-Marne",
+      "departmentSlug": "haute-marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Laon",
+      "slug": "laon",
+      "postalCodes": [
+        "02000"
+      ],
+      "departmentCode": "02",
+      "departmentName": "Aisne",
+      "departmentSlug": "aisne",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Laval",
+      "slug": "laval",
+      "postalCodes": [
+        "53000"
+      ],
+      "departmentCode": "53",
+      "departmentName": "Mayenne",
+      "departmentSlug": "mayenne",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Laxou",
+      "slug": "laxou",
+      "postalCodes": [
+        "54520"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Le Havre",
+      "slug": "le-havre",
+      "postalCodes": [
+        "76600"
+      ],
+      "departmentCode": "76",
+      "departmentName": "Seine-Maritime",
+      "departmentSlug": "seine-maritime",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Le Mans",
+      "slug": "le-mans",
+      "postalCodes": [
+        "72000"
+      ],
+      "departmentCode": "72",
+      "departmentName": "Sarthe",
+      "departmentSlug": "sarthe",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Le Puy-en-Velay",
+      "slug": "le-puy-en-velay",
+      "postalCodes": [
+        "43000"
+      ],
+      "departmentCode": "43",
+      "departmentName": "Haute-Loire",
+      "departmentSlug": "haute-loire",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Le Thillot",
+      "slug": "le-thillot",
+      "postalCodes": [
+        "88160"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Lens",
+      "slug": "lens",
+      "postalCodes": [
+        "62300"
+      ],
+      "departmentCode": "62",
+      "departmentName": "Pas-de-Calais",
+      "departmentSlug": "pas-de-calais",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Levallois-Perret",
+      "slug": "levallois-perret",
+      "postalCodes": [
+        "92300"
+      ],
+      "departmentCode": "92",
+      "departmentName": "Hauts-de-Seine",
+      "departmentSlug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Lille",
+      "slug": "lille",
+      "postalCodes": [
+        "59000"
+      ],
+      "departmentCode": "59",
+      "departmentName": "Nord",
+      "departmentSlug": "nord",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Limoges",
+      "slug": "limoges",
+      "postalCodes": [
+        "87000"
+      ],
+      "departmentCode": "87",
+      "departmentName": "Haute-Vienne",
+      "departmentSlug": "haute-vienne",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Lingolsheim",
+      "slug": "lingolsheim",
+      "postalCodes": [
+        "67380"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Longwy",
+      "slug": "longwy",
+      "postalCodes": [
+        "54400"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Lons-le-Saunier",
+      "slug": "lons-le-saunier",
+      "postalCodes": [
+        "39000"
+      ],
+      "departmentCode": "39",
+      "departmentName": "Jura",
+      "departmentSlug": "jura",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Lorient",
+      "slug": "lorient",
+      "postalCodes": [
+        "56100"
+      ],
+      "departmentCode": "56",
+      "departmentName": "Morbihan",
+      "departmentSlug": "morbihan",
+      "regionName": "Bretagne",
+      "regionSlug": "bretagne",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Lunéville",
+      "slug": "luneville",
+      "postalCodes": [
+        "54300"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "nancy",
+        "epinal",
+        "saint-die-des-vosges",
+        "sarreguemines"
+      ]
+    },
+    {
+      "name": "Lutterbach",
+      "slug": "lutterbach",
+      "postalCodes": [
+        "68460"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Luxeuil-les-Bains",
+      "slug": "luxeuil-les-bains",
+      "postalCodes": [
+        "70300"
+      ],
+      "departmentCode": "70",
+      "departmentName": "Haute-Saône",
+      "departmentSlug": "haute-saone",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Lyon",
+      "slug": "lyon",
+      "postalCodes": [
+        "69000"
+      ],
+      "departmentCode": "69",
+      "departmentName": "Rhône",
+      "departmentSlug": "rhone",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Maizières-lès-Metz",
+      "slug": "maizieres-les-metz",
+      "postalCodes": [
+        "57280"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Marseille",
+      "slug": "marseille",
+      "postalCodes": [
+        "13000"
+      ],
+      "departmentCode": "13",
+      "departmentName": "Bouches-du-Rhône",
+      "departmentSlug": "bouches-du-rhone",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Maxéville",
+      "slug": "maxeville",
+      "postalCodes": [
+        "54320"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Metz",
+      "slug": "metz",
+      "postalCodes": [
+        "57000"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "thionville",
+        "nancy",
+        "sarreguemines",
+        "verdun",
+        "luneville"
+      ]
+    },
+    {
+      "name": "Mirecourt",
+      "slug": "mirecourt",
+      "postalCodes": [
+        "88500"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Molsheim",
+      "slug": "molsheim",
+      "postalCodes": [
+        "67120"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Mont-Saint-Martin",
+      "slug": "mont-saint-martin",
+      "postalCodes": [
+        "54350"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Mont-de-Marsan",
+      "slug": "mont-de-marsan",
+      "postalCodes": [
+        "40000"
+      ],
+      "departmentCode": "40",
+      "departmentName": "Landes",
+      "departmentSlug": "landes",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Montauban",
+      "slug": "montauban",
+      "postalCodes": [
+        "82000"
+      ],
+      "departmentCode": "82",
+      "departmentName": "Tarn-et-Garonne",
+      "departmentSlug": "tarn-et-garonne",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Montbéliard",
+      "slug": "montbeliard",
+      "postalCodes": [
+        "25200"
+      ],
+      "departmentCode": "25",
+      "departmentName": "Doubs",
+      "departmentSlug": "doubs",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Montigny-lès-Metz",
+      "slug": "montigny-les-metz",
+      "postalCodes": [
+        "57950"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Montpellier",
+      "slug": "montpellier",
+      "postalCodes": [
+        "34000"
+      ],
+      "departmentCode": "34",
+      "departmentName": "Hérault",
+      "departmentSlug": "herault",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Montreuil",
+      "slug": "montreuil",
+      "postalCodes": [
+        "93100"
+      ],
+      "departmentCode": "93",
+      "departmentName": "Seine-Saint-Denis",
+      "departmentSlug": "seine-saint-denis",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Mourmelon-le-Grand",
+      "slug": "mourmelon-le-grand",
+      "postalCodes": [
+        "51400"
+      ],
+      "departmentCode": "51",
+      "departmentName": "Marne",
+      "departmentSlug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Moyeuvre-Grande",
+      "slug": "moyeuvre-grande",
+      "postalCodes": [
+        "57250"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Mulhouse",
+      "slug": "mulhouse",
+      "postalCodes": [
+        "68100"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "colmar",
+        "strasbourg",
+        "remiremont"
+      ]
+    },
+    {
+      "name": "Munster",
+      "slug": "munster",
+      "postalCodes": [
+        "68140"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Mâcon",
+      "slug": "macon",
+      "postalCodes": [
+        "71000"
+      ],
+      "departmentCode": "71",
+      "departmentName": "Saône-et-Loire",
+      "departmentSlug": "saone-et-loire",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Mérignac",
+      "slug": "merignac",
+      "postalCodes": [
+        "33700"
+      ],
+      "departmentCode": "33",
+      "departmentName": "Gironde",
+      "departmentSlug": "gironde",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Nancy",
+      "slug": "nancy",
+      "postalCodes": [
+        "54000"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "luneville",
+        "metz",
+        "epinal",
+        "neufchateau",
+        "verdun"
+      ]
+    },
+    {
+      "name": "Nanterre",
+      "slug": "nanterre",
+      "postalCodes": [
+        "92000"
+      ],
+      "departmentCode": "92",
+      "departmentName": "Hauts-de-Seine",
+      "departmentSlug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Nantes",
+      "slug": "nantes",
+      "postalCodes": [
+        "44000"
+      ],
+      "departmentCode": "44",
+      "departmentName": "Loire-Atlantique",
+      "departmentSlug": "loire-atlantique",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Narbonne",
+      "slug": "narbonne",
+      "postalCodes": [
+        "11100"
+      ],
+      "departmentCode": "11",
+      "departmentName": "Aude",
+      "departmentSlug": "aude",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Neufchâteau",
+      "slug": "neufchateau",
+      "postalCodes": [
+        "88300"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "epinal",
+        "nancy",
+        "chaumont",
+        "troyes"
+      ]
+    },
+    {
+      "name": "Neuilly-sur-Seine",
+      "slug": "neuilly-sur-seine",
+      "postalCodes": [
+        "92200"
+      ],
+      "departmentCode": "92",
+      "departmentName": "Hauts-de-Seine",
+      "departmentSlug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Neuves-Maisons",
+      "slug": "neuves-maisons",
+      "postalCodes": [
+        "54230"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Nevers",
+      "slug": "nevers",
+      "postalCodes": [
+        "58000"
+      ],
+      "departmentCode": "58",
+      "departmentName": "Nièvre",
+      "departmentSlug": "nievre",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Nice",
+      "slug": "nice",
+      "postalCodes": [
+        "06000"
+      ],
+      "departmentCode": "06",
+      "departmentName": "Alpes-Maritimes",
+      "departmentSlug": "alpes-maritimes",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Niort",
+      "slug": "niort",
+      "postalCodes": [
+        "79000"
+      ],
+      "departmentCode": "79",
+      "departmentName": "Deux-Sèvres",
+      "departmentSlug": "deux-sevres",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Nogent",
+      "slug": "nogent-haute-marne",
+      "postalCodes": [
+        "52800"
+      ],
+      "departmentCode": "52",
+      "departmentName": "Haute-Marne",
+      "departmentSlug": "haute-marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Nogent-sur-Seine",
+      "slug": "nogent-sur-seine",
+      "postalCodes": [
+        "10400"
+      ],
+      "departmentCode": "10",
+      "departmentName": "Aube",
+      "departmentSlug": "aube",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Noisy-le-Grand",
+      "slug": "noisy-le-grand",
+      "postalCodes": [
+        "93160"
+      ],
+      "departmentCode": "93",
+      "departmentName": "Seine-Saint-Denis",
+      "departmentSlug": "seine-saint-denis",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Nouzonville",
+      "slug": "nouzonville",
+      "postalCodes": [
+        "08700"
+      ],
+      "departmentCode": "08",
+      "departmentName": "Ardennes",
+      "departmentSlug": "ardennes",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Nîmes",
+      "slug": "nimes",
+      "postalCodes": [
+        "30000"
+      ],
+      "departmentCode": "30",
+      "departmentName": "Gard",
+      "departmentSlug": "gard",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Obernai",
+      "slug": "obernai",
+      "postalCodes": [
+        "67210"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Orléans",
+      "slug": "orleans",
+      "postalCodes": [
+        "45000"
+      ],
+      "departmentCode": "45",
+      "departmentName": "Loiret",
+      "departmentSlug": "loiret",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Ostwald",
+      "slug": "ostwald",
+      "postalCodes": [
+        "67540"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Paris",
+      "slug": "paris",
+      "postalCodes": [
+        "75000"
+      ],
+      "departmentCode": "75",
+      "departmentName": "Paris",
+      "departmentSlug": "paris",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Pau",
+      "slug": "pau",
+      "postalCodes": [
+        "64000"
+      ],
+      "departmentCode": "64",
+      "departmentName": "Pyrénées-Atlantiques",
+      "departmentSlug": "pyrenees-atlantiques",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Perpignan",
+      "slug": "perpignan",
+      "postalCodes": [
+        "66000"
+      ],
+      "departmentCode": "66",
+      "departmentName": "Pyrénées-Orientales",
+      "departmentSlug": "pyrenees-orientales",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Petite-Rosselle",
+      "slug": "petite-rosselle",
+      "postalCodes": [
+        "57540"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Pfastatt",
+      "slug": "pfastatt",
+      "postalCodes": [
+        "68120"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Poitiers",
+      "slug": "poitiers",
+      "postalCodes": [
+        "86000"
+      ],
+      "departmentCode": "86",
+      "departmentName": "Vienne",
+      "departmentSlug": "vienne",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Pont-Sainte-Marie",
+      "slug": "pont-sainte-marie",
+      "postalCodes": [
+        "10150"
+      ],
+      "departmentCode": "10",
+      "departmentName": "Aube",
+      "departmentSlug": "aube",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Pont-à-Mousson",
+      "slug": "pont-a-mousson",
+      "postalCodes": [
+        "54700"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Périgueux",
+      "slug": "perigueux",
+      "postalCodes": [
+        "24000"
+      ],
+      "departmentCode": "24",
+      "departmentName": "Dordogne",
+      "departmentSlug": "dordogne",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Quimper",
+      "slug": "quimper",
+      "postalCodes": [
+        "29000"
+      ],
+      "departmentCode": "29",
+      "departmentName": "Finistère",
+      "departmentSlug": "finistere",
+      "regionName": "Bretagne",
+      "regionSlug": "bretagne",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Rambervillers",
+      "slug": "rambervillers",
+      "postalCodes": [
+        "88700"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Raon-l'Étape",
+      "slug": "raon-l-etape",
+      "postalCodes": [
+        "88110"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Reichshoffen",
+      "slug": "reichshoffen",
+      "postalCodes": [
+        "67110"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Reims",
+      "slug": "reims",
+      "postalCodes": [
+        "51100"
+      ],
+      "departmentCode": "51",
+      "departmentName": "Marne",
+      "departmentSlug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "troyes",
+        "chaumont",
+        "verdun"
+      ]
+    },
+    {
+      "name": "Remiremont",
+      "slug": "remiremont",
+      "postalCodes": [
+        "88200"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "epinal",
+        "saint-die-des-vosges",
+        "mulhouse",
+        "colmar"
+      ]
+    },
+    {
+      "name": "Rennes",
+      "slug": "rennes",
+      "postalCodes": [
+        "35000"
+      ],
+      "departmentCode": "35",
+      "departmentName": "Ille-et-Vilaine",
+      "departmentSlug": "ille-et-vilaine",
+      "regionName": "Bretagne",
+      "regionSlug": "bretagne",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Revin",
+      "slug": "revin",
+      "postalCodes": [
+        "08500"
+      ],
+      "departmentCode": "08",
+      "departmentName": "Ardennes",
+      "departmentSlug": "ardennes",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Ribeauvillé",
+      "slug": "ribeauville",
+      "postalCodes": [
+        "68150"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Riedisheim",
+      "slug": "riedisheim",
+      "postalCodes": [
+        "68400"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Rixheim",
+      "slug": "rixheim",
+      "postalCodes": [
+        "68170"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Rochefort",
+      "slug": "rochefort",
+      "postalCodes": [
+        "17300"
+      ],
+      "departmentCode": "17",
+      "departmentName": "Charente-Maritime",
+      "departmentSlug": "charente-maritime",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Rodez",
+      "slug": "rodez",
+      "postalCodes": [
+        "12000"
+      ],
+      "departmentCode": "12",
+      "departmentName": "Aveyron",
+      "departmentSlug": "aveyron",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Romans-sur-Isère",
+      "slug": "romans-sur-isere",
+      "postalCodes": [
+        "26100"
+      ],
+      "departmentCode": "26",
+      "departmentName": "Drôme",
+      "departmentSlug": "drome",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Rombas",
+      "slug": "rombas",
+      "postalCodes": [
+        "57120"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Romilly-sur-Seine",
+      "slug": "romilly-sur-seine",
+      "postalCodes": [
+        "10100"
+      ],
+      "departmentCode": "10",
+      "departmentName": "Aube",
+      "departmentSlug": "aube",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Roubaix",
+      "slug": "roubaix",
+      "postalCodes": [
+        "59100"
+      ],
+      "departmentCode": "59",
+      "departmentName": "Nord",
+      "departmentSlug": "nord",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Rouen",
+      "slug": "rouen",
+      "postalCodes": [
+        "76000"
+      ],
+      "departmentCode": "76",
+      "departmentName": "Seine-Maritime",
+      "departmentSlug": "seine-maritime",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Rueil-Malmaison",
+      "slug": "rueil-malmaison",
+      "postalCodes": [
+        "92500"
+      ],
+      "departmentCode": "92",
+      "departmentName": "Hauts-de-Seine",
+      "departmentSlug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-André-les-Vergers",
+      "slug": "saint-andre-les-vergers",
+      "postalCodes": [
+        "10120"
+      ],
+      "departmentCode": "10",
+      "departmentName": "Aube",
+      "departmentSlug": "aube",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Avold",
+      "slug": "saint-avold",
+      "postalCodes": [
+        "57500"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Brieuc",
+      "slug": "saint-brieuc",
+      "postalCodes": [
+        "22000"
+      ],
+      "departmentCode": "22",
+      "departmentName": "Côtes-d'Armor",
+      "departmentSlug": "cotes-d-armor",
+      "regionName": "Bretagne",
+      "regionSlug": "bretagne",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Dizier",
+      "slug": "saint-dizier",
+      "postalCodes": [
+        "52100"
+      ],
+      "departmentCode": "52",
+      "departmentName": "Haute-Marne",
+      "departmentSlug": "haute-marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Dié-des-Vosges",
+      "slug": "saint-die-des-vosges",
+      "postalCodes": [
+        "88100"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "epinal",
+        "remiremont",
+        "colmar",
+        "nancy"
+      ]
+    },
+    {
+      "name": "Saint-Louis",
+      "slug": "saint-louis",
+      "postalCodes": [
+        "68300"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Lô",
+      "slug": "saint-lo",
+      "postalCodes": [
+        "50000"
+      ],
+      "departmentCode": "50",
+      "departmentName": "Manche",
+      "departmentSlug": "manche",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Malo",
+      "slug": "saint-malo",
+      "postalCodes": [
+        "35400"
+      ],
+      "departmentCode": "35",
+      "departmentName": "Ille-et-Vilaine",
+      "departmentSlug": "ille-et-vilaine",
+      "regionName": "Bretagne",
+      "regionSlug": "bretagne",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Maur-des-Fossés",
+      "slug": "saint-maur-des-fosses",
+      "postalCodes": [
+        "94100"
+      ],
+      "departmentCode": "94",
+      "departmentName": "Val-de-Marne",
+      "departmentSlug": "val-de-marne",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Max",
+      "slug": "saint-max",
+      "postalCodes": [
+        "54130"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Nazaire",
+      "slug": "saint-nazaire",
+      "postalCodes": [
+        "44600"
+      ],
+      "departmentCode": "44",
+      "departmentName": "Loire-Atlantique",
+      "departmentSlug": "loire-atlantique",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Paul",
+      "slug": "saint-paul",
+      "postalCodes": [
+        "97460"
+      ],
+      "departmentCode": "974",
+      "departmentName": "La Réunion",
+      "departmentSlug": "la-reunion",
+      "regionName": "La Réunion",
+      "regionSlug": "la-reunion",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Pierre",
+      "slug": "saint-pierre",
+      "postalCodes": [
+        "97410"
+      ],
+      "departmentCode": "974",
+      "departmentName": "La Réunion",
+      "departmentSlug": "la-reunion",
+      "regionName": "La Réunion",
+      "regionSlug": "la-reunion",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Quentin",
+      "slug": "saint-quentin",
+      "postalCodes": [
+        "02100"
+      ],
+      "departmentCode": "02",
+      "departmentName": "Aisne",
+      "departmentSlug": "aisne",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Saint-Étienne",
+      "slug": "saint-etienne",
+      "postalCodes": [
+        "42000"
+      ],
+      "departmentCode": "42",
+      "departmentName": "Loire",
+      "departmentSlug": "loire",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Sainte-Marie-aux-Mines",
+      "slug": "sainte-marie-aux-mines",
+      "postalCodes": [
+        "68160"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Sainte-Menehould",
+      "slug": "sainte-menehould",
+      "postalCodes": [
+        "51800"
+      ],
+      "departmentCode": "51",
+      "departmentName": "Marne",
+      "departmentSlug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Sainte-Savine",
+      "slug": "sainte-savine",
+      "postalCodes": [
+        "10300"
+      ],
+      "departmentCode": "10",
+      "departmentName": "Aube",
+      "departmentSlug": "aube",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Sanary-sur-Mer",
+      "slug": "sanary-sur-mer",
+      "postalCodes": [
+        "83110"
+      ],
+      "departmentCode": "83",
+      "departmentName": "Var",
+      "departmentSlug": "var",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Sarrebourg",
+      "slug": "sarrebourg",
+      "postalCodes": [
+        "57400"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Sarreguemines",
+      "slug": "sarreguemines",
+      "postalCodes": [
+        "57200"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "metz",
+        "thionville",
+        "strasbourg",
+        "nancy"
+      ]
+    },
+    {
+      "name": "Saverne",
+      "slug": "saverne",
+      "postalCodes": [
+        "67700"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Schiltigheim",
+      "slug": "schiltigheim",
+      "postalCodes": [
+        "67300"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Sedan",
+      "slug": "sedan",
+      "postalCodes": [
+        "08200"
+      ],
+      "departmentCode": "08",
+      "departmentName": "Ardennes",
+      "departmentSlug": "ardennes",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Senones",
+      "slug": "senones",
+      "postalCodes": [
+        "88210"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Sens",
+      "slug": "sens",
+      "postalCodes": [
+        "89100"
+      ],
+      "departmentCode": "89",
+      "departmentName": "Yonne",
+      "departmentSlug": "yonne",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Soissons",
+      "slug": "soissons",
+      "postalCodes": [
+        "02200"
+      ],
+      "departmentCode": "02",
+      "departmentName": "Aisne",
+      "departmentSlug": "aisne",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Soultz-Haut-Rhin",
+      "slug": "soultz-haut-rhin",
+      "postalCodes": [
+        "68360"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Stiring-Wendel",
+      "slug": "stiring-wendel",
+      "postalCodes": [
+        "57350"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Strasbourg",
+      "slug": "strasbourg",
+      "postalCodes": [
+        "67000"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "colmar",
+        "mulhouse",
+        "sarreguemines",
+        "metz"
+      ]
+    },
+    {
+      "name": "Sète",
+      "slug": "sete",
+      "postalCodes": [
+        "34200"
+      ],
+      "departmentCode": "34",
+      "departmentName": "Hérault",
+      "departmentSlug": "herault",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Sélestat",
+      "slug": "selestat",
+      "postalCodes": [
+        "67600"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Sézanne",
+      "slug": "sezanne",
+      "postalCodes": [
+        "51120"
+      ],
+      "departmentCode": "51",
+      "departmentName": "Marne",
+      "departmentSlug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Talange",
+      "slug": "talange",
+      "postalCodes": [
+        "57525"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Tarbes",
+      "slug": "tarbes",
+      "postalCodes": [
+        "65000"
+      ],
+      "departmentCode": "65",
+      "departmentName": "Hautes-Pyrénées",
+      "departmentSlug": "hautes-pyrenees",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Thann",
+      "slug": "thann",
+      "postalCodes": [
+        "68800"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Thaon-les-Vosges",
+      "slug": "thaon-les-vosges",
+      "postalCodes": [
+        "88150"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Thionville",
+      "slug": "thionville",
+      "postalCodes": [
+        "57100"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "metz",
+        "sarreguemines",
+        "verdun",
+        "nancy"
+      ]
+    },
+    {
+      "name": "Tinqueux",
+      "slug": "tinqueux",
+      "postalCodes": [
+        "51430"
+      ],
+      "departmentCode": "51",
+      "departmentName": "Marne",
+      "departmentSlug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Tomblaine",
+      "slug": "tomblaine",
+      "postalCodes": [
+        "54510"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Toul",
+      "slug": "toul",
+      "postalCodes": [
+        "54200"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Toulon",
+      "slug": "toulon",
+      "postalCodes": [
+        "83000"
+      ],
+      "departmentCode": "83",
+      "departmentName": "Var",
+      "departmentSlug": "var",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Toulouse",
+      "slug": "toulouse",
+      "postalCodes": [
+        "31000"
+      ],
+      "departmentCode": "31",
+      "departmentName": "Haute-Garonne",
+      "departmentSlug": "haute-garonne",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Tourcoing",
+      "slug": "tourcoing",
+      "postalCodes": [
+        "59200"
+      ],
+      "departmentCode": "59",
+      "departmentName": "Nord",
+      "departmentSlug": "nord",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Tours",
+      "slug": "tours",
+      "postalCodes": [
+        "37000"
+      ],
+      "departmentCode": "37",
+      "departmentName": "Indre-et-Loire",
+      "departmentSlug": "indre-et-loire",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Troyes",
+      "slug": "troyes",
+      "postalCodes": [
+        "10000"
+      ],
+      "departmentCode": "10",
+      "departmentName": "Aube",
+      "departmentSlug": "aube",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "reims",
+        "chaumont",
+        "neufchateau"
+      ]
+    },
+    {
+      "name": "Uckange",
+      "slug": "uckange",
+      "postalCodes": [
+        "57270"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Vagney",
+      "slug": "vagney",
+      "postalCodes": [
+        "88120"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Valence",
+      "slug": "valence",
+      "postalCodes": [
+        "26000"
+      ],
+      "departmentCode": "26",
+      "departmentName": "Drôme",
+      "departmentSlug": "drome",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Valenciennes",
+      "slug": "valenciennes",
+      "postalCodes": [
+        "59300"
+      ],
+      "departmentCode": "59",
+      "departmentName": "Nord",
+      "departmentSlug": "nord",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Vandœuvre-lès-Nancy",
+      "slug": "vandoeuvre-les-nancy",
+      "postalCodes": [
+        "54500"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Vannes",
+      "slug": "vannes",
+      "postalCodes": [
+        "56000"
+      ],
+      "departmentCode": "56",
+      "departmentName": "Morbihan",
+      "departmentSlug": "morbihan",
+      "regionName": "Bretagne",
+      "regionSlug": "bretagne",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Verdun",
+      "slug": "verdun",
+      "postalCodes": [
+        "55100"
+      ],
+      "departmentCode": "55",
+      "departmentName": "Meuse",
+      "departmentSlug": "meuse",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "metz",
+        "nancy",
+        "reims",
+        "thionville"
+      ]
+    },
+    {
+      "name": "Versailles",
+      "slug": "versailles",
+      "postalCodes": [
+        "78000"
+      ],
+      "departmentCode": "78",
+      "departmentName": "Yvelines",
+      "departmentSlug": "yvelines",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Vesoul",
+      "slug": "vesoul",
+      "postalCodes": [
+        "70000"
+      ],
+      "departmentCode": "70",
+      "departmentName": "Haute-Saône",
+      "departmentSlug": "haute-saone",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Villers-lès-Nancy",
+      "slug": "villers-les-nancy",
+      "postalCodes": [
+        "54600"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Villerupt",
+      "slug": "villerupt",
+      "postalCodes": [
+        "54190"
+      ],
+      "departmentCode": "54",
+      "departmentName": "Meurthe-et-Moselle",
+      "departmentSlug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Vitry-le-François",
+      "slug": "vitry-le-francois",
+      "postalCodes": [
+        "51300"
+      ],
+      "departmentCode": "51",
+      "departmentName": "Marne",
+      "departmentSlug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Vitry-sur-Seine",
+      "slug": "vitry-sur-seine",
+      "postalCodes": [
+        "94400"
+      ],
+      "departmentCode": "94",
+      "departmentName": "Val-de-Marne",
+      "departmentSlug": "val-de-marne",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Vittel",
+      "slug": "vittel",
+      "postalCodes": [
+        "88800"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Vouziers",
+      "slug": "vouziers",
+      "postalCodes": [
+        "08400"
+      ],
+      "departmentCode": "08",
+      "departmentName": "Ardennes",
+      "departmentSlug": "ardennes",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Vrigne-aux-Bois",
+      "slug": "vrigne-aux-bois",
+      "postalCodes": [
+        "08330"
+      ],
+      "departmentCode": "08",
+      "departmentName": "Ardennes",
+      "departmentSlug": "ardennes",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Wassy",
+      "slug": "wassy",
+      "postalCodes": [
+        "52130"
+      ],
+      "departmentCode": "52",
+      "departmentName": "Haute-Marne",
+      "departmentSlug": "haute-marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Wintzenheim",
+      "slug": "wintzenheim",
+      "postalCodes": [
+        "68920"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Wissembourg",
+      "slug": "wissembourg",
+      "postalCodes": [
+        "67160"
+      ],
+      "departmentCode": "67",
+      "departmentName": "Bas-Rhin",
+      "departmentSlug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Wittelsheim",
+      "slug": "wittelsheim",
+      "postalCodes": [
+        "68310"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Wittenheim",
+      "slug": "wittenheim",
+      "postalCodes": [
+        "68270"
+      ],
+      "departmentCode": "68",
+      "departmentName": "Haut-Rhin",
+      "departmentSlug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Woippy",
+      "slug": "woippy",
+      "postalCodes": [
+        "57140"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Xertigny",
+      "slug": "xertigny",
+      "postalCodes": [
+        "88220"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Yutz",
+      "slug": "yutz",
+      "postalCodes": [
+        "57970"
+      ],
+      "departmentCode": "57",
+      "departmentName": "Moselle",
+      "departmentSlug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Épernay",
+      "slug": "epernay",
+      "postalCodes": [
+        "51200"
+      ],
+      "departmentCode": "51",
+      "departmentName": "Marne",
+      "departmentSlug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Épinal",
+      "slug": "epinal",
+      "postalCodes": [
+        "88000"
+      ],
+      "departmentCode": "88",
+      "departmentName": "Vosges",
+      "departmentSlug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "nearbyCitySlugs": [
+        "remiremont",
+        "saint-die-des-vosges",
+        "neufchateau",
+        "nancy",
+        "luneville"
+      ]
+    },
+    {
+      "name": "Épinay-sur-Seine",
+      "slug": "epinay-sur-seine",
+      "postalCodes": [
+        "93800"
+      ],
+      "departmentCode": "93",
+      "departmentName": "Seine-Saint-Denis",
+      "departmentSlug": "seine-saint-denis",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Évreux",
+      "slug": "evreux",
+      "postalCodes": [
+        "27000"
+      ],
+      "departmentCode": "27",
+      "departmentName": "Eure",
+      "departmentSlug": "eure",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "nearbyCitySlugs": []
+    },
+    {
+      "name": "Évry-Courcouronnes",
+      "slug": "evry-courcouronnes",
+      "postalCodes": [
+        "91000"
+      ],
+      "departmentCode": "91",
+      "departmentName": "Essonne",
+      "departmentSlug": "essonne",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "nearbyCitySlugs": []
+    }
+  ],
+  "departments": [
+    {
+      "code": "02",
+      "name": "Aisne",
+      "slug": "aisne",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "citySlugs": [
+        "laon",
+        "saint-quentin",
+        "soissons"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "06",
+      "name": "Alpes-Maritimes",
+      "slug": "alpes-maritimes",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "citySlugs": [
+        "antibes",
+        "cannes",
+        "nice"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "08",
+      "name": "Ardennes",
+      "slug": "ardennes",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "citySlugs": [
+        "bogny-sur-meuse",
+        "charleville-mezieres",
+        "nouzonville",
+        "revin",
+        "sedan",
+        "vouziers",
+        "vrigne-aux-bois"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "10",
+      "name": "Aube",
+      "slug": "aube",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "citySlugs": [
+        "bar-sur-aube",
+        "bar-sur-seine",
+        "la-chapelle-saint-luc",
+        "nogent-sur-seine",
+        "pont-sainte-marie",
+        "romilly-sur-seine",
+        "saint-andre-les-vergers",
+        "sainte-savine",
+        "troyes"
+      ],
+      "neighborDepartmentSlugs": [
+        "marne",
+        "haute-marne"
+      ]
+    },
+    {
+      "code": "11",
+      "name": "Aude",
+      "slug": "aude",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "citySlugs": [
+        "carcassonne",
+        "narbonne"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "12",
+      "name": "Aveyron",
+      "slug": "aveyron",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "citySlugs": [
+        "rodez"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "67",
+      "name": "Bas-Rhin",
+      "slug": "bas-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "citySlugs": [
+        "barr",
+        "bischheim",
+        "bischwiller",
+        "brumath",
+        "erstein",
+        "haguenau",
+        "illkirch-graffenstaden",
+        "lingolsheim",
+        "molsheim",
+        "obernai",
+        "ostwald",
+        "reichshoffen",
+        "saverne",
+        "schiltigheim",
+        "selestat",
+        "strasbourg",
+        "wissembourg"
+      ],
+      "neighborDepartmentSlugs": [
+        "moselle",
+        "haut-rhin",
+        "meurthe-et-moselle"
+      ]
+    },
+    {
+      "code": "13",
+      "name": "Bouches-du-Rhône",
+      "slug": "bouches-du-rhone",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "citySlugs": [
+        "aix-en-provence",
+        "arles",
+        "marseille"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "14",
+      "name": "Calvados",
+      "slug": "calvados",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "citySlugs": [
+        "caen"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "15",
+      "name": "Cantal",
+      "slug": "cantal",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "citySlugs": [
+        "aurillac"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "16",
+      "name": "Charente",
+      "slug": "charente",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "citySlugs": [
+        "angouleme"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "17",
+      "name": "Charente-Maritime",
+      "slug": "charente-maritime",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "citySlugs": [
+        "la-rochelle",
+        "rochefort"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "18",
+      "name": "Cher",
+      "slug": "cher",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "citySlugs": [
+        "bourges"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "19",
+      "name": "Corrèze",
+      "slug": "correze",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "citySlugs": [
+        "brive-la-gaillarde"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "2A",
+      "name": "Corse-du-Sud",
+      "slug": "corse-du-sud",
+      "regionName": "Corse",
+      "regionSlug": "corse",
+      "citySlugs": [
+        "ajaccio"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "21",
+      "name": "Côte-d'Or",
+      "slug": "cote-d-or",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "citySlugs": [
+        "dijon"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "22",
+      "name": "Côtes-d'Armor",
+      "slug": "cotes-d-armor",
+      "regionName": "Bretagne",
+      "regionSlug": "bretagne",
+      "citySlugs": [
+        "saint-brieuc"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "79",
+      "name": "Deux-Sèvres",
+      "slug": "deux-sevres",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "citySlugs": [
+        "niort"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "24",
+      "name": "Dordogne",
+      "slug": "dordogne",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "citySlugs": [
+        "perigueux"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "25",
+      "name": "Doubs",
+      "slug": "doubs",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "citySlugs": [
+        "besancon",
+        "montbeliard"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "26",
+      "name": "Drôme",
+      "slug": "drome",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "citySlugs": [
+        "romans-sur-isere",
+        "valence"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "91",
+      "name": "Essonne",
+      "slug": "essonne",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "citySlugs": [
+        "evry-courcouronnes"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "27",
+      "name": "Eure",
+      "slug": "eure",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "citySlugs": [
+        "evreux"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "28",
+      "name": "Eure-et-Loir",
+      "slug": "eure-et-loir",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "citySlugs": [
+        "chartres"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "29",
+      "name": "Finistère",
+      "slug": "finistere",
+      "regionName": "Bretagne",
+      "regionSlug": "bretagne",
+      "citySlugs": [
+        "brest",
+        "quimper"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "30",
+      "name": "Gard",
+      "slug": "gard",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "citySlugs": [
+        "nimes"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "33",
+      "name": "Gironde",
+      "slug": "gironde",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "citySlugs": [
+        "bordeaux",
+        "merignac"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "68",
+      "name": "Haut-Rhin",
+      "slug": "haut-rhin",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "citySlugs": [
+        "altkirch",
+        "cernay",
+        "colmar",
+        "ensisheim",
+        "guebwiller",
+        "illzach",
+        "kingersheim",
+        "lutterbach",
+        "mulhouse",
+        "munster",
+        "pfastatt",
+        "ribeauville",
+        "riedisheim",
+        "rixheim",
+        "saint-louis",
+        "sainte-marie-aux-mines",
+        "soultz-haut-rhin",
+        "thann",
+        "wintzenheim",
+        "wittelsheim",
+        "wittenheim"
+      ],
+      "neighborDepartmentSlugs": [
+        "bas-rhin",
+        "vosges",
+        "haute-saone"
+      ]
+    },
+    {
+      "code": "2B",
+      "name": "Haute-Corse",
+      "slug": "haute-corse",
+      "regionName": "Corse",
+      "regionSlug": "corse",
+      "citySlugs": [
+        "bastia"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "31",
+      "name": "Haute-Garonne",
+      "slug": "haute-garonne",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "citySlugs": [
+        "toulouse"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "43",
+      "name": "Haute-Loire",
+      "slug": "haute-loire",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "citySlugs": [
+        "le-puy-en-velay"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "52",
+      "name": "Haute-Marne",
+      "slug": "haute-marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "citySlugs": [
+        "chaumont",
+        "joinville",
+        "langres",
+        "nogent-haute-marne",
+        "saint-dizier",
+        "wassy"
+      ],
+      "neighborDepartmentSlugs": [
+        "vosges",
+        "haute-saone",
+        "marne",
+        "aube",
+        "meuse"
+      ]
+    },
+    {
+      "code": "74",
+      "name": "Haute-Savoie",
+      "slug": "haute-savoie",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "citySlugs": [
+        "annecy"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "70",
+      "name": "Haute-Saône",
+      "slug": "haute-saone",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "citySlugs": [
+        "luxeuil-les-bains",
+        "vesoul"
+      ],
+      "neighborDepartmentSlugs": [
+        "vosges",
+        "haut-rhin",
+        "haute-marne"
+      ]
+    },
+    {
+      "code": "87",
+      "name": "Haute-Vienne",
+      "slug": "haute-vienne",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "citySlugs": [
+        "limoges"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "65",
+      "name": "Hautes-Pyrénées",
+      "slug": "hautes-pyrenees",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "citySlugs": [
+        "tarbes"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "92",
+      "name": "Hauts-de-Seine",
+      "slug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "citySlugs": [
+        "antony",
+        "asnieres-sur-seine",
+        "boulogne-billancourt",
+        "clichy",
+        "colombes",
+        "courbevoie",
+        "levallois-perret",
+        "nanterre",
+        "neuilly-sur-seine",
+        "rueil-malmaison"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "34",
+      "name": "Hérault",
+      "slug": "herault",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "citySlugs": [
+        "beziers",
+        "montpellier",
+        "sete"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "35",
+      "name": "Ille-et-Vilaine",
+      "slug": "ille-et-vilaine",
+      "regionName": "Bretagne",
+      "regionSlug": "bretagne",
+      "citySlugs": [
+        "rennes",
+        "saint-malo"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "36",
+      "name": "Indre",
+      "slug": "indre",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "citySlugs": [
+        "chateauroux"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "37",
+      "name": "Indre-et-Loire",
+      "slug": "indre-et-loire",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "citySlugs": [
+        "descartes",
+        "tours"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "38",
+      "name": "Isère",
+      "slug": "isere",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "citySlugs": [
+        "grenoble"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "39",
+      "name": "Jura",
+      "slug": "jura",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "citySlugs": [
+        "dole",
+        "lons-le-saunier"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "974",
+      "name": "La Réunion",
+      "slug": "la-reunion",
+      "regionName": "La Réunion",
+      "regionSlug": "la-reunion",
+      "citySlugs": [
+        "saint-paul",
+        "saint-pierre"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "40",
+      "name": "Landes",
+      "slug": "landes",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "citySlugs": [
+        "mont-de-marsan"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "41",
+      "name": "Loir-et-Cher",
+      "slug": "loir-et-cher",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "citySlugs": [
+        "blois"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "42",
+      "name": "Loire",
+      "slug": "loire",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "citySlugs": [
+        "saint-etienne"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "44",
+      "name": "Loire-Atlantique",
+      "slug": "loire-atlantique",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "citySlugs": [
+        "nantes",
+        "saint-nazaire"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "45",
+      "name": "Loiret",
+      "slug": "loiret",
+      "regionName": "Centre-Val de Loire",
+      "regionSlug": "centre-val-de-loire",
+      "citySlugs": [
+        "orleans"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "46",
+      "name": "Lot",
+      "slug": "lot",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "citySlugs": [
+        "cahors"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "47",
+      "name": "Lot-et-Garonne",
+      "slug": "lot-et-garonne",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "citySlugs": [
+        "agen"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "49",
+      "name": "Maine-et-Loire",
+      "slug": "maine-et-loire",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "citySlugs": [
+        "angers",
+        "cholet"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "50",
+      "name": "Manche",
+      "slug": "manche",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "citySlugs": [
+        "cherbourg",
+        "saint-lo"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "51",
+      "name": "Marne",
+      "slug": "marne",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "citySlugs": [
+        "ay-champagne",
+        "betheny",
+        "chalons-en-champagne",
+        "cormontreuil",
+        "epernay",
+        "fismes",
+        "mourmelon-le-grand",
+        "reims",
+        "sainte-menehould",
+        "sezanne",
+        "tinqueux",
+        "vitry-le-francois"
+      ],
+      "neighborDepartmentSlugs": [
+        "meuse",
+        "aube",
+        "haute-marne"
+      ]
+    },
+    {
+      "code": "972",
+      "name": "Martinique",
+      "slug": "martinique",
+      "regionName": "Martinique",
+      "regionSlug": "martinique",
+      "citySlugs": [
+        "fort-de-france"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "53",
+      "name": "Mayenne",
+      "slug": "mayenne",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "citySlugs": [
+        "laval"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "54",
+      "name": "Meurthe-et-Moselle",
+      "slug": "meurthe-et-moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "citySlugs": [
+        "baccarat",
+        "briey",
+        "homecourt",
+        "jarville-la-malgrange",
+        "joeuf",
+        "laxou",
+        "longwy",
+        "luneville",
+        "maxeville",
+        "mont-saint-martin",
+        "nancy",
+        "neuves-maisons",
+        "pont-a-mousson",
+        "saint-max",
+        "tomblaine",
+        "toul",
+        "vandoeuvre-les-nancy",
+        "villers-les-nancy",
+        "villerupt"
+      ],
+      "neighborDepartmentSlugs": [
+        "vosges",
+        "moselle",
+        "meuse",
+        "bas-rhin"
+      ]
+    },
+    {
+      "code": "55",
+      "name": "Meuse",
+      "slug": "meuse",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "citySlugs": [
+        "bar-le-duc",
+        "commercy",
+        "verdun"
+      ],
+      "neighborDepartmentSlugs": [
+        "meurthe-et-moselle",
+        "moselle",
+        "marne",
+        "vosges"
+      ]
+    },
+    {
+      "code": "56",
+      "name": "Morbihan",
+      "slug": "morbihan",
+      "regionName": "Bretagne",
+      "regionSlug": "bretagne",
+      "citySlugs": [
+        "lorient",
+        "vannes"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "57",
+      "name": "Moselle",
+      "slug": "moselle",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "citySlugs": [
+        "amneville",
+        "behren-les-forbach",
+        "boulay-moselle",
+        "clouange",
+        "creutzwald",
+        "fameck",
+        "faulquemont",
+        "florange",
+        "forbach",
+        "freyming-merlebach",
+        "guenange",
+        "hagondange",
+        "maizieres-les-metz",
+        "metz",
+        "montigny-les-metz",
+        "moyeuvre-grande",
+        "petite-rosselle",
+        "rombas",
+        "saint-avold",
+        "sarrebourg",
+        "sarreguemines",
+        "stiring-wendel",
+        "talange",
+        "thionville",
+        "uckange",
+        "woippy",
+        "yutz"
+      ],
+      "neighborDepartmentSlugs": [
+        "meurthe-et-moselle",
+        "bas-rhin",
+        "meuse"
+      ]
+    },
+    {
+      "code": "58",
+      "name": "Nièvre",
+      "slug": "nievre",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "citySlugs": [
+        "nevers"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "59",
+      "name": "Nord",
+      "slug": "nord",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "citySlugs": [
+        "douai",
+        "dunkerque",
+        "lille",
+        "roubaix",
+        "tourcoing",
+        "valenciennes"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "60",
+      "name": "Oise",
+      "slug": "oise",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "citySlugs": [
+        "beauvais",
+        "compiegne"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "61",
+      "name": "Orne",
+      "slug": "orne",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "citySlugs": [
+        "alencon"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "75",
+      "name": "Paris",
+      "slug": "paris",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "citySlugs": [
+        "paris"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "62",
+      "name": "Pas-de-Calais",
+      "slug": "pas-de-calais",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "citySlugs": [
+        "arras",
+        "boulogne-sur-mer",
+        "calais",
+        "lens"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "63",
+      "name": "Puy-de-Dôme",
+      "slug": "puy-de-dome",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "citySlugs": [
+        "clermont-ferrand"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "64",
+      "name": "Pyrénées-Atlantiques",
+      "slug": "pyrenees-atlantiques",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "citySlugs": [
+        "bayonne",
+        "pau"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "66",
+      "name": "Pyrénées-Orientales",
+      "slug": "pyrenees-orientales",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "citySlugs": [
+        "perpignan"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "69",
+      "name": "Rhône",
+      "slug": "rhone",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "citySlugs": [
+        "lyon"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "72",
+      "name": "Sarthe",
+      "slug": "sarthe",
+      "regionName": "Pays de la Loire",
+      "regionSlug": "pays-de-la-loire",
+      "citySlugs": [
+        "le-mans"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "73",
+      "name": "Savoie",
+      "slug": "savoie",
+      "regionName": "Auvergne-Rhône-Alpes",
+      "regionSlug": "auvergne-rhone-alpes",
+      "citySlugs": [
+        "chambery"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "71",
+      "name": "Saône-et-Loire",
+      "slug": "saone-et-loire",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "citySlugs": [
+        "chalon-sur-saone",
+        "macon"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "76",
+      "name": "Seine-Maritime",
+      "slug": "seine-maritime",
+      "regionName": "Normandie",
+      "regionSlug": "normandie",
+      "citySlugs": [
+        "le-havre",
+        "rouen"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "93",
+      "name": "Seine-Saint-Denis",
+      "slug": "seine-saint-denis",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "citySlugs": [
+        "aubervilliers",
+        "drancy",
+        "epinay-sur-seine",
+        "montreuil",
+        "noisy-le-grand"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "80",
+      "name": "Somme",
+      "slug": "somme",
+      "regionName": "Hauts-de-France",
+      "regionSlug": "hauts-de-france",
+      "citySlugs": [
+        "amiens"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "81",
+      "name": "Tarn",
+      "slug": "tarn",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "citySlugs": [
+        "albi",
+        "castres"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "82",
+      "name": "Tarn-et-Garonne",
+      "slug": "tarn-et-garonne",
+      "regionName": "Occitanie",
+      "regionSlug": "occitanie",
+      "citySlugs": [
+        "montauban"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "90",
+      "name": "Territoire de Belfort",
+      "slug": "territoire-de-belfort",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "citySlugs": [
+        "belfort"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "95",
+      "name": "Val-d'Oise",
+      "slug": "val-d-oise",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "citySlugs": [
+        "argenteuil",
+        "cergy"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "94",
+      "name": "Val-de-Marne",
+      "slug": "val-de-marne",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "citySlugs": [
+        "champigny-sur-marne",
+        "creteil",
+        "saint-maur-des-fosses",
+        "vitry-sur-seine"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "83",
+      "name": "Var",
+      "slug": "var",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "citySlugs": [
+        "bandol",
+        "frejus",
+        "la-seyne-sur-mer",
+        "sanary-sur-mer",
+        "toulon"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "84",
+      "name": "Vaucluse",
+      "slug": "vaucluse",
+      "regionName": "Provence-Alpes-Côte d'Azur",
+      "regionSlug": "provence-alpes-cote-d-azur",
+      "citySlugs": [
+        "avignon"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "86",
+      "name": "Vienne",
+      "slug": "vienne",
+      "regionName": "Nouvelle-Aquitaine",
+      "regionSlug": "nouvelle-aquitaine",
+      "citySlugs": [
+        "poitiers"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "88",
+      "name": "Vosges",
+      "slug": "vosges",
+      "regionName": "Grand Est",
+      "regionSlug": "grand-est",
+      "citySlugs": [
+        "bruyeres",
+        "charmes",
+        "contrexeville",
+        "cornimont",
+        "epinal",
+        "gerardmer",
+        "golbey",
+        "la-bresse",
+        "le-thillot",
+        "mirecourt",
+        "neufchateau",
+        "rambervillers",
+        "raon-l-etape",
+        "remiremont",
+        "saint-die-des-vosges",
+        "senones",
+        "thaon-les-vosges",
+        "vagney",
+        "vittel",
+        "xertigny"
+      ],
+      "neighborDepartmentSlugs": [
+        "meurthe-et-moselle",
+        "haute-saone",
+        "haut-rhin",
+        "haute-marne",
+        "meuse"
+      ]
+    },
+    {
+      "code": "89",
+      "name": "Yonne",
+      "slug": "yonne",
+      "regionName": "Bourgogne-Franche-Comté",
+      "regionSlug": "bourgogne-franche-comte",
+      "citySlugs": [
+        "auxerre",
+        "sens"
+      ],
+      "neighborDepartmentSlugs": []
+    },
+    {
+      "code": "78",
+      "name": "Yvelines",
+      "slug": "yvelines",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "citySlugs": [
+        "versailles"
+      ],
+      "neighborDepartmentSlugs": []
+    }
+  ],
+  "regions": [
+    {
+      "name": "Auvergne-Rhône-Alpes",
+      "slug": "auvergne-rhone-alpes",
+      "departmentSlugs": [
+        "cantal",
+        "drome",
+        "haute-loire",
+        "haute-savoie",
+        "isere",
+        "loire",
+        "puy-de-dome",
+        "rhone",
+        "savoie"
+      ]
+    },
+    {
+      "name": "Bourgogne-Franche-Comté",
+      "slug": "bourgogne-franche-comte",
+      "departmentSlugs": [
+        "cote-d-or",
+        "doubs",
+        "haute-saone",
+        "jura",
+        "nievre",
+        "saone-et-loire",
+        "territoire-de-belfort",
+        "yonne"
+      ]
+    },
+    {
+      "name": "Bretagne",
+      "slug": "bretagne",
+      "departmentSlugs": [
+        "cotes-d-armor",
+        "finistere",
+        "ille-et-vilaine",
+        "morbihan"
+      ]
+    },
+    {
+      "name": "Centre-Val de Loire",
+      "slug": "centre-val-de-loire",
+      "departmentSlugs": [
+        "cher",
+        "eure-et-loir",
+        "indre",
+        "indre-et-loire",
+        "loir-et-cher",
+        "loiret"
+      ]
+    },
+    {
+      "name": "Corse",
+      "slug": "corse",
+      "departmentSlugs": [
+        "corse-du-sud",
+        "haute-corse"
+      ]
+    },
+    {
+      "name": "Grand Est",
+      "slug": "grand-est",
+      "departmentSlugs": [
+        "ardennes",
+        "aube",
+        "bas-rhin",
+        "haut-rhin",
+        "haute-marne",
+        "marne",
+        "meurthe-et-moselle",
+        "meuse",
+        "moselle",
+        "vosges"
+      ]
+    },
+    {
+      "name": "Hauts-de-France",
+      "slug": "hauts-de-france",
+      "departmentSlugs": [
+        "aisne",
+        "nord",
+        "oise",
+        "pas-de-calais",
+        "somme"
+      ]
+    },
+    {
+      "name": "La Réunion",
+      "slug": "la-reunion",
+      "departmentSlugs": [
+        "la-reunion"
+      ]
+    },
+    {
+      "name": "Martinique",
+      "slug": "martinique",
+      "departmentSlugs": [
+        "martinique"
+      ]
+    },
+    {
+      "name": "Normandie",
+      "slug": "normandie",
+      "departmentSlugs": [
+        "calvados",
+        "eure",
+        "manche",
+        "orne",
+        "seine-maritime"
+      ]
+    },
+    {
+      "name": "Nouvelle-Aquitaine",
+      "slug": "nouvelle-aquitaine",
+      "departmentSlugs": [
+        "charente",
+        "charente-maritime",
+        "correze",
+        "deux-sevres",
+        "dordogne",
+        "gironde",
+        "haute-vienne",
+        "landes",
+        "lot-et-garonne",
+        "pyrenees-atlantiques",
+        "vienne"
+      ]
+    },
+    {
+      "name": "Occitanie",
+      "slug": "occitanie",
+      "departmentSlugs": [
+        "aude",
+        "aveyron",
+        "gard",
+        "haute-garonne",
+        "hautes-pyrenees",
+        "herault",
+        "lot",
+        "pyrenees-orientales",
+        "tarn",
+        "tarn-et-garonne"
+      ]
+    },
+    {
+      "name": "Pays de la Loire",
+      "slug": "pays-de-la-loire",
+      "departmentSlugs": [
+        "loire-atlantique",
+        "maine-et-loire",
+        "mayenne",
+        "sarthe"
+      ]
+    },
+    {
+      "name": "Provence-Alpes-Côte d'Azur",
+      "slug": "provence-alpes-cote-d-azur",
+      "departmentSlugs": [
+        "alpes-maritimes",
+        "bouches-du-rhone",
+        "var",
+        "vaucluse"
+      ]
+    },
+    {
+      "name": "Île-de-France",
+      "slug": "ile-de-france",
+      "departmentSlugs": [
+        "essonne",
+        "hauts-de-seine",
+        "paris",
+        "seine-saint-denis",
+        "val-d-oise",
+        "val-de-marne",
+        "yvelines"
+      ]
+    }
+  ]
+}
