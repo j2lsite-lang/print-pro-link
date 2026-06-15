@@ -1,4 +1,12 @@
 User-agent: *
 Allow: /
 
+# Routes techniques sans valeur SEO (canonical/noindex gèrent le reste)
+Disallow: /cart
+Disallow: /checkout
+Disallow: /payment-success
+Disallow: /auth
+Disallow: /account
+Disallow: /admin
+
 Sitemap: https://j2lprint.fr/sitemap.xml
