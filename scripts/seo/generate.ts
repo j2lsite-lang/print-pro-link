@@ -4,9 +4,10 @@
 //     so the runtime render is byte-for-byte the prerendered content)
 //  3. writes the multi-file sitemap containing ONLY these live pages
 //     (no old URLs, no products yet, no noindex pages).
-import { writeFileSync, mkdirSync } from "fs";
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 import { buildAllPages } from "./build-pages";
+import { loadGeo } from "./geo-data";
 import type { SeoPage } from "../../src/seo/types";
 
 const BASE_URL = "https://j2lprint.fr";
