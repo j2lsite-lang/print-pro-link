@@ -312,6 +312,13 @@ export default function ProductDetail() {
 
   const [productImages, setProductImages] = useState<string[]>([]);
 
+  // Tracks options the user explicitly changed (so the price resolver keeps
+  // their choices and only auto-adjusts hidden/auto properties when needed).
+  const touchedKeysRef = useRef<Set<string>>(new Set());
+  // Last fully-resolved machine options (incl. hidden required props) used for
+  // the successful price call — reused for shipping so payloads stay consistent.
+  const resolvedOptionsRef = useRef<Record<string, any>>({});
+
   const productName = product?.titleSingle || product?.name || sku || "Produit";
   useSEO({
     title: `${productName} – Impression personnalisée`,
