@@ -41,6 +41,11 @@ export const SERVICE_CONTENT: ServiceContent[] = [
     closing: [
       "L'impression numérique est idéale pour les petites et moyennes séries (de 1 à 5 000 exemplaires) : mise en route rapide, pas de frais de plaque, personnalisation possible. Pour les grands tirages (5 000 exemplaires et plus), l'impression offset offre un coût unitaire dégressif et un large choix de papiers et finitions.",
     ],
+    faq: [
+      { q: "Quels formats et papiers sont disponibles pour l'impression numérique ?", a: "Nous proposons des formats du A7 au B0 sur papiers couchés mats, brillants, satinés, recyclés, texturés et premium. Les cartes de visite disposent également de finitions luxe : vernis sélectif, dorure, découpe laser." },
+      { q: "Quel délai de livraison pour une impression numérique ?", a: "La production standard est de 3 à 5 jours ouvrés selon le produit et la quantité. Une option express est disponible sur devis pour les besoins urgents." },
+      { q: "Puis-je recevoir un bon à tirer avant production ?", a: "Oui. Un BAT numérique est envoyé systématiquement par email pour validation avant lancement de l'impression. Un BAT physique est possible sur demande." },
+    ],
   },
   {
     slug: "grand-format",
@@ -62,6 +67,11 @@ export const SERVICE_CONTENT: ServiceContent[] = [
       "Enseignes & panneaux — Dibond, PVC expansé, Akilux, plexiglas. Découpe sur mesure, pose possible sur devis.",
       "Décoration murale — papier peint personnalisé, toiles tendues, panneaux acoustiques imprimés. Pour bureaux et commerces.",
     ],
+    faq: [
+      { q: "Quelle résolution d'image faut-il pour l'impression grand format ?", a: "Nous recommandons une résolution de 100 à 150 dpi à la taille finale minimum pour les bâches et banderoles. Pour les adhésifs de proximité, 200 à 300 dpi garantissent un rendu net. Nous vérifions vos fichiers gratuitement." },
+      { q: "Les bâches et adhésifs sont-ils résistants aux intempéries ?", a: "Oui. Les encres éco-solvantes, latex et UV offrent une tenue de 3 à 7 ans en extérieur selon le support. Les bâches PVC 500g/m² et les vinyles polymères sont traités anti-UV et anti-moisissure." },
+      { q: "Quels délais pour une impression grand format ?", a: "La production standard est de 5 à 7 jours ouvrés. Un service express est proposé sur devis pour les besoins urgents (salons, événements)." },
+    ],
   },
   {
     slug: "supports-publicitaires",
@@ -82,6 +92,11 @@ export const SERVICE_CONTENT: ServiceContent[] = [
       "Totems & colonnes — totems elliptiques, carrés, triangulaires. Éclairés ou non. Visibles de loin.",
       "Comptoirs d'accueil — comptoirs pliables avec impression graphique. Idéal pour accueil salon, inscription événement.",
       "PLV & présentoirs — chevalets, porte-brochures, displays carton, kakémonos. Mise en valeur de vos produits en magasin.",
+    ],
+    faq: [
+      { q: "Les roll-ups sont-ils réutilisables avec un nouveau visuel ?", a: "Oui. La structure est réutilisable à l'infini. Vous pouvez commander uniquement le visuel imprimé pour vos prochains événements, ce qui réduit considérablement le coût à long terme." },
+      { q: "Quelle taille de stand puis-je équiper avec vos supports ?", a: "Nous proposons des packs adaptés du stand 3 m² (2 roll-ups + 1 comptoir) jusqu'au stand 50 m² (tentes, totems, drapeaux, moquette imprimée). Un devis sur mesure est établi selon votre plan de stand." },
+      { q: "Livrez-vous les supports publicitaires montés ou à monter ?", a: "Les structures sont livrées démontées dans leur housse de transport avec notice de montage. Le montage est simple et rapide (2 à 10 minutes selon le support). La pose sur site est possible sur devis." },
     ],
   },
   {
@@ -106,6 +121,11 @@ export const SERVICE_CONTENT: ServiceContent[] = [
     ],
     closing: [
       "Plusieurs techniques de marquage sont disponibles selon le support et la quantité : sérigraphie, broderie, transfert DTF / numérique et sublimation.",
+    ],
+    faq: [
+      { q: "Quelle technique de marquage choisir selon le support ?", a: "La sérigraphie est idéale pour les grandes séries textiles. La broderie convient aux polos, vestes et casquettes pour un rendu premium. Le transfert DTF offre un rendu photo sur tous les textiles. La sublimation est réservée aux objets et textiles polyester." },
+      { q: "Quelle quantité minimum pour personnaliser des textiles ?", a: "Nous acceptons les petites séries dès 10 pièces pour la sérigraphie et le transfert DTF. La broderie démarre à 5 pièces. Pour les objets publicitaires, les quantités minimales varient selon le produit (généralement 25 à 50 unités)." },
+      { q: "Puis-je envoyer mon propre fichier de logo ?", a: "Oui. Nous acceptons les fichiers vectoriels (AI, EPS, PDF vectoriel, SVG) pour un rendu optimal. Nos graphistes vérifient la compatibilité et vous envoient une maquette gratuite avant production." },
     ],
   },
 ];
