@@ -2,7 +2,7 @@
 // registry with live catalog/location data from the database.
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
-import type { SeoPage, LinkItem } from "../../src/seo/types";
+import type { SeoPage, LinkItem, ProductItem } from "../../src/seo/types";
 import { CATEGORY_CONTENT, CATEGORY_SLUGS } from "../../src/seo/content/categories";
 import {
   cityIntro, citySections, cityFaq, type CityData,
@@ -45,6 +45,27 @@ async function rest<T = any>(path: string): Promise<T[]> {
     }
   } catch { /* keep partial */ }
   return out;
+}
+
+// Real, active product names from the live Print.com catalog (via the
+// printcom-proxy edge function). Only SKUs returned here are linkable, so
+// product links never point to a 404 / inactive configurator.
+async function fetchProductNames(): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  if (!SB || !ANON) return map;
+  try {
+    const r = await fetch(`${SB}/functions/v1/printcom-proxy?action=list-products&lang=fr-FR`, {
+      headers: { apikey: ANON, Authorization: `Bearer ${ANON}` },
+    });
+    if (r.ok) {
+      const arr = await r.json();
+      for (const p of Array.isArray(arr) ? arr : []) {
+        const sku = p?.sku;
+        if (sku && p?.active !== false) map.set(sku, p?.titleSingle || p?.name || sku);
+      }
+    }
+  } catch { /* keep partial */ }
+  return map;
 }
 
 const PRIORITY_CITIES = [
@@ -90,6 +111,24 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     if (!childrenOf.has(c.parent_id)) childrenOf.set(c.parent_id, []);
     childrenOf.get(c.parent_id)!.push(c);
   }
+
+  // Real catalog data so subcategory pages list actual products
+  // (name + image + live configurator link) instead of just text.
+  const nameBySku = await fetchProductNames();
+  const imgRows = await rest<{ sku: string; thumbnail_url: string | null }>(
+    "product_images?select=sku,thumbnail_url&order=sort_order.asc",
+  );
+  const imgBySku = new Map<string, string>();
+  for (const row of imgRows) {
+    if (row.thumbnail_url && !imgBySku.has(row.sku)) imgBySku.set(row.sku, row.thumbnail_url);
+  }
+  // Only SKUs that resolve to a real, active product are listed/linked.
+  const productsForCat = (catId: string): ProductItem[] =>
+    [...(skuByCat.get(catId) || [])]
+      .filter((sku) => nameBySku.has(sku))
+      .map((sku) => ({ sku, name: nameBySku.get(sku)!, image: imgBySku.get(sku) || null }))
+      .sort((a, b) => a.name.localeCompare(b.name, "fr"));
+
   const cityRows = await rest<CityData>(
     `cities?select=slug,name,department,region,cp&slug=in.(${PRIORITY_CITIES.join(",")})`,
   );
@@ -151,7 +190,9 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     const content = CATEGORY_CONTENT[slug];
     const cat = cats.find((c) => c.slug === slug && !c.parent_id);
     const subs = (cat && childrenOf.get(cat.id)) || [];
-    const nonEmptySubs = subs.filter((s) => (skuByCat.get(s.id)?.size || 0) > 0);
+    // A subcategory is "non-empty" only when it has real, resolvable products.
+    const nonEmptySubs = subs.filter((s) => productsForCat(s.id).length > 0);
+    const emptySubs = subs.filter((s) => productsForCat(s.id).length === 0);
     const crumb = [home, { name: "Catalogue", path: "/catalogue" }, { name: content.name, path: `/categorie/${slug}` }];
     const subLinks: LinkItem[] = nonEmptySubs.map((s) => ({ label: s.name, path: `/categorie/${slug}/${s.slug}` }));
     const relatedCats: LinkItem[] = CATEGORY_SLUGS.filter((s) => s !== slug).slice(0, 4)
@@ -183,9 +224,10 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       ],
     });
 
-    // ── ALL non-empty subcategories ──
+    // ── ALL non-empty subcategories (with real product listings) ──
     nonEmptySubs.forEach((sub, si) => {
       const subCrumb = [...crumb, { name: sub.name, path: `/categorie/${slug}/${sub.slug}` }];
+      const products = productsForCat(sub.id);
       const angles = [
         `Découvrez la sélection « ${sub.name} » de J2L Print, au sein de l'univers ${content.name}. Configurez votre produit en ligne — format, matière et finitions — et recevez votre commande partout en France.`,
         `Pour vos besoins en « ${sub.name} », J2L Print propose une gamme professionnelle dans la catégorie ${content.name}, avec un rendu fidèle et des finitions au choix.`,
@@ -199,6 +241,8 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         h1: sub.name,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
+        products,
+        productsHeading: `Nos produits ${sub.name.toLowerCase()}`,
         internalLinks: [
           { heading: "Catégorie", links: [{ label: content.name, path: `/categorie/${slug}` }] },
           ...(near.length ? [{ heading: "Sous-catégories proches", links: near }] : []),
@@ -206,8 +250,36 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         ],
         jsonLd: [
           breadcrumbLd(subCrumb),
-          collectionPageLd({ name: sub.name, description: `${sub.name} dans ${content.name}.`, path: `/categorie/${slug}/${sub.slug}`, items: [] }),
+          collectionPageLd({
+            name: sub.name,
+            description: `${sub.name} dans ${content.name}.`,
+            path: `/categorie/${slug}/${sub.slug}`,
+            items: products.map((p) => ({ name: p.name, path: `/products/${p.sku}` })),
+          }),
         ],
+      });
+    });
+
+    // ── Empty subcategories: keep reachable but noindex,follow and out of the
+    // sitemap (no products → thin page). Not linked from the parent category.
+    emptySubs.forEach((sub) => {
+      const subCrumb = [...crumb, { name: sub.name, path: `/categorie/${slug}/${sub.slug}` }];
+      pages.push({
+        path: `/categorie/${slug}/${sub.slug}`,
+        title: `${sub.name} — ${content.name}`,
+        description: `${sub.name} (${content.name.toLowerCase()}) : sélection en cours de constitution chez J2L Print. Découvrez nos autres produits ${content.name.toLowerCase()}.`,
+        h1: sub.name,
+        intro: [
+          `La sélection « ${sub.name} » est en cours de constitution. En attendant, découvrez l'ensemble de notre gamme ${content.name.toLowerCase()} et configurez votre produit en ligne.`,
+        ],
+        breadcrumb: subCrumb,
+        noindex: true,
+        internalLinks: [
+          { heading: "Catégorie", links: [{ label: content.name, path: `/categorie/${slug}` }] },
+          ...(subLinks.length ? [{ heading: "Sous-catégories disponibles", links: subLinks.slice(0, 6) }] : []),
+          { heading: "Nos services", links: SERVICE_LINKS },
+        ],
+        jsonLd: [breadcrumbLd(subCrumb)],
       });
     });
   }

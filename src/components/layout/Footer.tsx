@@ -2,15 +2,16 @@ import { Link } from "react-router-dom";
 import { Facebook, ExternalLink, MapPin } from "lucide-react";
 import logoJ2L from "@/assets/logo-j2l.png";
 
+// Only published cities with a real, indexable /ville/{slug} page.
 const cityLinks = [
   { slug: "epinal", name: "Épinal" },
   { slug: "nancy", name: "Nancy" },
   { slug: "metz", name: "Metz" },
   { slug: "strasbourg", name: "Strasbourg" },
-  { slug: "paris", name: "Paris" },
-  { slug: "lyon", name: "Lyon" },
-  { slug: "marseille", name: "Marseille" },
-  { slug: "lille", name: "Lille" },
+  { slug: "mulhouse", name: "Mulhouse" },
+  { slug: "reims", name: "Reims" },
+  { slug: "troyes", name: "Troyes" },
+  { slug: "colmar", name: "Colmar" },
 ];
 
 export default function Footer() {
@@ -99,12 +100,12 @@ export default function Footer() {
             <h4 className="font-display text-sm font-semibold text-foreground mt-5 mb-3">Nos villes</h4>
             <nav className="flex flex-col gap-1.5 text-sm text-muted-foreground">
               {cityLinks.map((c) => (
-                <Link key={c.slug} to={`/imprimerie/${c.slug}`} className="hover:text-foreground transition-colors flex items-center gap-1">
+                <Link key={c.slug} to={`/ville/${c.slug}`} className="hover:text-foreground transition-colors flex items-center gap-1">
                   <MapPin className="h-3 w-3 text-primary" /> {c.name}
                 </Link>
               ))}
               <Link to="/imprimerie" className="text-primary hover:text-foreground transition-colors text-xs mt-1">
-                Voir les 276 villes →
+                Voir nos villes desservies →
               </Link>
             </nav>
           </div>
