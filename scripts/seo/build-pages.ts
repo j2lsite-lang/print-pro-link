@@ -47,6 +47,27 @@ async function rest<T = any>(path: string): Promise<T[]> {
   return out;
 }
 
+// Real, active product names from the live Print.com catalog (via the
+// printcom-proxy edge function). Only SKUs returned here are linkable, so
+// product links never point to a 404 / inactive configurator.
+async function fetchProductNames(): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  if (!SB || !ANON) return map;
+  try {
+    const r = await fetch(`${SB}/functions/v1/printcom-proxy?action=list-products&lang=fr-FR`, {
+      headers: { apikey: ANON, Authorization: `Bearer ${ANON}` },
+    });
+    if (r.ok) {
+      const arr = await r.json();
+      for (const p of Array.isArray(arr) ? arr : []) {
+        const sku = p?.sku;
+        if (sku && p?.active !== false) map.set(sku, p?.titleSingle || p?.name || sku);
+      }
+    }
+  } catch { /* keep partial */ }
+  return map;
+}
+
 const PRIORITY_CITIES = [
   "epinal", "nancy", "metz", "strasbourg", "colmar", "mulhouse", "reims",
   "troyes", "saint-die-des-vosges", "remiremont", "neufchateau", "luneville",
