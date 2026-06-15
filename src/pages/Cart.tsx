@@ -112,19 +112,19 @@ export default function Cart() {
                 <span className="font-medium text-foreground">{total.toFixed(2)} €</span>
               </div>
             </div>
-            <div className="flex justify-between items-center text-xs">
+            <div className="flex justify-between items-center text-sm">
               <span className="text-muted-foreground flex items-center gap-1">
-                <Truck className="h-3.5 w-3.5" /> Livraison
+                <Truck className="h-3.5 w-3.5" /> Forfait livraison HT
               </span>
-              <span className="text-muted-foreground">Calculée à l'étape suivante</span>
+              <span className="font-medium text-foreground">{FLAT_SHIPPING_HT.toFixed(2)} €</span>
             </div>
           </div>
           <div className="mt-4 border-t border-border pt-4">
             <div className="flex justify-between text-lg font-bold font-display">
-              <span>Total HT</span>
-              <span>{total.toFixed(2)} €</span>
+              <span>Total estimatif HT</span>
+              <span>{grandTotal.toFixed(2)} €</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Hors frais de livraison</p>
+            <p className="text-xs text-muted-foreground mt-1">Forfait livraison de {FLAT_SHIPPING_HT.toFixed(2)} € HT inclus</p>
           </div>
           <Button asChild className="mt-6 w-full" size="lg">
             <Link to="/checkout">
