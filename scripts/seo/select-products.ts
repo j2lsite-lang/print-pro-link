@@ -254,7 +254,7 @@ async function main() {
   // Two passes: pass 1 enforces balance + 1 product per intent bucket; pass 2 fills remaining.
   const queue = [...candidates];
   let attempts = 0;
-  const MAX_ATTEMPTS = 90;
+  const MAX_ATTEMPTS = 300;
 
   for (const c of queue) {
     if (selected.length >= TARGET) break;
