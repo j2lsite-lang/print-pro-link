@@ -222,6 +222,14 @@ export async function buildAllPages(): Promise<SeoPage[]> {
   }
 
   // ── Cities (priority) ──
+  const cityNameBySlug = new Map(cityRows.map((c) => [c.slug, c.name]));
+  const variedCats = () => CATEGORY_LINKS_VARIED.map((l) => ({ label: l.anchor, path: l.path }));
+  const variedServices = () => SERVICE_LINKS_VARIED.map((l) => ({ label: l.anchor, path: l.path }));
+  const actionLinks = [
+    { label: "demander un devis personnalisé", path: "/#devis" },
+    { label: "voir tout le catalogue", path: "/catalogue" },
+  ];
+
   for (const c of cityRows) {
     const crumb = [
       home,
@@ -232,18 +240,50 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     ];
     const cart = article(c.department);
     const faq = cityFaq(c);
+    const profile = CITY_PROFILES[c.slug];
+    const heroImg = HERO_CITY_IMAGES[profile?.hero ?? 1];
+    const deptSlug = slugify(c.department);
+    const neighborLinks = (profile?.neighbors || [])
+      .filter((s) => cityNameBySlug.has(s))
+      .slice(0, 6)
+      .map((s) => ({ label: cityNameBySlug.get(s)!, path: `/ville/${s}` }));
+    const official = CITY_OFFICIAL[c.slug];
+
     pages.push({
       path: `/ville/${c.slug}`,
       title: `Imprimerie en ligne à ${c.name} — livraison ${cart.de}`,
       description: `Impression professionnelle livrée à ${c.name} (${c.cp}) : flyers, cartes de visite, banderoles et PLV. Commande en ligne, livraison ${cart.dans}.`,
-      h1: `Imprimerie en ligne pour ${c.name}`,
+      h1: `Imprimerie en ligne pour les professionnels à ${c.name}`,
+      hero: {
+        image: heroImg,
+        imageAlt: `Impression et supports de communication livrés à ${c.name}`,
+        eyebrow: "Imprimerie en ligne",
+        tagline: `Configurez vos supports en ligne et recevez votre devis personnalisé pour une livraison à ${c.name} et ${cart.dans}.`,
+        ctas: [
+          { label: "Voir le catalogue", path: "/catalogue", variant: "primary" },
+          { label: "Demander un devis", path: "/#devis", variant: "secondary" },
+        ],
+      },
       intro: cityIntro(c),
       breadcrumb: crumb,
       sections: citySections(c),
+      productGrid: {
+        heading: `Produits les plus demandés à ${c.name}`,
+        intro: `Les supports les plus commandés par les professionnels ${de(c.name)}. Cliquez pour configurer le vôtre dans le catalogue.`,
+        cards: PRODUCT_CARDS,
+      },
+      cta: { label: "Voir le catalogue", path: "/catalogue" },
       faq,
       internalLinks: [
-        { heading: "Nos univers", links: CATEGORY_SLUGS.slice(0, 6).map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` })) },
-        { heading: "Nos services", links: SERVICE_LINKS },
+        ...(neighborLinks.length ? [{ heading: "Villes proches desservies", links: neighborLinks }] : []),
+        { heading: "Nos univers d'impression", links: variedCats() },
+        { heading: "Nos services", links: variedServices() },
+        { heading: "Votre département", links: [{ label: `Impression ${cart.dans}`, path: `/departement/${deptSlug}` }] },
+        { heading: "Passez à l'action", links: actionLinks },
+      ],
+      externalLinks: [
+        ...(official ? [{ label: official.label, path: official.url, external: true }] : []),
+        CCI_GRAND_EST,
       ],
       jsonLd: [
         breadcrumbLd(crumb),
@@ -264,34 +304,92 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     ];
     const citiesHere = cityRows.filter((c) => slugify(c.department) === d.slug);
     const art = article(d.name);
+    const dp = DEPT_PROFILES[d.slug];
+    const neighborDepts = (dp?.neighbors || [])
+      .filter((s) => PRIORITY_DEPARTMENTS.some((x) => x.slug === s))
+      .map((s) => {
+        const nd = PRIORITY_DEPARTMENTS.find((x) => x.slug === s)!;
+        return { label: nd.name, path: `/departement/${s}` };
+      });
+    const official = DEPT_OFFICIAL[d.slug];
+    const deptFaq = [
+      {
+        q: `Livrez-vous partout ${art.dans} ?`,
+        a: `Oui. J2L Print livre l'ensemble du département ${d.name}, des grandes villes aux communes rurales, directement à votre adresse.`,
+      },
+      {
+        q: "Faut-il se déplacer pour commander ?",
+        a: `Non. Tout se fait en ligne : configuration, validation du fichier et suivi. J2L Print n'a pas d'imprimerie physique ${art.dans}.`,
+      },
+      {
+        q: "Quels professionnels accompagnez-vous ?",
+        a: `${(dp?.sectors || ["Commerces", "Artisans", "Associations", "Collectivités"]).slice(0, 4).join(", ")} et toutes les organisations ${art.de}.`,
+      },
+      {
+        q: "Comment obtenir un devis ?",
+        a: "Décrivez votre besoin dans le formulaire de devis en ligne : nous vous répondons avec une proposition personnalisée.",
+      },
+    ];
+
     pages.push({
       path: `/departement/${d.slug}`,
       title: `Impression en ligne ${art.dans} (${d.region})`,
       description: `Imprimerie en ligne livrant ${art.dans} : supports professionnels, prix transparents, commande à distance et livraison locale.`,
-      h1: `Impression pour les entreprises ${art.de}`,
+      h1: `Impression professionnelle et supports personnalisés ${art.dans}`,
+      hero: {
+        image: deptHero(d.slug),
+        imageAlt: `Impression et supports de communication livrés ${art.dans}`,
+        eyebrow: `Imprimerie en ligne · ${d.region}`,
+        tagline: `Commandez vos supports en ligne et faites-vous livrer ${art.dans}, des grandes villes aux communes rurales.`,
+        ctas: [
+          { label: "Voir le catalogue", path: "/catalogue", variant: "primary" },
+          { label: "Demander un devis", path: "/#devis", variant: "secondary" },
+        ],
+      },
       intro: [
-        `J2L Print accompagne les professionnels du département ${art.de} (${d.region}) avec une imprimerie en ligne complète : vous commandez à distance et nous livrons sur place.`,
-        `Aucune boutique physique n'est nécessaire : la configuration, le paiement et la livraison se font en ligne ${art.dans}.`,
+        `${dp?.economy || `Le département ${d.name} réunit un tissu varié de professionnels.`} J2L Print accompagne les professionnels ${art.de} (${d.region}) avec une imprimerie en ligne complète : vous commandez à distance et nous livrons sur place.`,
+        `Aucune boutique physique n'est nécessaire : la configuration, la validation du fichier et la livraison se font en ligne ${art.dans}.`,
       ],
       breadcrumb: crumb,
       sections: [
         {
-          heading: `Villes desservies ${art.dans}`,
+          heading: `Secteurs professionnels accompagnés ${art.dans}`,
+          paragraphs: ["Nos supports s'adaptent aux principaux secteurs du département :"],
+          bullets: dp?.sectors || [],
+        },
+        {
+          heading: `Principales villes desservies ${art.dans}`,
           paragraphs: ["Nous livrons l'ensemble du département, notamment :"],
           bullets: citiesHere.map((c) => c.name),
         },
       ],
+      productGrid: {
+        heading: "Produits recommandés pour votre activité",
+        intro: `Les supports les plus utiles aux professionnels ${art.de}. Configurez le vôtre dans le catalogue.`,
+        cards: PRODUCT_CARDS,
+      },
+      cta: { label: "Voir le catalogue", path: "/catalogue" },
+      faq: deptFaq,
       internalLinks: [
         ...(citiesHere.length ? [{ heading: "Villes du département", links: citiesHere.map((c) => ({ label: c.name, path: `/ville/${c.slug}` })) }] : []),
-        { heading: "Nos univers", links: CATEGORY_SLUGS.slice(0, 6).map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` })) },
+        ...(neighborDepts.length ? [{ heading: "Départements voisins", links: neighborDepts }] : []),
+        { heading: "Nos univers d'impression", links: variedCats() },
+        { heading: "Nos services", links: variedServices() },
+        { heading: "Passez à l'action", links: actionLinks },
+      ],
+      externalLinks: [
+        ...(official ? [{ label: official.label, path: official.url, external: true }] : []),
+        CCI_GRAND_EST,
       ],
       jsonLd: [
         breadcrumbLd(crumb),
         webPageLd({ name: `Impression ${art.dans}`, description: `Impression en ligne livrée ${art.dans}.`, path: `/departement/${d.slug}` }),
         serviceLd({ name: `Impression ${art.dans}`, description: `Impression en ligne avec livraison ${art.dans}.`, areaServed: d.name }),
+        faqLd(deptFaq),
       ],
     });
   }
+
 
   // ── Service landing pages (4) ──
   // Mirror the published React routes so the prerendered HTML carries the
