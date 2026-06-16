@@ -86,6 +86,24 @@ export default function Products() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    const skus = [...new Set([...NOUVEAUTES_SKUS, ...BESTSELLER_SKUS])];
+    supabase
+      .from("product_images")
+      .select("sku, thumbnail_url")
+      .in("sku", skus)
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, string> = {};
+        for (const row of data) {
+          if (!map[row.sku] && row.thumbnail_url) map[row.sku] = row.thumbnail_url;
+        }
+        setSectionThumbnails(map);
+      });
+  }, []);
+
+
+
 
   const filtered = useMemo(() => {
     return products.filter((product) => {
