@@ -109,8 +109,8 @@ Deno.serve(async (req: Request) => {
       "banner-frames": "toiles-textiles-deco-interieure",
       "displays-pos-material": "presentoirs-materiel-plv",
       "card-holders": "presentoirs-materiel-plv",
-      "rigids": "panneaux-accessoires-int",
-      "rigids-accessories": "panneaux-accessoires-int",
+      "rigids": "panneaux-accessoires",
+      "rigids-accessories": "panneaux-accessoires",
       // Publicité extérieure
       "flags-outdoor": "drapeaux-beachflags-accessoires",
       "beachflags": "drapeaux-beachflags-accessoires",
