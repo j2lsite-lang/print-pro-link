@@ -737,6 +737,109 @@ export async function buildProductPages(): Promise<SeoPage[]> {
 }
 
 
+/* ----------------------------------------------------------------------------
+ * Theme pages (/themes and /themes/:slug)
+ * ----------------------------------------------------------------------------
+ * Prerenders the themes index and one page per theme so the Cloudflare worker
+ * serves real crawler-readable HTML (own title/canonical/H1/content) instead of
+ * the SPA homepage fallback. Never touches prices, the Print.com API, the
+ * configurator or the product/theme mappings — it only emits editorial SEO
+ * content and links toward the existing /themes/:slug runtime routes.
+ */
+interface ThemeLite {
+  slug: string;
+  name: string;
+  description: string | null;
+  sort_order: number;
+}
+
+export async function buildThemePages(): Promise<SeoPage[]> {
+  const home: BreadcrumbItemLite = { name: "Accueil", path: "/" };
+
+  const themes = (await rest<ThemeLite>(
+    "product_themes?select=slug,name,description,sort_order&order=sort_order",
+  )).filter((t) => t?.slug && t?.name);
+  if (!themes.length) return [];
+
+  const themesCrumb = [home, { name: "Catalogue", path: "/catalogue" }, { name: "Thèmes", path: "/themes" }];
+  const themeLinks: LinkItem[] = themes.map((t) => ({ label: t.name, path: `/themes/${t.slug}` }));
+
+  const pages: SeoPage[] = [];
+
+  // ── Themes index ──
+  pages.push({
+    path: "/themes",
+    title: "Thèmes & collections – Impression en ligne | J2L Print",
+    description:
+      "Explorez nos thèmes : Écologique, Nouveautés, Hôtels & restaurants, Bureau, Saison estivale et plus. Retrouvez les produits associés à chaque thème.",
+    h1: "Thèmes",
+    intro: [
+      "Parcourez nos thèmes pour trouver rapidement les produits adaptés à chaque occasion et secteur. Chaque thème regroupe une sélection de supports d'impression à configurer en ligne et à recevoir partout en France.",
+    ],
+    breadcrumb: themesCrumb,
+    internalLinks: [
+      { heading: "Tous les thèmes", links: themeLinks },
+      { heading: "Nos services", links: SERVICE_LINKS },
+    ],
+    jsonLd: [
+      breadcrumbLd(themesCrumb),
+      collectionPageLd({
+        name: "Thèmes J2L Print",
+        description: "Toutes nos collections thématiques d'impression et supports de communication.",
+        path: "/themes",
+        items: themes.map((t) => ({ name: t.name, path: `/themes/${t.slug}` })),
+      }),
+    ],
+    ogType: "website",
+  });
+
+  // ── One page per theme ──
+  for (const t of themes) {
+    const path = `/themes/${t.slug}`;
+    const crumb = [...themesCrumb, { name: t.name, path }];
+    const desc = t.description?.trim()
+      ? truncate(t.description)
+      : truncate(
+          `Thème « ${t.name} » : découvrez une sélection de produits d'impression personnalisée adaptés à ${t.name.toLowerCase()}. Configuration en ligne, devis gratuit et livraison partout en France.`,
+        );
+    const others = themeLinks.filter((l) => l.path !== path).slice(0, 8);
+    const faq = [
+      {
+        q: `Que contient le thème « ${t.name} » ?`,
+        a: `Le thème « ${t.name} » rassemble une sélection de produits d'impression à configurer en ligne — format, matière, finitions et quantité — livrés partout en France.`,
+      },
+      {
+        q: "Comment commander un produit du thème ?",
+        a: "Choisissez un produit du thème, configurez-le en ligne dans le catalogue, puis demandez votre devis gratuit.",
+      },
+    ];
+    pages.push({
+      path,
+      title: truncate(`${t.name} – Thème impression personnalisée | J2L Print`, 65),
+      description: desc,
+      h1: t.name,
+      intro: [
+        `Découvrez la collection « ${t.name} » de J2L Print : une sélection de supports d'impression personnalisée à configurer en ligne et à recevoir partout en France.`,
+      ],
+      breadcrumb: crumb,
+      cta: { label: "Voir les produits du thème", path },
+      faq,
+      internalLinks: [
+        { heading: "Autres thèmes", links: others },
+        { heading: "Catalogue", links: [{ label: "Voir tout le catalogue", path: "/catalogue" }] },
+        { heading: "Nos services", links: SERVICE_LINKS },
+      ],
+      jsonLd: [
+        breadcrumbLd(crumb),
+        webPageLd({ name: t.name, description: desc, path }),
+        faqLd(faq),
+      ],
+      ogType: "website",
+    });
+  }
+
+  return pages;
+}
 
 
 type BreadcrumbItemLite = { name: string; path: string };
