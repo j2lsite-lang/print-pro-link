@@ -6,7 +6,7 @@
 //     (no old URLs, no products yet, no noindex pages).
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from "fs";
 import { resolve } from "path";
-import { buildAllPages } from "./build-pages";
+import { buildAllPages, buildProductPages } from "./build-pages";
 import { loadGeo } from "./geo-data";
 import type { SeoPage } from "../../src/seo/types";
 
