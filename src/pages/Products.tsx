@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
 import { fetchAllProductCategoryMappings, fetchPublicCatalogSkuSet } from "@/lib/catalog-mappings";
 import { fetchAllProductThemeMappings } from "@/lib/theme-mappings";
+import { NOUVEAUTES_SKUS, BESTSELLER_SKUS } from "@/lib/catalog-sections";
 
 interface Product extends CatalogProduct {}
 
@@ -22,6 +23,7 @@ export default function Products() {
   const { themes, loading: themesLoading } = useThemes();
   const [categoryCounts, setCategoryCounts] = useState<CategoryCount>({});
   const [themeCounts, setThemeCounts] = useState<Record<string, number>>({});
+  const [sectionThumbnails, setSectionThumbnails] = useState<Record<string, string>>({});
 
   useSEO({
     title: "Catalogue produits – Impression en ligne",
@@ -84,6 +86,24 @@ export default function Products() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    const skus = [...new Set([...NOUVEAUTES_SKUS, ...BESTSELLER_SKUS])];
+    supabase
+      .from("product_images")
+      .select("sku, thumbnail_url")
+      .in("sku", skus)
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, string> = {};
+        for (const row of data) {
+          if (!map[row.sku] && row.thumbnail_url) map[row.sku] = row.thumbnail_url;
+        }
+        setSectionThumbnails(map);
+      });
+  }, []);
+
+
+
 
   const filtered = useMemo(() => {
     return products.filter((product) => {
@@ -92,6 +112,24 @@ export default function Products() {
       return product.name.toLowerCase().includes(q) || product.sku.toLowerCase().includes(q);
     });
   }, [products, search]);
+
+  const pickBySkus = (skus: string[]) => {
+    const bySku = new Map(products.map((p) => [p.sku, p]));
+    const out: Product[] = [];
+    const seen = new Set<string>();
+    for (const sku of skus) {
+      const p = bySku.get(sku);
+      if (p && !seen.has(sku)) {
+        seen.add(sku);
+        out.push(p);
+      }
+    }
+    return out;
+  };
+
+  const nouveautes = useMemo(() => pickBySkus(NOUVEAUTES_SKUS), [products]);
+  const bestSellers = useMemo(() => pickBySkus(BESTSELLER_SKUS), [products]);
+
 
   return (
     <div className="container py-10">
@@ -140,6 +178,28 @@ export default function Products() {
           ))}
         </div>
       )}
+
+      {!loading && bestSellers.length > 0 && (
+        <ProductSection
+          eyebrow="Les plus demandés"
+          title="Nos best-sellers"
+          subtitle="Les produits Print.com les plus commandés par nos clients."
+          items={bestSellers}
+          thumbnails={sectionThumbnails}
+        />
+      )}
+
+      {!loading && nouveautes.length > 0 && (
+        <ProductSection
+          eyebrow="Tout juste arrivés"
+          title="Nouveautés"
+          subtitle="Les derniers produits ajoutés au catalogue Print.com."
+          items={nouveautes}
+          thumbnails={sectionThumbnails}
+        />
+      )}
+
+
 
       {!themesLoading && themes.length > 0 && (
         <section className="mt-16">
@@ -265,3 +325,59 @@ export default function Products() {
     </div>
   );
 }
+
+function ProductSection({
+  eyebrow,
+  title,
+  subtitle,
+  items,
+  thumbnails,
+}: {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  items: Product[];
+  thumbnails: Record<string, string>;
+}) {
+  return (
+    <section className="mt-16">
+      <p className="text-sm font-medium uppercase tracking-wide text-primary">{eyebrow}</p>
+      <h2 className="mt-2 font-display text-3xl font-bold text-foreground">{title}</h2>
+      <p className="mt-2 max-w-3xl text-muted-foreground">{subtitle}</p>
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map((product) => {
+          const imageUrl = thumbnails[product.sku] || product.thumbnailUrl;
+          return (
+          <Link
+            key={product.sku}
+            to={`/products/${product.sku}`}
+            className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:border-primary/40 hover:shadow-elevated"
+          >
+            <div className="aspect-[4/3] overflow-hidden bg-muted/50">
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt={product.name}
+                  className="h-full w-full object-contain p-3 transition-transform duration-500 group-hover:scale-110"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  <span className="text-5xl opacity-20">📦</span>
+                </div>
+              )}
+            </div>
+            <div className="px-4 py-3.5">
+              <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">Produit J2L Print</p>
+              <h3 className="mt-1 truncate font-display text-sm font-semibold text-card-foreground transition-colors group-hover:text-primary">
+                {product.name}
+              </h3>
+            </div>
+          </Link>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
