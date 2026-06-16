@@ -59,10 +59,11 @@ function group(pages: SeoPage[]) {
   };
 }
 
-/** Regenerate the geographic arrays in the Cloudflare worker from the merged
- *  national reference (no manually limited arrays). Leaves all worker logic
- *  untouched — only the data lines are replaced. */
-function syncWorker() {
+/** Regenerate the geographic arrays + the product slug list in the Cloudflare
+ *  worker so its SEO-managed set matches EXACTLY the prerendered pages (no
+ *  product served via the SPA fallback). Leaves all worker logic untouched —
+ *  only the data lines are replaced. */
+function syncWorker(productSlugs: string[]) {
   const wp = resolve("public/cloudflare-worker-j2lprint.js");
   if (!existsSync(wp)) return;
   const geo = loadGeo();
@@ -70,13 +71,17 @@ function syncWorker() {
   const cities = arr(geo.cities.map((c) => c.slug));
   const departments = arr(geo.departments.map((d) => d.slug));
   const regions = arr(geo.regions.map((r) => r.slug));
+  const products = arr(productSlugs);
   let src = readFileSync(wp, "utf8");
   src = src
-    .replace(/const CITIES=\[[^\]]*\];/, `const CITIES=${cities};`)
-    .replace(/const DEPARTMENTS=\[[^\]]*\];/, `const DEPARTMENTS=${departments};`)
-    .replace(/const REGIONS=\[[^\]]*\];/, `const REGIONS=${regions};`);
+    .replace(/const CITIES\s*=\s*\[[\s\S]*?\];/, `const CITIES = ${cities};`)
+    .replace(/const DEPARTMENTS\s*=\s*\[[\s\S]*?\];/, `const DEPARTMENTS = ${departments};`)
+    .replace(/const REGIONS\s*=\s*\[[\s\S]*?\];/, `const REGIONS = ${regions};`)
+    .replace(/const PRODUCTS\s*=\s*\[[\s\S]*?\];/, `const PRODUCTS = ${products};`);
   writeFileSync(wp, src);
-  console.log(`Worker synced: cities=${geo.cities.length} departments=${geo.departments.length} regions=${geo.regions.length}`);
+  console.log(
+    `Worker synced: cities=${geo.cities.length} departments=${geo.departments.length} regions=${geo.regions.length} products=${productSlugs.length}`,
+  );
 }
 
 async function main() {
