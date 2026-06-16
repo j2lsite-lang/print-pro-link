@@ -89,6 +89,9 @@ export async function buildAllPages(): Promise<SeoPage[]> {
 
   const pages: SeoPage[] = [];
   const home: BreadcrumbItemLite = { name: "Accueil", path: "/" };
+  // Remove consecutive identical labels (e.g. city == department: Paris > Paris).
+  const dedupeCrumb = <T extends { name: string }>(items: T[]): T[] =>
+    items.filter((it, i) => i === 0 || it.name.trim().toLowerCase() !== items[i - 1].name.trim().toLowerCase());
 
   // ── Homepage ──
   pages.push({
@@ -305,13 +308,13 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     };
     const copy = cityCopy(gen);
     const hero = heroAt(cityHero.get(gc.slug) ?? cityHeroIndex(cityArchetype(gen), seedOf(gc.slug)));
-    const crumb = [
+    const crumb = dedupeCrumb([
       home,
       { name: "Zones desservies", path: "/imprimerie" },
       { name: gc.regionName, path: `/region/${gc.regionSlug}` },
       { name: gc.departmentName, path: `/departement/${gc.departmentSlug}` },
       { name: gc.name, path: `/ville/${gc.slug}` },
-    ];
+    ]);
     const dep = article(gc.departmentName);
     const reg = article(gc.regionName);
     const official = CITY_OFFICIAL[gc.slug];
