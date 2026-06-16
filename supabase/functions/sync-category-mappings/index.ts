@@ -346,30 +346,72 @@ Deno.serve(async (req: Request) => {
     const allMappings: { sku: string; category_id: string }[] = [];
     const parentIds = new Set(categories!.filter(c => c.parent_id === null).map(c => c.id));
 
+    const pushWithParent = (sku: string, localCatId: string) => {
+      allMappings.push({ sku, category_id: localCatId });
+      const cat = categories!.find(c => c.id === localCatId);
+      if (cat?.parent_id && parentIds.has(cat.parent_id)) {
+        allMappings.push({ sku, category_id: cat.parent_id });
+      }
+    };
+
     for (const [cmsSlug, localCatId] of Object.entries(cmsSlugToLocalId)) {
       const skus = collectSkus(cmsSlug);
-      for (const sku of skus) {
-        allMappings.push({ sku, category_id: localCatId });
-
-        // Also add to parent category
-        const cat = categories!.find(c => c.id === localCatId);
-        if (cat?.parent_id && parentIds.has(cat.parent_id)) {
-          allMappings.push({ sku, category_id: cat.parent_id });
-        }
-      }
+      for (const sku of skus) pushWithParent(sku, localCatId);
     }
 
-    // Deduplicate
+    // 5b. Per-SKU manual classification (products with no/themed CMS group).
+    let manualSkuApplied = 0;
+    for (const [sku, localSlug] of Object.entries(SKU_MANUAL_CATEGORY)) {
+      const localCatId = localSlugToId[localSlug];
+      if (!localCatId) {
+        console.warn(`[sync-mappings] unknown slug for ${sku}: ${localSlug}`);
+        continue;
+      }
+      pushWithParent(sku, localCatId);
+      manualSkuApplied++;
+    }
+    console.log(`[sync-mappings] ${manualSkuApplied} per-SKU manual mappings applied`);
+
+    // 5c. Fetch the live API active-SKU set to drop stale mappings (SKUs the
+    //     supplier no longer returns from GET /products). If the call fails we
+    //     SKIP filtering to avoid accidentally emptying the catalogue.
+    let activeSkus: Set<string> | null = null;
+    try {
+      const apiKey = Deno.env.get("PRINTCOM_API_KEY");
+      if (apiKey) {
+        const apiRes = await fetch("https://api.print.com/products", {
+          headers: { Authorization: `PrintApiKey ${apiKey}`, "Accept-Language": "fr-FR" },
+        });
+        if (apiRes.ok) {
+          const arr = await apiRes.json();
+          if (Array.isArray(arr)) {
+            activeSkus = new Set(arr.filter((p) => p?.active !== false && p?.sku).map((p) => p.sku as string));
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("[sync-mappings] could not fetch active SKUs, skipping stale filter:", e);
+    }
+
+    // 5d. Apply exclusions (non-customer SKUs) and stale filter.
+    const filteredMappings = allMappings.filter((m) => {
+      if (EXCLUDED_NON_CUSTOMER_SKUS.has(m.sku)) return false;
+      if (activeSkus && !activeSkus.has(m.sku)) return false; // stale (retiré du fournisseur)
+      return true;
+    });
+
+    // Deduplicate (unicity = sku + category_id; no duplicate product page)
     const uniqueKey = (m: { sku: string; category_id: string }) => `${m.sku}|${m.category_id}`;
     const seen = new Set<string>();
-    const dedupedMappings = allMappings.filter(m => {
+    const dedupedMappings = filteredMappings.filter(m => {
       const k = uniqueKey(m);
       if (seen.has(k)) return false;
       seen.add(k);
       return true;
     });
 
-    console.log(`[sync-mappings] ${dedupedMappings.length} unique mappings to upsert`);
+    console.log(`[sync-mappings] ${dedupedMappings.length} unique mappings (activeFilter=${activeSkus ? "on" : "off"}) to upsert`);
+
 
     // 6. Clear existing mappings and insert fresh ones
     const { error: delErr } = await supabase
