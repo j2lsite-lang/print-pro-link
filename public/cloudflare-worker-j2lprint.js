@@ -540,6 +540,20 @@ function fetchOrigin(originRequest) {
   });
 }
 
+/**
+ * Fetch origine avec repli : on demande dabord le HTML prérendu (/…/index.html).
+ * Si ce fichier nexiste pas (404/403 — typiquement les fiches produits
+ * rendues côté client, non prérendues), on rejoue la requête sur lURL propre
+ * pour servir le shell SPA en 200 au lieu dun 404.
+ */
+async function fetchOriginWithFallback(seoRequest, cleanRequest, rewrote) {
+  const resp = await fetchOrigin(seoRequest);
+  if (rewrote && (resp.status === 404 || resp.status === 403)) {
+    return fetchOrigin(cleanRequest);
+  }
+  return resp;
+}
+
 /* ----------------------------------------------------------------------------
  * 7. Handler principal
  * ------------------------------------------------------------------------- */
