@@ -9,16 +9,19 @@
  *   - Cache HTML / assets / sitemaps avec des TTL adaptés.
  *   - Réécrit le domaine d origine vers le domaine canonique dans le HTML.
  *   - Marque les pages SEO gérées (X-SEO-Managed) : villes, départements,
- *     régions, catégories, sous-catégories, services et fiches produits.
+ *     régions, catégories, sous-catégories, services, thèmes et fiches produits.
  *   - Ne met jamais en cache les pages dynamiques (panier, compte, admin…).
+ *   - AUCUN repli vers la page d'accueil : une URL gérée sert UNIQUEMENT son
+ *     fichier prérendu /…/index.html ; si le fichier manque -> vraie 404.
  *
- *  Données SEO :
+ *  Données SEO (synchronisées par scripts/seo/generate.ts) :
  *   - 599 villes
  *   - 101 départements
  *   - 18 régions
  *   - 4 services
  *   - 8 catégories / 47 sous-catégories
- *   - 977 produits Print.com
+ *   - 14 thèmes
+ *   - 940 fiches produits clientes (37 références techniques exclues)
  * ============================================================================
  */
 
