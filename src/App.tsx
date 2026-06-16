@@ -37,6 +37,7 @@ const SupportsPublicitaires = lazy(() => import("./pages/SupportsPublicitaires")
 const Personnalisation = lazy(() => import("./pages/Personnalisation"));
 const SeoRoute = lazy(() => import("./pages/SeoRoute"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
+const WorkerDiagnostic = lazy(() => import("./pages/WorkerDiagnostic"));
 
 const queryClient = new QueryClient();
 
@@ -83,6 +84,7 @@ const App = () => (
                   <Route path="/departement/:slug" element={<SeoRoute />} />
                   <Route path="/region/:slug" element={<SeoRoute />} />
                   <Route path="/unsubscribe" element={<Unsubscribe />} />
+                  <Route path="/__worker" element={<WorkerDiagnostic />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>
