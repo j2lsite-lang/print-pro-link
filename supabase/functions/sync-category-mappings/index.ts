@@ -109,8 +109,8 @@ Deno.serve(async (req: Request) => {
       "banner-frames": "toiles-textiles-deco-interieure",
       "displays-pos-material": "presentoirs-materiel-plv",
       "card-holders": "presentoirs-materiel-plv",
-      "rigids": "panneaux-accessoires-int",
-      "rigids-accessories": "panneaux-accessoires-int",
+      "rigids": "panneaux-accessoires",
+      "rigids-accessories": "panneaux-accessoires",
       // Publicité extérieure
       "flags-outdoor": "drapeaux-beachflags-accessoires",
       "beachflags": "drapeaux-beachflags-accessoires",
@@ -128,8 +128,8 @@ Deno.serve(async (req: Request) => {
       "banner": "baches-banderoles",
       "vinyl": "films-adhesifs",
       "lookbooks": "lookbooks",
-      // Panneaux & accessoires (parent cat)
-      "indoor-interior": "panneaux-accessoires",
+      // Panneaux & accessoires (parent cat) — panneaux rigides + matériaux
+      "materials-samples": "panneaux-accessoires",
       // Impression
       "flyers-folders-posters": "flyers-depliants-affiches",
       "cards-envelopes": "cartes-visite-enveloppes",
@@ -283,6 +283,8 @@ Deno.serve(async (req: Request) => {
       "adhesive-hanger": "accessoires-autocollants",
       // Saisonnalité
       "inhaker-christmas-tree": "saisonnalite",
+      // Barrières (ex-groupe parent indoor-interior, sans sous-groupe propre)
+      "zipper-barriers": "stands-materiel-expo",
     };
 
     // ── Non-customer SKUs to ALWAYS exclude ────────────────────────────────
