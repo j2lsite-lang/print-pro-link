@@ -147,6 +147,10 @@ const REGIONS = [
   "normandie", "nouvelle-aquitaine", "occitanie", "pays-de-la-loire", "provence-alpes-cote-d-azur"
 ];
 
+// Thèmes / collections (slugs des pages /themes/:slug). Synchronisé par
+// scripts/seo/generate.ts avec les thèmes prérendus.
+const THEMES = ["coupe-du-monde-2026","easter","events","hospitality-industry","interior-and-decoration-theme","kit-du-supporter","new-and-updated","new-years-resolutions","office-theme","sale","summer-theme","sustainable","valentine","verkiezingsdrukwerk"];
+
 /* ----------------------------------------------------------------------------
  * 3. Arborescence du catalogue : services, catégories & sous-catégories
  * ------------------------------------------------------------------------- */
