@@ -48,7 +48,7 @@ export function prerenderPlugin(): Plugin {
           writeFileSync(file, injectIntoShell(shell, page));
           count++;
         }
-        console.log(`[prerender] wrote ${count} static HTML pages (${Object.keys(products).length} products)`);
+        console.log(`[prerender] wrote ${count} static HTML pages (${Object.keys(products).length} products, ${Object.keys(themes).length} themes)`);
       } catch (err) {
         console.warn("[prerender] skipped due to error:", (err as Error).message);
       }
