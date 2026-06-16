@@ -8,17 +8,19 @@ import { article } from "../../src/seo/content/fr";
 import { SERVICE_CONTENT } from "../../src/seo/content/services";
 import {
   CITY_PROFILES, DEPT_PROFILES, CITY_OFFICIAL, DEPT_OFFICIAL, CCI_GRAND_EST,
-  PRODUCT_CARDS, CATEGORY_LINKS_VARIED, SERVICE_LINKS_VARIED,
-  HERO_CITY_IMAGES, deptHero,
+  PRODUCT_CARDS, CATEGORY_LINKS_VARIED, SERVICE_LINKS_VARIED, J2L_ECOSYSTEM,
 } from "../../src/seo/content/local";
 import {
   breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
 } from "../../src/seo/schema";
 import { loadGeo } from "./geo-data";
 import {
-  cityCopy, deptCopy, seedOf, type GenCity, type GenDept, type NeighborRef,
+  cityCopy, deptCopy, seedOf, cityArchetype, type GenCity, type GenDept, type NeighborRef,
 } from "../../src/seo/content/geo-cities";
 import { regionCopy, type GenRegion } from "../../src/seo/content/regions";
+import {
+  cityHeroIndex, deptHeroIndex, regionHeroIndex, heroAt, HERO_BANK,
+} from "../../src/seo/content/hero-bank";
 
 // Catalog CTA used on category/subcategory SEO pages. SEO pages NEVER fetch or
 // embed the Print.com catalog/configurator — they only link to the existing one.
