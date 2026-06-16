@@ -7,6 +7,7 @@ import logoJ2L from "@/assets/logo-j2l.png";
 
 const navLinks = [
   { to: "/products", label: "Catalogue" },
+  { to: "/themes", label: "Thèmes" },
   { to: "/#services", label: "Services" },
   { to: "/#devis", label: "Devis" },
   { to: "/blog", label: "Blog" },
