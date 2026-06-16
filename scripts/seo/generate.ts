@@ -74,9 +74,9 @@ function syncWorker(productSlugs: string[]) {
   const products = arr(productSlugs);
   let src = readFileSync(wp, "utf8");
   src = src
-    .replace(/const CITIES\s*=\s*\[[\s\S]*?\];/, `const CITIES = ${cities};`)
-    .replace(/const DEPARTMENTS\s*=\s*\[[\s\S]*?\];/, `const DEPARTMENTS = ${departments};`)
-    .replace(/const REGIONS\s*=\s*\[[\s\S]*?\];/, `const REGIONS = ${regions};`)
+    .replace(/const CITIES=\[[^\]]*\];/, `const CITIES=${cities};`)
+    .replace(/const DEPARTMENTS=\[[^\]]*\];/, `const DEPARTMENTS=${departments};`)
+    .replace(/const REGIONS=\[[^\]]*\];/, `const REGIONS=${regions};`)
     .replace(/const PRODUCTS\s*=\s*\[[\s\S]*?\];/, `const PRODUCTS = ${products};`);
   writeFileSync(wp, src);
   console.log(
