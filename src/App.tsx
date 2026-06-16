@@ -14,6 +14,8 @@ import Index from "./pages/Index";
 const Products = lazy(() => import("./pages/Products"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const CategoryProducts = lazy(() => import("./pages/CategoryProducts"));
+const Themes = lazy(() => import("./pages/Themes"));
+const ThemeProducts = lazy(() => import("./pages/ThemeProducts"));
 const Cart = lazy(() => import("./pages/Cart"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -52,6 +54,8 @@ const App = () => (
                   <Route path="/" element={<Index />} />
                   <Route path="/products" element={<Products />} />
                   <Route path="/products/category/:slug" element={<CategoryProducts />} />
+                  <Route path="/themes" element={<Themes />} />
+                  <Route path="/themes/:slug" element={<ThemeProducts />} />
                   <Route path="/products/:sku" element={<ProductDetail />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout" element={<Checkout />} />
