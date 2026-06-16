@@ -18,14 +18,21 @@ export function prerenderPlugin(): Plugin {
         const outDir = resolve("dist");
         const shellPath = resolve(outDir, "index.html");
         const pagesPath = resolve("src/seo/generated/pages.json");
+        const productsPath = resolve("src/seo/generated/products.json");
         if (!existsSync(shellPath) || !existsSync(pagesPath)) {
           console.warn("[prerender] shell or pages.json missing — skipped");
           return;
         }
         const shell = readFileSync(shellPath, "utf8");
         const byPath = JSON.parse(readFileSync(pagesPath, "utf8")) as Record<string, SeoPage>;
+        // Product pages are stored separately to keep the runtime bundle small,
+        // but they must be prerendered to real /products/<sku>/index.html files.
+        const products: Record<string, SeoPage> = existsSync(productsPath)
+          ? (JSON.parse(readFileSync(productsPath, "utf8")) as Record<string, SeoPage>)
+          : {};
+        const allPages = [...Object.values(byPath), ...Object.values(products)];
         let count = 0;
-        for (const page of Object.values(byPath)) {
+        for (const page of allPages) {
           if (page.path === "/") {
             // homepage: overwrite root index.html head + intro block
             writeFileSync(shellPath, injectIntoShell(shell, page));
@@ -37,7 +44,7 @@ export function prerenderPlugin(): Plugin {
           writeFileSync(file, injectIntoShell(shell, page));
           count++;
         }
-        console.log(`[prerender] wrote ${count} static HTML pages`);
+        console.log(`[prerender] wrote ${count} static HTML pages (${Object.keys(products).length} products)`);
       } catch (err) {
         console.warn("[prerender] skipped due to error:", (err as Error).message);
       }
