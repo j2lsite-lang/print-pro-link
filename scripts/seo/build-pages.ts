@@ -383,6 +383,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       sectors: dp?.sectors,
     };
     const copy = deptCopy(gen);
+    const hero = heroAt(deptHeroIndex(seedOf(gd.slug)));
     const crumb = [
       home,
       { name: "Zones desservies", path: "/imprimerie" },
