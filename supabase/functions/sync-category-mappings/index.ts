@@ -186,6 +186,128 @@ Deno.serve(async (req: Request) => {
       "new-and-updated": "general",
     };
 
+    // ── Per-SKU manual classification ──────────────────────────────────────
+    // The Print.com API exposes ~977 orderable products, but 116 are not placed
+    // in any CMS productGroup (99 have NO group, 17 are only in themed groups
+    // such as feestdagenshop-fr / sustainable). The audit (validated) found 79
+    // real sellable products among them. They are classified here by SKU →
+    // local sub-category slug so they appear in the catalogue without relying on
+    // CMS groups. Unicity key stays the SKU, so no duplicate product page is
+    // created. Slugs below all exist in product_categories.
+    const SKU_MANUAL_CATEGORY: Record<string, string> = {
+      // Verrerie, vaisselle, gourdes & boissons
+      "allegra-wine-glass-35cl": "verrerie-vaisselle-gourdes",
+      "gibraltar-stackable-glass-30cl": "verrerie-vaisselle-gourdes",
+      "classico-longdrink-glass-32cl": "verrerie-vaisselle-gourdes",
+      "boerke-beer-glass-33cl": "verrerie-vaisselle-gourdes",
+      "americano-medio": "verrerie-vaisselle-gourdes",
+      "reusable-cups-all-over": "verrerie-vaisselle-gourdes",
+      "as-drinking-bottle": "verrerie-vaisselle-gourdes",
+      "aluminum-bottle-with-carabiner": "verrerie-vaisselle-gourdes",
+      "wine-cooler": "verrerie-vaisselle-gourdes",
+      "wine-set": "verrerie-vaisselle-gourdes",
+      "beer-crate": "verrerie-vaisselle-gourdes",
+      "cap-opener": "gadgets",
+      "gingerbread-in-can": "nourriture-boissons",
+      "chocolate-letter-sleeve": "nourriture-boissons",
+      "scented-candles": "gadgets",
+      "face-paint-stick": "general",
+      "portable-electrical-fans": "gadgets",
+      "sunglasses-flag": "general",
+      "quartet-cards": "general",
+      // Stylos & articles de papeterie
+      "pen-baron": "articles-papeterie",
+      "pen-senator-nature-plus": "articles-papeterie",
+      "pen-senator-super-hit-eco": "articles-papeterie",
+      "pen-contour-rpet": "articles-papeterie",
+      "pen-apollo-hardcolor": "articles-papeterie",
+      "pen-kific-r-abs": "articles-papeterie",
+      "happy-hardcolor-pen": "articles-papeterie",
+      // Grand format, adhésifs, panneaux & déco
+      "carwrap": "films-adhesifs",
+      "geckotex": "films-adhesifs",
+      "chrome-pet-vinyl": "films-adhesifs",
+      "static-film": "films-adhesifs",
+      "biond-vinyl": "films-adhesifs",
+      "dibond-coating": "panneaux-accessoires",
+      "forex-re": "panneaux-accessoires",
+      "hd-metal-prints": "toiles-textiles-deco-interieure",
+      "ceramic-tiles": "toiles-textiles-deco-interieure",
+      "window-curtains": "toiles-textiles-deco-interieure",
+      "duvet-covers": "cuisine-sejour",
+      "tablecloth-indoor": "cuisine-sejour",
+      // Signalétique & PLV
+      "garden-signs": "panneaux-accessoires-ext",
+      "facade-letters": "panneaux-accessoires-ext",
+      "election-boards": "panneaux-accessoires-ext",
+      "snap-frames-waterproof": "panneaux-accessoires-ext",
+      "pavement-signs-water-tank-premium": "stop-trottoirs-panneaux",
+      "foldable-led-frames": "presentoirs-materiel-plv",
+      "led-frame-counters": "presentoirs-materiel-plv",
+      "sign-holder-deluxe": "presentoirs-materiel-plv",
+      "inhaker-folder-displays": "presentoirs-materiel-plv",
+      "easels": "presentoirs-materiel-plv",
+      "info-stands-deluxe": "stands-materiel-expo",
+      "hanging-banners": "stands-materiel-expo",
+      "telescopic-backdrops": "stands-materiel-expo",
+      "hockers-cardboard": "mobilier-interieur",
+      "stick-flags": "drapeaux-beachflags-accessoires",
+      "steel-plate-17": "drapeaux-beachflags-accessoires",
+      "inhaker-caps-baseplate": "drapeaux-beachflags-accessoires",
+      // Textiles & accessoires
+      "christmas-sweater": "vetements",
+      "softshell-jacket-with-hood": "vetements",
+      "trainings-vest": "textiles-sport",
+      "headbands": "accessoires",
+      "double-knit-thinsulate-hats": "accessoires",
+      "textile-stickers": "marquage-transferts-textiles",
+      // Emballages & sacs
+      "shipping-boxes": "emballages-expedition",
+      "paper-mailbag": "emballages-expedition",
+      "paper-mailbag-inkjet": "emballages-expedition",
+      "paper-bag-flat-loop-digital": "sacs-tote-bags",
+      "lunch-boxes": "emballages-alimentaires",
+      "carrying-trays": "emballages-alimentaires",
+      "slider-boxes": "emballages-cadeaux",
+      "wine-hang-tags": "emballages-cadeaux",
+      // Impression papier
+      "election-flyers-fr": "flyers-depliants-affiches",
+      "election-posters-fr": "flyers-depliants-affiches",
+      "tickets": "flyers-depliants-affiches",
+      "raffle-tickets": "flyers-depliants-affiches",
+      "tear-off-calendars": "calendriers",
+      "printed-binder-filler": "papeterie",
+      "clipboard-mdf": "catering-restaurants",
+      // Stickers & accessoires
+      "fluor-stickers": "petits-autocollants",
+      "adhesive-hanger": "accessoires-autocollants",
+      // Saisonnalité
+      "inhaker-christmas-tree": "saisonnalite",
+    };
+
+    // ── Non-customer SKUs to ALWAYS exclude ────────────────────────────────
+    // Sample books (lookbooks), internal samples, mounting templates and
+    // consumables that Print.com exposes via the API but must NOT be shown as
+    // customer products. Excluded by EXACT SKU only (never by a name containing
+    // "sample"). 37 references, validated by the audit.
+    const EXCLUDED_NON_CUSTOMER_SKUS = new Set<string>([
+      "print-lookbook", "print-lookbook-contents-only", "coated-print-lookbook",
+      "uncoated-print-lookbook", "eco-print-lookbook", "special-print-lookbook",
+      "finishes-print-lookbook",                          // Lookbooks Print (livres d'échantillons)
+      "sign-lookbook", "sign-lookbook-contents-only", "paper-sign-lookbook",
+      "laminate-sign-lookbook", "vinyl-sign-lookbook", "textiles-sign-lookbook",
+      "wall-coverings-sign-lookbook", "banners-sign-lookbook", // Lookbooks Sign
+      "rigid-lookbook", "rigid-lookbook-contents-only", "box1-rigid-lookbook",
+      "box2-rigid-lookbook", "box3-rigid-lookbook", "box4-rigid-lookbook", // Lookbooks Rigids
+      "mail-lookbook", "mail-lookbook-contents-only", "cards-mail-lookbook",
+      "envelopes-mail-lookbook",                          // Lookbooks Mail
+      "covers-lookbook", "inspire-lookbook", "refill-lookbook", "set-lookbooks", // Lookbooks divers
+      "samples-internal", "acrylox-sample-chain",         // Échantillons internes
+      "mounting-template",                                // Gabarit de montage
+      "nylon-spacers-glue",                               // Consommable (colle)
+      "posterclamp", "popup-wall-feet", "umbrella-base-45", "signing", // Accessoires techniques exclus (audit)
+    ]);
+
     const localSlugToId: Record<string, string> = {};
     for (const cat of categories!) {
       localSlugToId[cat.slug] = cat.id;
