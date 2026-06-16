@@ -618,7 +618,7 @@ export default {
     const isHead = method === "HEAD";
     const bypassCache = !isRead || isHead || hasSession || isNoCachePath(p);
     if (bypassCache) {
-      const resp = await fetchOrigin(originRequest);
+      const resp = await fetchOriginWithFallback(originRequest, cleanRequest, rewrote);
       const out = new Response(resp.body, resp);
       out.headers.set("Cache-Control", "no-store");
       applySecurityHeaders(out.headers);
@@ -635,7 +635,7 @@ export default {
       return hit;
     }
 
-    const response = await fetchOrigin(originRequest);
+    const response = await fetchOriginWithFallback(originRequest, cleanRequest, rewrote);
     const ct = response.headers.get("Content-Type") || "";
 
     // 7.5 — Sitemaps & robots.txt
