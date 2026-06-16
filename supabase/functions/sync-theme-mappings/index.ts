@@ -187,8 +187,31 @@ Deno.serve(async (req: Request) => {
       perTheme.push({ slug, name, valid: valid.length, total: skus.size });
     }
 
+    // 5b. Manual themes (not in the CMS menu). Upsert + map validated SKUs.
+    for (const mt of MANUAL_THEMES) {
+      const { data: themeRow, error: upErr } = await supabase
+        .from("product_themes")
+        .upsert(
+          { name: mt.name, slug: mt.slug, sort_order: sortOrder++ },
+          { onConflict: "slug" },
+        )
+        .select("id")
+        .single();
+      if (upErr || !themeRow) {
+        console.error(`[sync-themes] upsert manual theme ${mt.slug} failed:`, upErr?.message);
+        continue;
+      }
+      const valid = [...new Set(mt.skus)].filter((s) => publicSkus.has(s));
+      for (const sku of valid) allMappings.push({ sku, theme_id: themeRow.id });
+      perTheme.push({ slug: mt.slug, name: mt.name, valid: valid.length, total: mt.skus.length });
+    }
+
     // 6. Remove themes no longer in the menu (and their mappings cascade).
-    const activeSlugs = themeGroups.map((g) => g.slug.trim());
+    //    Manual theme slugs are always preserved.
+    const activeSlugs = [
+      ...themeGroups.map((g) => g.slug.trim()),
+      ...MANUAL_THEMES.map((m) => m.slug),
+    ];
     const { data: existingThemes } = await supabase.from("product_themes").select("id, slug");
     const staleIds = (existingThemes || [])
       .filter((t) => !activeSlugs.includes(t.slug))
