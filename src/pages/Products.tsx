@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getCatalogProducts, type CatalogProduct } from "@/lib/printcom";
 import { useCategories } from "@/hooks/useCategories";
+import { useThemes } from "@/hooks/useThemes";
 import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
 import { fetchAllProductCategoryMappings, fetchPublicCatalogSkuSet } from "@/lib/catalog-mappings";
+import { fetchAllProductThemeMappings } from "@/lib/theme-mappings";
 
 interface Product extends CatalogProduct {}
 
