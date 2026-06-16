@@ -283,6 +283,8 @@ Deno.serve(async (req: Request) => {
       "adhesive-hanger": "accessoires-autocollants",
       // Saisonnalité
       "inhaker-christmas-tree": "saisonnalite",
+      // Barrières (ex-groupe parent indoor-interior, sans sous-groupe propre)
+      "zipper-barriers": "stands-materiel-expo",
     };
 
     // ── Non-customer SKUs to ALWAYS exclude ────────────────────────────────
