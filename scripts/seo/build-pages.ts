@@ -467,12 +467,12 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       description: copy.description,
       h1: copy.h1,
       hero: {
-        image: deptHero(gr.slug),
-        imageAlt: `Impression et supports de communication livrés ${art.dans}`,
+        image: hero.file,
+        imageAlt: `${hero.alt} — livraison ${art.dans}`,
         eyebrow: copy.heroEyebrow,
         tagline: copy.heroTagline,
         ctas: [
-          { label: "Voir le catalogue", path: "/catalogue", variant: "primary" },
+          { label: copy.ctaLabel, path: "/catalogue", variant: "primary" },
           { label: "Demander un devis", path: "/#devis", variant: "secondary" },
         ],
       },
@@ -480,13 +480,14 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       breadcrumb: crumb,
       sections: copy.sections,
       productGrid: { heading: copy.productGridHeading, intro: copy.productGridIntro, cards: PRODUCT_CARDS },
-      cta: { label: "Voir le catalogue", path: "/catalogue" },
+      cta: { label: copy.ctaLabel, path: "/catalogue" },
       faq: copy.faq,
       internalLinks: [
         ...(deptLinks.length ? [{ heading: "Départements de la région", links: deptLinks }] : []),
         ...(cityLinks.length ? [{ heading: "Villes desservies", links: cityLinks }] : []),
         { heading: "Nos univers d'impression", links: variedCats() },
         { heading: "Nos services", links: variedServices() },
+        ecoGroup(seedOf(gr.slug), J2L_ECOSYSTEM.length),
         { heading: "Passez à l'action", links: actionLinks },
       ],
       jsonLd: [
