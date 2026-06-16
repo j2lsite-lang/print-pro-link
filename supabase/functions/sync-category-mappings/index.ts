@@ -128,8 +128,8 @@ Deno.serve(async (req: Request) => {
       "banner": "baches-banderoles",
       "vinyl": "films-adhesifs",
       "lookbooks": "lookbooks",
-      // Panneaux & accessoires (parent cat)
-      "indoor-interior": "panneaux-accessoires",
+      // Panneaux & accessoires (parent cat) — panneaux rigides + matériaux
+      "materials-samples": "panneaux-accessoires",
       // Impression
       "flyers-folders-posters": "flyers-depliants-affiches",
       "cards-envelopes": "cartes-visite-enveloppes",
