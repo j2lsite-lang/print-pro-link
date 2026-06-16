@@ -93,6 +93,24 @@ export default function Products() {
     });
   }, [products, search]);
 
+  const pickBySkus = (skus: string[]) => {
+    const bySku = new Map(products.map((p) => [p.sku, p]));
+    const out: Product[] = [];
+    const seen = new Set<string>();
+    for (const sku of skus) {
+      const p = bySku.get(sku);
+      if (p && !seen.has(sku)) {
+        seen.add(sku);
+        out.push(p);
+      }
+    }
+    return out;
+  };
+
+  const nouveautes = useMemo(() => pickBySkus(NOUVEAUTES_SKUS), [products]);
+  const bestSellers = useMemo(() => pickBySkus(BESTSELLER_SKUS), [products]);
+
+
   return (
     <div className="container py-10">
       <p className="text-sm font-medium text-primary tracking-wide uppercase">Catalogue</p>
