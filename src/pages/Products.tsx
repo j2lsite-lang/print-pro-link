@@ -67,11 +67,23 @@ export default function Products() {
   }, [categories]);
 
   useEffect(() => {
+    if (themes.length === 0) return;
+    fetchAllProductThemeMappings().then((mappings) => {
+      const c: Record<string, number> = {};
+      for (const t of themes) {
+        c[t.id] = new Set(mappings.filter((m) => m.theme_id === t.id).map((m) => m.sku)).size;
+      }
+      setThemeCounts(c);
+    });
+  }, [themes]);
+
+  useEffect(() => {
     Promise.all([getCatalogProducts(), fetchPublicCatalogSkuSet()])
       .then(([items, publicSkuSet]) => setProducts(items.filter((product) => publicSkuSet.has(product.sku))))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
+
 
   const filtered = useMemo(() => {
     return products.filter((product) => {
