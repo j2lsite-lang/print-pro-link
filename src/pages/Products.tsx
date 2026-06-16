@@ -179,28 +179,6 @@ export default function Products() {
         </div>
       )}
 
-      {!loading && bestSellers.length > 0 && (
-        <ProductSection
-          eyebrow="Les plus demandés"
-          title="Nos best-sellers"
-          subtitle="Les produits Print.com les plus commandés par nos clients."
-          items={bestSellers}
-          thumbnails={sectionThumbnails}
-        />
-      )}
-
-      {!loading && nouveautes.length > 0 && (
-        <ProductSection
-          eyebrow="Tout juste arrivés"
-          title="Nouveautés"
-          subtitle="Les derniers produits ajoutés au catalogue Print.com."
-          items={nouveautes}
-          thumbnails={sectionThumbnails}
-        />
-      )}
-
-
-
       {!themesLoading && themes.length > 0 && (
         <section className="mt-16">
           <p className="text-sm font-medium uppercase tracking-wide text-primary">Collections</p>
@@ -243,6 +221,26 @@ export default function Products() {
             ))}
           </div>
         </section>
+      )}
+
+      {!loading && nouveautes.length > 0 && (
+        <ProductSection
+          eyebrow="Tout juste arrivés"
+          title="Nouveautés"
+          subtitle="Les derniers produits ajoutés au catalogue Print.com."
+          items={nouveautes}
+          thumbnails={sectionThumbnails}
+        />
+      )}
+
+      {!loading && bestSellers.length > 0 && (
+        <ProductSection
+          eyebrow="Les plus demandés"
+          title="Nos best-sellers"
+          subtitle="Les produits Print.com les plus commandés par nos clients."
+          items={bestSellers}
+          thumbnails={sectionThumbnails}
+        />
       )}
 
 
