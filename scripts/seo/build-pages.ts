@@ -8,17 +8,19 @@ import { article } from "../../src/seo/content/fr";
 import { SERVICE_CONTENT } from "../../src/seo/content/services";
 import {
   CITY_PROFILES, DEPT_PROFILES, CITY_OFFICIAL, DEPT_OFFICIAL, CCI_GRAND_EST,
-  PRODUCT_CARDS, CATEGORY_LINKS_VARIED, SERVICE_LINKS_VARIED,
-  HERO_CITY_IMAGES, deptHero,
+  PRODUCT_CARDS, CATEGORY_LINKS_VARIED, SERVICE_LINKS_VARIED, J2L_ECOSYSTEM,
 } from "../../src/seo/content/local";
 import {
   breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
 } from "../../src/seo/schema";
 import { loadGeo } from "./geo-data";
 import {
-  cityCopy, deptCopy, seedOf, type GenCity, type GenDept, type NeighborRef,
+  cityCopy, deptCopy, seedOf, cityArchetype, type GenCity, type GenDept, type NeighborRef,
 } from "../../src/seo/content/geo-cities";
 import { regionCopy, type GenRegion } from "../../src/seo/content/regions";
+import {
+  cityHeroIndex, deptHeroIndex, regionHeroIndex, heroAt, HERO_BANK,
+} from "../../src/seo/content/hero-bank";
 
 // Catalog CTA used on category/subcategory SEO pages. SEO pages NEVER fetch or
 // embed the Print.com catalog/configurator — they only link to the existing one.
@@ -242,6 +244,44 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     { label: "voir tout le catalogue", path: "/catalogue" },
   ];
 
+  // ── J2L ecosystem links (deterministic subset per page) ──
+  // villes : 1 à 2 liens · départements : 2 à 3 · régions : les 4.
+  const ecoLinks = (seed: number, n: number): LinkItem[] => {
+    const out: LinkItem[] = [];
+    const start = seed % J2L_ECOSYSTEM.length;
+    for (let i = 0; i < Math.min(n, J2L_ECOSYSTEM.length); i++) {
+      out.push(J2L_ECOSYSTEM[(start + i) % J2L_ECOSYSTEM.length]);
+    }
+    return out;
+  };
+  const ecoGroup = (seed: number, n: number) => ({
+    heading: "L'écosystème J2L",
+    links: ecoLinks(seed, n),
+  });
+
+  // ── Hero assignment with neighbour avoidance ──
+  // Deterministic base index (archetype + seed) then, if a neighbouring city
+  // already uses the same hero, shift to the next free one so two adjacent
+  // cities rarely share the exact same visual.
+  const cityHero = new Map<string, number>();
+  for (const gc of geo.cities) {
+    const arch = cityArchetype({
+      name: gc.name, slug: gc.slug, cp: gc.postalCodes[0] || "",
+      department: gc.departmentName, departmentSlug: gc.departmentSlug,
+      region: gc.regionName, regionSlug: gc.regionSlug, neighbors: [],
+      economy: CITY_PROFILES[gc.slug]?.economy, audiences: CITY_PROFILES[gc.slug]?.audiences,
+    });
+    let idx = cityHeroIndex(arch, seedOf(gc.slug));
+    const usedByNeighbors = new Set<number>();
+    for (const ns of gc.nearbyCitySlugs || []) {
+      if (cityHero.has(ns)) usedByNeighbors.add(cityHero.get(ns)!);
+    }
+    for (let step = 0; step < HERO_BANK.length && usedByNeighbors.has(idx); step++) {
+      idx = (idx + 1) % HERO_BANK.length;
+    }
+    cityHero.set(gc.slug, idx);
+  }
+
   // ── Cities ──
   for (const gc of geo.cities) {
     const profile = CITY_PROFILES[gc.slug];
@@ -264,7 +304,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       events: profile?.events,
     };
     const copy = cityCopy(gen);
-    const heroVariant = (profile?.hero ?? ((seedOf(gc.slug) % 3) + 1)) as 1 | 2 | 3;
+    const hero = heroAt(cityHero.get(gc.slug) ?? cityHeroIndex(cityArchetype(gen), seedOf(gc.slug)));
     const crumb = [
       home,
       { name: "Zones desservies", path: "/imprimerie" },
@@ -285,12 +325,12 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       description: copy.description,
       h1: copy.h1,
       hero: {
-        image: HERO_CITY_IMAGES[heroVariant],
-        imageAlt: `Impression et supports de communication livrés à ${gc.name}`,
+        image: hero.file,
+        imageAlt: `${hero.alt} — livraison à ${gc.name}`,
         eyebrow: copy.heroEyebrow,
         tagline: copy.heroTagline,
         ctas: [
-          { label: "Voir le catalogue", path: "/catalogue", variant: "primary" },
+          { label: copy.ctaLabel, path: "/catalogue", variant: "primary" },
           { label: "Demander un devis", path: "/#devis", variant: "secondary" },
         ],
       },
@@ -298,7 +338,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       breadcrumb: crumb,
       sections: copy.sections,
       productGrid: { heading: copy.productGridHeading, intro: copy.productGridIntro, cards: PRODUCT_CARDS },
-      cta: { label: "Voir le catalogue", path: "/catalogue" },
+      cta: { label: copy.ctaLabel, path: "/catalogue" },
       faq: copy.faq,
       internalLinks: [
         ...(neighbors.length
@@ -313,6 +353,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
             { label: `Impression ${reg.dans}`, path: `/region/${gc.regionSlug}` },
           ],
         },
+        ecoGroup(seedOf(gc.slug), 2),
         { heading: "Passez à l'action", links: actionLinks },
       ],
       ...(ext.length ? { externalLinks: ext } : {}),
@@ -342,6 +383,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       sectors: dp?.sectors,
     };
     const copy = deptCopy(gen);
+    const hero = heroAt(deptHeroIndex(seedOf(gd.slug)));
     const crumb = [
       home,
       { name: "Zones desservies", path: "/imprimerie" },
@@ -363,12 +405,12 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       description: copy.description,
       h1: copy.h1,
       hero: {
-        image: deptHero(gd.slug),
-        imageAlt: `Impression et supports de communication livrés ${article(gd.name).dans}`,
+        image: hero.file,
+        imageAlt: `${hero.alt} — livraison ${article(gd.name).dans}`,
         eyebrow: copy.heroEyebrow,
         tagline: copy.heroTagline,
         ctas: [
-          { label: "Voir le catalogue", path: "/catalogue", variant: "primary" },
+          { label: copy.ctaLabel, path: "/catalogue", variant: "primary" },
           { label: "Demander un devis", path: "/#devis", variant: "secondary" },
         ],
       },
@@ -376,7 +418,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       breadcrumb: crumb,
       sections: copy.sections,
       productGrid: { heading: copy.productGridHeading, intro: copy.productGridIntro, cards: PRODUCT_CARDS },
-      cta: { label: "Voir le catalogue", path: "/catalogue" },
+      cta: { label: copy.ctaLabel, path: "/catalogue" },
       faq: copy.faq,
       internalLinks: [
         ...(cityLinks.length ? [{ heading: "Villes du département", links: cityLinks }] : []),
@@ -384,6 +426,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         { heading: "Votre région", links: [{ label: `Impression ${reg.dans}`, path: `/region/${gd.regionSlug}` }] },
         { heading: "Nos univers d'impression", links: variedCats() },
         { heading: "Nos services", links: variedServices() },
+        ecoGroup(seedOf(gd.slug), 3),
         { heading: "Passez à l'action", links: actionLinks },
       ],
       ...(ext.length ? { externalLinks: ext } : {}),
@@ -410,6 +453,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       cityNames: regionCities.map((c) => c.name),
     };
     const copy = regionCopy(gen);
+    const hero = heroAt(regionHeroIndex(seedOf(gr.slug)));
     const art = article(gr.name);
     const crumb = [
       home,
@@ -423,12 +467,12 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       description: copy.description,
       h1: copy.h1,
       hero: {
-        image: deptHero(gr.slug),
-        imageAlt: `Impression et supports de communication livrés ${art.dans}`,
+        image: hero.file,
+        imageAlt: `${hero.alt} — livraison ${art.dans}`,
         eyebrow: copy.heroEyebrow,
         tagline: copy.heroTagline,
         ctas: [
-          { label: "Voir le catalogue", path: "/catalogue", variant: "primary" },
+          { label: copy.ctaLabel, path: "/catalogue", variant: "primary" },
           { label: "Demander un devis", path: "/#devis", variant: "secondary" },
         ],
       },
@@ -436,13 +480,14 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       breadcrumb: crumb,
       sections: copy.sections,
       productGrid: { heading: copy.productGridHeading, intro: copy.productGridIntro, cards: PRODUCT_CARDS },
-      cta: { label: "Voir le catalogue", path: "/catalogue" },
+      cta: { label: copy.ctaLabel, path: "/catalogue" },
       faq: copy.faq,
       internalLinks: [
         ...(deptLinks.length ? [{ heading: "Départements de la région", links: deptLinks }] : []),
         ...(cityLinks.length ? [{ heading: "Villes desservies", links: cityLinks }] : []),
         { heading: "Nos univers d'impression", links: variedCats() },
         { heading: "Nos services", links: variedServices() },
+        ecoGroup(seedOf(gr.slug), J2L_ECOSYSTEM.length),
         { heading: "Passez à l'action", links: actionLinks },
       ],
       jsonLd: [

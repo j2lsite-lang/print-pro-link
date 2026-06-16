@@ -500,18 +500,10 @@ export const SERVICE_LINKS_VARIED: { anchor: string; path: string }[] = [
   { anchor: "découvrir la personnalisation", path: "/personnalisation" },
 ];
 
-export const HERO_CITY_IMAGES: Record<1 | 2 | 3, string> = {
-  1: "/seo/hero-print-1.jpg",
-  2: "/seo/hero-print-2.jpg",
-  3: "/seo/hero-print-3.jpg",
-};
-export const HERO_DEPT_IMAGES = ["/seo/hero-dept-1.jpg", "/seo/hero-dept-2.jpg"];
+// NOTE: the old fixed hero set (HERO_CITY_IMAGES / HERO_DEPT_IMAGES / deptHero)
+// has been removed. Hero visuals are now assigned from the 16-image bank in
+// src/seo/content/hero-bank.ts (archetype + seed + neighbour avoidance).
 
-export function deptHero(slug: string): string {
-  let h = 0;
-  for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0;
-  return HERO_DEPT_IMAGES[h % HERO_DEPT_IMAGES.length];
-}
 
 // ── J2L ecosystem (external sites of the group) ──
 // Rendered as a discreet internal-link group (renderer adds target/rel for
