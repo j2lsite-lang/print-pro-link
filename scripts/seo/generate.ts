@@ -63,7 +63,7 @@ function group(pages: SeoPage[]) {
  *  worker so its SEO-managed set matches EXACTLY the prerendered pages (no
  *  product served via the SPA fallback). Leaves all worker logic untouched —
  *  only the data lines are replaced. */
-function syncWorker(productSlugs: string[]) {
+function syncWorker(productSlugs: string[], themeSlugs: string[]) {
   const wp = resolve("public/cloudflare-worker-j2lprint.js");
   if (!existsSync(wp)) return;
   const geo = loadGeo();
@@ -72,15 +72,17 @@ function syncWorker(productSlugs: string[]) {
   const departments = arr(geo.departments.map((d) => d.slug));
   const regions = arr(geo.regions.map((r) => r.slug));
   const products = arr(productSlugs);
+  const themes = arr(themeSlugs);
   let src = readFileSync(wp, "utf8");
   src = src
     .replace(/const CITIES=\[[^\]]*\];/, `const CITIES=${cities};`)
     .replace(/const DEPARTMENTS=\[[^\]]*\];/, `const DEPARTMENTS=${departments};`)
     .replace(/const REGIONS=\[[^\]]*\];/, `const REGIONS=${regions};`)
+    .replace(/const THEMES\s*=\s*\[[\s\S]*?\];/, `const THEMES = ${themes};`)
     .replace(/const PRODUCTS\s*=\s*\[[\s\S]*?\];/, `const PRODUCTS = ${products};`);
   writeFileSync(wp, src);
   console.log(
-    `Worker synced: cities=${geo.cities.length} departments=${geo.departments.length} regions=${geo.regions.length} products=${productSlugs.length}`,
+    `Worker synced: cities=${geo.cities.length} departments=${geo.departments.length} regions=${geo.regions.length} themes=${themeSlugs.length} products=${productSlugs.length}`,
   );
 }
 
