@@ -327,7 +327,7 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/4.3.0");
+  headers.set("X-Worker", "j2lprint-seo/4.4.0");
 }
 
 /** Fetch origine : URL publique conservée, résolution DNS forcée vers lorigine dédiée. */
@@ -371,6 +371,27 @@ export default {
     const { pathname: p } = url;
     const method = request.method.toUpperCase();
     const isRead = method === "GET" || method === "HEAD";
+
+    // 7.1b — Diagnostic public : si cette route affiche l'app ou une 404,
+    // le Worker Cloudflare n'est pas déployé/routé sur j2lprint.fr.
+    if (p === "/__worker") {
+      const h = new Headers({
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+        "X-SEO-Managed": "1",
+      });
+      applySecurityHeaders(h);
+      return new Response(JSON.stringify({
+        ok: true,
+        worker: "j2lprint-seo/4.4.0",
+        host: url.hostname,
+        origin: ORIGIN_HOST,
+        products: PRODUCTS.length,
+        cities: CITIES.length,
+        departments: DEPARTMENTS.length,
+        regions: REGIONS.length,
+      }), { status: 200, headers: h });
+    }
 
     // 7.2 — Construit la requête vers lorigine dédiée Cloudflare.
     //        Pour une URL SEO propre (catégorie, ville, produit…), on demande
