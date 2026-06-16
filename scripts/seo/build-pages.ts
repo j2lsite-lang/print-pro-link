@@ -11,8 +11,9 @@ import {
   PRODUCT_CARDS, CATEGORY_LINKS_VARIED, SERVICE_LINKS_VARIED, J2L_ECOSYSTEM,
 } from "../../src/seo/content/local";
 import {
-  breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
+  breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd, productLd,
 } from "../../src/seo/schema";
+import { getProductSEOData } from "../../src/lib/product-seo";
 import { loadGeo } from "./geo-data";
 import {
   cityCopy, deptCopy, seedOf, cityArchetype, type GenCity, type GenDept, type NeighborRef,
