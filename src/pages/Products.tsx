@@ -141,6 +141,52 @@ export default function Products() {
         </div>
       )}
 
+      {!themesLoading && themes.length > 0 && (
+        <section className="mt-16">
+          <p className="text-sm font-medium uppercase tracking-wide text-primary">Collections</p>
+          <h2 className="mt-2 font-display text-3xl font-bold text-foreground">Thèmes</h2>
+          <p className="mt-2 max-w-3xl text-muted-foreground">
+            Parcourez le catalogue par thème pour trouver rapidement les produits adaptés à chaque occasion.
+          </p>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {themes.map((theme) => (
+              <Link
+                key={theme.id}
+                to={`/themes/${theme.slug}`}
+                className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:border-primary/40 hover:shadow-elevated"
+              >
+                <div className="aspect-[4/3] overflow-hidden bg-muted/50">
+                  {theme.image_url ? (
+                    <img
+                      src={theme.image_url}
+                      alt={theme.name}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <span className="text-5xl opacity-20">🎨</span>
+                    </div>
+                  )}
+                </div>
+                <div className="px-4 py-3.5 flex items-baseline justify-between gap-2">
+                  <h3 className="font-display text-sm font-semibold text-card-foreground transition-colors group-hover:text-primary truncate">
+                    {theme.name}
+                  </h3>
+                  {themeCounts[theme.id] != null && (
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      ({themeCounts[theme.id]})
+                    </span>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+
+
       <div className="mt-10">
         <Button
           variant={showAllProducts ? "default" : "outline"}
