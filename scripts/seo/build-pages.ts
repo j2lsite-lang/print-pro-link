@@ -11,8 +11,9 @@ import {
   PRODUCT_CARDS, CATEGORY_LINKS_VARIED, SERVICE_LINKS_VARIED, J2L_ECOSYSTEM,
 } from "../../src/seo/content/local";
 import {
-  breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd,
+  breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd, productLd,
 } from "../../src/seo/schema";
+import { getProductSEOData } from "../../src/lib/product-seo";
 import { loadGeo } from "./geo-data";
 import {
   cityCopy, deptCopy, seedOf, cityArchetype, type GenCity, type GenDept, type NeighborRef,
@@ -547,6 +548,195 @@ export async function buildAllPages(): Promise<SeoPage[]> {
   }
   return pages;
 }
+
+
+
+
+/* ----------------------------------------------------------------------------
+ * Product detail pages (/products/:sku)
+ * ----------------------------------------------------------------------------
+ * Prerenders a real, crawler-readable HTML file for every PUBLIC product so the
+ * Cloudflare worker can serve /products/<sku>/index.html in 200 with the right
+ * <title>, canonical, <h1> and content — never the SPA homepage fallback.
+ *
+ * IMPORTANT — this NEVER touches prices, the Print.com API contract or the
+ * runtime configurator. It only emits editorial SEO metadata + content. The
+ * live React route (ProductDetail) still fetches the catalog/price/configurator
+ * client-side and replaces this prerendered shell on hydration.
+ */
+
+interface CatalogProductLite {
+  sku: string;
+  name: string;
+  thumbnailUrl?: string | null;
+}
+
+function cmsAssetUrl(assetId: string | undefined, assets: Record<string, any> | undefined): string | null {
+  if (!assetId || !assets?.[assetId]?.file) return null;
+  return `https:${assets[assetId].file}`;
+}
+
+async function proxyCall(action: string, params: Record<string, string> = {}): Promise<any> {
+  if (!SB || !ANON) return null;
+  try {
+    const qs = new URLSearchParams({ action, ...params }).toString();
+    const r = await fetch(`${SB}/functions/v1/printcom-proxy?${qs}`, {
+      headers: { apikey: ANON, Authorization: `Bearer ${ANON}`, "Content-Type": "application/json" },
+    });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch {
+    return null;
+  }
+}
+
+/** Build the merged catalog (Print.com list + CMS) — mirror of the runtime
+ *  getCatalogProducts(), but pure Node and defensive (never throws). */
+async function fetchCatalogProducts(): Promise<Map<string, CatalogProductLite>> {
+  const [apiProducts, cms] = await Promise.all([
+    proxyCall("list-products", { lang: "fr-FR" }),
+    proxyCall("get-cms"),
+  ]);
+  const assets = cms?.asset as Record<string, any> | undefined;
+  const cmsProducts = cms?.product as Record<string, any> | undefined;
+  const merged = new Map<string, CatalogProductLite>();
+
+  for (const p of Array.isArray(apiProducts) ? apiProducts : []) {
+    const sku = p?.sku;
+    if (!sku) continue;
+    if (p?.active === false) continue;
+    const cmsProduct = cmsProducts
+      ? (Object.values(cmsProducts).find((it: any) => it?.sku === sku) as any)
+      : null;
+    const thumbnailUrl =
+      p?.thumbnailUrl || p?.thumbnail_url || cmsAssetUrl(cmsProduct?.image?.id || cmsProduct?.icon?.id, assets);
+    merged.set(sku, { sku, name: p?.titleSingle || p?.name || sku, thumbnailUrl });
+  }
+
+  for (const cmsProduct of Object.values(cmsProducts || {})) {
+    const sku = (cmsProduct as any)?.sku;
+    if (!sku) continue;
+    const thumbnailUrl = cmsAssetUrl((cmsProduct as any)?.image?.id || (cmsProduct as any)?.icon?.id, assets);
+    if (merged.has(sku)) {
+      const existing = merged.get(sku)!;
+      if (!existing.thumbnailUrl && thumbnailUrl) existing.thumbnailUrl = thumbnailUrl;
+      continue;
+    }
+    merged.set(sku, { sku, name: (cmsProduct as any)?.productName || sku, thumbnailUrl });
+  }
+  return merged;
+}
+
+function truncate(s: string, max = 158): string {
+  const clean = s.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  return `${clean.slice(0, max - 1).replace(/[\s,.;:]+\S*$/, "")}…`;
+}
+
+export async function buildProductPages(): Promise<SeoPage[]> {
+  const home: BreadcrumbItemLite = { name: "Accueil", path: "/" };
+
+  // 1. Public catalog = every SKU mapped to at least one category.
+  const mappings = await rest<{ sku: string; category_id: string }>(
+    "product_category_mappings?select=sku,category_id",
+  );
+  if (!mappings.length) return [];
+  const skuCategories = new Map<string, string[]>();
+  for (const m of mappings) {
+    if (!m?.sku || !m?.category_id) continue;
+    if (!skuCategories.has(m.sku)) skuCategories.set(m.sku, []);
+    skuCategories.get(m.sku)!.push(m.category_id);
+  }
+
+  // 2. Category tree (for breadcrumbs).
+  const cats = await rest<{ id: string; slug: string; name: string; parent_id: string | null }>(
+    "product_categories?select=id,slug,name,parent_id",
+  );
+  const catById = new Map(cats.map((c) => [c.id, c]));
+
+  // 3. Merged catalog (names + thumbnails) from Print.com via the proxy.
+  const catalog = await fetchCatalogProducts();
+  if (!catalog.size) return [];
+
+  const productCrumb = (sku: string, name: string): BreadcrumbItemLite[] => {
+    const ids = skuCategories.get(sku) || [];
+    const resolved = ids.map((id) => catById.get(id)).filter(Boolean) as typeof cats;
+    const sub = resolved.find((c) => c.parent_id);
+    const top = sub ? catById.get(sub.parent_id!) : resolved.find((c) => !c.parent_id);
+    const crumb: BreadcrumbItemLite[] = [home, { name: "Catalogue", path: "/catalogue" }];
+    if (top) crumb.push({ name: top.name, path: `/categorie/${top.slug}` });
+    if (top && sub) crumb.push({ name: sub.name, path: `/categorie/${top.slug}/${sub.slug}` });
+    crumb.push({ name, path: `/products/${sku}` });
+    return crumb;
+  };
+
+  const pages: SeoPage[] = [];
+  // Only PUBLIC products (mapped to a category), sorted for deterministic output.
+  const publicSkus = [...skuCategories.keys()].filter((sku) => catalog.has(sku)).sort();
+
+  for (const sku of publicSkus) {
+    const prod = catalog.get(sku)!;
+    const name = prod.name || sku;
+    const seo = getProductSEOData(name, sku);
+    const crumb = productCrumb(sku, name);
+    const path = `/products/${sku}`;
+    const lower = name.toLowerCase();
+
+    const sections = [
+      { heading: `À quoi sert votre ${lower} ?`, paragraphs: [seo.useCases] },
+      { heading: "Qualité d'impression et finitions", paragraphs: [seo.quality] },
+    ];
+
+    const related = crumb
+      .filter((c) => c.path.startsWith("/categorie/"))
+      .map((c) => ({ label: c.name, path: c.path }));
+
+    pages.push({
+      path,
+      title: truncate(`${name} – Impression personnalisée | J2L Print`, 65),
+      description: truncate(
+        `${name} sur mesure : configuration en ligne, formats, matières et finitions au choix. Devis gratuit et livraison partout en France avec J2L Print.`,
+      ),
+      h1: name,
+      intro: [seo.intro],
+      breadcrumb: crumb,
+      sections,
+      cta: { label: "Demander un devis gratuit", path: "/#devis" },
+      faq: seo.faq,
+      internalLinks: [
+        ...(related.length ? [{ heading: "Catégorie", links: related }] : []),
+        {
+          heading: "Nos services",
+          links: [
+            { label: "Impression numérique", path: "/impression-numerique" },
+            { label: "Grand format", path: "/grand-format" },
+            { label: "Supports publicitaires", path: "/supports-publicitaires" },
+            { label: "Personnalisation", path: "/personnalisation" },
+          ],
+        },
+        { heading: "Catalogue", links: [{ label: "Voir tout le catalogue", path: "/catalogue" }] },
+      ],
+      jsonLd: [
+        breadcrumbLd(crumb),
+        productLd({
+          name,
+          description: truncate(seo.intro, 300),
+          sku,
+          path,
+          image: prod.thumbnailUrl || null,
+          // Prices are NEVER computed/asserted here — left undefined on purpose.
+          fromPrice: null,
+        }),
+        ...(seo.faq && seo.faq.length ? [faqLd(seo.faq)] : []),
+      ],
+      ogType: "product",
+    });
+  }
+
+  return pages;
+}
+
+
 
 
 type BreadcrumbItemLite = { name: string; path: string };

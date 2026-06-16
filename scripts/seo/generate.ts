@@ -6,7 +6,7 @@
 //     (no old URLs, no products yet, no noindex pages).
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from "fs";
 import { resolve } from "path";
-import { buildAllPages } from "./build-pages";
+import { buildAllPages, buildProductPages } from "./build-pages";
 import { loadGeo } from "./geo-data";
 import type { SeoPage } from "../../src/seo/types";
 
@@ -59,10 +59,11 @@ function group(pages: SeoPage[]) {
   };
 }
 
-/** Regenerate the geographic arrays in the Cloudflare worker from the merged
- *  national reference (no manually limited arrays). Leaves all worker logic
- *  untouched — only the data lines are replaced. */
-function syncWorker() {
+/** Regenerate the geographic arrays + the product slug list in the Cloudflare
+ *  worker so its SEO-managed set matches EXACTLY the prerendered pages (no
+ *  product served via the SPA fallback). Leaves all worker logic untouched —
+ *  only the data lines are replaced. */
+function syncWorker(productSlugs: string[]) {
   const wp = resolve("public/cloudflare-worker-j2lprint.js");
   if (!existsSync(wp)) return;
   const geo = loadGeo();
@@ -70,13 +71,17 @@ function syncWorker() {
   const cities = arr(geo.cities.map((c) => c.slug));
   const departments = arr(geo.departments.map((d) => d.slug));
   const regions = arr(geo.regions.map((r) => r.slug));
+  const products = arr(productSlugs);
   let src = readFileSync(wp, "utf8");
   src = src
     .replace(/const CITIES=\[[^\]]*\];/, `const CITIES=${cities};`)
     .replace(/const DEPARTMENTS=\[[^\]]*\];/, `const DEPARTMENTS=${departments};`)
-    .replace(/const REGIONS=\[[^\]]*\];/, `const REGIONS=${regions};`);
+    .replace(/const REGIONS=\[[^\]]*\];/, `const REGIONS=${regions};`)
+    .replace(/const PRODUCTS\s*=\s*\[[\s\S]*?\];/, `const PRODUCTS = ${products};`);
   writeFileSync(wp, src);
-  console.log(`Worker synced: cities=${geo.cities.length} departments=${geo.departments.length} regions=${geo.regions.length}`);
+  console.log(
+    `Worker synced: cities=${geo.cities.length} departments=${geo.departments.length} regions=${geo.regions.length} products=${productSlugs.length}`,
+  );
 }
 
 async function main() {
@@ -88,6 +93,15 @@ async function main() {
   const byPath: Record<string, SeoPage> = {};
   for (const p of pages) byPath[p.path] = p;
   writeFileSync(resolve(genDir, "pages.json"), JSON.stringify(byPath, null, 0));
+
+  // 1b. product pages — prerendered separately (products.json) so the runtime
+  //     React bundle is NOT bloated with ~940 entries. Only the build-time
+  //     prerenderer reads this file. Never affects prices/API/configurator.
+  const productPages = await buildProductPages();
+  const productsByPath: Record<string, SeoPage> = {};
+  for (const p of productPages) productsByPath[p.path] = p;
+  writeFileSync(resolve(genDir, "products.json"), JSON.stringify(productsByPath, null, 0));
+  const productSlugs = productPages.map((p) => p.path.replace(/^\/products\//, ""));
 
   // 2. sitemaps — only these live, indexable pages
   const dir = resolve("public/sitemaps");
@@ -102,16 +116,17 @@ async function main() {
   write("static.xml", g.static, "0.9", "weekly");
   write("categories.xml", g.categories, "0.8", "weekly");
   write("subcategories.xml", g.subcategories, "0.7", "weekly");
+  write("products.xml", productPages.map((p) => p.path), "0.7", "weekly");
   write("cities.xml", g.cities, "0.6", "monthly");
   write("departments.xml", g.departments, "0.5", "monthly");
   write("regions.xml", g.regions, "0.6", "monthly");
   writeFileSync(resolve("public/sitemap.xml"), index(files));
 
-  // 3. keep the Cloudflare worker geographic arrays in sync
-  syncWorker();
+  // 3. keep the Cloudflare worker geographic + product arrays in sync
+  syncWorker(productSlugs);
 
-  console.log(`SEO build: ${pages.length} pages → pages.json`);
-  console.log(`Sitemaps: static=${g.static.length} categories=${g.categories.length} subcategories=${g.subcategories.length} cities=${g.cities.length} departments=${g.departments.length} regions=${g.regions.length}`);
+  console.log(`SEO build: ${pages.length} pages + ${productPages.length} products → pages.json/products.json`);
+  console.log(`Sitemaps: static=${g.static.length} categories=${g.categories.length} subcategories=${g.subcategories.length} products=${productPages.length} cities=${g.cities.length} departments=${g.departments.length} regions=${g.regions.length}`);
 }
 
 main();
