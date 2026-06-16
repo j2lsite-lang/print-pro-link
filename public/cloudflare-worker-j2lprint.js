@@ -333,7 +333,7 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/4.4.0");
+  headers.set("X-Worker", "j2lprint-seo/4.5.0");
 }
 
 /** Fetch origine : URL publique conservée, résolution DNS forcée vers lorigine dédiée. */
