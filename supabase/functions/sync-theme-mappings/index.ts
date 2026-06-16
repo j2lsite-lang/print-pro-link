@@ -33,6 +33,42 @@ interface CmsMenu {
 }
 
 /**
+ * Manual themes that do NOT exist in the Print.com CMS "themes-fr" menu but are
+ * requested for J2L Print. Each lists the SKUs to associate; every SKU is
+ * intersected with the public catalogue, so only working product pages appear.
+ * Duplicates inside a theme are removed; unicity stays (sku, theme_id).
+ */
+const MANUAL_THEMES: { slug: string; name: string; skus: string[] }[] = [
+  {
+    slug: "coupe-du-monde-2026",
+    name: "Coupe du Monde 2026",
+    skus: [
+      "banners", "beer-mats", "bunting-flags", "buttons", "coffee-paper-cups",
+      "cotton-gymsac", "fut-cards", "grs-pp-sunglasses", "menus", "neon-posters",
+      "polyester-gymsac", "posters", "reusable-cups", "reusable-cups-all-over",
+      "rpet-sunglasses", "self-adhesive-posters", "sky-dancers",
+      "sport-shirt-basic-1", "sport-shirt-basic-2", "sport-shirt-budget-2",
+      "sport-shirt-premium-2", "stick-flags", "waterproof-posters",
+      "sunglasses-flag", "face-paint-stick", "beachflags", "pole-flags",
+      "boerke-beer-glass-33cl", "classico-longdrink-glass-32cl", "cap-opener",
+      "beer-crate", "headbands", "double-knit-thinsulate-hats",
+    ],
+  },
+  {
+    slug: "kit-du-supporter",
+    name: "Le kit du supporter",
+    skus: [
+      "stick-flags", "bunting-flags", "sunglasses-flag", "grs-pp-sunglasses",
+      "rpet-sunglasses", "face-paint-stick", "buttons", "sport-shirt-basic-1",
+      "sport-shirt-basic-2", "sport-shirt-budget-2", "sport-shirt-premium-2",
+      "headbands", "double-knit-thinsulate-hats", "cotton-gymsac",
+      "polyester-gymsac", "beachflags", "pole-flags", "reusable-cups",
+      "reusable-cups-all-over",
+    ],
+  },
+];
+
+/**
  * Deterministic sync of product→theme mappings from the Print.com CMS.
  * Reads the French "themes-fr" menu (the themes shown at
  * app.print.com/catalogue/themes) and links each theme to its products.
@@ -151,8 +187,31 @@ Deno.serve(async (req: Request) => {
       perTheme.push({ slug, name, valid: valid.length, total: skus.size });
     }
 
+    // 5b. Manual themes (not in the CMS menu). Upsert + map validated SKUs.
+    for (const mt of MANUAL_THEMES) {
+      const { data: themeRow, error: upErr } = await supabase
+        .from("product_themes")
+        .upsert(
+          { name: mt.name, slug: mt.slug, sort_order: sortOrder++ },
+          { onConflict: "slug" },
+        )
+        .select("id")
+        .single();
+      if (upErr || !themeRow) {
+        console.error(`[sync-themes] upsert manual theme ${mt.slug} failed:`, upErr?.message);
+        continue;
+      }
+      const valid = [...new Set(mt.skus)].filter((s) => publicSkus.has(s));
+      for (const sku of valid) allMappings.push({ sku, theme_id: themeRow.id });
+      perTheme.push({ slug: mt.slug, name: mt.name, valid: valid.length, total: mt.skus.length });
+    }
+
     // 6. Remove themes no longer in the menu (and their mappings cascade).
-    const activeSlugs = themeGroups.map((g) => g.slug.trim());
+    //    Manual theme slugs are always preserved.
+    const activeSlugs = [
+      ...themeGroups.map((g) => g.slug.trim()),
+      ...MANUAL_THEMES.map((m) => m.slug),
+    ];
     const { data: existingThemes } = await supabase.from("product_themes").select("id, slug");
     const staleIds = (existingThemes || [])
       .filter((t) => !activeSlugs.includes(t.slug))
