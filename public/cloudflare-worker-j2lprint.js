@@ -548,8 +548,13 @@ export default {
     const method = request.method.toUpperCase();
     const isRead = method === "GET" || method === "HEAD";
 
-    // 7.2 — Construit la requête vers lorigine Lovable
-    const originUrl = new URL(url.pathname + url.search, LOVABLE_ORIGIN);
+    // 7.2 — Construit la requête vers lorigine Lovable.
+    //        Pour une URL SEO propre (catégorie, ville, produit…), on demande
+    //        explicitement le fichier statique prérendu /…/index.html, sinon
+    //        lhébergement SPA renvoie son fallback (la page daccueil) et la
+    //        page sert alors le mauvais title / canonical / H1.
+    const originPathname = seoOriginPathname(p) || url.pathname;
+    const originUrl = new URL(originPathname + url.search, LOVABLE_ORIGIN);
     const originRequest = new Request(originUrl.toString(), request);
     originRequest.headers.set("Host", ORIGIN_HOST);
     originRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
