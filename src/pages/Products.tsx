@@ -374,7 +374,8 @@ function ProductSection({
               </h3>
             </div>
           </Link>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
