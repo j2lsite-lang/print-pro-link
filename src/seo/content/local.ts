@@ -512,3 +512,14 @@ export function deptHero(slug: string): string {
   for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0;
   return HERO_DEPT_IMAGES[h % HERO_DEPT_IMAGES.length];
 }
+
+// ── J2L ecosystem (external sites of the group) ──
+// Rendered as a discreet internal-link group (renderer adds target/rel for
+// external links). Never call these "backlinks": specialised group sites.
+import type { LinkItem as _LinkItemEco } from "../types";
+export const J2L_ECOSYSTEM: _LinkItemEco[] = [
+  { label: "J2L Publicité — objets publicitaires, communication et services personnalisés", path: "https://www.j2lpublicite.fr", external: true },
+  { label: "J2L Textiles — vêtements professionnels et textiles personnalisés", path: "https://www.j2ltextiles.fr", external: true },
+  { label: "PizzPub — boîtes à pizza personnalisées pour événements et communication locale", path: "https://www.pizzpub.fr", external: true },
+  { label: "BaguettPub — sacs à pains publicitaires personnalisés", path: "https://www.baguettpub.fr", external: true },
+];
