@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAllProductCategoryMappings } from "@/lib/catalog-mappings";
 
 export interface ProductCategory {
   id: string;
@@ -74,14 +75,9 @@ export function useSkusForCategory(categoryId: string | undefined) {
 
       const categoryIds = [categoryId!, ...(subCats?.map(s => s.id) || [])];
 
-      // Get all SKUs from these categories
-      const { data } = await supabase
-        .from("product_category_mappings")
-        .select("sku")
-        .in("category_id", categoryIds);
-
-      // Deduplicate
-      const uniqueSkus = [...new Set(data?.map(d => d.sku) || [])];
+      const mappings = await fetchAllProductCategoryMappings();
+      const categorySet = new Set(categoryIds);
+      const uniqueSkus = [...new Set(mappings.filter((d) => categorySet.has(d.category_id)).map((d) => d.sku))];
       setSkus(uniqueSkus);
       setLoading(false);
     }
