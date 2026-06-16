@@ -388,13 +388,15 @@ export default {
       applySecurityHeaders(h);
       return new Response(JSON.stringify({
         ok: true,
-        worker: "j2lprint-seo/4.4.0",
+        worker: "j2lprint-seo/4.5.0",
         host: url.hostname,
         origin: ORIGIN_HOST,
         products: PRODUCTS.length,
+        themes: THEMES.length,
         cities: CITIES.length,
         departments: DEPARTMENTS.length,
         regions: REGIONS.length,
+        fallbackToHome: false,
       }), { status: 200, headers: h });
     }
 
