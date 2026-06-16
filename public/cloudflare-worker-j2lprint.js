@@ -581,11 +581,13 @@ export default {
     //        LURL publique reste https://j2lprint.fr/…, cf.resolveOverride
     //        force Cloudflare à joindre origin.j2lprint.fr, hors route Worker,
     //        et le Host envoyé à lorigine reste celui de lhébergement Lovable.
+    const seoPathname = seoOriginPathname(p);
+    const rewrote = Boolean(seoPathname) && seoPathname !== url.pathname;
     const originUrl = new URL(request.url);
     originUrl.protocol = "https:";
     originUrl.hostname = CANONICAL_HOST;
     originUrl.port = "";
-    originUrl.pathname = seoOriginPathname(p) || url.pathname;
+    originUrl.pathname = seoPathname || url.pathname;
     //        CORRECTIF : le Host envoyé à l'origine DOIT rester le domaine
     //        canonique (j2lprint.fr). Lhébergement Lovable redirige (302)
     //        toute requête *.lovable.app vers le domaine personnalisé : envoyer
@@ -596,6 +598,15 @@ export default {
     originRequest.headers.set("Host", CANONICAL_HOST);
     originRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
     originRequest.headers.set("X-Forwarded-Proto", "https");
+
+    //        Requête de repli sur lURL propre (sans /index.html), utilisée si
+    //        le HTML prérendu nexiste pas (fiches produits non prérendues).
+    const cleanUrl = new URL(originUrl.toString());
+    cleanUrl.pathname = url.pathname;
+    const cleanRequest = new Request(cleanUrl.toString(), request);
+    cleanRequest.headers.set("Host", CANONICAL_HOST);
+    cleanRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
+    cleanRequest.headers.set("X-Forwarded-Proto", "https");
 
     // 7.3 — Détecte une session connectée (jamais de cache pour ces requêtes)
     const hasSession =
