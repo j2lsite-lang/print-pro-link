@@ -19,13 +19,13 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/categorie/impression-papier/brochures-magazines</loc>
+    <loc>https://j2lprint.fr/categorie/impression-papier/flyers-depliants-affiches</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/categorie/impression-papier/flyers-depliants-affiches</loc>
+    <loc>https://j2lprint.fr/categorie/impression-papier/brochures-magazines</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -115,6 +115,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://j2lprint.fr/categorie/etiquettes-stickers/autocollants-rouleaux</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://j2lprint.fr/categorie/etiquettes-stickers/petits-autocollants</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -134,12 +140,6 @@
   </url>
   <url>
     <loc>https://j2lprint.fr/categorie/etiquettes-stickers/films-adhesifs-type</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/categorie/etiquettes-stickers/autocollants-rouleaux</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -223,6 +223,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://j2lprint.fr/categorie/textiles-accessoires/textiles-sport</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://j2lprint.fr/categorie/textiles-accessoires/textiles-bain</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -242,12 +248,6 @@
   </url>
   <url>
     <loc>https://j2lprint.fr/categorie/textiles-accessoires/produits-bebes</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/categorie/textiles-accessoires/textiles-sport</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
