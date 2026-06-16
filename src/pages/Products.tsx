@@ -23,6 +23,7 @@ export default function Products() {
   const { themes, loading: themesLoading } = useThemes();
   const [categoryCounts, setCategoryCounts] = useState<CategoryCount>({});
   const [themeCounts, setThemeCounts] = useState<Record<string, number>>({});
+  const [sectionThumbnails, setSectionThumbnails] = useState<Record<string, string>>({});
 
   useSEO({
     title: "Catalogue produits – Impression en ligne",
