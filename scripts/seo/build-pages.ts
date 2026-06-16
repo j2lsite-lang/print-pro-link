@@ -405,12 +405,12 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       description: copy.description,
       h1: copy.h1,
       hero: {
-        image: deptHero(gd.slug),
-        imageAlt: `Impression et supports de communication livrés ${article(gd.name).dans}`,
+        image: hero.file,
+        imageAlt: `${hero.alt} — livraison ${article(gd.name).dans}`,
         eyebrow: copy.heroEyebrow,
         tagline: copy.heroTagline,
         ctas: [
-          { label: "Voir le catalogue", path: "/catalogue", variant: "primary" },
+          { label: copy.ctaLabel, path: "/catalogue", variant: "primary" },
           { label: "Demander un devis", path: "/#devis", variant: "secondary" },
         ],
       },
@@ -418,7 +418,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       breadcrumb: crumb,
       sections: copy.sections,
       productGrid: { heading: copy.productGridHeading, intro: copy.productGridIntro, cards: PRODUCT_CARDS },
-      cta: { label: "Voir le catalogue", path: "/catalogue" },
+      cta: { label: copy.ctaLabel, path: "/catalogue" },
       faq: copy.faq,
       internalLinks: [
         ...(cityLinks.length ? [{ heading: "Villes du département", links: cityLinks }] : []),
@@ -426,6 +426,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         { heading: "Votre région", links: [{ label: `Impression ${reg.dans}`, path: `/region/${gd.regionSlug}` }] },
         { heading: "Nos univers d'impression", links: variedCats() },
         { heading: "Nos services", links: variedServices() },
+        ecoGroup(seedOf(gd.slug), 3),
         { heading: "Passez à l'action", links: actionLinks },
       ],
       ...(ext.length ? { externalLinks: ext } : {}),
