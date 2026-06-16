@@ -217,6 +217,8 @@ const KNOWN_SITEMAPS = [
 const MANAGED_SEO_PATHS = new Set([
   ...STATIC_SEO_PATHS,
   ...EDITORIAL_PATHS,
+  "/themes",
+  ...THEMES.map((s) => `/themes/${s}`),
   ...CITIES.map((s) => `/ville/${s}`),
   ...CITIES.map((s) => `/imprimerie/${s}`),
   ...DEPARTMENTS.map((s) => `/departement/${s}`),
