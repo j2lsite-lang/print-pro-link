@@ -6,6 +6,7 @@ import { getCatalogProducts, type CatalogProduct } from "@/lib/printcom";
 import { supabase } from "@/integrations/supabase/client";
 import { useCategoryBySlug, useCategories, useSkusForCategory } from "@/hooks/useCategories";
 import { useSEO } from "@/hooks/useSEO";
+import { fetchAllProductCategoryMappings } from "@/lib/catalog-mappings";
 
 interface Product extends CatalogProduct {}
 
@@ -63,12 +64,10 @@ export default function CategoryProducts() {
   useEffect(() => {
     if (subCategories.length === 0) return;
     const subIds = subCategories.map((s) => s.id);
-    supabase
-      .from("product_category_mappings")
-      .select("sku, category_id")
-      .in("category_id", subIds)
-      .then(({ data }) => {
-        if (!data) return;
+    fetchAllProductCategoryMappings()
+      .then((mappings) => {
+        const subIdSet = new Set(subIds);
+        const data = mappings.filter((mapping) => subIdSet.has(mapping.category_id));
         const counts: Record<string, number> = {};
         for (const sub of subCategories) {
           const uniqueSkus = new Set(data.filter((m) => m.category_id === sub.id).map((m) => m.sku));

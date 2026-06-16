@@ -7,6 +7,7 @@ import { getCatalogProducts, type CatalogProduct } from "@/lib/printcom";
 import { useCategories } from "@/hooks/useCategories";
 import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
+import { fetchAllProductCategoryMappings, fetchPublicCatalogSkuSet } from "@/lib/catalog-mappings";
 
 interface Product extends CatalogProduct {}
 
@@ -45,11 +46,7 @@ export default function Products() {
         }
       });
 
-      const { data: mappings } = await supabase
-        .from("product_category_mappings")
-        .select("sku, category_id");
-
-      if (!mappings) return;
+      const mappings = await fetchAllProductCategoryMappings();
 
       const counts: CategoryCount = {};
       for (const cat of categories) {
@@ -66,8 +63,8 @@ export default function Products() {
   }, [categories]);
 
   useEffect(() => {
-    getCatalogProducts()
-      .then(setProducts)
+    Promise.all([getCatalogProducts(), fetchPublicCatalogSkuSet()])
+      .then(([items, publicSkuSet]) => setProducts(items.filter((product) => publicSkuSet.has(product.sku))))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
