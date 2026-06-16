@@ -28,7 +28,8 @@
 const CANONICAL_HOST  = "j2lprint.fr";
 const CANONICAL_ORIGIN = "https://j2lprint.fr";
 const ORIGIN_HOST = "origin.j2lprint.fr";
-const LOVABLE_ORIGIN_HOST = "print-pro-link.lovable.app";
+// LOVABLE_ORIGIN_HOST retiré : provoquait une boucle de redirection (voir 7.2).
+// const LOVABLE_ORIGIN_HOST = "print-pro-link.lovable.app";
 
 const HTML_TTL  = 300;       // 5 minutes  — pages HTML
 const ASSET_TTL = 31536000;  // 1 an       — assets immuables (hash dans le nom)
@@ -527,7 +528,7 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/4.2.0");
+  headers.set("X-Worker", "j2lprint-seo/4.3.0");
 }
 
 /** Fetch origine : URL publique conservée, résolution DNS forcée vers lorigine dédiée. */
@@ -537,6 +538,20 @@ function fetchOrigin(originRequest) {
       resolveOverride: ORIGIN_HOST,
     },
   });
+}
+
+/**
+ * Fetch origine avec repli : on demande dabord le HTML prérendu (/…/index.html).
+ * Si ce fichier nexiste pas (404/403 — typiquement les fiches produits
+ * rendues côté client, non prérendues), on rejoue la requête sur lURL propre
+ * pour servir le shell SPA en 200 au lieu dun 404.
+ */
+async function fetchOriginWithFallback(seoRequest, cleanRequest, rewrote) {
+  const resp = await fetchOrigin(seoRequest);
+  if (rewrote && (resp.status === 404 || resp.status === 403)) {
+    return fetchOrigin(cleanRequest);
+  }
+  return resp;
 }
 
 /* ----------------------------------------------------------------------------
@@ -566,15 +581,32 @@ export default {
     //        LURL publique reste https://j2lprint.fr/…, cf.resolveOverride
     //        force Cloudflare à joindre origin.j2lprint.fr, hors route Worker,
     //        et le Host envoyé à lorigine reste celui de lhébergement Lovable.
+    const seoPathname = seoOriginPathname(p);
+    const rewrote = Boolean(seoPathname) && seoPathname !== url.pathname;
     const originUrl = new URL(request.url);
     originUrl.protocol = "https:";
     originUrl.hostname = CANONICAL_HOST;
     originUrl.port = "";
-    originUrl.pathname = seoOriginPathname(p) || url.pathname;
+    originUrl.pathname = seoPathname || url.pathname;
+    //        CORRECTIF : le Host envoyé à l'origine DOIT rester le domaine
+    //        canonique (j2lprint.fr). Lhébergement Lovable redirige (302)
+    //        toute requête *.lovable.app vers le domaine personnalisé : envoyer
+    //        Host: print-pro-link.lovable.app provoquait donc une BOUCLE de
+    //        redirection. Avec Host: j2lprint.fr + resolveOverride(origin),
+    //        lorigine sert directement le HTML prérendu (/…/index.html) en 200.
     const originRequest = new Request(originUrl.toString(), request);
-    originRequest.headers.set("Host", LOVABLE_ORIGIN_HOST);
-    originRequest.headers.set("X-Forwarded-Host", LOVABLE_ORIGIN_HOST);
+    originRequest.headers.set("Host", CANONICAL_HOST);
+    originRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
     originRequest.headers.set("X-Forwarded-Proto", "https");
+
+    //        Requête de repli sur lURL propre (sans /index.html), utilisée si
+    //        le HTML prérendu nexiste pas (fiches produits non prérendues).
+    const cleanUrl = new URL(originUrl.toString());
+    cleanUrl.pathname = url.pathname;
+    const cleanRequest = new Request(cleanUrl.toString(), request);
+    cleanRequest.headers.set("Host", CANONICAL_HOST);
+    cleanRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
+    cleanRequest.headers.set("X-Forwarded-Proto", "https");
 
     // 7.3 — Détecte une session connectée (jamais de cache pour ces requêtes)
     const hasSession =
@@ -586,7 +618,7 @@ export default {
     const isHead = method === "HEAD";
     const bypassCache = !isRead || isHead || hasSession || isNoCachePath(p);
     if (bypassCache) {
-      const resp = await fetchOrigin(originRequest);
+      const resp = await fetchOriginWithFallback(originRequest, cleanRequest, rewrote);
       const out = new Response(resp.body, resp);
       out.headers.set("Cache-Control", "no-store");
       applySecurityHeaders(out.headers);
@@ -603,7 +635,7 @@ export default {
       return hit;
     }
 
-    const response = await fetchOrigin(originRequest);
+    const response = await fetchOriginWithFallback(originRequest, cleanRequest, rewrote);
     const ct = response.headers.get("Content-Type") || "";
 
     // 7.5 — Sitemaps & robots.txt
