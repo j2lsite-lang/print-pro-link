@@ -452,7 +452,7 @@ export default {
       return hit;
     }
 
-    const response = await fetchOriginWithFallback(originRequest, cleanRequest, rewrote);
+    const response = await fetchOrigin(originRequest);
     const ct = response.headers.get("Content-Type") || "";
 
     // 7.5 — Sitemaps & robots.txt
