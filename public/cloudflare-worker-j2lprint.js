@@ -147,6 +147,10 @@ const REGIONS = [
   "normandie", "nouvelle-aquitaine", "occitanie", "pays-de-la-loire", "provence-alpes-cote-d-azur"
 ];
 
+// Thèmes / collections (slugs des pages /themes/:slug). Synchronisé par
+// scripts/seo/generate.ts avec les thèmes prérendus.
+const THEMES = ["coupe-du-monde-2026","easter","events","hospitality-industry","interior-and-decoration-theme","kit-du-supporter","new-and-updated","new-years-resolutions","office-theme","sale","summer-theme","sustainable","valentine","verkiezingsdrukwerk"];
+
 /* ----------------------------------------------------------------------------
  * 3. Arborescence du catalogue : services, catégories & sous-catégories
  * ------------------------------------------------------------------------- */
@@ -213,6 +217,8 @@ const KNOWN_SITEMAPS = [
 const MANAGED_SEO_PATHS = new Set([
   ...STATIC_SEO_PATHS,
   ...EDITORIAL_PATHS,
+  "/themes",
+  ...THEMES.map((s) => `/themes/${s}`),
   ...CITIES.map((s) => `/ville/${s}`),
   ...CITIES.map((s) => `/imprimerie/${s}`),
   ...DEPARTMENTS.map((s) => `/departement/${s}`),
@@ -327,7 +333,7 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/4.4.0");
+  headers.set("X-Worker", "j2lprint-seo/4.5.0");
 }
 
 /** Fetch origine : URL publique conservée, résolution DNS forcée vers lorigine dédiée. */
@@ -340,18 +346,17 @@ function fetchOrigin(originRequest) {
 }
 
 /**
- * Fetch origine avec repli : on demande dabord le HTML prérendu (/…/index.html).
- * Si ce fichier nexiste pas (404/403 — typiquement les fiches produits
- * rendues côté client, non prérendues), on rejoue la requête sur lURL propre
- * pour servir le shell SPA en 200 au lieu dun 404.
+ * AUCUN repli vers la page d'accueil.
+ *
+ * Pour une URL SEO propre (catégorie, sous-catégorie, ville, département,
+ * région, service, thème, fiche produit), on demande UNIQUEMENT le fichier
+ * statique prérendu /…/index.html. Toutes ces pages sont prérendues au build :
+ *   - si le fichier existe   -> 200 + vrai HTML (title/canonical/H1 propres) ;
+ *   - si le fichier manque   -> 404 réel (jamais le shell SPA / la home).
+ * Les chemins NON gérés (catalogue dynamique /products, /cart, /themes hors
+ * liste, etc.) passent par leur URL propre et conservent le rendu SPA normal.
  */
-async function fetchOriginWithFallback(seoRequest, cleanRequest, rewrote) {
-  const resp = await fetchOrigin(seoRequest);
-  if (rewrote && (resp.status === 404 || resp.status === 403)) {
-    return fetchOrigin(cleanRequest);
-  }
-  return resp;
-}
+
 
 /* ----------------------------------------------------------------------------
  * 7. Handler principal
@@ -383,50 +388,42 @@ export default {
       applySecurityHeaders(h);
       return new Response(JSON.stringify({
         ok: true,
-        worker: "j2lprint-seo/4.4.0",
+        worker: "j2lprint-seo/4.5.0",
         host: url.hostname,
         origin: ORIGIN_HOST,
         products: PRODUCTS.length,
+        themes: THEMES.length,
         cities: CITIES.length,
         departments: DEPARTMENTS.length,
         regions: REGIONS.length,
+        fallbackToHome: false,
       }), { status: 200, headers: h });
     }
 
     // 7.2 — Construit la requête vers lorigine dédiée Cloudflare.
-    //        Pour une URL SEO propre (catégorie, ville, produit…), on demande
-    //        explicitement le fichier statique prérendu /…/index.html, sinon
-    //        lhébergement SPA renvoie son fallback (la page daccueil) et la
-    //        page sert alors le mauvais title / canonical / H1.
+    //        Pour une URL SEO propre (catégorie, sous-catégorie, ville,
+    //        département, région, service, thème, fiche produit), on demande
+    //        EXCLUSIVEMENT le fichier statique prérendu /…/index.html. Aucun
+    //        repli vers l'URL propre n'est tenté : si le fichier manque, on
+    //        renvoie une vraie 404 (jamais la page d'accueil).
     //        LURL publique reste https://j2lprint.fr/…, cf.resolveOverride
-    //        force Cloudflare à joindre origin.j2lprint.fr, hors route Worker,
-    //        et le Host envoyé à lorigine reste celui de lhébergement Lovable.
+    //        force Cloudflare à joindre origin.j2lprint.fr, hors route Worker.
     const seoPathname = seoOriginPathname(p);
-    const rewrote = Boolean(seoPathname) && seoPathname !== url.pathname;
     const originUrl = new URL(request.url);
     originUrl.protocol = "https:";
     originUrl.hostname = CANONICAL_HOST;
     originUrl.port = "";
     originUrl.pathname = seoPathname || url.pathname;
-    //        CORRECTIF : le Host envoyé à l'origine DOIT rester le domaine
-    //        canonique (j2lprint.fr). Lhébergement Lovable redirige (302)
-    //        toute requête *.lovable.app vers le domaine personnalisé : envoyer
-    //        Host: print-pro-link.lovable.app provoquait donc une BOUCLE de
-    //        redirection. Avec Host: j2lprint.fr + resolveOverride(origin),
-    //        lorigine sert directement le HTML prérendu (/…/index.html) en 200.
+    //        Le Host envoyé à l'origine DOIT rester le domaine canonique
+    //        (j2lprint.fr). Lhébergement Lovable redirige (302) toute requête
+    //        *.lovable.app vers le domaine personnalisé : envoyer un Host
+    //        *.lovable.app provoquerait une BOUCLE de redirection. Avec
+    //        Host: j2lprint.fr + resolveOverride(origin), lorigine sert
+    //        directement le HTML prérendu (/…/index.html) en 200.
     const originRequest = new Request(originUrl.toString(), request);
     originRequest.headers.set("Host", CANONICAL_HOST);
     originRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
     originRequest.headers.set("X-Forwarded-Proto", "https");
-
-    //        Requête de repli sur lURL propre (sans /index.html), utilisée si
-    //        le HTML prérendu nexiste pas (fiches produits non prérendues).
-    const cleanUrl = new URL(originUrl.toString());
-    cleanUrl.pathname = url.pathname;
-    const cleanRequest = new Request(cleanUrl.toString(), request);
-    cleanRequest.headers.set("Host", CANONICAL_HOST);
-    cleanRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
-    cleanRequest.headers.set("X-Forwarded-Proto", "https");
 
     // 7.3 — Détecte une session connectée (jamais de cache pour ces requêtes)
     const hasSession =
@@ -438,7 +435,7 @@ export default {
     const isHead = method === "HEAD";
     const bypassCache = !isRead || isHead || hasSession || isNoCachePath(p);
     if (bypassCache) {
-      const resp = await fetchOriginWithFallback(originRequest, cleanRequest, rewrote);
+      const resp = await fetchOrigin(originRequest);
       const out = new Response(resp.body, resp);
       out.headers.set("Cache-Control", "no-store");
       applySecurityHeaders(out.headers);
@@ -455,7 +452,7 @@ export default {
       return hit;
     }
 
-    const response = await fetchOriginWithFallback(originRequest, cleanRequest, rewrote);
+    const response = await fetchOrigin(originRequest);
     const ct = response.headers.get("Content-Type") || "";
 
     // 7.5 — Sitemaps & robots.txt
