@@ -185,6 +185,7 @@ export default function Products() {
           title="Nos best-sellers"
           subtitle="Les produits Print.com les plus commandés par nos clients."
           items={bestSellers}
+          thumbnails={sectionThumbnails}
         />
       )}
 
@@ -194,6 +195,7 @@ export default function Products() {
           title="Nouveautés"
           subtitle="Les derniers produits ajoutés au catalogue Print.com."
           items={nouveautes}
+          thumbnails={sectionThumbnails}
         />
       )}
 
