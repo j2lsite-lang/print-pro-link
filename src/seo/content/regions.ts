@@ -1,6 +1,8 @@
-// Region SEO page content (18 French regions). Seed-based variation so each
-// region page is genuinely distinct: real department list, real major cities,
-// varied templates and FAQ subset. No fake LocalBusiness / address.
+// Region SEO page content (18 French regions). Real pillar pages: economic
+// presentation, departments covered, main metropolises, dominant sectors,
+// needs of companies/communities/associations, J2L services and a varied FAQ.
+// Seed-based variation so each region page is genuinely distinct. No fake
+// LocalBusiness / address.
 import type { ContentSection, FaqItem } from "../types";
 import { article } from "./fr";
 import { seedOf } from "./geo-cities";
@@ -23,6 +25,7 @@ export interface RegionCopy {
   faq: FaqItem[];
   productGridHeading: string;
   productGridIntro: string;
+  ctaLabel: string;
 }
 
 function pick<T>(arr: T[], seed: number, salt = 0): T {
@@ -35,10 +38,29 @@ function rotate<T>(pool: T[], seed: number, n: number, salt = 0): T[] {
   return out;
 }
 
+const WHY_ARGS = [
+  "Un configurateur en ligne pour composer chaque support (format, matière, finitions, quantité).",
+  "Un prix calculé en direct selon votre configuration, sans surprise.",
+  "La vérification de vos fichiers avant impression (résolution, fonds perdus, CMJN).",
+  "L'impression numérique et offset, selon le tirage et le rendu recherchés.",
+  "Le grand format pour vos affiches, bâches, panneaux et PLV.",
+  "Un devis personnalisé sous 24 h ouvrées lorsque votre projet le nécessite.",
+  "La livraison partout en France, directement à votre adresse.",
+  "Une gamme complète centralisée : papeterie, signalétique, textile, objets et emballages.",
+];
+
+const CTA_LABELS = [
+  "Voir le catalogue",
+  "Configurer un produit",
+  "Découvrir tous nos supports",
+  "Voir tous les produits",
+];
+
 export function regionCopy(r: GenRegion): RegionCopy {
   const s = seedOf(r.slug);
   const art = article(r.name);
   const nbDep = r.departmentNames.length;
+  const metros = r.cityNames.slice(0, 6);
 
   const title = pick(
     [
@@ -83,18 +105,31 @@ export function regionCopy(r: GenRegion): RegionCopy {
 
   const sections: ContentSection[] = [
     {
-      heading: `Départements desservis ${art.dans}`,
-      paragraphs: [`Nous livrons l'ensemble des départements de la région, parmi lesquels :`],
+      heading: `Une région, ${nbDep} départements desservis`,
+      paragraphs: [
+        `${art.dans[0].toUpperCase() + art.dans.slice(1)}, J2L Print couvre un territoire à l'économie variée — métropoles, bassins industriels, zones rurales, tourisme et commerces — avec une seule plateforme d'impression en ligne livrant chaque département.`,
+      ],
       bullets: r.departmentNames.slice(0, 15),
     },
   ];
-  if (r.cityNames.length) {
+  if (metros.length) {
     sections.push({
-      heading: `Principales villes desservies ${art.dans}`,
-      paragraphs: ["Des métropoles aux communes rurales, nous livrons notamment :"],
+      heading: `Principales métropoles desservies ${art.dans}`,
+      paragraphs: ["Des grandes villes aux communes rurales, nous livrons notamment :"],
       bullets: r.cityNames.slice(0, 24),
     });
   }
+  sections.push({
+    heading: `Des supports pour les entreprises, collectivités et associations ${art.de}`,
+    paragraphs: [
+      `Entreprises et industries, commerces et artisans, collectivités, établissements et associations : chacun trouve ${art.dans} les supports adaptés à sa communication. J2L Print imprime aussi bien la papeterie d'entreprise que la signalétique, le grand format, les textiles et les objets publicitaires.`,
+    ],
+  });
+  sections.push({
+    heading: "Pourquoi choisir J2L Print ?",
+    paragraphs: [`Une imprimerie en ligne complète, pensée pour les professionnels ${art.de} :`],
+    bullets: rotate(WHY_ARGS, s, 6, 13),
+  });
 
   const faqPool: FaqItem[] = [
     {
@@ -107,14 +142,18 @@ export function regionCopy(r: GenRegion): RegionCopy {
     },
     {
       q: `Quels supports imprimez-vous ${art.dans} ?`,
-      a: "Flyers, cartes de visite, affiches, panneaux, bâches, roll-ups, étiquettes, textiles et objets publicitaires.",
+      a: "Flyers, cartes de visite, dépliants, brochures, affiches, panneaux, bâches, roll-up, étiquettes, adhésifs, textiles et objets publicitaires.",
     },
     {
       q: "Comment obtenir un devis ?",
-      a: "Décrivez votre besoin dans le formulaire de devis en ligne : nous revenons vers vous avec une proposition personnalisée.",
+      a: "Configurez votre produit pour un prix immédiat, ou décrivez votre besoin dans le formulaire de devis : nous revenons vers vous avec une proposition personnalisée.",
+    },
+    {
+      q: "Les fichiers sont-ils vérifiés avant impression ?",
+      a: "Oui, chaque fichier est contrôlé (résolution, fonds perdus, CMJN) avant production pour garantir un rendu fidèle.",
     },
   ];
-  const faq = rotate(faqPool, s, 4, 5);
+  const faq = rotate(faqPool, s, 5, 5);
 
   return {
     title,
@@ -127,5 +166,6 @@ export function regionCopy(r: GenRegion): RegionCopy {
     faq,
     productGridHeading: "Supports les plus demandés",
     productGridIntro: `Les supports les plus commandés par les professionnels ${art.de}. Configurez le vôtre dans le catalogue.`,
+    ctaLabel: pick(CTA_LABELS, s, 15),
   };
 }
