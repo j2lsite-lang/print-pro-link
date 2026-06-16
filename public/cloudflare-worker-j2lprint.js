@@ -405,6 +405,7 @@ const KNOWN_SITEMAPS = [
   "/sitemaps/static.xml",
   "/sitemaps/categories.xml",
   "/sitemaps/subcategories.xml",
+  "/sitemaps/products.xml",
   "/sitemaps/cities.xml",
   "/sitemaps/departments.xml",
   "/sitemaps/regions.xml",
