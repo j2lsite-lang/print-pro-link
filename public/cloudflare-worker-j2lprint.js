@@ -346,18 +346,17 @@ function fetchOrigin(originRequest) {
 }
 
 /**
- * Fetch origine avec repli : on demande dabord le HTML prérendu (/…/index.html).
- * Si ce fichier nexiste pas (404/403 — typiquement les fiches produits
- * rendues côté client, non prérendues), on rejoue la requête sur lURL propre
- * pour servir le shell SPA en 200 au lieu dun 404.
+ * AUCUN repli vers la page d'accueil.
+ *
+ * Pour une URL SEO propre (catégorie, sous-catégorie, ville, département,
+ * région, service, thème, fiche produit), on demande UNIQUEMENT le fichier
+ * statique prérendu /…/index.html. Toutes ces pages sont prérendues au build :
+ *   - si le fichier existe   -> 200 + vrai HTML (title/canonical/H1 propres) ;
+ *   - si le fichier manque   -> 404 réel (jamais le shell SPA / la home).
+ * Les chemins NON gérés (catalogue dynamique /products, /cart, /themes hors
+ * liste, etc.) passent par leur URL propre et conservent le rendu SPA normal.
  */
-async function fetchOriginWithFallback(seoRequest, cleanRequest, rewrote) {
-  const resp = await fetchOrigin(seoRequest);
-  if (rewrote && (resp.status === 404 || resp.status === 403)) {
-    return fetchOrigin(cleanRequest);
-  }
-  return resp;
-}
+
 
 /* ----------------------------------------------------------------------------
  * 7. Handler principal
