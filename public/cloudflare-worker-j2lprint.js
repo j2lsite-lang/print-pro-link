@@ -557,11 +557,13 @@ export default {
     const method = request.method.toUpperCase();
     const isRead = method === "GET" || method === "HEAD";
 
-    // 7.2 — Construit la requête vers lorigine DNS Cloudflare.
+    // 7.2 — Construit la requête vers lorigine dédiée Cloudflare.
     //        Pour une URL SEO propre (catégorie, ville, produit…), on demande
     //        explicitement le fichier statique prérendu /…/index.html, sinon
     //        lhébergement SPA renvoie son fallback (la page daccueil) et la
     //        page sert alors le mauvais title / canonical / H1.
+    //        LURL publique reste https://j2lprint.fr/…, mais cf.resolveOverride
+    //        force Cloudflare à joindre origin.j2lprint.fr, hors route Worker.
     const originUrl = new URL(request.url);
     originUrl.pathname = seoOriginPathname(p) || url.pathname;
     const originRequest = new Request(originUrl.toString(), request);
@@ -579,7 +581,7 @@ export default {
     const isHead = method === "HEAD";
     const bypassCache = !isRead || isHead || hasSession || isNoCachePath(p);
     if (bypassCache) {
-      const resp = await fetch(originRequest);
+      const resp = await fetchOrigin(originRequest);
       const out = new Response(resp.body, resp);
       out.headers.set("Cache-Control", "no-store");
       applySecurityHeaders(out.headers);
@@ -596,7 +598,7 @@ export default {
       return hit;
     }
 
-    const response = await fetch(originRequest);
+    const response = await fetchOrigin(originRequest);
     const ct = response.headers.get("Content-Type") || "";
 
     // 7.5 — Sitemaps & robots.txt
