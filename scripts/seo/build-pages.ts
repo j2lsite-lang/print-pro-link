@@ -545,7 +545,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       ],
       ogType: "website",
     });
+  }
+  return pages;
 }
+
+
 
 
 /* ----------------------------------------------------------------------------
