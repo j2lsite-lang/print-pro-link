@@ -453,6 +453,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       cityNames: regionCities.map((c) => c.name),
     };
     const copy = regionCopy(gen);
+    const hero = heroAt(regionHeroIndex(seedOf(gr.slug)));
     const art = article(gr.name);
     const crumb = [
       home,
