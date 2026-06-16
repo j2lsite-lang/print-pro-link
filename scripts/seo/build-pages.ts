@@ -89,6 +89,9 @@ export async function buildAllPages(): Promise<SeoPage[]> {
 
   const pages: SeoPage[] = [];
   const home: BreadcrumbItemLite = { name: "Accueil", path: "/" };
+  // Remove consecutive identical labels (e.g. city == department: Paris > Paris).
+  const dedupeCrumb = <T extends { name: string }>(items: T[]): T[] =>
+    items.filter((it, i) => i === 0 || it.name.trim().toLowerCase() !== items[i - 1].name.trim().toLowerCase());
 
   // ── Homepage ──
   pages.push({
