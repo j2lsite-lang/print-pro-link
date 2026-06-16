@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
 import { fetchAllProductCategoryMappings, fetchPublicCatalogSkuSet } from "@/lib/catalog-mappings";
 import { fetchAllProductThemeMappings } from "@/lib/theme-mappings";
+import { NOUVEAUTES_SKUS, BESTSELLER_SKUS } from "@/lib/catalog-sections";
 
 interface Product extends CatalogProduct {}
 
