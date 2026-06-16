@@ -244,6 +244,44 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     { label: "voir tout le catalogue", path: "/catalogue" },
   ];
 
+  // ── J2L ecosystem links (deterministic subset per page) ──
+  // villes : 1 à 2 liens · départements : 2 à 3 · régions : les 4.
+  const ecoLinks = (seed: number, n: number): LinkItem[] => {
+    const out: LinkItem[] = [];
+    const start = seed % J2L_ECOSYSTEM.length;
+    for (let i = 0; i < Math.min(n, J2L_ECOSYSTEM.length); i++) {
+      out.push(J2L_ECOSYSTEM[(start + i) % J2L_ECOSYSTEM.length]);
+    }
+    return out;
+  };
+  const ecoGroup = (seed: number, n: number) => ({
+    heading: "L'écosystème J2L",
+    links: ecoLinks(seed, n),
+  });
+
+  // ── Hero assignment with neighbour avoidance ──
+  // Deterministic base index (archetype + seed) then, if a neighbouring city
+  // already uses the same hero, shift to the next free one so two adjacent
+  // cities rarely share the exact same visual.
+  const cityHero = new Map<string, number>();
+  for (const gc of geo.cities) {
+    const arch = cityArchetype({
+      name: gc.name, slug: gc.slug, cp: gc.postalCodes[0] || "",
+      department: gc.departmentName, departmentSlug: gc.departmentSlug,
+      region: gc.regionName, regionSlug: gc.regionSlug, neighbors: [],
+      economy: CITY_PROFILES[gc.slug]?.economy, audiences: CITY_PROFILES[gc.slug]?.audiences,
+    });
+    let idx = cityHeroIndex(arch, seedOf(gc.slug));
+    const usedByNeighbors = new Set<number>();
+    for (const ns of gc.nearbyCitySlugs || []) {
+      if (cityHero.has(ns)) usedByNeighbors.add(cityHero.get(ns)!);
+    }
+    for (let step = 0; step < HERO_BANK.length && usedByNeighbors.has(idx); step++) {
+      idx = (idx + 1) % HERO_BANK.length;
+    }
+    cityHero.set(gc.slug, idx);
+  }
+
   // ── Cities ──
   for (const gc of geo.cities) {
     const profile = CITY_PROFILES[gc.slug];
