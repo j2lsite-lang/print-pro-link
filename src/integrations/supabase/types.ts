@@ -547,6 +547,65 @@ export type Database = {
         }
         Relationships: []
       }
+      product_theme_mappings: {
+        Row: {
+          created_at: string
+          id: string
+          sku: string
+          theme_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          sku: string
+          theme_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sku?: string
+          theme_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_theme_mappings_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "product_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_themes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           company: string | null
