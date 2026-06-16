@@ -571,9 +571,15 @@ export default {
     originUrl.hostname = CANONICAL_HOST;
     originUrl.port = "";
     originUrl.pathname = seoOriginPathname(p) || url.pathname;
+    //        CORRECTIF : le Host envoyé à l'origine DOIT rester le domaine
+    //        canonique (j2lprint.fr). Lhébergement Lovable redirige (302)
+    //        toute requête *.lovable.app vers le domaine personnalisé : envoyer
+    //        Host: print-pro-link.lovable.app provoquait donc une BOUCLE de
+    //        redirection. Avec Host: j2lprint.fr + resolveOverride(origin),
+    //        lorigine sert directement le HTML prérendu (/…/index.html) en 200.
     const originRequest = new Request(originUrl.toString(), request);
-    originRequest.headers.set("Host", LOVABLE_ORIGIN_HOST);
-    originRequest.headers.set("X-Forwarded-Host", LOVABLE_ORIGIN_HOST);
+    originRequest.headers.set("Host", CANONICAL_HOST);
+    originRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
     originRequest.headers.set("X-Forwarded-Proto", "https");
 
     // 7.3 — Détecte une session connectée (jamais de cache pour ces requêtes)
