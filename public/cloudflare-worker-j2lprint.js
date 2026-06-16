@@ -3,7 +3,8 @@
  *  J2L Print — Cloudflare Worker SEO / Reverse Proxy
  * ============================================================================
  *  Rôle :
- *   - Sert le domaine canonique https://j2lprint.fr depuis l origine DNS Cloudflare.
+ *   - Sert le domaine canonique https://j2lprint.fr depuis l origine DNS Cloudflare
+ *     origin.j2lprint.fr via cf.resolveOverride, sans repasser dans la route Worker.
  *   - Force HTTPS + redirige www -> apex (301).
  *   - Cache HTML / assets / sitemaps avec des TTL adaptés.
  *   - Réécrit le domaine d origine vers le domaine canonique dans le HTML.
@@ -26,6 +27,7 @@
  * ------------------------------------------------------------------------- */
 const CANONICAL_HOST  = "j2lprint.fr";
 const CANONICAL_ORIGIN = "https://j2lprint.fr";
+const ORIGIN_HOST = "origin.j2lprint.fr";
 
 const HTML_TTL  = 300;       // 5 minutes  — pages HTML
 const ASSET_TTL = 31536000;  // 1 an       — assets immuables (hash dans le nom)
@@ -524,7 +526,16 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/4.0.0");
+  headers.set("X-Worker", "j2lprint-seo/4.1.0");
+}
+
+/** Fetch origine : URL publique conservée, résolution DNS forcée vers lorigine dédiée. */
+function fetchOrigin(originRequest) {
+  return fetch(originRequest, {
+    cf: {
+      resolveOverride: ORIGIN_HOST,
+    },
+  });
 }
 
 /* ----------------------------------------------------------------------------
@@ -546,12 +557,17 @@ export default {
     const method = request.method.toUpperCase();
     const isRead = method === "GET" || method === "HEAD";
 
-    // 7.2 — Construit la requête vers lorigine DNS Cloudflare.
+    // 7.2 — Construit la requête vers lorigine dédiée Cloudflare.
     //        Pour une URL SEO propre (catégorie, ville, produit…), on demande
     //        explicitement le fichier statique prérendu /…/index.html, sinon
     //        lhébergement SPA renvoie son fallback (la page daccueil) et la
     //        page sert alors le mauvais title / canonical / H1.
+    //        LURL publique reste https://j2lprint.fr/…, mais cf.resolveOverride
+    //        force Cloudflare à joindre origin.j2lprint.fr, hors route Worker.
     const originUrl = new URL(request.url);
+    originUrl.protocol = "https:";
+    originUrl.hostname = CANONICAL_HOST;
+    originUrl.port = "";
     originUrl.pathname = seoOriginPathname(p) || url.pathname;
     const originRequest = new Request(originUrl.toString(), request);
     originRequest.headers.set("Host", CANONICAL_HOST);
@@ -568,7 +584,7 @@ export default {
     const isHead = method === "HEAD";
     const bypassCache = !isRead || isHead || hasSession || isNoCachePath(p);
     if (bypassCache) {
-      const resp = await fetch(originRequest);
+      const resp = await fetchOrigin(originRequest);
       const out = new Response(resp.body, resp);
       out.headers.set("Cache-Control", "no-store");
       applySecurityHeaders(out.headers);
@@ -585,7 +601,7 @@ export default {
       return hit;
     }
 
-    const response = await fetch(originRequest);
+    const response = await fetchOrigin(originRequest);
     const ct = response.headers.get("Content-Type") || "";
 
     // 7.5 — Sitemaps & robots.txt
