@@ -304,3 +304,54 @@ export default function Products() {
     </div>
   );
 }
+
+function ProductSection({
+  eyebrow,
+  title,
+  subtitle,
+  items,
+}: {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  items: Product[];
+}) {
+  return (
+    <section className="mt-16">
+      <p className="text-sm font-medium uppercase tracking-wide text-primary">{eyebrow}</p>
+      <h2 className="mt-2 font-display text-3xl font-bold text-foreground">{title}</h2>
+      <p className="mt-2 max-w-3xl text-muted-foreground">{subtitle}</p>
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map((product) => (
+          <Link
+            key={product.sku}
+            to={`/products/${product.sku}`}
+            className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:border-primary/40 hover:shadow-elevated"
+          >
+            <div className="aspect-[4/3] overflow-hidden bg-muted/50">
+              {product.thumbnailUrl ? (
+                <img
+                  src={product.thumbnailUrl}
+                  alt={product.name}
+                  className="h-full w-full object-contain p-3 transition-transform duration-500 group-hover:scale-110"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  <span className="text-5xl opacity-20">📦</span>
+                </div>
+              )}
+            </div>
+            <div className="px-4 py-3.5">
+              <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">Produit J2L Print</p>
+              <h3 className="mt-1 truncate font-display text-sm font-semibold text-card-foreground transition-colors group-hover:text-primary">
+                {product.name}
+              </h3>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
