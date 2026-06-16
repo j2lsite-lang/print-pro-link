@@ -565,6 +565,9 @@ export default {
     //        LURL publique reste https://j2lprint.fr/…, mais cf.resolveOverride
     //        force Cloudflare à joindre origin.j2lprint.fr, hors route Worker.
     const originUrl = new URL(request.url);
+    originUrl.protocol = "https:";
+    originUrl.hostname = CANONICAL_HOST;
+    originUrl.port = "";
     originUrl.pathname = seoOriginPathname(p) || url.pathname;
     const originRequest = new Request(originUrl.toString(), request);
     originRequest.headers.set("Host", CANONICAL_HOST);
