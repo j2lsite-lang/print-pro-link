@@ -3,7 +3,7 @@
  *  J2L Print — Cloudflare Worker SEO / Reverse Proxy
  * ============================================================================
  *  Rôle :
- *   - Sert le domaine canonique https://j2lprint.fr depuis l origine Lovable.
+ *   - Sert le domaine canonique https://j2lprint.fr depuis l origine DNS Cloudflare.
  *   - Force HTTPS + redirige www -> apex (301).
  *   - Cache HTML / assets / sitemaps avec des TTL adaptés.
  *   - Réécrit le domaine d origine vers le domaine canonique dans le HTML.
@@ -24,8 +24,6 @@
 /* ----------------------------------------------------------------------------
  * 1. Configuration des domaines & des durées de cache (TTL en secondes)
  * ------------------------------------------------------------------------- */
-const LOVABLE_ORIGIN  = "https://print-pro-link.lovable.app";
-const ORIGIN_HOST     = "print-pro-link.lovable.app";
 const CANONICAL_HOST  = "j2lprint.fr";
 const CANONICAL_ORIGIN = "https://j2lprint.fr";
 
@@ -515,9 +513,9 @@ function seoOriginPathname(pathname) {
 /** Réécrit le domaine dorigine vers le domaine canonique dans le HTML. */
 function rewriteHtmlDomain(text) {
   return text
-    .replaceAll(`https://${ORIGIN_HOST}`, CANONICAL_ORIGIN)
-    .replaceAll(`http://${ORIGIN_HOST}`, CANONICAL_ORIGIN)
-    .replaceAll(ORIGIN_HOST, CANONICAL_HOST);
+    .replaceAll("https://print-pro-link.lovable.app", CANONICAL_ORIGIN)
+    .replaceAll("http://print-pro-link.lovable.app", CANONICAL_ORIGIN)
+    .replaceAll("print-pro-link.lovable.app", CANONICAL_HOST);
 }
 
 /** En-têtes de sécurité appliqués à toutes les réponses. */
@@ -548,15 +546,15 @@ export default {
     const method = request.method.toUpperCase();
     const isRead = method === "GET" || method === "HEAD";
 
-    // 7.2 — Construit la requête vers lorigine Lovable.
+    // 7.2 — Construit la requête vers lorigine DNS Cloudflare.
     //        Pour une URL SEO propre (catégorie, ville, produit…), on demande
     //        explicitement le fichier statique prérendu /…/index.html, sinon
     //        lhébergement SPA renvoie son fallback (la page daccueil) et la
     //        page sert alors le mauvais title / canonical / H1.
-    const originPathname = seoOriginPathname(p) || url.pathname;
-    const originUrl = new URL(originPathname + url.search, LOVABLE_ORIGIN);
+    const originUrl = new URL(request.url);
+    originUrl.pathname = seoOriginPathname(p) || url.pathname;
     const originRequest = new Request(originUrl.toString(), request);
-    originRequest.headers.set("Host", ORIGIN_HOST);
+    originRequest.headers.set("Host", CANONICAL_HOST);
     originRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
     originRequest.headers.set("X-Forwarded-Proto", "https");
 
@@ -567,7 +565,8 @@ export default {
         request.headers.get("Cookie") || ""
       );
 
-    const bypassCache = !isRead || hasSession || isNoCachePath(p);
+    const isHead = method === "HEAD";
+    const bypassCache = !isRead || isHead || hasSession || isNoCachePath(p);
     if (bypassCache) {
       const resp = await fetch(originRequest);
       const out = new Response(resp.body, resp);
