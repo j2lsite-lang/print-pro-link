@@ -304,7 +304,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       events: profile?.events,
     };
     const copy = cityCopy(gen);
-    const heroVariant = (profile?.hero ?? ((seedOf(gc.slug) % 3) + 1)) as 1 | 2 | 3;
+    const hero = heroAt(cityHero.get(gc.slug) ?? cityHeroIndex(cityArchetype(gen), seedOf(gc.slug)));
     const crumb = [
       home,
       { name: "Zones desservies", path: "/imprimerie" },
