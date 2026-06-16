@@ -28,7 +28,8 @@
 const CANONICAL_HOST  = "j2lprint.fr";
 const CANONICAL_ORIGIN = "https://j2lprint.fr";
 const ORIGIN_HOST = "origin.j2lprint.fr";
-const LOVABLE_ORIGIN_HOST = "print-pro-link.lovable.app";
+// LOVABLE_ORIGIN_HOST retiré : provoquait une boucle de redirection (voir 7.2).
+// const LOVABLE_ORIGIN_HOST = "print-pro-link.lovable.app";
 
 const HTML_TTL  = 300;       // 5 minutes  — pages HTML
 const ASSET_TTL = 31536000;  // 1 an       — assets immuables (hash dans le nom)
@@ -527,7 +528,7 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/4.2.0");
+  headers.set("X-Worker", "j2lprint-seo/4.3.0");
 }
 
 /** Fetch origine : URL publique conservée, résolution DNS forcée vers lorigine dédiée. */
