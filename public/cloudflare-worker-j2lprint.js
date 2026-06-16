@@ -28,6 +28,7 @@
 const CANONICAL_HOST  = "j2lprint.fr";
 const CANONICAL_ORIGIN = "https://j2lprint.fr";
 const ORIGIN_HOST = "origin.j2lprint.fr";
+const LOVABLE_ORIGIN_HOST = "print-pro-link.lovable.app";
 
 const HTML_TTL  = 300;       // 5 minutes  — pages HTML
 const ASSET_TTL = 31536000;  // 1 an       — assets immuables (hash dans le nom)
@@ -526,7 +527,7 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/4.1.0");
+  headers.set("X-Worker", "j2lprint-seo/4.2.0");
 }
 
 /** Fetch origine : URL publique conservée, résolution DNS forcée vers lorigine dédiée. */
@@ -562,16 +563,17 @@ export default {
     //        explicitement le fichier statique prérendu /…/index.html, sinon
     //        lhébergement SPA renvoie son fallback (la page daccueil) et la
     //        page sert alors le mauvais title / canonical / H1.
-    //        LURL publique reste https://j2lprint.fr/…, mais cf.resolveOverride
-    //        force Cloudflare à joindre origin.j2lprint.fr, hors route Worker.
+    //        LURL publique reste https://j2lprint.fr/…, cf.resolveOverride
+    //        force Cloudflare à joindre origin.j2lprint.fr, hors route Worker,
+    //        et le Host envoyé à lorigine reste celui de lhébergement Lovable.
     const originUrl = new URL(request.url);
     originUrl.protocol = "https:";
     originUrl.hostname = CANONICAL_HOST;
     originUrl.port = "";
     originUrl.pathname = seoOriginPathname(p) || url.pathname;
     const originRequest = new Request(originUrl.toString(), request);
-    originRequest.headers.set("Host", CANONICAL_HOST);
-    originRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
+    originRequest.headers.set("Host", LOVABLE_ORIGIN_HOST);
+    originRequest.headers.set("X-Forwarded-Host", LOVABLE_ORIGIN_HOST);
     originRequest.headers.set("X-Forwarded-Proto", "https");
 
     // 7.3 — Détecte une session connectée (jamais de cache pour ces requêtes)
