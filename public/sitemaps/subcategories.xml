@@ -19,13 +19,13 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/categorie/impression-papier/flyers-depliants-affiches</loc>
+    <loc>https://j2lprint.fr/categorie/impression-papier/brochures-magazines</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/categorie/impression-papier/brochures-magazines</loc>
+    <loc>https://j2lprint.fr/categorie/impression-papier/flyers-depliants-affiches</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -73,18 +73,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/categorie/publicite-interieure/toiles-textiles-deco-interieure</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/categorie/publicite-interieure/presentoirs-materiel-plv</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://j2lprint.fr/categorie/publicite-interieure/panneaux-accessoires-int</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -103,6 +91,18 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://j2lprint.fr/categorie/publicite-interieure/toiles-textiles-deco-interieure</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://j2lprint.fr/categorie/publicite-interieure/presentoirs-materiel-plv</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://j2lprint.fr/categorie/publicite-interieure/roll-ups</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -110,12 +110,6 @@
   </url>
   <url>
     <loc>https://j2lprint.fr/categorie/etiquettes-stickers/accessoires-autocollants</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/categorie/etiquettes-stickers/autocollants-rouleaux</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -145,6 +139,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://j2lprint.fr/categorie/etiquettes-stickers/autocollants-rouleaux</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://j2lprint.fr/categorie/emballages-sacs/sacs-tote-bags</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -169,12 +169,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/categorie/objets-publicitaires-cadeaux/saisonnalite</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://j2lprint.fr/categorie/objets-publicitaires-cadeaux/gadgets</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -182,6 +176,12 @@
   </url>
   <url>
     <loc>https://j2lprint.fr/categorie/objets-publicitaires-cadeaux/bien-etre</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://j2lprint.fr/categorie/objets-publicitaires-cadeaux/saisonnalite</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -223,6 +223,18 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://j2lprint.fr/categorie/textiles-accessoires/vetements</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://j2lprint.fr/categorie/textiles-accessoires/produits-bebes</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://j2lprint.fr/categorie/textiles-accessoires/textiles-sport</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -236,18 +248,6 @@
   </url>
   <url>
     <loc>https://j2lprint.fr/categorie/textiles-accessoires/cuisine-sejour</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/categorie/textiles-accessoires/vetements</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/categorie/textiles-accessoires/produits-bebes</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
