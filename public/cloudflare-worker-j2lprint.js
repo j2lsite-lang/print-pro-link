@@ -16,6 +16,10 @@ function isImmutableAsset(p){return p.startsWith("/assets/")||/\.(?:js|mjs|css|w
 function isXmlOrRobots(p){return p==="/robots.txt"||p==="/sitemap.xml"||p.startsWith("/sitemaps/");}
 function isManagedCategoryPath(p){const parts=p.split("/").filter(Boolean);if(parts[0]!=="categorie")return false;if(parts.length===2)return CATEGORIES.includes(parts[1]);if(parts.length===3){const children=SUBCATEGORIES[parts[1]];return Array.isArray(children)&&children.includes(parts[2]);}return false;}
 function isCacheableHtml(p){if(isNoCachePath(p))return false;if(isImmutableAsset(p))return false;if(isXmlOrRobots(p))return false;return true;}
+function isManagedSeoPath(p){return MANAGED_SEO_PATHS.has(p)||isManagedCategoryPath(p);}
+// Map a clean SEO URL to its prerendered static file so the host serves the
+// real category/city/etc. HTML instead of SPA-falling back to the homepage.
+function seoOriginPathname(p){if(p==="/"||!isManagedSeoPath(p))return null;if(/\.[a-z0-9]+$/i.test(p))return null;return p.endsWith("/")?`${p}index.html`:`${p}/index.html`;}
 function rewriteHtmlDomain(t){return t.replaceAll(`https://${ORIGIN_HOST}`,CANONICAL_ORIGIN).replaceAll(`http://${ORIGIN_HOST}`,CANONICAL_ORIGIN).replaceAll(ORIGIN_HOST,CANONICAL_HOST);}
 function applySecurityHeaders(h){h.set("X-Content-Type-Options","nosniff");h.set("Referrer-Policy","strict-origin-when-cross-origin");h.set("X-Frame-Options","SAMEORIGIN");h.set("Strict-Transport-Security","max-age=31536000; includeSubDomains; preload");h.set("X-Worker","j2lprint-seo/4.0.0");}
 
