@@ -325,12 +325,12 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       description: copy.description,
       h1: copy.h1,
       hero: {
-        image: HERO_CITY_IMAGES[heroVariant],
-        imageAlt: `Impression et supports de communication livrés à ${gc.name}`,
+        image: hero.file,
+        imageAlt: `${hero.alt} — livraison à ${gc.name}`,
         eyebrow: copy.heroEyebrow,
         tagline: copy.heroTagline,
         ctas: [
-          { label: "Voir le catalogue", path: "/catalogue", variant: "primary" },
+          { label: copy.ctaLabel, path: "/catalogue", variant: "primary" },
           { label: "Demander un devis", path: "/#devis", variant: "secondary" },
         ],
       },
@@ -338,7 +338,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       breadcrumb: crumb,
       sections: copy.sections,
       productGrid: { heading: copy.productGridHeading, intro: copy.productGridIntro, cards: PRODUCT_CARDS },
-      cta: { label: "Voir le catalogue", path: "/catalogue" },
+      cta: { label: copy.ctaLabel, path: "/catalogue" },
       faq: copy.faq,
       internalLinks: [
         ...(neighbors.length
@@ -353,6 +353,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
             { label: `Impression ${reg.dans}`, path: `/region/${gc.regionSlug}` },
           ],
         },
+        ecoGroup(seedOf(gc.slug), 2),
         { heading: "Passez à l'action", links: actionLinks },
       ],
       ...(ext.length ? { externalLinks: ext } : {}),
