@@ -19,7 +19,9 @@ interface CategoryCount {
 
 export default function Products() {
   const { categories, loading: catLoading } = useCategories();
+  const { themes, loading: themesLoading } = useThemes();
   const [categoryCounts, setCategoryCounts] = useState<CategoryCount>({});
+  const [themeCounts, setThemeCounts] = useState<Record<string, number>>({});
 
   useSEO({
     title: "Catalogue produits – Impression en ligne",
