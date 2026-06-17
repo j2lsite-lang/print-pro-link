@@ -891,6 +891,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
         ...(seo.faq && seo.faq.length ? [faqLd(seo.faq)] : []),
       ],
       ogType: "product",
+      keywords: productKeywords(name),
     });
   }
 
