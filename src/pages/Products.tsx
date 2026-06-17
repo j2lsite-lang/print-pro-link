@@ -11,6 +11,8 @@ import { useSEO } from "@/hooks/useSEO";
 import { fetchAllProductCategoryMappings, fetchPublicCatalogSkuSet } from "@/lib/catalog-mappings";
 import { fetchAllProductThemeMappings } from "@/lib/theme-mappings";
 import { NOUVEAUTES_SKUS, BESTSELLER_SKUS } from "@/lib/catalog-sections";
+import { searchProducts } from "@/lib/search";
+import { isExcludedSku } from "@/config/excluded-products";
 
 interface Product extends CatalogProduct {}
 
