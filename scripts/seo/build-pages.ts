@@ -245,6 +245,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       }),
     ],
     ogType: "website",
+    keywords: SITE_KEYWORDS,
   });
 
   // ── 8 categories ──
