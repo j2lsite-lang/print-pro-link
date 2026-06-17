@@ -280,6 +280,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     },
     internalLinks: [
       { heading: "Catégories", links: CATEGORY_SLUGS.map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` })) },
+      ecosystemGroup(seedFrom("catalogue"), 2),
     ],
     jsonLd: [
       breadcrumbLd([home, { name: "Catalogue", path: "/catalogue" }]),
@@ -341,6 +342,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         ...(complementaryCats.length ? [{ heading: "Univers complémentaires", links: complementaryCats }] : []),
         { heading: "Catégories associées", links: relatedCats },
         { heading: "Nos services", links: SERVICE_LINKS },
+        ecosystemGroup(catSeed, 2),
       ],
       jsonLd: [
         breadcrumbLd(crumb),
@@ -403,6 +405,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           { heading: "Catégorie", links: [{ label: content.name, path: `/categorie/${slug}` }] },
           ...(near.length ? [{ heading: "Sous-catégories proches", links: near }] : []),
           { heading: "Nos services", links: SERVICE_LINKS },
+          ecosystemGroup(subSeed, 1),
         ],
         jsonLd: [
           breadcrumbLd(subCrumb),
