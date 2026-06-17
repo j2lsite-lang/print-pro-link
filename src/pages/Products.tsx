@@ -229,7 +229,7 @@ export default function Products() {
         <ProductSection
           eyebrow="Tout juste arrivés"
           title="Nouveautés"
-          subtitle="Les derniers produits ajoutés au catalogue Print.com."
+          subtitle="Découvrez les derniers produits ajoutés au catalogue J2L Print."
           items={nouveautes}
           thumbnails={sectionThumbnails}
         />
