@@ -11,7 +11,7 @@ export default function PolitiqueConfidentialite() {
             <h2 className="font-display text-lg font-semibold text-foreground">Responsable du traitement</h2>
             <p><strong className="text-foreground">J2L Publicité</strong> — M. Jean-Luc Lemaire</p>
             <p>22 B rue Robert Barret, 88390 Uxegney, France</p>
-            <p>Email : <a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></p>
+            <p>Email : <a href="mailto:contact@j2lprint.fr" className="text-primary hover:underline">contact@j2lprint.fr</a></p>
             <p>Téléphone : <a href="tel:+33329304479" className="text-primary hover:underline">03 29 30 44 79</a></p>
           </div>
 
@@ -77,7 +77,7 @@ export default function PolitiqueConfidentialite() {
               <li><strong className="text-foreground">Droit d'opposition :</strong> vous opposer au traitement de vos données pour des motifs légitimes</li>
               <li><strong className="text-foreground">Droit à la portabilité :</strong> recevoir vos données dans un format structuré et couramment utilisé</li>
             </ul>
-            <p className="mt-2">Pour exercer ces droits, contactez-nous à : <a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></p>
+            <p className="mt-2">Pour exercer ces droits, contactez-nous à : <a href="mailto:contact@j2lprint.fr" className="text-primary hover:underline">contact@j2lprint.fr</a></p>
             <p>Nous nous engageons à répondre dans un délai d'un mois à compter de la réception de votre demande.</p>
           </div>
 
