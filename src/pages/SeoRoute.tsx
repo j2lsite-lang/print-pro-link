@@ -24,6 +24,7 @@ export default function SeoRoute() {
   const { pathname } = useLocation();
   const page = PAGES[pathname] || PAGES[pathname.replace(/\/$/, "")];
   if (!page) return <NotFound />;
+  const linkGroups = page.internalLinks || [];
 
   return (
     <>
@@ -102,6 +103,30 @@ export default function SeoRoute() {
         </header>
       )}
 
+      {page.visual && (
+        <section className="container max-w-5xl pt-6">
+          <div className="overflow-hidden rounded-2xl border border-border bg-card/60 shadow-card">
+            <img
+              src={page.visual.image}
+              alt={page.visual.imageAlt}
+              width={1280}
+              height={720}
+              loading="lazy"
+              className="aspect-[16/7] w-full object-cover"
+            />
+            {page.visual.keywords && page.visual.keywords.length > 0 && (
+              <div className="flex flex-wrap gap-2 p-4">
+                {page.visual.keywords.slice(0, 8).map((keyword) => (
+                  <span key={keyword} className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs text-primary">
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       <article className="container max-w-5xl space-y-10 py-10">
         {/* Intro */}
         <div className="space-y-4">
@@ -109,6 +134,30 @@ export default function SeoRoute() {
             <p key={i} className="text-muted-foreground leading-relaxed">{p}</p>
           ))}
         </div>
+
+        {/* Internal links */}
+        {linkGroups.length > 0 && (
+          <div className="grid gap-4 md:grid-cols-2">
+            {linkGroups.map((g, i) => (
+              <section key={i} className="space-y-3 rounded-xl border border-border bg-card/45 p-4">
+                <h2 className="font-display text-lg font-semibold">{g.heading}</h2>
+                <ul className="flex flex-wrap gap-x-4 gap-y-2">
+                  {g.links.map((l) => (
+                    <li key={l.path + l.label}>
+                      {l.external ? (
+                        <a href={l.path} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                          {l.label} <ExternalLink className="h-3 w-3" />
+                        </a>
+                      ) : (
+                        <Link to={l.path} className="text-primary hover:underline">{l.label}</Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        )}
 
         {/* Sections */}
         {page.sections?.map((s, i) => (
@@ -190,24 +239,6 @@ export default function SeoRoute() {
             ))}
           </section>
         )}
-
-        {/* Internal links */}
-        {page.internalLinks?.map((g, i) => (
-          <section key={i} className="space-y-3">
-            <h2 className="font-display text-lg font-semibold">{g.heading}</h2>
-            <ul className="flex flex-wrap gap-x-4 gap-y-2">
-              {g.links.map((l) => (
-                <li key={l.path + l.label}>
-                  {l.external ? (
-                    <a href={l.path} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{l.label}</a>
-                  ) : (
-                    <Link to={l.path} className="text-primary hover:underline">{l.label}</Link>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
 
         {/* External resources */}
         {page.externalLinks && page.externalLinks.length > 0 && (

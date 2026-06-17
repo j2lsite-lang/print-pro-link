@@ -36,6 +36,47 @@ import {
 // embed the Print.com catalog/configurator — they only link to the existing one.
 const CATALOG_CTA = { label: "Voir les produits dans le catalogue", path: "/products" };
 
+const CATEGORY_VISUALS: Record<string, { image: string; alt: string }> = {
+  "impression-papier": { image: "/seo/hero-flyers.jpg", alt: "Flyers, cartes et brochures imprimés" },
+  "publicite-exterieure": { image: "/seo/hero-baches.jpg", alt: "Bâches, panneaux et supports extérieurs" },
+  "publicite-interieure": { image: "/seo/hero-rollup.jpg", alt: "Roll-up et PLV pour espaces intérieurs" },
+  "etiquettes-stickers": { image: "/seo/hero-autocollants.jpg", alt: "Stickers et étiquettes personnalisés" },
+  "emballages-sacs": { image: "/seo/hero-emballages.jpg", alt: "Sacs et emballages personnalisés" },
+  "objets-publicitaires-cadeaux": { image: "/seo/hero-objets.jpg", alt: "Objets publicitaires personnalisés" },
+  "textiles-accessoires": { image: "/seo/hero-textiles.jpg", alt: "Textiles et accessoires personnalisés" },
+  "panneaux-baches-vinyles-toiles": { image: "/seo/hero-panneaux.jpg", alt: "Panneaux rigides, bâches et vinyles imprimés" },
+};
+
+const FAMILY_VISUALS: Record<string, { image: string; alt: string }> = {
+  flyer: { image: "/seo/hero-flyers.jpg", alt: "Flyers et dépliants imprimés" },
+  affiche: { image: "/seo/hero-affiches.jpg", alt: "Affiches et posters imprimés" },
+  carte: { image: "/seo/hero-cartes-visite.jpg", alt: "Cartes de visite et papeterie imprimées" },
+  brochure: { image: "/seo/hero-brochures.jpg", alt: "Brochures, catalogues et magazines imprimés" },
+  banner: { image: "/seo/hero-baches.jpg", alt: "Bâches et banderoles imprimées" },
+  "roll-up": { image: "/seo/hero-rollup.jpg", alt: "Roll-up, kakémonos et PLV imprimés" },
+  adhesif: { image: "/seo/hero-autocollants.jpg", alt: "Adhésifs, stickers et vinyles imprimés" },
+  panneau: { image: "/seo/hero-panneaux.jpg", alt: "Panneaux rigides et signalétique imprimés" },
+  "t-shirt": { image: "/seo/hero-textiles.jpg", alt: "Textiles personnalisés imprimés" },
+  mug: { image: "/seo/hero-objets.jpg", alt: "Objets publicitaires personnalisés" },
+  bottle: { image: "/seo/hero-objets.jpg", alt: "Gourdes et objets publicitaires personnalisés" },
+  bag: { image: "/seo/hero-emballages.jpg", alt: "Sacs personnalisés imprimés" },
+  menu: { image: "/seo/hero-brochures.jpg", alt: "Menus et supports papier imprimés" },
+};
+
+function visibleKeywords(entry?: SemanticEntry, fallback: string[] = []): string[] {
+  if (!entry) return fallback.slice(0, 8);
+  return [entry.primaryKeyword, ...entry.secondary, ...entry.longTail].filter(Boolean).slice(0, 8);
+}
+
+function ecosystemGroup(seed: number, n: number) {
+  const links: LinkItem[] = [];
+  const start = seed % J2L_ECOSYSTEM.length;
+  for (let i = 0; i < Math.min(n, J2L_ECOSYSTEM.length); i++) {
+    links.push(J2L_ECOSYSTEM[(start + i) % J2L_ECOSYSTEM.length]);
+  }
+  return { heading: "L'écosystème J2L", links };
+}
+
 /* ----------------------------------------------------------------------------
  * Semantic SEO enrichment helpers (categories + subcategories).
  * Pure editorial content derived from the semantic map. NEVER touches prices,
@@ -227,6 +268,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       "Parcourez l'ensemble de nos univers d'impression. Du flyer à la bâche grand format, chaque produit se configure en ligne avec ses formats, matières et finitions.",
     ],
     breadcrumb: [home, { name: "Catalogue", path: "/catalogue" }],
+    visual: {
+      image: "/seo/hero-atelier.jpg",
+      imageAlt: "Atelier d'impression et supports personnalisés J2L Print",
+      keywords: SITE_KEYWORDS.slice(0, 8),
+    },
     productGrid: {
       heading: "Supports les plus demandés",
       intro: "Un aperçu des produits les plus commandés. Cliquez pour configurer le vôtre.",
@@ -234,6 +280,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     },
     internalLinks: [
       { heading: "Catégories", links: CATEGORY_SLUGS.map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` })) },
+      ecosystemGroup(seedFrom("catalogue"), 2),
     ],
     jsonLd: [
       breadcrumbLd([home, { name: "Catalogue", path: "/catalogue" }]),
@@ -277,6 +324,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       h1: content.h1,
       intro: content.intro,
       breadcrumb: crumb,
+      visual: CATEGORY_VISUALS[slug] ? {
+        image: CATEGORY_VISUALS[slug].image,
+        imageAlt: CATEGORY_VISUALS[slug].alt,
+        keywords: visibleKeywords(entry),
+      } : undefined,
       sections,
       productGrid: {
         heading: "Produits populaires",
@@ -290,6 +342,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         ...(complementaryCats.length ? [{ heading: "Univers complémentaires", links: complementaryCats }] : []),
         { heading: "Catégories associées", links: relatedCats },
         { heading: "Nos services", links: SERVICE_LINKS },
+        ecosystemGroup(catSeed, 2),
       ],
       jsonLd: [
         breadcrumbLd(crumb),
@@ -322,6 +375,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       const near = subLinks.filter((l) => !l.path.endsWith(`/${sub.slug}`)).slice(0, 6);
       const subSecs = subcategorySections(subEntry, sub.name, subSeed);
       const subFaq = subcategoryFaq(subEntry, sub.name, subSeed);
+      const subVisual = (famKey && FAMILY_VISUALS[famKey]) || CATEGORY_VISUALS[slug];
       // Make H1 unique when the same subcategory name exists under several
       // parent categories (append the parent universe — real, factual context).
       const subH1 = (subNameCount.get(sub.name.trim().toLowerCase()) || 0) > 1
@@ -334,6 +388,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         h1: subH1,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
+        visual: subVisual ? {
+          image: subVisual.image,
+          imageAlt: `${subVisual.alt} — ${sub.name}`,
+          keywords: visibleKeywords(subEntry, subcategoryKeywords(subEntry, sub.name, subSeed)),
+        } : undefined,
         sections: subSecs,
         productGrid: {
           heading: `Produits disponibles dans « ${sub.name} »`,
@@ -346,6 +405,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           { heading: "Catégorie", links: [{ label: content.name, path: `/categorie/${slug}` }] },
           ...(near.length ? [{ heading: "Sous-catégories proches", links: near }] : []),
           { heading: "Nos services", links: SERVICE_LINKS },
+          ecosystemGroup(subSeed, 1),
         ],
         jsonLd: [
           breadcrumbLd(subCrumb),
