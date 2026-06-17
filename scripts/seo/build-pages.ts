@@ -301,6 +301,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         }),
         faqLd(faq),
       ],
+      ...(entry ? { keywords: categoryKeywords(entry) } : {}),
     });
 
     // ── Subcategories: rich editorial text + internal links + a button toward
