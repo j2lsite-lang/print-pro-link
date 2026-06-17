@@ -260,7 +260,7 @@ export default function CityPage() {
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Mail className="h-4 w-4 text-primary" /> 
-              <a href="mailto:contact@j2lpublicite.fr" className="hover:text-primary">contact@j2lpublicite.fr</a>
+              <a href="mailto:contact@j2lprint.fr" className="hover:text-primary">contact@j2lprint.fr</a>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground sm:col-span-2">
               <MapPin className="h-4 w-4 text-primary" /> 

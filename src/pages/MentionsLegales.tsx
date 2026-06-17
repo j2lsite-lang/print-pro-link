@@ -15,7 +15,7 @@ export default function MentionsLegales() {
             <p><strong className="text-foreground">J2L Publicité</strong>, entreprise individuelle</p>
             <p><strong className="text-foreground">Siège social :</strong> 22 B rue Robert Barret, 88390 Uxegney, France</p>
             <p><strong className="text-foreground">Téléphone :</strong> <a href="tel:+33329304479" className="text-primary hover:underline">03 29 30 44 79</a></p>
-            <p><strong className="text-foreground">Email :</strong> <a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></p>
+            <p><strong className="text-foreground">Email :</strong> <a href="mailto:contact@j2lprint.fr" className="text-primary hover:underline">contact@j2lprint.fr</a></p>
             <p><strong className="text-foreground">SIREN :</strong> 508 858 784</p>
             <p><strong className="text-foreground">SIRET :</strong> 508 858 784 00046</p>
             <p><strong className="text-foreground">TVA intracommunautaire :</strong> FR64 508 858 784</p>
@@ -25,7 +25,7 @@ export default function MentionsLegales() {
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Directeur / Responsable de la publication</h2>
             <p><strong className="text-foreground">Responsable de la publication :</strong> M. Jean-Luc Lemaire, en qualité de gérant de J2L Publicité</p>
-            <p><strong className="text-foreground">Contact :</strong> <a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></p>
+            <p><strong className="text-foreground">Contact :</strong> <a href="mailto:contact@j2lprint.fr" className="text-primary hover:underline">contact@j2lprint.fr</a></p>
           </div>
 
           <div className="glass-card p-6 space-y-3">
@@ -47,7 +47,7 @@ export default function MentionsLegales() {
             <h2 className="font-display text-lg font-semibold text-foreground">Données personnelles</h2>
             <p>Les informations personnelles collectées via les formulaires de contact et/ou de demande de devis (nom, prénom, coordonnées, contenu du message, etc.) sont utilisées uniquement pour répondre aux demandes des utilisateurs et assurer le suivi de la relation commerciale.</p>
             <p>Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés modifiée, vous disposez d'un droit d'accès, de rectification, d'opposition, de limitation, de suppression et de portabilité des données vous concernant.</p>
-            <p>Vous pouvez exercer ces droits en écrivant à : <a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></p>
+            <p>Vous pouvez exercer ces droits en écrivant à : <a href="mailto:contact@j2lprint.fr" className="text-primary hover:underline">contact@j2lprint.fr</a></p>
             <p>Les données sont conservées pendant la durée strictement nécessaire au traitement de la demande et au maximum 3 ans à compter du dernier contact avec vous, sauf obligation légale contraire.</p>
             <p>Vous disposez également du droit d'introduire une réclamation auprès de la Commission Nationale de l'Informatique et des Libertés (CNIL) : <a href="https://www.cnil.fr" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">www.cnil.fr</a></p>
             <p>Pour en savoir plus, consultez notre <a href="/politique-confidentialite" className="text-primary hover:underline">Politique de confidentialité</a>.</p>

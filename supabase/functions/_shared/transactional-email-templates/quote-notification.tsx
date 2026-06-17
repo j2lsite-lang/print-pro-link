@@ -156,7 +156,7 @@ export const template = {
   subject: (data: QuoteNotificationProps) =>
     `Nouvelle demande de devis J2L Print – ${data?.reference ?? ''}`.trim(),
   displayName: 'Notification de demande de devis',
-  to: 'contact@j2lpublicite.fr',
+  to: 'contact@j2lprint.fr',
   previewData: {
     reference: 'DEVIS-AB12CD34',
     name: 'Jean Dupont',

@@ -144,8 +144,8 @@ export default function Personnalisation() {
             <a href="tel:+33329304479" className="flex items-center gap-2 text-muted-foreground hover:text-primary">
               <Phone className="h-4 w-4 text-primary" /> 03 29 30 44 79
             </a>
-            <a href="mailto:contact@j2lpublicite.fr" className="flex items-center gap-2 text-muted-foreground hover:text-primary">
-              <Mail className="h-4 w-4 text-primary" /> contact@j2lpublicite.fr
+            <a href="mailto:contact@j2lprint.fr" className="flex items-center gap-2 text-muted-foreground hover:text-primary">
+              <Mail className="h-4 w-4 text-primary" /> contact@j2lprint.fr
             </a>
           </div>
         </div>

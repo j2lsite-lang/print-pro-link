@@ -109,7 +109,7 @@ export default function Livraison() {
             <ul className="list-disc pl-5 space-y-1">
               <li>Vérifier l'état du colis avant signature</li>
               <li>En cas de dommage apparent, émettre des réserves précises sur le bon de livraison</li>
-              <li>Nous informer de tout problème sous 48 heures par email à <a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></li>
+              <li>Nous informer de tout problème sous 48 heures par email à <a href="mailto:contact@j2lprint.fr" className="text-primary hover:underline">contact@j2lprint.fr</a></li>
             </ul>
           </div>
 
@@ -118,7 +118,7 @@ export default function Livraison() {
             <div className="grid gap-3 sm:grid-cols-2 mt-2">
               <div className="rounded-lg border border-border p-3">
                 <p className="font-semibold text-foreground">📧 Par email</p>
-                <p><a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></p>
+                <p><a href="mailto:contact@j2lprint.fr" className="text-primary hover:underline">contact@j2lprint.fr</a></p>
               </div>
               <div className="rounded-lg border border-border p-3">
                 <p className="font-semibold text-foreground">📞 Par téléphone</p>

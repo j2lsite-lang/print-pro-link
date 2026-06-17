@@ -46,7 +46,7 @@ export default function PolitiqueRetours() {
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Procédure de retour</h2>
             <ol className="list-decimal pl-5 space-y-2">
-              <li><strong className="text-foreground">Signalement sous 48h :</strong> Contactez-nous par email à <a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a> ou par téléphone au <a href="tel:+33329304479" className="text-primary hover:underline">03 29 30 44 79</a> dans les 48 heures suivant la réception.</li>
+              <li><strong className="text-foreground">Signalement sous 48h :</strong> Contactez-nous par email à <a href="mailto:contact@j2lprint.fr" className="text-primary hover:underline">contact@j2lprint.fr</a> ou par téléphone au <a href="tel:+33329304479" className="text-primary hover:underline">03 29 30 44 79</a> dans les 48 heures suivant la réception.</li>
               <li><strong className="text-foreground">Description du problème :</strong> Joignez des photos du produit concerné et décrivez précisément le défaut ou la non-conformité.</li>
               <li><strong className="text-foreground">Validation du retour :</strong> Nous vous confirmons l'acceptation du retour et vous communiquons les instructions d'envoi.</li>
               <li><strong className="text-foreground">Envoi du colis :</strong> Retournez les produits dans leur emballage d'origine. Les frais de retour sont à notre charge en cas de défaut ou erreur de notre part.</li>
@@ -87,7 +87,7 @@ export default function PolitiqueRetours() {
             <div className="grid gap-3 sm:grid-cols-2 mt-2">
               <div className="rounded-lg border border-border p-3">
                 <p className="font-semibold text-foreground">📧 Par email</p>
-                <p><a href="mailto:contact@j2lpublicite.fr" className="text-primary hover:underline">contact@j2lpublicite.fr</a></p>
+                <p><a href="mailto:contact@j2lprint.fr" className="text-primary hover:underline">contact@j2lprint.fr</a></p>
                 <p className="text-xs mt-1">Joignez photos + n° de commande</p>
               </div>
               <div className="rounded-lg border border-border p-3">

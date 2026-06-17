@@ -35,7 +35,7 @@ export default function Footer() {
               Tél : <a href="tel:+33329304479" className="text-foreground hover:text-primary transition-colors">03 29 30 44 79</a>
             </p>
             <p className="text-sm text-muted-foreground">
-              Email : <a href="mailto:contact@j2lpublicite.fr" className="text-foreground hover:text-primary transition-colors">contact@j2lpublicite.fr</a>
+              Email : <a href="mailto:contact@j2lprint.fr" className="text-foreground hover:text-primary transition-colors">contact@j2lprint.fr</a>
             </p>
 
             {/* Liens externes */}
