@@ -24,6 +24,7 @@ export default function SeoRoute() {
   const { pathname } = useLocation();
   const page = PAGES[pathname] || PAGES[pathname.replace(/\/$/, "")];
   if (!page) return <NotFound />;
+  const linkGroups = page.internalLinks || [];
 
   return (
     <>
@@ -100,6 +101,30 @@ export default function SeoRoute() {
         <header className="container max-w-5xl space-y-4 pt-4">
           <h1 className="font-display text-3xl font-bold">{page.h1}</h1>
         </header>
+      )}
+
+      {page.visual && (
+        <section className="container max-w-5xl pt-6">
+          <div className="overflow-hidden rounded-2xl border border-border bg-card/60 shadow-card">
+            <img
+              src={page.visual.image}
+              alt={page.visual.imageAlt}
+              width={1280}
+              height={720}
+              loading="lazy"
+              className="aspect-[16/7] w-full object-cover"
+            />
+            {page.visual.keywords && page.visual.keywords.length > 0 && (
+              <div className="flex flex-wrap gap-2 p-4">
+                {page.visual.keywords.slice(0, 8).map((keyword) => (
+                  <span key={keyword} className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs text-primary">
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
       )}
 
       <article className="container max-w-5xl space-y-10 py-10">
