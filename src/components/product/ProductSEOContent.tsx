@@ -12,11 +12,27 @@ interface ProductSEOContentProps {
 export default function ProductSEOContent({ productName, sku, description, options }: ProductSEOContentProps) {
   const seo = getProductSEOData(productName, sku);
 
+  // Keep only real, displayable options: a clean title and at least one valid value.
+  // Drop empty/undefined/duplicate values and technical-only entries.
+  const cleanOptions = (options || [])
+    .map((opt) => {
+      const title = (opt.title || "").trim();
+      const values = Array.from(
+        new Set(
+          (opt.values || [])
+            .map((v) => (v == null ? "" : String(v).trim()))
+            .filter((v) => v && v.toLowerCase() !== "undefined" && v.toLowerCase() !== "null"),
+        ),
+      );
+      return { title, values };
+    })
+    .filter((opt) => opt.title && opt.values.length > 0);
+
   return (
     <div className="mt-12 space-y-10 border-t border-border pt-10">
 
-      {/* Section 3 — Options de personnalisation */}
-      {options && options.length > 0 && (
+      {/* Section 3 — Options de personnalisation (hidden entirely if none are real) */}
+      {cleanOptions.length > 0 && (
         <div className="space-y-4">
           <h3 className="font-display text-lg font-semibold text-foreground">
             Options de personnalisation disponibles
@@ -26,7 +42,7 @@ export default function ProductSEOContent({ productName, sku, description, optio
             Chaque commande est produite sur mesure avec les options que vous sélectionnez :
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
-            {options.slice(0, 10).map((opt) => (
+            {cleanOptions.slice(0, 10).map((opt) => (
               <div key={opt.title} className="flex items-start gap-2 text-sm text-muted-foreground">
                 <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                 <span>

@@ -3,6 +3,8 @@ import { ShoppingCart, Menu, X, Search } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/hooks/useCart";
 import { getCatalogProducts } from "@/lib/printcom";
+import { searchProducts } from "@/lib/search";
+import { isExcludedSku } from "@/config/excluded-products";
 import logoJ2L from "@/assets/logo-j2l.png";
 
 const navLinks = [
@@ -48,10 +50,12 @@ export default function Header() {
 
     getCatalogProducts()
       .then((items) => {
-        cachedProducts = items.map((p) => ({
-          id: p.sku,
-          name: p.name,
-        }));
+        cachedProducts = items
+          .filter((p) => !isExcludedSku(p.sku))
+          .map((p) => ({
+            id: p.sku,
+            name: p.name,
+          }));
         setAllProducts(cachedProducts);
       })
       .catch(() => {});
@@ -63,12 +67,14 @@ export default function Header() {
       return;
     }
 
-    const q = query.toLowerCase();
-    const matched = allProducts
-      .filter((p) => p.name.toLowerCase().includes(q) || p.id.includes(q))
-      .slice(0, 8);
+    const matched = searchProducts(
+      allProducts.map((p) => ({ sku: p.id, name: p.name })),
+      query,
+      8,
+    ).map((p) => ({ id: p.sku, name: p.name }));
     setResults(matched);
   }, [query, allProducts]);
+
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
