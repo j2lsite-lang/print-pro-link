@@ -564,6 +564,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         serviceLd({ name: `Impression ${article(gd.name).dans}`, description: `Impression en ligne avec livraison ${article(gd.name).dans}.`, areaServed: gd.name }),
         faqLd(copy.faq),
       ],
+      keywords: deptKeywords(gd.name, article(gd.name).dans),
     });
   }
 
