@@ -22,7 +22,7 @@ async function callProxy(
 
   if (!res.ok) {
     const errBody = await res.text();
-    throw new Error(`Print.com API error [${res.status}]: ${errBody}`);
+    throw new Error(`Erreur catalogue [${res.status}]: ${errBody}`);
   }
 
   return res.json();
