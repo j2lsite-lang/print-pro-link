@@ -112,11 +112,7 @@ export default function Products() {
 
 
   const filtered = useMemo(() => {
-    return products.filter((product) => {
-      if (!search) return true;
-      const q = search.toLowerCase();
-      return product.name.toLowerCase().includes(q) || product.sku.toLowerCase().includes(q);
-    });
+    return searchProducts(products, search);
   }, [products, search]);
 
   const pickBySkus = (skus: string[]) => {
