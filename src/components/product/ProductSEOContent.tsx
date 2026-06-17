@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { CheckCircle, Truck, FileText, Phone, ArrowRight, HelpCircle } from "lucide-react";
+import { CheckCircle, Truck, FileText, Phone, ArrowRight, HelpCircle, Sparkles, Target, Briefcase, Layers, FileCheck2 } from "lucide-react";
 import { getProductSEOData } from "@/lib/product-seo";
 
 interface ProductSEOContentProps {
@@ -9,8 +9,24 @@ interface ProductSEOContentProps {
   options?: { title: string; values: string[] }[];
 }
 
+const CATEGORY_LABELS: Record<string, string> = {
+  "impression-papier": "Impression papier",
+  "publicite-exterieure": "Publicité extérieure",
+  "publicite-interieure": "Publicité intérieure",
+  "etiquettes-stickers": "Étiquettes & stickers",
+  "emballages-sacs": "Emballages & sacs",
+  "objets-publicitaires-cadeaux": "Objets publicitaires & cadeaux",
+  "textiles-accessoires": "Textiles & accessoires",
+  "panneaux-baches-vinyles-toiles": "Panneaux, bâches & vinyles",
+};
+
 export default function ProductSEOContent({ productName, sku, description, options }: ProductSEOContentProps) {
   const seo = getProductSEOData(productName, sku);
+  const supportsLine = [
+    ...(seo.materials || []),
+    ...(seo.formats || []),
+    ...(seo.finitions || []),
+  ];
 
   // Keep only real, displayable options: a clean title and at least one valid value.
   // Drop empty/undefined/duplicate values and technical-only entries.
