@@ -11,6 +11,8 @@ import { useSEO } from "@/hooks/useSEO";
 import { fetchAllProductCategoryMappings, fetchPublicCatalogSkuSet } from "@/lib/catalog-mappings";
 import { fetchAllProductThemeMappings } from "@/lib/theme-mappings";
 import { NOUVEAUTES_SKUS, BESTSELLER_SKUS } from "@/lib/catalog-sections";
+import { searchProducts } from "@/lib/search";
+import { isExcludedSku } from "@/config/excluded-products";
 
 interface Product extends CatalogProduct {}
 
@@ -81,7 +83,11 @@ export default function Products() {
 
   useEffect(() => {
     Promise.all([getCatalogProducts(), fetchPublicCatalogSkuSet()])
-      .then(([items, publicSkuSet]) => setProducts(items.filter((product) => publicSkuSet.has(product.sku))))
+      .then(([items, publicSkuSet]) =>
+        setProducts(
+          items.filter((product) => publicSkuSet.has(product.sku) && !isExcludedSku(product.sku)),
+        ),
+      )
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
@@ -106,11 +112,7 @@ export default function Products() {
 
 
   const filtered = useMemo(() => {
-    return products.filter((product) => {
-      if (!search) return true;
-      const q = search.toLowerCase();
-      return product.name.toLowerCase().includes(q) || product.sku.toLowerCase().includes(q);
-    });
+    return searchProducts(products, search);
   }, [products, search]);
 
   const pickBySkus = (skus: string[]) => {
@@ -227,7 +229,7 @@ export default function Products() {
         <ProductSection
           eyebrow="Tout juste arrivés"
           title="Nouveautés"
-          subtitle="Les derniers produits ajoutés au catalogue Print.com."
+          subtitle="Découvrez les derniers produits ajoutés au catalogue J2L Print."
           items={nouveautes}
           thumbnails={sectionThumbnails}
         />
@@ -237,7 +239,7 @@ export default function Products() {
         <ProductSection
           eyebrow="Les plus demandés"
           title="Nos best-sellers"
-          subtitle="Les produits Print.com les plus commandés par nos clients."
+          subtitle="Les produits les plus commandés par nos clients."
           items={bestSellers}
           thumbnails={sectionThumbnails}
         />

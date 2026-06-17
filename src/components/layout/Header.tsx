@@ -3,6 +3,8 @@ import { ShoppingCart, Menu, X, Search } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/hooks/useCart";
 import { getCatalogProducts } from "@/lib/printcom";
+import { searchProducts } from "@/lib/search";
+import { isExcludedSku } from "@/config/excluded-products";
 import logoJ2L from "@/assets/logo-j2l.png";
 
 const navLinks = [
@@ -48,10 +50,12 @@ export default function Header() {
 
     getCatalogProducts()
       .then((items) => {
-        cachedProducts = items.map((p) => ({
-          id: p.sku,
-          name: p.name,
-        }));
+        cachedProducts = items
+          .filter((p) => !isExcludedSku(p.sku))
+          .map((p) => ({
+            id: p.sku,
+            name: p.name,
+          }));
         setAllProducts(cachedProducts);
       })
       .catch(() => {});
@@ -63,12 +67,14 @@ export default function Header() {
       return;
     }
 
-    const q = query.toLowerCase();
-    const matched = allProducts
-      .filter((p) => p.name.toLowerCase().includes(q) || p.id.includes(q))
-      .slice(0, 8);
+    const matched = searchProducts(
+      allProducts.map((p) => ({ sku: p.id, name: p.name })),
+      query,
+      8,
+    ).map((p) => ({ id: p.sku, name: p.name }));
     setResults(matched);
   }, [query, allProducts]);
+
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -111,7 +117,7 @@ export default function Header() {
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
-                placeholder="Rechercher un produit… (tampons, flyers, bâches…)"
+                placeholder="Rechercher un produit… flyers, affiches, bâches, autocollants"
                 value={query}
                 onChange={(e) => {
                   setQuery(e.target.value);
@@ -145,10 +151,20 @@ export default function Header() {
             </div>
           )}
           {showResults && query.trim() && results.length === 0 && allProducts.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 rounded-xl border border-border bg-background shadow-elevated z-50 p-4 text-center text-sm text-muted-foreground">
-              Aucun produit trouvé pour « {query} »
+            <div className="absolute top-full left-0 right-0 mt-1 rounded-xl border border-border bg-background shadow-elevated z-50 p-4 text-sm">
+              <p className="text-muted-foreground">Aucun produit trouvé pour « {query} ».</p>
+              <p className="mt-2 text-xs text-muted-foreground">Suggestions : flyers, affiches, bâches, autocollants, cartes de visite.</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Link to="/products" onClick={() => setShowResults(false)} className="pill text-xs font-medium">
+                  Voir le catalogue
+                </Link>
+                <Link to="/#devis" onClick={() => setShowResults(false)} className="pill text-xs font-medium">
+                  Demander un devis
+                </Link>
+              </div>
             </div>
           )}
+
         </div>
 
         <nav className="hidden items-center gap-1.5 md:flex flex-wrap justify-end shrink-0">

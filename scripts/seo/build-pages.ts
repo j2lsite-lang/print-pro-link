@@ -14,6 +14,7 @@ import {
   breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd, productLd,
 } from "../../src/seo/schema";
 import { getProductSEOData } from "../../src/lib/product-seo";
+import { isExcludedSku } from "../../src/config/excluded-products";
 import { loadGeo } from "./geo-data";
 import {
   cityCopy, deptCopy, seedOf, cityArchetype, type GenCity, type GenDept, type NeighborRef,
@@ -672,7 +673,9 @@ export async function buildProductPages(): Promise<SeoPage[]> {
 
   const pages: SeoPage[] = [];
   // Only PUBLIC products (mapped to a category), sorted for deterministic output.
-  const publicSkus = [...skuCategories.keys()].filter((sku) => catalog.has(sku)).sort();
+  const publicSkus = [...skuCategories.keys()]
+    .filter((sku) => catalog.has(sku) && !isExcludedSku(sku))
+    .sort();
 
   for (const sku of publicSkus) {
     const prod = catalog.get(sku)!;

@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
+import { getSlugRedirect, isUnavailableSku } from "@/config/excluded-products";
 import { Loader2, ChevronRight, CheckCircle } from "lucide-react";
 import { getProductSEOData } from "@/lib/product-seo";
 import { cn } from "@/lib/utils";
@@ -831,6 +832,35 @@ export default function ProductDetail() {
 
   const images = productImages.length > 0 ? productImages : (product?.images || []);
   const thumbnailUrl = product?.thumbnailUrl || null;
+
+  // Supplier: deprecated/seasonal slugs must redirect to a real active product,
+  // and excluded products without a target show a clean "no longer available" page.
+  const redirectTarget = getSlugRedirect(sku);
+  if (redirectTarget) {
+    return <Navigate to={`/products/${redirectTarget}`} replace />;
+  }
+  if (isUnavailableSku(sku)) {
+    return (
+      <div className="container py-20 text-center space-y-6">
+        <h1 className="font-display text-2xl font-bold text-foreground">
+          Ce produit n'est plus disponible
+        </h1>
+        <p className="text-muted-foreground max-w-xl mx-auto">
+          Ce produit ne fait plus partie de notre catalogue permanent. Découvrez nos affiches
+          standards, disponibles dans tous les formats.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link to="/products/posters" className="pill font-semibold text-sm">
+            Voir les affiches standards
+          </Link>
+          <Link to="/products" className="pill font-semibold text-sm">
+            Retour au catalogue
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
 
   if (loading) {
     return (
