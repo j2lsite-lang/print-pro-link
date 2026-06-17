@@ -212,6 +212,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     // Organization JSON-LD lives once in the static index.html shell (sitewide);
     // don't re-emit it here or the homepage would carry a duplicate.
     jsonLd: [],
+    keywords: SITE_KEYWORDS,
   });
 
   // ── Catalogue ──
