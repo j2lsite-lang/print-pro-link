@@ -105,6 +105,18 @@ async function main() {
   writeFileSync(resolve(genDir, "products.json"), JSON.stringify(productsByPath, null, 0));
   const productSlugs = productPages.map((p) => p.path.replace(/^\/products\//, ""));
 
+  // 1b-bis. related-products.json — a SMALL sku→complementary-links map consumed
+  //         by the runtime fiche-produit (ProductSEOContent) so the visible
+  //         "Produits complémentaires" block matches the prerendered HTML and
+  //         only links to existing product pages (no 404).
+  const relatedBySku: Record<string, { label: string; path: string }[]> = {};
+  for (const p of productPages) {
+    const sku = p.path.replace(/^\/products\//, "");
+    const grp = (p.internalLinks || []).find((g) => g.heading === "Produits complémentaires");
+    if (grp && grp.links.length) relatedBySku[sku] = grp.links.map((l) => ({ label: l.label, path: l.path }));
+  }
+  writeFileSync(resolve(genDir, "related-products.json"), JSON.stringify(relatedBySku, null, 0));
+
   // 1c. theme pages — /themes + /themes/:slug, prerendered separately
   //     (themes.json) for the same reason as products. Never affects the
   //     runtime /themes routes, prices, API, configurator or mappings.
