@@ -259,6 +259,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       "Parcourez l'ensemble de nos univers d'impression. Du flyer à la bâche grand format, chaque produit se configure en ligne avec ses formats, matières et finitions.",
     ],
     breadcrumb: [home, { name: "Catalogue", path: "/catalogue" }],
+    visual: {
+      image: "/seo/hero-atelier.jpg",
+      imageAlt: "Atelier d'impression et supports personnalisés J2L Print",
+      keywords: SITE_KEYWORDS.slice(0, 8),
+    },
     productGrid: {
       heading: "Supports les plus demandés",
       intro: "Un aperçu des produits les plus commandés. Cliquez pour configurer le vôtre.",
@@ -309,6 +314,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       h1: content.h1,
       intro: content.intro,
       breadcrumb: crumb,
+      visual: CATEGORY_VISUALS[slug] ? {
+        image: CATEGORY_VISUALS[slug].image,
+        imageAlt: CATEGORY_VISUALS[slug].alt,
+        keywords: visibleKeywords(entry),
+      } : undefined,
       sections,
       productGrid: {
         heading: "Produits populaires",
@@ -366,6 +376,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         h1: subH1,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
+        visual: (famKey && FAMILY_VISUALS[famKey]) || CATEGORY_VISUALS[slug] ? {
+          image: ((famKey && FAMILY_VISUALS[famKey]) || CATEGORY_VISUALS[slug]).image,
+          imageAlt: `${((famKey && FAMILY_VISUALS[famKey]) || CATEGORY_VISUALS[slug]).alt} — ${sub.name}`,
+          keywords: visibleKeywords(subEntry, subcategoryKeywords(subEntry, sub.name, subSeed)),
+        } : undefined,
         sections: subSecs,
         productGrid: {
           heading: `Produits disponibles dans « ${sub.name} »`,
