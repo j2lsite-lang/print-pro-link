@@ -356,6 +356,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           }),
           faqLd(subFaq),
         ],
+        keywords: subcategoryKeywords(subEntry, sub.name, subSeed),
       });
     });
   }
