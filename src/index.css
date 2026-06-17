@@ -151,6 +151,4 @@
   .seo-product-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); margin-top: 1rem; }
   .seo-product-card { display: block; padding: 1.25rem; border-radius: 18px; background: hsla(0,0%,7%,.72); border: 1px solid hsl(var(--border)); text-decoration: none; }
   .seo-cta-button { display: inline-flex; padding: .75rem 1.5rem; border-radius: 12px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-weight: 700; text-decoration: none; }
-  /* Crawler-readable but visually hidden list of natural Google queries. */
-  .seo-keywords { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 }
