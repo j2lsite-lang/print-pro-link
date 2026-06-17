@@ -68,6 +68,15 @@ function visibleKeywords(entry?: SemanticEntry, fallback: string[] = []): string
   return [entry.primaryKeyword, ...entry.secondary, ...entry.longTail].filter(Boolean).slice(0, 8);
 }
 
+function ecosystemGroup(seed: number, n: number) {
+  const links: LinkItem[] = [];
+  const start = seed % J2L_ECOSYSTEM.length;
+  for (let i = 0; i < Math.min(n, J2L_ECOSYSTEM.length); i++) {
+    links.push(J2L_ECOSYSTEM[(start + i) % J2L_ECOSYSTEM.length]);
+  }
+  return { heading: "L'écosystème J2L", links };
+}
+
 /* ----------------------------------------------------------------------------
  * Semantic SEO enrichment helpers (categories + subcategories).
  * Pure editorial content derived from the semantic map. NEVER touches prices,
