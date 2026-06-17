@@ -364,6 +364,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       const near = subLinks.filter((l) => !l.path.endsWith(`/${sub.slug}`)).slice(0, 6);
       const subSecs = subcategorySections(subEntry, sub.name, subSeed);
       const subFaq = subcategoryFaq(subEntry, sub.name, subSeed);
+      const subVisual = (famKey && FAMILY_VISUALS[famKey]) || CATEGORY_VISUALS[slug];
       // Make H1 unique when the same subcategory name exists under several
       // parent categories (append the parent universe — real, factual context).
       const subH1 = (subNameCount.get(sub.name.trim().toLowerCase()) || 0) > 1
@@ -376,9 +377,9 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         h1: subH1,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
-        visual: (famKey && FAMILY_VISUALS[famKey]) || CATEGORY_VISUALS[slug] ? {
-          image: ((famKey && FAMILY_VISUALS[famKey]) || CATEGORY_VISUALS[slug]).image,
-          imageAlt: `${((famKey && FAMILY_VISUALS[famKey]) || CATEGORY_VISUALS[slug]).alt} — ${sub.name}`,
+        visual: subVisual ? {
+          image: subVisual.image,
+          imageAlt: `${subVisual.alt} — ${sub.name}`,
           keywords: visibleKeywords(subEntry, subcategoryKeywords(subEntry, sub.name, subSeed)),
         } : undefined,
         sections: subSecs,
