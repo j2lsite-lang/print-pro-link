@@ -237,12 +237,24 @@ export async function buildAllPages(): Promise<SeoPage[]> {
   // ── 8 categories ──
   for (const slug of CATEGORY_SLUGS) {
     const content = CATEGORY_CONTENT[slug];
+    const entry = CATEGORY_KEYWORDS[slug];
+    const catSeed = seedFrom(slug);
     const cat = cats.find((c) => c.slug === slug && !c.parent_id);
     const subs = (cat && childrenOf.get(cat.id)) || [];
     const crumb = [home, { name: "Catalogue", path: "/catalogue" }, { name: content.name, path: `/categorie/${slug}` }];
     const subLinks: LinkItem[] = subs.map((s) => ({ label: s.name, path: `/categorie/${slug}/${s.slug}` }));
     const relatedCats: LinkItem[] = CATEGORY_SLUGS.filter((s) => s !== slug).slice(0, 4)
       .map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` }));
+    // Complementary universes from the semantic map (always valid category links).
+    const complementaryCats: LinkItem[] = entry
+      ? entry.complementary.filter((s) => CATEGORY_CONTENT[s] && s !== slug)
+          .map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` }))
+      : [];
+
+    // Enrich existing content WITHOUT changing the URL: append semantic sections
+    // and extend the FAQ to 6–10 entries (deduped). Fully seeded for variety.
+    const sections = entry ? [...content.sections, ...categorySemanticSections(entry, catSeed)] : content.sections;
+    const faq = entry ? mergeFaq([content.faq, entry.faq], 10) : content.faq;
 
     pages.push({
       path: `/categorie/${slug}`,
@@ -251,11 +263,17 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       h1: content.h1,
       intro: content.intro,
       breadcrumb: crumb,
-      sections: content.sections,
-      faq: content.faq,
+      sections,
+      productGrid: {
+        heading: "Produits populaires",
+        intro: "Une sélection de supports parmi les plus demandés. Cliquez pour configurer le vôtre dans le catalogue en ligne.",
+        cards: PRODUCT_CARDS,
+      },
+      faq,
       cta: CATALOG_CTA,
       internalLinks: [
         ...(subLinks.length ? [{ heading: "Sous-catégories", links: subLinks }] : []),
+        ...(complementaryCats.length ? [{ heading: "Univers complémentaires", links: complementaryCats }] : []),
         { heading: "Catégories associées", links: relatedCats },
         { heading: "Nos services", links: SERVICE_LINKS },
       ],
@@ -267,40 +285,38 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           path: `/categorie/${slug}`,
           items: subs.map((s) => ({ name: s.name, path: `/categorie/${slug}/${s.slug}` })),
         }),
-        faqLd(content.faq),
+        faqLd(faq),
       ],
     });
 
-    // ── Subcategories: editorial text + internal links + a button toward the
-    //    existing catalog. They never fetch, embed, rebuild or intercept the
+    // ── Subcategories: rich editorial text + internal links + a button toward
+    //    the existing catalog. They never fetch, embed, rebuild or intercept the
     //    Print.com catalog/configurator — they only link to /products.
     subs.forEach((sub, si) => {
       const subCrumb = [...crumb, { name: sub.name, path: `/categorie/${slug}/${sub.slug}` }];
+      // Prefer a precise product-family universe detected from the sub name;
+      // fall back to the parent category universe.
+      const famKey = detectFamily(sub.name);
+      const subEntry: SemanticEntry = (famKey && FAMILY_KEYWORDS[famKey]) || entry || CATEGORY_KEYWORDS[slug];
+      const subSeed = seedFrom(sub.slug);
       const angles = [
-        `Découvrez la sélection « ${sub.name} » de J2L Print, au sein de l'univers ${content.name}. Configurez votre produit en ligne — format, matière et finitions — et recevez votre commande partout en France.`,
-        `Pour vos besoins en « ${sub.name} », J2L Print propose une gamme professionnelle dans la catégorie ${content.name}, avec un rendu fidèle et des finitions au choix.`,
-        `La rubrique « ${sub.name} » regroupe nos produits ${content.name.toLowerCase()} adaptés à cet usage : choisissez vos options en ligne et profitez de tarifs dégressifs selon la quantité.`,
+        `Découvrez la sélection « ${sub.name} » de J2L Print, au sein de l'univers ${content.name}. ${cap1(subEntry.primaryKeyword)} à configurer en ligne — format, support et finitions — avec livraison partout en France.`,
+        `Pour vos besoins en « ${sub.name} », J2L Print propose une gamme professionnelle (${subEntry.primaryKeyword}) avec un rendu fidèle, des finitions au choix et des tarifs dégressifs.`,
+        `La rubrique « ${sub.name} » regroupe nos produits ${content.name.toLowerCase()} adaptés à cet usage : ${frList(pickN(subEntry.usages, subSeed, 2).map((u) => u.toLowerCase()))}. Configurez vos options en ligne.`,
       ];
       const near = subLinks.filter((l) => !l.path.endsWith(`/${sub.slug}`)).slice(0, 6);
-      const subFaq = [
-        {
-          q: `Peut-on commander « ${sub.name} » en ligne ?`,
-          a: `Oui. La gamme « ${sub.name} » se configure entièrement en ligne — format, matière, finitions et quantité — puis est livrée partout en France.`,
-        },
-        {
-          q: "Comment obtenir un devis ?",
-          a: "Configurez votre produit dans le catalogue ou décrivez votre besoin dans le formulaire de devis : nous revenons vers vous avec une proposition personnalisée.",
-        },
-      ];
+      const subSecs = subcategorySections(subEntry, sub.name, subSeed);
+      const subFaq = subcategoryFaq(subEntry, sub.name, subSeed);
       pages.push({
         path: `/categorie/${slug}/${sub.slug}`,
         title: `${sub.name} — ${content.name}`,
-        description: `${sub.name} : impression professionnelle en ligne (${content.name.toLowerCase()}). Formats, matières et finitions au choix, devis et livraison partout en France.`,
+        description: `${sub.name} : impression professionnelle en ligne (${content.name.toLowerCase()}). Formats, supports et finitions au choix, devis et livraison partout en France.`,
         h1: sub.name,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
+        sections: subSecs,
         productGrid: {
-          heading: `Supports populaires dans « ${sub.name} »`,
+          heading: `Produits disponibles dans « ${sub.name} »`,
           intro: "Configurez votre produit dans le catalogue en ligne.",
           cards: PRODUCT_CARDS,
         },
