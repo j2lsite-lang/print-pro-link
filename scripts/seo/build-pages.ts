@@ -2,7 +2,7 @@
 // registry with live catalog/location data from the database.
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
-import type { SeoPage, LinkItem } from "../../src/seo/types";
+import type { SeoPage, LinkItem, ContentSection } from "../../src/seo/types";
 import { CATEGORY_CONTENT, CATEGORY_SLUGS } from "../../src/seo/content/categories";
 import { article } from "../../src/seo/content/fr";
 import { SERVICE_CONTENT } from "../../src/seo/content/services";
@@ -13,7 +13,10 @@ import {
 import {
   breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd, productLd,
 } from "../../src/seo/schema";
-import { getProductSEOData } from "../../src/lib/product-seo";
+import { getProductSEOData, detectFamily } from "../../src/lib/product-seo";
+import {
+  CATEGORY_KEYWORDS, FAMILY_KEYWORDS, seedFrom, pickN, type SemanticEntry,
+} from "../../src/seo/data/semantic-keywords";
 import { isExcludedSku } from "../../src/config/excluded-products";
 import { loadGeo } from "./geo-data";
 import {
