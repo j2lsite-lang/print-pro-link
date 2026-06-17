@@ -16,7 +16,7 @@
 import { normalize } from "./search";
 import {
   FAMILY_KEYWORDS, SECTORS_POOL, seedFrom, pickN, pickOne, type SemanticEntry,
-} from "@/seo/data/semantic-keywords";
+} from "../seo/data/semantic-keywords";
 
 export interface ProductSEOData {
   /* ── stable fields (consumed by the prerenderer + runtime) ── */
