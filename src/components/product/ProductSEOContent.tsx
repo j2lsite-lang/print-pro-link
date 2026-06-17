@@ -233,7 +233,24 @@ export default function ProductSEOContent({ productName, sku, description, optio
         </div>
       </div>
 
+      {/* Produits complémentaires — 2 à 6 produits réels liés (aucune URL 404) */}
+      {relatedProducts.length >= 2 && (
+        <div className="space-y-3">
+          <h3 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+            <Boxes className="h-5 w-5 text-primary" /> Produits complémentaires
+          </h3>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 text-sm">
+            {relatedProducts.slice(0, 6).map((r) => (
+              <Link key={r.path} to={r.path} className="text-muted-foreground hover:text-primary flex items-center gap-1">
+                <ArrowRight className="h-3 w-3 text-primary flex-shrink-0" /> {r.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Liens internes */}
+
       <div className="space-y-3">
         <h3 className="font-display text-sm font-semibold text-foreground">Découvrez aussi</h3>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 text-sm">
