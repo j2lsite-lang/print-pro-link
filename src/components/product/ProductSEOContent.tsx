@@ -28,6 +28,13 @@ export default function ProductSEOContent({ productName, sku, description, optio
     ...(seo.formats || []),
     ...(seo.finitions || []),
   ];
+  // File-prep tips are shown only when we have enough genuine advice (≥3).
+  const fileTips = (seo.fileTips || []).filter(Boolean);
+  // Complementary products: real, existing product pages prerendered at build
+  // time (sku → links). Empty when fewer than 2 reliable siblings exist.
+  const relatedProducts = ((relatedProductsMap as Record<string, { label: string; path: string }[]>)[sku || ""] || [])
+    .filter((r) => r && r.path && r.label);
+
 
   // Keep only real, displayable options: a clean title and at least one valid value.
   // Drop empty/undefined/duplicate values and technical-only entries.
