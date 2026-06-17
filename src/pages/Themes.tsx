@@ -12,7 +12,7 @@ export default function Themes() {
   useSEO({
     title: "Thèmes & collections – Impression en ligne | J2L Print",
     description:
-      "Explorez nos thèmes : Écologique, Nouveautés, Hôtels & restaurants, Bureau, Saison estivale et plus. Retrouvez les produits Print.com associés à chaque thème.",
+      "Explorez nos thèmes : Écologique, Nouveautés, Hôtels & restaurants, Bureau, Saison estivale et plus. Retrouvez les produits J2L Print associés à chaque thème.",
   });
 
   useEffect(() => {
