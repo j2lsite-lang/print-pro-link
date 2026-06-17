@@ -18,6 +18,7 @@ import {
   CATEGORY_KEYWORDS, FAMILY_KEYWORDS, seedFrom, pickN, type SemanticEntry,
 } from "../../src/seo/data/semantic-keywords";
 import { isExcludedSku } from "../../src/config/excluded-products";
+import { twinDisplayName } from "../../src/seo/data/twin-products";
 import { loadGeo } from "./geo-data";
 import {
   cityCopy, deptCopy, seedOf, cityArchetype, type GenCity, type GenDept, type NeighborRef,
