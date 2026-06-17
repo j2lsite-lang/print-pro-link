@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { CheckCircle, Truck, FileText, Phone, ArrowRight, HelpCircle, Sparkles, Target, Briefcase, Layers, FileCheck2 } from "lucide-react";
+import { CheckCircle, Truck, FileText, Phone, ArrowRight, HelpCircle, Sparkles, Target, Briefcase, Layers, FileCheck2, Boxes } from "lucide-react";
 import { getProductSEOData } from "@/lib/product-seo";
+import relatedProductsMap from "@/seo/generated/related-products.json";
 
 interface ProductSEOContentProps {
   productName: string;
