@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { CheckCircle, Truck, FileText, Phone, ArrowRight, HelpCircle } from "lucide-react";
+import { CheckCircle, Truck, FileText, Phone, ArrowRight, HelpCircle, Sparkles, Target, Briefcase, Layers, FileCheck2 } from "lucide-react";
 import { getProductSEOData } from "@/lib/product-seo";
 
 interface ProductSEOContentProps {
@@ -9,8 +9,24 @@ interface ProductSEOContentProps {
   options?: { title: string; values: string[] }[];
 }
 
+const CATEGORY_LABELS: Record<string, string> = {
+  "impression-papier": "Impression papier",
+  "publicite-exterieure": "Publicité extérieure",
+  "publicite-interieure": "Publicité intérieure",
+  "etiquettes-stickers": "Étiquettes & stickers",
+  "emballages-sacs": "Emballages & sacs",
+  "objets-publicitaires-cadeaux": "Objets publicitaires & cadeaux",
+  "textiles-accessoires": "Textiles & accessoires",
+  "panneaux-baches-vinyles-toiles": "Panneaux, bâches & vinyles",
+};
+
 export default function ProductSEOContent({ productName, sku, description, options }: ProductSEOContentProps) {
   const seo = getProductSEOData(productName, sku);
+  const supportsLine = [
+    ...(seo.materials || []),
+    ...(seo.formats || []),
+    ...(seo.finitions || []),
+  ];
 
   // Keep only real, displayable options: a clean title and at least one valid value.
   // Drop empty/undefined/duplicate values and technical-only entries.
@@ -30,6 +46,69 @@ export default function ProductSEOContent({ productName, sku, description, optio
 
   return (
     <div className="mt-12 space-y-10 border-t border-border pt-10">
+
+      {/* Section 1 — Pourquoi choisir ce produit */}
+      {seo.whyChoose && seo.whyChoose.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="font-display text-xl font-semibold text-foreground flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" /> Pourquoi choisir votre {productName.toLowerCase()} ?
+          </h2>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {seo.whyChoose.map((b) => (
+              <div key={b} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" /><span>{b}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Section 2 — Usages & secteurs */}
+      {((seo.usagesList && seo.usagesList.length > 0) || (seo.sectors && seo.sectors.length > 0)) && (
+        <div className="grid gap-6 sm:grid-cols-2">
+          {seo.usagesList && seo.usagesList.length > 0 && (
+            <div className="space-y-3">
+              <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+                <Target className="h-5 w-5 text-primary" /> Pour quels usages ?
+              </h2>
+              <ul className="space-y-1.5">
+                {seo.usagesList.map((u) => (
+                  <li key={u} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <ArrowRight className="h-3.5 w-3.5 text-primary mt-1 flex-shrink-0" />{u}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {seo.sectors && seo.sectors.length > 0 && (
+            <div className="space-y-3">
+              <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+                <Briefcase className="h-5 w-5 text-primary" /> Pour quels professionnels ?
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {seo.sectors.map((s) => (
+                  <span key={s} className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground capitalize">{s}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Formats, supports & finitions */}
+      {supportsLine.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+            <Layers className="h-5 w-5 text-primary" /> Formats, supports et finitions disponibles
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {supportsLine.map((v) => (
+              <span key={v} className="rounded-full bg-secondary/40 px-3 py-1 text-xs text-muted-foreground">{v}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
 
       {/* Section 3 — Options de personnalisation (hidden entirely if none are real) */}
       {cleanOptions.length > 0 && (
