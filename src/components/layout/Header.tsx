@@ -151,10 +151,20 @@ export default function Header() {
             </div>
           )}
           {showResults && query.trim() && results.length === 0 && allProducts.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 rounded-xl border border-border bg-background shadow-elevated z-50 p-4 text-center text-sm text-muted-foreground">
-              Aucun produit trouvé pour « {query} »
+            <div className="absolute top-full left-0 right-0 mt-1 rounded-xl border border-border bg-background shadow-elevated z-50 p-4 text-sm">
+              <p className="text-muted-foreground">Aucun produit trouvé pour « {query} ».</p>
+              <p className="mt-2 text-xs text-muted-foreground">Suggestions : flyers, affiches, bâches, autocollants, cartes de visite.</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Link to="/products" onClick={() => setShowResults(false)} className="pill text-xs font-medium">
+                  Voir le catalogue
+                </Link>
+                <Link to="/#devis" onClick={() => setShowResults(false)} className="pill text-xs font-medium">
+                  Demander un devis
+                </Link>
+              </div>
             </div>
           )}
+
         </div>
 
         <nav className="hidden items-center gap-1.5 md:flex flex-wrap justify-end shrink-0">
