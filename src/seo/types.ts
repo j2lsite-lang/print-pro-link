@@ -64,6 +64,13 @@ export interface ProductGrid {
   cards: ProductCard[];
 }
 
+export interface SeoVisual {
+  image: string;
+  imageAlt: string;
+  /** Short visible semantic expressions, capped by renderers. */
+  keywords?: string[];
+}
+
 export interface SeoPage {
   /** canonical path, e.g. "/categorie/impression-papier" */
   path: string;
@@ -85,6 +92,8 @@ export interface SeoPage {
   faq?: FaqItem[];
   /** Optional visual hero banner (city/department pages). */
   hero?: SeoHero;
+  /** Optional editorial visual for catalogue/category/service SEO pages. */
+  visual?: SeoVisual;
   /** Optional product-cards grid linking to existing catalog categories. */
   productGrid?: ProductGrid;
   /** JSON-LD blocks already shaped for schema.org */
