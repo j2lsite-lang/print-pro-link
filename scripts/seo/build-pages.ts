@@ -171,6 +171,13 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     if (!childrenOf.has(c.parent_id)) childrenOf.set(c.parent_id, []);
     childrenOf.get(c.parent_id)!.push(c);
   }
+  // Count subcategory NAME occurrences across the whole tree so we can make
+  // colliding H1s unique (e.g. "Panneaux & accessoires" exists in 3 parents).
+  const subNameCount = new Map<string, number>();
+  for (const c of cats) if (c.parent_id) {
+    const k = c.name.trim().toLowerCase();
+    subNameCount.set(k, (subNameCount.get(k) || 0) + 1);
+  }
 
 
 
