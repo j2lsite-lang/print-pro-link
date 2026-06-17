@@ -239,7 +239,7 @@ export default function Products() {
         <ProductSection
           eyebrow="Les plus demandés"
           title="Nos best-sellers"
-          subtitle="Les produits Print.com les plus commandés par nos clients."
+          subtitle="Les produits les plus commandés par nos clients."
           items={bestSellers}
           thumbnails={sectionThumbnails}
         />
