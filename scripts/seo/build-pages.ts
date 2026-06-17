@@ -2,7 +2,7 @@
 // registry with live catalog/location data from the database.
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
-import type { SeoPage, LinkItem } from "../../src/seo/types";
+import type { SeoPage, LinkItem, ContentSection } from "../../src/seo/types";
 import { CATEGORY_CONTENT, CATEGORY_SLUGS } from "../../src/seo/content/categories";
 import { article } from "../../src/seo/content/fr";
 import { SERVICE_CONTENT } from "../../src/seo/content/services";
@@ -13,7 +13,10 @@ import {
 import {
   breadcrumbLd, collectionPageLd, serviceLd, webPageLd, faqLd, productLd,
 } from "../../src/seo/schema";
-import { getProductSEOData } from "../../src/lib/product-seo";
+import { getProductSEOData, detectFamily } from "../../src/lib/product-seo";
+import {
+  CATEGORY_KEYWORDS, FAMILY_KEYWORDS, seedFrom, pickN, type SemanticEntry,
+} from "../../src/seo/data/semantic-keywords";
 import { isExcludedSku } from "../../src/config/excluded-products";
 import { loadGeo } from "./geo-data";
 import {
@@ -27,6 +30,88 @@ import {
 // Catalog CTA used on category/subcategory SEO pages. SEO pages NEVER fetch or
 // embed the Print.com catalog/configurator — they only link to the existing one.
 const CATALOG_CTA = { label: "Voir les produits dans le catalogue", path: "/products" };
+
+/* ----------------------------------------------------------------------------
+ * Semantic SEO enrichment helpers (categories + subcategories).
+ * Pure editorial content derived from the semantic map. NEVER touches prices,
+ * SKUs, the Print.com API or the configurator — only generates copy + links.
+ * Seeded by slug so two pages of the same family stay distinct (anti-dup).
+ * -------------------------------------------------------------------------- */
+const cap1 = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
+function frList(items: string[]): string {
+  const a = items.filter(Boolean);
+  if (a.length <= 1) return a[0] || "";
+  return `${a.slice(0, -1).join(", ")} et ${a[a.length - 1]}`;
+}
+
+/** Merge several FAQ pools, dedup by question, cap to `max`. */
+function mergeFaq(pools: { q: string; a: string }[][], max: number): { q: string; a: string }[] {
+  const seen = new Set<string>();
+  const out: { q: string; a: string }[] = [];
+  for (const pool of pools) {
+    for (const f of pool || []) {
+      const k = f.q.trim().toLowerCase();
+      if (!f.q || !f.a || seen.has(k)) continue;
+      seen.add(k);
+      out.push(f);
+      if (out.length >= max) return out;
+    }
+  }
+  return out;
+}
+
+/** Build extra editorial sections for a category from its semantic universe. */
+function categorySemanticSections(entry: SemanticEntry, seed: number): ContentSection[] {
+  const secs: ContentSection[] = [];
+  if (entry.anchors?.length) secs.push({ heading: "Familles de produits", bullets: entry.anchors.map(cap1) });
+  if (entry.usages?.length) secs.push({ heading: "Usages les plus fréquents", bullets: entry.usages });
+  if (entry.sectors?.length) secs.push({ heading: "Secteurs professionnels concernés", bullets: entry.sectors.map(cap1) });
+  const matFin = [...(entry.materials || []), ...(entry.formats || []), ...(entry.finitions || [])];
+  if (matFin.length) secs.push({ heading: "Matériaux, formats et finitions", bullets: matFin });
+  const usageHint = frList(pickN(entry.usages, seed, 2).map((u) => u.toLowerCase()));
+  const supportHint = frList(pickN(entry.materials.length ? entry.materials : entry.finitions, seed + 1, 2));
+  secs.push({
+    heading: "Guide de choix",
+    paragraphs: [
+      `Pour bien choisir, partez de votre usage (${usageHint}), puis du support le plus adapté (${supportHint}). ` +
+      `Configurez ensuite le format, la quantité et les finitions directement en ligne pour obtenir un prix immédiat, ou demandez un devis gratuit pour un accompagnement personnalisé.`,
+    ],
+  });
+  return secs;
+}
+
+/** Build the full editorial section set for a subcategory. */
+function subcategorySections(entry: SemanticEntry, name: string, seed: number): ContentSection[] {
+  const secs: ContentSection[] = [];
+  if (entry.anchors?.length) secs.push({ heading: `Types de « ${name} » disponibles`, bullets: pickN(entry.anchors, seed, Math.min(4, entry.anchors.length)) });
+  if (entry.usages?.length) secs.push({ heading: "Usages", bullets: pickN(entry.usages, seed + 1, 4) });
+  if (entry.formats?.length) secs.push({ heading: "Formats", bullets: entry.formats });
+  if (entry.materials?.length) secs.push({ heading: "Supports et matériaux", bullets: entry.materials });
+  if (entry.finitions?.length) secs.push({ heading: "Finitions", bullets: entry.finitions });
+  if (entry.sectors?.length) secs.push({ heading: "Secteurs concernés", bullets: pickN(entry.sectors, seed + 2, 5).map(cap1) });
+  const usageHint = frList(pickN(entry.usages, seed + 3, 2).map((u) => u.toLowerCase()));
+  secs.push({
+    heading: "Guide de choix",
+    paragraphs: [
+      `Pour « ${name} », identifiez d'abord votre usage (${usageHint}), puis sélectionnez format, support et finitions dans le configurateur en ligne. ` +
+      `Le prix s'affiche immédiatement et un devis gratuit reste disponible pour les projets sur mesure.`,
+    ],
+  });
+  return secs;
+}
+
+/** Subcategory FAQ: a seeded subset of the family/category pool + 1 specific Q. */
+function subcategoryFaq(entry: SemanticEntry, name: string, seed: number): { q: string; a: string }[] {
+  const specific = [
+    {
+      q: `Peut-on commander « ${name} » en ligne ?`,
+      a: `Oui. La gamme « ${name} » se configure entièrement en ligne — format, support, finitions et quantité — puis est livrée partout en France, avec un devis gratuit sur demande.`,
+    },
+  ];
+  return mergeFaq([specific, pickN(entry.faq, seed, entry.faq.length)], 8);
+}
+
 
 function readEnv(): Record<string, string> {
   const env: Record<string, string> = { ...process.env } as Record<string, string>;
@@ -152,12 +237,24 @@ export async function buildAllPages(): Promise<SeoPage[]> {
   // ── 8 categories ──
   for (const slug of CATEGORY_SLUGS) {
     const content = CATEGORY_CONTENT[slug];
+    const entry = CATEGORY_KEYWORDS[slug];
+    const catSeed = seedFrom(slug);
     const cat = cats.find((c) => c.slug === slug && !c.parent_id);
     const subs = (cat && childrenOf.get(cat.id)) || [];
     const crumb = [home, { name: "Catalogue", path: "/catalogue" }, { name: content.name, path: `/categorie/${slug}` }];
     const subLinks: LinkItem[] = subs.map((s) => ({ label: s.name, path: `/categorie/${slug}/${s.slug}` }));
     const relatedCats: LinkItem[] = CATEGORY_SLUGS.filter((s) => s !== slug).slice(0, 4)
       .map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` }));
+    // Complementary universes from the semantic map (always valid category links).
+    const complementaryCats: LinkItem[] = entry
+      ? entry.complementary.filter((s) => CATEGORY_CONTENT[s] && s !== slug)
+          .map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` }))
+      : [];
+
+    // Enrich existing content WITHOUT changing the URL: append semantic sections
+    // and extend the FAQ to 6–10 entries (deduped). Fully seeded for variety.
+    const sections = entry ? [...content.sections, ...categorySemanticSections(entry, catSeed)] : content.sections;
+    const faq = entry ? mergeFaq([content.faq, entry.faq], 10) : content.faq;
 
     pages.push({
       path: `/categorie/${slug}`,
@@ -166,11 +263,17 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       h1: content.h1,
       intro: content.intro,
       breadcrumb: crumb,
-      sections: content.sections,
-      faq: content.faq,
+      sections,
+      productGrid: {
+        heading: "Produits populaires",
+        intro: "Une sélection de supports parmi les plus demandés. Cliquez pour configurer le vôtre dans le catalogue en ligne.",
+        cards: PRODUCT_CARDS,
+      },
+      faq,
       cta: CATALOG_CTA,
       internalLinks: [
         ...(subLinks.length ? [{ heading: "Sous-catégories", links: subLinks }] : []),
+        ...(complementaryCats.length ? [{ heading: "Univers complémentaires", links: complementaryCats }] : []),
         { heading: "Catégories associées", links: relatedCats },
         { heading: "Nos services", links: SERVICE_LINKS },
       ],
@@ -182,40 +285,38 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           path: `/categorie/${slug}`,
           items: subs.map((s) => ({ name: s.name, path: `/categorie/${slug}/${s.slug}` })),
         }),
-        faqLd(content.faq),
+        faqLd(faq),
       ],
     });
 
-    // ── Subcategories: editorial text + internal links + a button toward the
-    //    existing catalog. They never fetch, embed, rebuild or intercept the
+    // ── Subcategories: rich editorial text + internal links + a button toward
+    //    the existing catalog. They never fetch, embed, rebuild or intercept the
     //    Print.com catalog/configurator — they only link to /products.
     subs.forEach((sub, si) => {
       const subCrumb = [...crumb, { name: sub.name, path: `/categorie/${slug}/${sub.slug}` }];
+      // Prefer a precise product-family universe detected from the sub name;
+      // fall back to the parent category universe.
+      const famKey = detectFamily(sub.name);
+      const subEntry: SemanticEntry = (famKey && FAMILY_KEYWORDS[famKey]) || entry || CATEGORY_KEYWORDS[slug];
+      const subSeed = seedFrom(sub.slug);
       const angles = [
-        `Découvrez la sélection « ${sub.name} » de J2L Print, au sein de l'univers ${content.name}. Configurez votre produit en ligne — format, matière et finitions — et recevez votre commande partout en France.`,
-        `Pour vos besoins en « ${sub.name} », J2L Print propose une gamme professionnelle dans la catégorie ${content.name}, avec un rendu fidèle et des finitions au choix.`,
-        `La rubrique « ${sub.name} » regroupe nos produits ${content.name.toLowerCase()} adaptés à cet usage : choisissez vos options en ligne et profitez de tarifs dégressifs selon la quantité.`,
+        `Découvrez la sélection « ${sub.name} » de J2L Print, au sein de l'univers ${content.name}. ${cap1(subEntry.primaryKeyword)} à configurer en ligne — format, support et finitions — avec livraison partout en France.`,
+        `Pour vos besoins en « ${sub.name} », J2L Print propose une gamme professionnelle (${subEntry.primaryKeyword}) avec un rendu fidèle, des finitions au choix et des tarifs dégressifs.`,
+        `La rubrique « ${sub.name} » regroupe nos produits ${content.name.toLowerCase()} adaptés à cet usage : ${frList(pickN(subEntry.usages, subSeed, 2).map((u) => u.toLowerCase()))}. Configurez vos options en ligne.`,
       ];
       const near = subLinks.filter((l) => !l.path.endsWith(`/${sub.slug}`)).slice(0, 6);
-      const subFaq = [
-        {
-          q: `Peut-on commander « ${sub.name} » en ligne ?`,
-          a: `Oui. La gamme « ${sub.name} » se configure entièrement en ligne — format, matière, finitions et quantité — puis est livrée partout en France.`,
-        },
-        {
-          q: "Comment obtenir un devis ?",
-          a: "Configurez votre produit dans le catalogue ou décrivez votre besoin dans le formulaire de devis : nous revenons vers vous avec une proposition personnalisée.",
-        },
-      ];
+      const subSecs = subcategorySections(subEntry, sub.name, subSeed);
+      const subFaq = subcategoryFaq(subEntry, sub.name, subSeed);
       pages.push({
         path: `/categorie/${slug}/${sub.slug}`,
         title: `${sub.name} — ${content.name}`,
-        description: `${sub.name} : impression professionnelle en ligne (${content.name.toLowerCase()}). Formats, matières et finitions au choix, devis et livraison partout en France.`,
+        description: `${sub.name} : impression professionnelle en ligne (${content.name.toLowerCase()}). Formats, supports et finitions au choix, devis et livraison partout en France.`,
         h1: sub.name,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
+        sections: subSecs,
         productGrid: {
-          heading: `Supports populaires dans « ${sub.name} »`,
+          heading: `Produits disponibles dans « ${sub.name} »`,
           intro: "Configurez votre produit dans le catalogue en ligne.",
           cards: PRODUCT_CARDS,
         },
@@ -677,6 +778,22 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     .filter((sku) => catalog.has(sku) && !isExcludedSku(sku))
     .sort();
 
+  // Resolve the TOP category id of a SKU (for sibling/complementary products).
+  const topIdOf = (sku: string): string | undefined => {
+    const ids = skuCategories.get(sku) || [];
+    const resolved = ids.map((id) => catById.get(id)).filter(Boolean) as typeof cats;
+    const sub = resolved.find((c) => c.parent_id);
+    const top = sub ? catById.get(sub.parent_id!) : resolved.find((c) => !c.parent_id);
+    return top?.id;
+  };
+  // Group public SKUs by top category → real, existing complementary products.
+  const skusByTop = new Map<string, string[]>();
+  for (const sku of publicSkus) {
+    const key = topIdOf(sku) || "_uncat";
+    if (!skusByTop.has(key)) skusByTop.set(key, []);
+    skusByTop.get(key)!.push(sku);
+  }
+
   for (const sku of publicSkus) {
     const prod = catalog.get(sku)!;
     const name = prod.name || sku;
@@ -684,15 +801,29 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const crumb = productCrumb(sku, name);
     const path = `/products/${sku}`;
     const lower = name.toLowerCase();
+    const seed = seedFrom(sku);
 
     const sections = [
       { heading: `À quoi sert votre ${lower} ?`, paragraphs: [seo.useCases] },
       { heading: "Qualité d'impression et finitions", paragraphs: [seo.quality] },
+      // Visible file-preparation advice — masked when data is insufficient.
+      ...(seo.fileTips && seo.fileTips.length >= 3
+        ? [{ heading: "Conseils pour préparer votre fichier", bullets: seo.fileTips }]
+        : []),
     ];
 
     const related = crumb
       .filter((c) => c.path.startsWith("/categorie/"))
       .map((c) => ({ label: c.name, path: c.path }));
+
+    // Complementary products: 2–6 REAL sibling products (same top category),
+    // seeded for variety, excluding self. Every link is a prerendered product
+    // page → no 404. Block is omitted when fewer than 2 siblings exist.
+    const siblings = (skusByTop.get(topIdOf(sku) || "_uncat") || []).filter((s) => s !== sku);
+    const compCount = siblings.length >= 6 ? 6 : siblings.length;
+    const complementaryProducts = compCount >= 2
+      ? pickN(siblings, seed, compCount).map((s) => ({ label: catalog.get(s)!.name || s, path: `/products/${s}` }))
+      : [];
 
     pages.push({
       path,
@@ -708,6 +839,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
       faq: seo.faq,
       internalLinks: [
         ...(related.length ? [{ heading: "Catégorie", links: related }] : []),
+        ...(complementaryProducts.length ? [{ heading: "Produits complémentaires", links: complementaryProducts }] : []),
         {
           heading: "Nos services",
           links: [

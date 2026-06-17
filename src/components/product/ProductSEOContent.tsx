@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { CheckCircle, Truck, FileText, Phone, ArrowRight, HelpCircle, Sparkles, Target, Briefcase, Layers, FileCheck2 } from "lucide-react";
+import { CheckCircle, Truck, FileText, Phone, ArrowRight, HelpCircle, Sparkles, Target, Briefcase, Layers, FileCheck2, Boxes } from "lucide-react";
 import { getProductSEOData } from "@/lib/product-seo";
+import relatedProductsMap from "@/seo/generated/related-products.json";
 
 interface ProductSEOContentProps {
   productName: string;
@@ -27,6 +28,13 @@ export default function ProductSEOContent({ productName, sku, description, optio
     ...(seo.formats || []),
     ...(seo.finitions || []),
   ];
+  // File-prep tips are shown only when we have enough genuine advice (≥3).
+  const fileTips = (seo.fileTips || []).filter(Boolean);
+  // Complementary products: real, existing product pages prerendered at build
+  // time (sku → links). Empty when fewer than 2 reliable siblings exist.
+  const relatedProducts = ((relatedProductsMap as Record<string, { label: string; path: string }[]>)[sku || ""] || [])
+    .filter((r) => r && r.path && r.label);
+
 
   // Keep only real, displayable options: a clean title and at least one valid value.
   // Drop empty/undefined/duplicate values and technical-only entries.
@@ -108,6 +116,24 @@ export default function ProductSEOContent({ productName, sku, description, optio
           </div>
         </div>
       )}
+
+      {/* Conseils pour préparer votre fichier — masqué si données insuffisantes */}
+      {fileTips.length >= 3 && (
+        <div className="space-y-3">
+          <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+            <FileCheck2 className="h-5 w-5 text-primary" /> Conseils pour préparer votre fichier
+          </h2>
+          <ul className="space-y-1.5">
+            {fileTips.map((tip) => (
+              <li key={tip} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />{tip}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+
 
 
       {/* Section 3 — Options de personnalisation (hidden entirely if none are real) */}
@@ -207,7 +233,24 @@ export default function ProductSEOContent({ productName, sku, description, optio
         </div>
       </div>
 
+      {/* Produits complémentaires — 2 à 6 produits réels liés (aucune URL 404) */}
+      {relatedProducts.length >= 2 && (
+        <div className="space-y-3">
+          <h3 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+            <Boxes className="h-5 w-5 text-primary" /> Produits complémentaires
+          </h3>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 text-sm">
+            {relatedProducts.slice(0, 6).map((r) => (
+              <Link key={r.path} to={r.path} className="text-muted-foreground hover:text-primary flex items-center gap-1">
+                <ArrowRight className="h-3 w-3 text-primary flex-shrink-0" /> {r.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Liens internes */}
+
       <div className="space-y-3">
         <h3 className="font-display text-sm font-semibold text-foreground">Découvrez aussi</h3>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 text-sm">
