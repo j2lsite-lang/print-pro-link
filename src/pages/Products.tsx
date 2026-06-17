@@ -83,7 +83,11 @@ export default function Products() {
 
   useEffect(() => {
     Promise.all([getCatalogProducts(), fetchPublicCatalogSkuSet()])
-      .then(([items, publicSkuSet]) => setProducts(items.filter((product) => publicSkuSet.has(product.sku))))
+      .then(([items, publicSkuSet]) =>
+        setProducts(
+          items.filter((product) => publicSkuSet.has(product.sku) && !isExcludedSku(product.sku)),
+        ),
+      )
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
