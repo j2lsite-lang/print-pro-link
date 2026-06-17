@@ -93,9 +93,8 @@ export interface SeoPage {
   ogType?: string;
   /**
    * Natural Google search expressions ("requêtes") matching this page.
-   * Rendered as a crawler-readable, visually-hidden "Recherches fréquentes"
-   * list. Pure SEO metadata — never affects URLs, prices, SKUs or the
-   * configurator.
+   * Pure SEO metadata used by generated pages — never affects URLs, prices,
+   * SKUs or the configurator.
    */
   keywords?: string[];
 }
