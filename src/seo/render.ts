@@ -173,6 +173,7 @@ export function renderBody(page: SeoPage): string {
     renderFaq(page.faq),
     links,
     renderExternalLinks(page),
+    renderKeywords(page),
     `</div>`,
   ].join("\n");
 }
