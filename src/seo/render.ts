@@ -137,6 +137,21 @@ function renderProductGrid(page: SeoPage): string {
   ].filter(Boolean).join("\n");
 }
 
+function renderVisual(page: SeoPage): string {
+  const v = page.visual;
+  if (!v) return "";
+  const chips = (v.keywords || [])
+    .slice(0, 8)
+    .map((k) => `<span>${esc(k)}</span>`)
+    .join("");
+  return [
+    `<section class="seo-visual">`,
+    `  <img src="${v.image}" alt="${esc(v.imageAlt)}" loading="lazy" width="1280" height="720" />`,
+    chips ? `  <div class="seo-visual-keywords" aria-label="Expressions associées">${chips}</div>` : "",
+    `</section>`,
+  ].filter(Boolean).join("\n");
+}
+
 function renderExternalLinks(page: SeoPage): string {
   if (!page.externalLinks || !page.externalLinks.length) return "";
   const links = page.externalLinks
@@ -159,6 +174,7 @@ export function renderBody(page: SeoPage): string {
   return [
     `<div class="seo-prerender">`,
     header,
+    renderVisual(page),
     `  <div class="seo-intro">${intro}</div>`,
     sections,
     renderProductGrid(page),
