@@ -10,7 +10,7 @@ export default function CGV() {
           <div className="glass-card p-6 space-y-3">
             <h2 className="font-display text-lg font-semibold text-foreground">Article 1 — Objet et champ d'application</h2>
             <p>Les présentes Conditions Générales de Vente (CGV) régissent l'ensemble des relations commerciales entre :</p>
-            <p><strong className="text-foreground">J2L Publicité</strong><br />22 B rue Robert Barret, 88390 Uxegney, France<br />SIRET : 508 858 784 00046 — RCS Épinal<br />TVA intracommunautaire : FR64 508 858 784<br />Tél : <a href="tel:+33329304479" className="text-primary hover:underline">03 29 30 44 79</a><br />E-mail : <a href="mailto:contact@j2lprint.fr" className="text-primary hover:underline">contact@j2lprint.fr</a></p>
+            <p><strong className="text-foreground">J2L Publicité</strong> (site officiel : <a href="https://j2lpublicite.fr" className="text-primary hover:underline">j2lpublicite.fr</a>), exploitant la marque J2L Print via le site <a href="https://j2lprint.fr" className="text-primary hover:underline">j2lprint.fr</a><br />22 B rue Robert Barret, 88390 Uxegney, France<br />SIRET : 508 858 784 00046 — RCS Épinal<br />TVA intracommunautaire : FR64 508 858 784<br />Tél : <a href="tel:+33329304479" className="text-primary hover:underline">03 29 30 44 79</a><br />E-mail : <a href="mailto:contact@j2lprint.fr" className="text-primary hover:underline">contact@j2lprint.fr</a></p>
             <p>Et ses clients professionnels ou particuliers (ci-après « le Client »).</p>
             <p>Toute commande implique l'acceptation sans réserve des présentes CGV qui prévalent sur tout autre document du Client.</p>
           </div>
