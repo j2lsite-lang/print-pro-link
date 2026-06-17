@@ -4,8 +4,8 @@ export default function MentionsLegales() {
       <div className="container max-w-3xl">
         <h1 className="font-display text-3xl font-bold text-foreground mb-2">Mentions Légales</h1>
         <p className="text-sm text-muted-foreground mb-8">
-          Le site <a href="https://j2lprint.fr" className="text-primary hover:underline">j2lprint.fr</a> est un site de la marque{" "}
-          <a href="https://j2lpublicite.fr" className="text-primary hover:underline">j2lpublicite.fr</a>
+          Le site officiel est <a href="https://j2lpublicite.fr" className="text-primary hover:underline">j2lpublicite.fr</a>.{" "}
+          <a href="https://j2lprint.fr" className="text-primary hover:underline">j2lprint.fr</a> est une marque de J2L Publicité.
         </p>
 
         <div className="space-y-6 text-sm text-muted-foreground leading-relaxed">
