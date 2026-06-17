@@ -21,6 +21,10 @@ import { isExcludedSku } from "../../src/config/excluded-products";
 import { twinDisplayName } from "../../src/seo/data/twin-products";
 import { loadGeo } from "./geo-data";
 import {
+  SITE_KEYWORDS, cityKeywords, deptKeywords, regionKeywords,
+  categoryKeywords, subcategoryKeywords, productKeywords,
+} from "./geo-keywords";
+import {
   cityCopy, deptCopy, seedOf, cityArchetype, type GenCity, type GenDept, type NeighborRef,
 } from "../../src/seo/content/geo-cities";
 import { regionCopy, type GenRegion } from "../../src/seo/content/regions";
