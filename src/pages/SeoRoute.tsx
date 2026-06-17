@@ -229,6 +229,18 @@ export default function SeoRoute() {
             </ul>
           </section>
         )}
+
+        {/* Recherches fréquentes — crawler-readable, visually hidden */}
+        {page.keywords && page.keywords.length > 0 && (
+          <section className="seo-keywords">
+            <h2>Recherches fréquentes</h2>
+            <ul>
+              {page.keywords.map((k) => (
+                <li key={k}>{k}</li>
+              ))}
+            </ul>
+          </section>
+        )}
       </article>
     </>
   );

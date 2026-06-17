@@ -91,4 +91,11 @@ export interface SeoPage {
   jsonLd: Record<string, unknown>[];
   noindex?: boolean;
   ogType?: string;
+  /**
+   * Natural Google search expressions ("requêtes") matching this page.
+   * Rendered as a crawler-readable, visually-hidden "Recherches fréquentes"
+   * list. Pure SEO metadata — never affects URLs, prices, SKUs or the
+   * configurator.
+   */
+  keywords?: string[];
 }

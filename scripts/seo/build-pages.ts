@@ -21,6 +21,10 @@ import { isExcludedSku } from "../../src/config/excluded-products";
 import { twinDisplayName } from "../../src/seo/data/twin-products";
 import { loadGeo } from "./geo-data";
 import {
+  SITE_KEYWORDS, cityKeywords, deptKeywords, regionKeywords,
+  categoryKeywords, subcategoryKeywords, productKeywords,
+} from "./geo-keywords";
+import {
   cityCopy, deptCopy, seedOf, cityArchetype, type GenCity, type GenDept, type NeighborRef,
 } from "../../src/seo/content/geo-cities";
 import { regionCopy, type GenRegion } from "../../src/seo/content/regions";
@@ -208,6 +212,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     // Organization JSON-LD lives once in the static index.html shell (sitewide);
     // don't re-emit it here or the homepage would carry a duplicate.
     jsonLd: [],
+    keywords: SITE_KEYWORDS,
   });
 
   // ── Catalogue ──
@@ -240,6 +245,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       }),
     ],
     ogType: "website",
+    keywords: SITE_KEYWORDS,
   });
 
   // ── 8 categories ──
@@ -295,6 +301,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         }),
         faqLd(faq),
       ],
+      ...(entry ? { keywords: categoryKeywords(entry) } : {}),
     });
 
     // ── Subcategories: rich editorial text + internal links + a button toward
@@ -349,6 +356,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           }),
           faqLd(subFaq),
         ],
+        keywords: subcategoryKeywords(subEntry, sub.name, subSeed),
       });
     });
   }
@@ -482,6 +490,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         serviceLd({ name: `Impression pour les professionnels à ${gc.name}`, description: `Impression en ligne avec livraison à ${gc.name} et ${dep.dans}.`, areaServed: gc.name }),
         faqLd(copy.faq),
       ],
+      keywords: cityKeywords(gc.name),
     });
   }
 
@@ -555,6 +564,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         serviceLd({ name: `Impression ${article(gd.name).dans}`, description: `Impression en ligne avec livraison ${article(gd.name).dans}.`, areaServed: gd.name }),
         faqLd(copy.faq),
       ],
+      keywords: deptKeywords(gd.name, article(gd.name).dans),
     });
   }
 
@@ -620,6 +630,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         serviceLd({ name: `Impression ${art.dans}`, description: `Impression en ligne avec livraison ${art.dans}.`, areaServed: gr.name }),
         faqLd(copy.faq),
       ],
+      keywords: regionKeywords(gr.name, art.dans),
     });
   }
 
@@ -880,6 +891,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
         ...(seo.faq && seo.faq.length ? [faqLd(seo.faq)] : []),
       ],
       ogType: "product",
+      keywords: productKeywords(name),
     });
   }
 

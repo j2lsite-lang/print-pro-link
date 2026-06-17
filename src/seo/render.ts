@@ -148,6 +148,13 @@ function renderExternalLinks(page: SeoPage): string {
   return `<section class="seo-links"><h2>Ressources officielles</h2><ul>${links}</ul></section>`;
 }
 
+/** Visually-hidden, crawler-readable "Recherches fréquentes" (Google queries). */
+function renderKeywords(page: SeoPage): string {
+  if (!page.keywords || !page.keywords.length) return "";
+  const items = page.keywords.map((k) => `<li>${esc(k)}</li>`).join("");
+  return `<section class="seo-keywords"><h2>Recherches fréquentes</h2><ul>${items}</ul></section>`;
+}
+
 /** Build the body content injected inside #root (real, crawlable content). */
 export function renderBody(page: SeoPage): string {
   const intro = page.intro.map((p) => `<p>${esc(p)}</p>`).join("");
@@ -166,6 +173,7 @@ export function renderBody(page: SeoPage): string {
     renderFaq(page.faq),
     links,
     renderExternalLinks(page),
+    renderKeywords(page),
     `</div>`,
   ].join("\n");
 }
