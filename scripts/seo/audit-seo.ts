@@ -156,8 +156,9 @@ for (const p of CATALOG) {
   if (isSubcategory(p) && hasFaq && (p.faq!.length < 5 || p.faq!.length > 8)) flag("faq-count-subcategory", id, false);
   if (isProduct(p) && hasFaq && (p.faq!.length < 3 || p.faq!.length > 6)) flag("faq-count-product", id, false);
 
-  // CTA presence (catalog editorial pages)
-  if ((isCategory(p) || isSubcategory(p) || isProduct(p) || isTheme(p)) && !p.cta) flag("no-cta", id);
+  // CTA presence (catalog editorial pages; the /themes index is exempt)
+  const isThemeDetail = isTheme(p) && seg(p.path).length === 2;
+  if ((isCategory(p) || isSubcategory(p) || isProduct(p) || isThemeDetail) && !p.cta) flag("no-cta", id);
 
   // Internal links presence + 404
   const { internal } = pageLinkPaths(p);
