@@ -630,6 +630,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         serviceLd({ name: `Impression ${art.dans}`, description: `Impression en ligne avec livraison ${art.dans}.`, areaServed: gr.name }),
         faqLd(copy.faq),
       ],
+      keywords: regionKeywords(gr.name, art.dans),
     });
   }
 
