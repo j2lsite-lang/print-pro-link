@@ -18,6 +18,7 @@ import {
   CATEGORY_KEYWORDS, FAMILY_KEYWORDS, seedFrom, pickN, type SemanticEntry,
 } from "../../src/seo/data/semantic-keywords";
 import { isExcludedSku } from "../../src/config/excluded-products";
+import { twinDisplayName } from "../../src/seo/data/twin-products";
 import { loadGeo } from "./geo-data";
 import {
   cityCopy, deptCopy, seedOf, cityArchetype, type GenCity, type GenDept, type NeighborRef,
@@ -171,6 +172,13 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     if (!childrenOf.has(c.parent_id)) childrenOf.set(c.parent_id, []);
     childrenOf.get(c.parent_id)!.push(c);
   }
+  // Count subcategory NAME occurrences across the whole tree so we can make
+  // colliding H1s unique (e.g. "Panneaux & accessoires" exists in 3 parents).
+  const subNameCount = new Map<string, number>();
+  for (const c of cats) if (c.parent_id) {
+    const k = c.name.trim().toLowerCase();
+    subNameCount.set(k, (subNameCount.get(k) || 0) + 1);
+  }
 
 
 
@@ -307,11 +315,16 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       const near = subLinks.filter((l) => !l.path.endsWith(`/${sub.slug}`)).slice(0, 6);
       const subSecs = subcategorySections(subEntry, sub.name, subSeed);
       const subFaq = subcategoryFaq(subEntry, sub.name, subSeed);
+      // Make H1 unique when the same subcategory name exists under several
+      // parent categories (append the parent universe — real, factual context).
+      const subH1 = (subNameCount.get(sub.name.trim().toLowerCase()) || 0) > 1
+        ? `${sub.name} — ${content.name}`
+        : sub.name;
       pages.push({
         path: `/categorie/${slug}/${sub.slug}`,
         title: `${sub.name} — ${content.name}`,
         description: `${sub.name} : impression professionnelle en ligne (${content.name.toLowerCase()}). Formats, supports et finitions au choix, devis et livraison partout en France.`,
-        h1: sub.name,
+        h1: subH1,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
         sections: subSecs,
@@ -796,7 +809,9 @@ export async function buildProductPages(): Promise<SeoPage[]> {
 
   for (const sku of publicSkus) {
     const prod = catalog.get(sku)!;
-    const name = prod.name || sku;
+    // Unique, factual display name for twin SKUs that share an identical
+    // catalog name (prevents duplicate title/description/H1/intro).
+    const name = twinDisplayName(sku, prod.name || sku);
     const seo = getProductSEOData(name, sku);
     const crumb = productCrumb(sku, name);
     const path = `/products/${sku}`;
