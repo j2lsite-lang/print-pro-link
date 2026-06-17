@@ -117,6 +117,24 @@ export default function ProductSEOContent({ productName, sku, description, optio
         </div>
       )}
 
+      {/* Conseils pour préparer votre fichier — masqué si données insuffisantes */}
+      {fileTips.length >= 3 && (
+        <div className="space-y-3">
+          <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+            <FileCheck2 className="h-5 w-5 text-primary" /> Conseils pour préparer votre fichier
+          </h2>
+          <ul className="space-y-1.5">
+            {fileTips.map((tip) => (
+              <li key={tip} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />{tip}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+
+
 
       {/* Section 3 — Options de personnalisation (hidden entirely if none are real) */}
       {cleanOptions.length > 0 && (
