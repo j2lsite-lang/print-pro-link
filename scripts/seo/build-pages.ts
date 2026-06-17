@@ -778,6 +778,22 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     .filter((sku) => catalog.has(sku) && !isExcludedSku(sku))
     .sort();
 
+  // Resolve the TOP category id of a SKU (for sibling/complementary products).
+  const topIdOf = (sku: string): string | undefined => {
+    const ids = skuCategories.get(sku) || [];
+    const resolved = ids.map((id) => catById.get(id)).filter(Boolean) as typeof cats;
+    const sub = resolved.find((c) => c.parent_id);
+    const top = sub ? catById.get(sub.parent_id!) : resolved.find((c) => !c.parent_id);
+    return top?.id;
+  };
+  // Group public SKUs by top category → real, existing complementary products.
+  const skusByTop = new Map<string, string[]>();
+  for (const sku of publicSkus) {
+    const key = topIdOf(sku) || "_uncat";
+    if (!skusByTop.has(key)) skusByTop.set(key, []);
+    skusByTop.get(key)!.push(sku);
+  }
+
   for (const sku of publicSkus) {
     const prod = catalog.get(sku)!;
     const name = prod.name || sku;
@@ -785,15 +801,29 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const crumb = productCrumb(sku, name);
     const path = `/products/${sku}`;
     const lower = name.toLowerCase();
+    const seed = seedFrom(sku);
 
     const sections = [
       { heading: `À quoi sert votre ${lower} ?`, paragraphs: [seo.useCases] },
       { heading: "Qualité d'impression et finitions", paragraphs: [seo.quality] },
+      // Visible file-preparation advice — masked when data is insufficient.
+      ...(seo.fileTips && seo.fileTips.length >= 3
+        ? [{ heading: "Conseils pour préparer votre fichier", bullets: seo.fileTips }]
+        : []),
     ];
 
     const related = crumb
       .filter((c) => c.path.startsWith("/categorie/"))
       .map((c) => ({ label: c.name, path: c.path }));
+
+    // Complementary products: 2–6 REAL sibling products (same top category),
+    // seeded for variety, excluding self. Every link is a prerendered product
+    // page → no 404. Block is omitted when fewer than 2 siblings exist.
+    const siblings = (skusByTop.get(topIdOf(sku) || "_uncat") || []).filter((s) => s !== sku);
+    const compCount = siblings.length >= 6 ? 6 : siblings.length;
+    const complementaryProducts = compCount >= 2
+      ? pickN(siblings, seed, compCount).map((s) => ({ label: catalog.get(s)!.name || s, path: `/products/${s}` }))
+      : [];
 
     pages.push({
       path,
@@ -809,6 +839,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
       faq: seo.faq,
       internalLinks: [
         ...(related.length ? [{ heading: "Catégorie", links: related }] : []),
+        ...(complementaryProducts.length ? [{ heading: "Produits complémentaires", links: complementaryProducts }] : []),
         {
           heading: "Nos services",
           links: [
