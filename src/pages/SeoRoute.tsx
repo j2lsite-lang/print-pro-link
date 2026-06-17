@@ -135,6 +135,30 @@ export default function SeoRoute() {
           ))}
         </div>
 
+        {/* Internal links */}
+        {linkGroups.length > 0 && (
+          <div className="grid gap-4 md:grid-cols-2">
+            {linkGroups.map((g, i) => (
+              <section key={i} className="space-y-3 rounded-xl border border-border bg-card/45 p-4">
+                <h2 className="font-display text-lg font-semibold">{g.heading}</h2>
+                <ul className="flex flex-wrap gap-x-4 gap-y-2">
+                  {g.links.map((l) => (
+                    <li key={l.path + l.label}>
+                      {l.external ? (
+                        <a href={l.path} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                          {l.label} <ExternalLink className="h-3 w-3" />
+                        </a>
+                      ) : (
+                        <Link to={l.path} className="text-primary hover:underline">{l.label}</Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        )}
+
         {/* Sections */}
         {page.sections?.map((s, i) => (
           <section key={i} className="space-y-3">
@@ -215,24 +239,6 @@ export default function SeoRoute() {
             ))}
           </section>
         )}
-
-        {/* Internal links */}
-        {page.internalLinks?.map((g, i) => (
-          <section key={i} className="space-y-3">
-            <h2 className="font-display text-lg font-semibold">{g.heading}</h2>
-            <ul className="flex flex-wrap gap-x-4 gap-y-2">
-              {g.links.map((l) => (
-                <li key={l.path + l.label}>
-                  {l.external ? (
-                    <a href={l.path} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{l.label}</a>
-                  ) : (
-                    <Link to={l.path} className="text-primary hover:underline">{l.label}</Link>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
 
         {/* External resources */}
         {page.externalLinks && page.externalLinks.length > 0 && (
