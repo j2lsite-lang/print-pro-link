@@ -809,7 +809,9 @@ export async function buildProductPages(): Promise<SeoPage[]> {
 
   for (const sku of publicSkus) {
     const prod = catalog.get(sku)!;
-    const name = prod.name || sku;
+    // Unique, factual display name for twin SKUs that share an identical
+    // catalog name (prevents duplicate title/description/H1/intro).
+    const name = twinDisplayName(sku, prod.name || sku);
     const seo = getProductSEOData(name, sku);
     const crumb = productCrumb(sku, name);
     const path = `/products/${sku}`;
