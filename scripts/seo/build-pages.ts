@@ -314,11 +314,16 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       const near = subLinks.filter((l) => !l.path.endsWith(`/${sub.slug}`)).slice(0, 6);
       const subSecs = subcategorySections(subEntry, sub.name, subSeed);
       const subFaq = subcategoryFaq(subEntry, sub.name, subSeed);
+      // Make H1 unique when the same subcategory name exists under several
+      // parent categories (append the parent universe — real, factual context).
+      const subH1 = (subNameCount.get(sub.name.trim().toLowerCase()) || 0) > 1
+        ? `${sub.name} — ${content.name}`
+        : sub.name;
       pages.push({
         path: `/categorie/${slug}/${sub.slug}`,
         title: `${sub.name} — ${content.name}`,
         description: `${sub.name} : impression professionnelle en ligne (${content.name.toLowerCase()}). Formats, supports et finitions au choix, devis et livraison partout en France.`,
-        h1: sub.name,
+        h1: subH1,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
         sections: subSecs,
