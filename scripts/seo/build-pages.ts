@@ -31,6 +31,88 @@ import {
 // embed the Print.com catalog/configurator — they only link to the existing one.
 const CATALOG_CTA = { label: "Voir les produits dans le catalogue", path: "/products" };
 
+/* ----------------------------------------------------------------------------
+ * Semantic SEO enrichment helpers (categories + subcategories).
+ * Pure editorial content derived from the semantic map. NEVER touches prices,
+ * SKUs, the Print.com API or the configurator — only generates copy + links.
+ * Seeded by slug so two pages of the same family stay distinct (anti-dup).
+ * -------------------------------------------------------------------------- */
+const cap1 = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
+function frList(items: string[]): string {
+  const a = items.filter(Boolean);
+  if (a.length <= 1) return a[0] || "";
+  return `${a.slice(0, -1).join(", ")} et ${a[a.length - 1]}`;
+}
+
+/** Merge several FAQ pools, dedup by question, cap to `max`. */
+function mergeFaq(pools: { q: string; a: string }[][], max: number): { q: string; a: string }[] {
+  const seen = new Set<string>();
+  const out: { q: string; a: string }[] = [];
+  for (const pool of pools) {
+    for (const f of pool || []) {
+      const k = f.q.trim().toLowerCase();
+      if (!f.q || !f.a || seen.has(k)) continue;
+      seen.add(k);
+      out.push(f);
+      if (out.length >= max) return out;
+    }
+  }
+  return out;
+}
+
+/** Build extra editorial sections for a category from its semantic universe. */
+function categorySemanticSections(entry: SemanticEntry, seed: number): ContentSection[] {
+  const secs: ContentSection[] = [];
+  if (entry.anchors?.length) secs.push({ heading: "Familles de produits", bullets: entry.anchors.map(cap1) });
+  if (entry.usages?.length) secs.push({ heading: "Usages les plus fréquents", bullets: entry.usages });
+  if (entry.sectors?.length) secs.push({ heading: "Secteurs professionnels concernés", bullets: entry.sectors.map(cap1) });
+  const matFin = [...(entry.materials || []), ...(entry.formats || []), ...(entry.finitions || [])];
+  if (matFin.length) secs.push({ heading: "Matériaux, formats et finitions", bullets: matFin });
+  const usageHint = frList(pickN(entry.usages, seed, 2).map((u) => u.toLowerCase()));
+  const supportHint = frList(pickN(entry.materials.length ? entry.materials : entry.finitions, seed + 1, 2));
+  secs.push({
+    heading: "Guide de choix",
+    paragraphs: [
+      `Pour bien choisir, partez de votre usage (${usageHint}), puis du support le plus adapté (${supportHint}). ` +
+      `Configurez ensuite le format, la quantité et les finitions directement en ligne pour obtenir un prix immédiat, ou demandez un devis gratuit pour un accompagnement personnalisé.`,
+    ],
+  });
+  return secs;
+}
+
+/** Build the full editorial section set for a subcategory. */
+function subcategorySections(entry: SemanticEntry, name: string, seed: number): ContentSection[] {
+  const secs: ContentSection[] = [];
+  if (entry.anchors?.length) secs.push({ heading: `Types de « ${name} » disponibles`, bullets: pickN(entry.anchors, seed, Math.min(4, entry.anchors.length)) });
+  if (entry.usages?.length) secs.push({ heading: "Usages", bullets: pickN(entry.usages, seed + 1, 4) });
+  if (entry.formats?.length) secs.push({ heading: "Formats", bullets: entry.formats });
+  if (entry.materials?.length) secs.push({ heading: "Supports et matériaux", bullets: entry.materials });
+  if (entry.finitions?.length) secs.push({ heading: "Finitions", bullets: entry.finitions });
+  if (entry.sectors?.length) secs.push({ heading: "Secteurs concernés", bullets: pickN(entry.sectors, seed + 2, 5).map(cap1) });
+  const usageHint = frList(pickN(entry.usages, seed + 3, 2).map((u) => u.toLowerCase()));
+  secs.push({
+    heading: "Guide de choix",
+    paragraphs: [
+      `Pour « ${name} », identifiez d'abord votre usage (${usageHint}), puis sélectionnez format, support et finitions dans le configurateur en ligne. ` +
+      `Le prix s'affiche immédiatement et un devis gratuit reste disponible pour les projets sur mesure.`,
+    ],
+  });
+  return secs;
+}
+
+/** Subcategory FAQ: a seeded subset of the family/category pool + 1 specific Q. */
+function subcategoryFaq(entry: SemanticEntry, name: string, seed: number): { q: string; a: string }[] {
+  const specific = [
+    {
+      q: `Peut-on commander « ${name} » en ligne ?`,
+      a: `Oui. La gamme « ${name} » se configure entièrement en ligne — format, support, finitions et quantité — puis est livrée partout en France, avec un devis gratuit sur demande.`,
+    },
+  ];
+  return mergeFaq([specific, pickN(entry.faq, seed, entry.faq.length)], 8);
+}
+
+
 function readEnv(): Record<string, string> {
   const env: Record<string, string> = { ...process.env } as Record<string, string>;
   const p = resolve(".env");
