@@ -182,12 +182,6 @@ Deno.serve(async (req: Request) => {
         return proxyRequest("GET", `/products/${sku}/images`, null, lang);
       }
 
-      case "raw": {
-        const path = url.searchParams.get("path");
-        if (!path) return jsonError("path required");
-        return proxyRequest("GET", path, null, lang);
-      }
-
       default:
         return jsonError(`Unknown action: ${action}.`);
     }
