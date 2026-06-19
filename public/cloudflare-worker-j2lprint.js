@@ -31,6 +31,10 @@
 const CANONICAL_HOST  = "j2lprint.fr";
 const CANONICAL_ORIGIN = "https://j2lprint.fr";
 const ORIGIN_HOST = "origin.j2lprint.fr";
+const PAGE_REDIRECTS = {
+  "/devis": "/#devis",
+  "/contact": "/#devis",
+};
 // LOVABLE_ORIGIN_HOST retiré : provoquait une boucle de redirection (voir 7.2).
 // const LOVABLE_ORIGIN_HOST = "print-pro-link.lovable.app";
 
@@ -379,6 +383,13 @@ export default {
     const { pathname: p } = url;
     const method = request.method.toUpperCase();
     const isRead = method === "GET" || method === "HEAD";
+
+    const normalizedPath = p.replace(/\/+$/, "") || "/";
+    const pageRedirect = PAGE_REDIRECTS[normalizedPath];
+    if (isRead && pageRedirect) {
+      const target = new URL(pageRedirect, CANONICAL_ORIGIN);
+      return Response.redirect(target.toString(), 301);
+    }
 
     // 7.1b — Diagnostic public : si cette route affiche l'app ou une 404,
     // le Worker Cloudflare n'est pas déployé/routé sur j2lprint.fr.
