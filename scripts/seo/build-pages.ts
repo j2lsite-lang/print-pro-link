@@ -732,6 +732,70 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       ogType: "website",
     });
   }
+
+  // ── Garde d'unicité globale ───────────────────────────────────────────
+  // Garantit que chaque page a un title, une meta description et une intro
+  // uniques, même pour les territoires/villes jumeaux qui partagent un même
+  // nom de base (Martinique dépt/région, Saint-Paul/Saint-Pierre Réunion,
+  // sous-catégories homonymes…). On ne réécrit que les pages réellement en
+  // collision, avec un discriminant local et naturel.
+  const uniqCtx = (p: SeoPage): string => {
+    const s = p.path.split("/").filter(Boolean);
+    if (s[0] === "ville") {
+      const c = cityBySlug.get(s[1]);
+      if (c && c.postalCodes.length) return `(${c.postalCodes.join(", ")})`;
+      if (c) return `(${c.departmentName})`;
+    }
+    if (s[0] === "departement") {
+      const d = deptBySlug.get(s[1]);
+      if (d) return `(département ${d.code})`;
+    }
+    if (s[0] === "region") return "(région)";
+    if (s[0] === "categorie" && s.length === 3) {
+      const parent = p.breadcrumb?.[p.breadcrumb.length - 2]?.name;
+      if (parent) return `(${parent})`;
+    }
+    return "";
+  };
+  const stampField = (field: "title" | "description") => {
+    const groups = new Map<string, SeoPage[]>();
+    for (const p of pages) {
+      const k = (p[field] || "").trim().toLowerCase();
+      if (!k) continue;
+      const g = groups.get(k);
+      if (g) g.push(p); else groups.set(k, [p]);
+    }
+    for (const grp of groups.values()) {
+      if (grp.length < 2) continue;
+      for (const p of grp) {
+        const c = uniqCtx(p);
+        if (c && !p[field].includes(c)) p[field] = `${p[field]} ${c}`;
+      }
+    }
+  };
+  stampField("title");
+  stampField("description");
+  // Intro (tableau de paragraphes) : différencie les pages dont le contenu
+  // visible serveur serait identique en ajoutant une phrase de contexte local.
+  const introGroups = new Map<string, SeoPage[]>();
+  for (const p of pages) {
+    const k = (p.intro || []).join(" ").trim().toLowerCase();
+    if (!k) continue;
+    const g = introGroups.get(k);
+    if (g) g.push(p); else introGroups.set(k, [p]);
+  }
+  for (const grp of introGroups.values()) {
+    if (grp.length < 2) continue;
+    for (const p of grp) {
+      const bc = p.breadcrumb || [];
+      const self = bc[bc.length - 1]?.name;
+      const parent = bc[bc.length - 2]?.name;
+      if (self && parent) {
+        p.intro = [...(p.intro || []), `Retrouvez « ${self} » au sein de notre univers ${parent}, avec configuration en ligne et devis personnalisé.`];
+      }
+    }
+  }
+
   return pages;
 }
 
