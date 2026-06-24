@@ -340,7 +340,7 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/4.5.0");
+  headers.set("X-Worker", "j2lprint-seo/4.5.1");
 }
 
 /** Fetch origine : on joint directement l'hôte d'origine dédié
@@ -403,7 +403,7 @@ export default {
       applySecurityHeaders(h);
       return new Response(JSON.stringify({
         ok: true,
-        worker: "j2lprint-seo/4.5.0",
+        worker: "j2lprint-seo/4.5.1",
         host: url.hostname,
         origin: ORIGIN_HOST,
         products: PRODUCTS.length,
