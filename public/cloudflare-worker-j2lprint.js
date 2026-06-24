@@ -343,14 +343,15 @@ function applySecurityHeaders(headers) {
   headers.set("X-Worker", "j2lprint-seo/4.5.0");
 }
 
-/** Fetch origine : URL publique conservée, résolution DNS forcée vers lorigine dédiée. */
+/** Fetch origine : on joint directement l'hôte d'origine dédié
+ *  (origin.j2lprint.fr), servi en 200 hors route Worker. Plus de
+ *  cf.resolveOverride : il visait un enregistrement proxifié et déclenchait
+ *  l'erreur Cloudflare 1000 « DNS points to prohibited IP » sur toutes les
+ *  réponses (home, sitemaps, catégories…). */
 function fetchOrigin(originRequest) {
-  return fetch(originRequest, {
-    cf: {
-      resolveOverride: ORIGIN_HOST,
-    },
-  });
+  return fetch(originRequest, { redirect: "follow" });
 }
+
 
 /**
  * AUCUN repli vers la page d'accueil.
