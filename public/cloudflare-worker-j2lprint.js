@@ -420,24 +420,26 @@ export default {
     //        EXCLUSIVEMENT le fichier statique prérendu /…/index.html. Aucun
     //        repli vers l'URL propre n'est tenté : si le fichier manque, on
     //        renvoie une vraie 404 (jamais la page d'accueil).
-    //        LURL publique reste https://j2lprint.fr/…, cf.resolveOverride
-    //        force Cloudflare à joindre origin.j2lprint.fr, hors route Worker.
+    //        On joint directement origin.j2lprint.fr (enregistrement servi en
+    //        200 hors route Worker). L'ancien cf.resolveOverride vers un
+    //        enregistrement proxifié provoquait une erreur Cloudflare 1000
+    //        « DNS points to prohibited IP » sur TOUTES les pages (home,
+    //        sitemaps, catégories…). On fetch donc l'hôte d'origine tel quel.
     const seoPathname = seoOriginPathname(p);
     const originUrl = new URL(request.url);
     originUrl.protocol = "https:";
-    originUrl.hostname = CANONICAL_HOST;
+    originUrl.hostname = ORIGIN_HOST;
     originUrl.port = "";
     originUrl.pathname = seoPathname || url.pathname;
-    //        Le Host envoyé à l'origine DOIT rester le domaine canonique
-    //        (j2lprint.fr). Lhébergement Lovable redirige (302) toute requête
-    //        *.lovable.app vers le domaine personnalisé : envoyer un Host
-    //        *.lovable.app provoquerait une BOUCLE de redirection. Avec
-    //        Host: j2lprint.fr + resolveOverride(origin), lorigine sert
-    //        directement le HTML prérendu (/…/index.html) en 200.
+    //        Le Host est celui de l'origine dédiée (origin.j2lprint.fr), qui
+    //        sert directement le HTML prérendu / les sitemaps en 200 sans
+    //        boucle de redirection. On conserve le domaine canonique dans
+    //        X-Forwarded-Host pour la cohérence applicative.
     const originRequest = new Request(originUrl.toString(), request);
-    originRequest.headers.set("Host", CANONICAL_HOST);
+    originRequest.headers.set("Host", ORIGIN_HOST);
     originRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
     originRequest.headers.set("X-Forwarded-Proto", "https");
+
 
     // 7.3 — Détecte une session connectée (jamais de cache pour ces requêtes)
     const hasSession =
