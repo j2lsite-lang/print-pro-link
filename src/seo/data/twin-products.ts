@@ -47,10 +47,10 @@ export const TWIN_PRODUCT_NAMES: Record<string, string> = {
   //  fidèle à la matière et à la catégorie réelle, sans rien inventer.)
   "airtex": "Bâche microperforée Airtex",
   "backlit": "Bâche backlit pour caisson lumineux",
-  "chopsticks": "Baguettes japonaises personnalisées",
+  "chopsticks": "Baguettes japonaises",
   "dispa": "Panneau carton léger Dispa",
-  "frisbee": "Frisbee publicitaire personnalisé",
-  "parasol": "Parasol publicitaire personnalisé",
+  "frisbee": "Frisbee publicitaire",
+  "parasol": "Parasol publicitaire",
   "pes-outdoor": "Bâche textile PES Outdoor (100% recyclable)",
   "re-board": "Panneau carton alvéolaire Re-board",
   "segrollr": "Roll-up textile SegRollR",
