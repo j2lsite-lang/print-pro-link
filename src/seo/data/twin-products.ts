@@ -41,7 +41,20 @@ export const TWIN_PRODUCT_NAMES: Record<string, string> = {
   // Plastic drinkware : sport bottle vs. reusable gourd.
   "plastic-drinkingbottle": "Bouteille d'eau en plastique",
   // plastic-bottle keeps "Gourde en plastique".
-};
+
+  // ── Noms techniques fournisseur → noms commerciaux français clairs ──
+  // (matériaux/marques Print.com affichés bruts : on donne un libellé vendeur
+  //  fidèle à la matière et à la catégorie réelle, sans rien inventer.)
+  "airtex": "Bâche microperforée Airtex",
+  "backlit": "Bâche backlit pour caisson lumineux",
+  "chopsticks": "Baguettes japonaises personnalisées",
+  "dispa": "Panneau carton léger Dispa",
+  "frisbee": "Frisbee publicitaire personnalisé",
+  "parasol": "Parasol publicitaire personnalisé",
+  "pes-outdoor": "Bâche textile PES Outdoor (100% recyclable)",
+  "re-board": "Panneau carton alvéolaire Re-board",
+  "segrollr": "Roll-up textile SegRollR",
+  "stormfix": "Banderole Stormfix résistante au vent",
 
 /** Return the SEO display name for a SKU (override when twin, else original). */
 export function twinDisplayName(sku: string, fallback: string): string {
