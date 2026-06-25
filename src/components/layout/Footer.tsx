@@ -57,14 +57,9 @@ export default function Footer() {
               >
                 <ExternalLink className="h-3.5 w-3.5" /> J2L Textiles
               </a>
-              <a
-                href="https://www.j2lpublicite.fr"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                <ExternalLink className="h-3.5 w-3.5" /> J2L Publicité
-              </a>
+              <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                J2L Publicité
+              </span>
             </div>
 
             <p className="text-xs text-muted-foreground mt-4">
