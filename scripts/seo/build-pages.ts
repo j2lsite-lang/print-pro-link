@@ -975,23 +975,23 @@ export async function buildProductPages(): Promise<SeoPage[]> {
       ? pickN(siblings, seed, compCount).map((s) => ({ label: catalog.get(s)!.name || s, path: `/products/${s}` }))
       : [];
 
-    // Commercial, family-aware & seeded title/meta so snippets stay unique,
-    // vendeurs and never reduced to a raw SKU.
-    const fam = detectFamily(name, sku);
+    // Commercial & seeded title/meta so snippets stay unique, vendeurs and
+    // never reduced to a raw SKU.
     const titleVariants = [
       `${name} personnalisé | Devis gratuit – J2L Print`,
       `${name} sur mesure – Impression en ligne | J2L Print`,
       `${name} pas cher à personnaliser | J2L Print`,
-      `Imprimer ${lower} en ligne – ${truncate(name, 30)} | J2L Print`,
+      `Imprimer ${lower} en ligne – J2L Print`,
     ];
     const descVariants = [
-      `Commandez ${low(name)} personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat, devis gratuit et livraison rapide partout en France.`,
+      `Commandez ${lower} personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat, devis gratuit et livraison rapide partout en France.`,
       `${name} de qualité professionnelle à personnaliser selon vos besoins. Configuration en ligne, tarif dégressif, fichiers vérifiés et livraison en France.`,
-      `Besoin de ${low(name)} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, devis gratuit et expédition soignée partout en France.`,
+      `Besoin de ${lower} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, devis gratuit et expédition soignée partout en France.`,
       `${name} imprimé sur mesure par J2L Print. Choisissez vos options, obtenez un prix immédiat et profitez d'un accompagnement et d'une livraison France entière.`,
     ];
     const title = truncate(titleVariants[seed % titleVariants.length], 65);
     const description = truncate(descVariants[seed % descVariants.length], 158);
+
 
       intro: [seo.intro],
       breadcrumb: crumb,
