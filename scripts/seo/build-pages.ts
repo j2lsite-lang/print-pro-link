@@ -992,7 +992,11 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const title = truncate(titleVariants[seed % titleVariants.length], 65);
     const description = truncate(descVariants[seed % descVariants.length], 158);
 
-
+    pages.push({
+      path,
+      title,
+      description,
+      h1: name,
       intro: [seo.intro],
       breadcrumb: crumb,
       sections,
