@@ -510,7 +510,6 @@ export const SERVICE_LINKS_VARIED: { anchor: string; path: string }[] = [
 // external links). Never call these "backlinks": specialised group sites.
 import type { LinkItem as _LinkItemEco } from "../types";
 export const J2L_ECOSYSTEM: _LinkItemEco[] = [
-  { label: "J2L Publicité — objets publicitaires, communication et services personnalisés", path: "https://www.j2lpublicite.fr", external: true },
   { label: "J2L Textiles — vêtements professionnels et textiles personnalisés", path: "https://www.j2ltextiles.fr", external: true },
   { label: "PizzPub — boîtes à pizza personnalisées pour événements et communication locale", path: "https://www.pizzpub.fr", external: true },
   { label: "BaguettPub — sacs à pains publicitaires personnalisés", path: "https://www.baguettpub.fr", external: true },
