@@ -64,17 +64,40 @@ export default function Index() {
     setDevisLoading(true);
     const form = devisFormRef.current!;
     const formData = new FormData(form);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const phone = (formData.get("phone") as string) || null;
+    const product = (formData.get("product") as string) || null;
+    const message = (formData.get("message") as string) || null;
     const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase.from("devis_requests").insert({
-      name: formData.get("name") as string,
-      email: formData.get("email") as string,
-      phone: (formData.get("phone") as string) || null,
-      product: (formData.get("product") as string) || null,
-      message: (formData.get("message") as string) || null,
+      name,
+      email,
+      phone,
+      product,
+      message,
     });
+    if (!error) {
+      try {
+        await supabase.functions.invoke("send-quote-smtp", {
+          body: {
+            type: "devis",
+            name,
+            firstName: name ? name.split(" ")[0] : "",
+            email,
+            phone,
+            product,
+            message,
+            pageUrl: window.location.href,
+          },
+        });
+      } catch (mailErr) {
+        console.error("Notification devis non envoyée:", mailErr);
+      }
+    }
     setDevisLoading(false);
     if (error) {
-      toast({ title: "Erreur", description: "Impossible d'envoyer la demande.", variant: "destructive" });
+      toast({ title: "Erreur", description: "Impossible d'envoyer la demande. Veuillez réessayer.", variant: "destructive" });
     } else {
       toast({ title: "Demande envoyée ✓", description: "Nous vous répondons sous 24h." });
       form.reset();
@@ -86,17 +109,41 @@ export default function Index() {
     setCallbackLoading(true);
     const form = callbackFormRef.current!;
     const formData = new FormData(form);
+    const name = formData.get("cb_name") as string;
+    const phone = formData.get("cb_phone") as string;
+    const timeSlot = (formData.get("cb_slot") as string) || null;
+    const subject = (formData.get("cb_subject") as string) || null;
+    const message = (formData.get("cb_message") as string) || null;
     const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase.from("callback_requests").insert({
-      name: formData.get("cb_name") as string,
-      phone: formData.get("cb_phone") as string,
-      time_slot: (formData.get("cb_slot") as string) || null,
-      subject: (formData.get("cb_subject") as string) || null,
-      message: (formData.get("cb_message") as string) || null,
+      name,
+      phone,
+      time_slot: timeSlot,
+      subject,
+      message,
     });
+    if (!error) {
+      try {
+        await supabase.functions.invoke("send-quote-smtp", {
+          body: {
+            type: "callback",
+            name,
+            firstName: name ? name.split(" ")[0] : "",
+            phone,
+            timeSlot,
+            subject,
+            product: subject,
+            message,
+            pageUrl: window.location.href,
+          },
+        });
+      } catch (mailErr) {
+        console.error("Notification rappel non envoyée:", mailErr);
+      }
+    }
     setCallbackLoading(false);
     if (error) {
-      toast({ title: "Erreur", description: "Impossible d'envoyer la demande.", variant: "destructive" });
+      toast({ title: "Erreur", description: "Impossible d'envoyer la demande. Veuillez réessayer.", variant: "destructive" });
     } else {
       setCallbackSent(true);
       setTimeout(() => {
@@ -105,6 +152,7 @@ export default function Index() {
       }, 2500);
     }
   };
+
 
   return (
     <>
