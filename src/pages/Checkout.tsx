@@ -86,32 +86,41 @@ export default function Checkout() {
       // Email de notification envoyé UNIQUEMENT après un enregistrement réussi du devis.
       const reference = `DEVIS-${requestId.slice(0, 8).toUpperCase()}`;
       try {
-        const { error: mailError } = await supabase.functions.invoke("send-transactional-email", {
+        const { error: mailError } = await supabase.functions.invoke("send-quote-smtp", {
           body: {
-            templateName: "quote-notification",
-            idempotencyKey: `quote-${requestId}`,
-            replyTo: address.email,
-            templateData: {
-              reference,
-              name: `${address.firstName} ${address.lastName}`.trim(),
-              company: address.company || null,
-              email: address.email,
-              phone: address.phone || null,
-              address: fullAddress || null,
-              postalCode: address.postalCode || null,
-              city: address.city || null,
-              message: address.message || null,
-              items: quoteItems,
-              productsTotalHt,
-              shippingHt,
-              estimatedTotalHt: grandTotal,
-            },
+            type: "devis",
+            reference,
+            firstName: address.firstName,
+            lastName: address.lastName,
+            name: `${address.firstName} ${address.lastName}`.trim(),
+            company: address.company || null,
+            email: address.email,
+            phone: address.phone || null,
+            address: fullAddress || null,
+            postalCode: address.postalCode || null,
+            city: address.city || null,
+            message: address.message || null,
+            pageUrl: window.location.href,
+            items: quoteItems.map((i) => ({
+              productName: i.product_name,
+              sku: i.sku,
+              quantity: i.quantity,
+              dimensions:
+                (i.options && (i.options.format || i.options.dimensions || i.options.size)) || null,
+              options: i.options,
+              fileName: i.file_name,
+              fileUrl: i.file_url,
+            })),
+            productsTotalHt,
+            shippingHt,
+            estimatedTotalHt: grandTotal,
           },
         });
         if (mailError) console.error("Notification devis non envoyée:", mailError);
       } catch (mailErr) {
         console.error("Notification devis non envoyée:", mailErr);
       }
+
 
       clearCart();
       toast.success("Demande de devis envoyée avec succès ! Nous vous recontactons rapidement.");
