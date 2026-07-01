@@ -962,8 +962,17 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const lower = name.toLowerCase();
     const seed = seedFrom(sku);
 
+    // Real, factual attributes from the Print.com API (never invented).
+    const attrs: ProductAttributes | undefined = attrMap.get(sku);
+    const attrBullets = attrs ? productAttributeBullets(attrs) : [];
+    const attrPhrases = attrs ? productAttributePhrases(attrs, seed) : [];
+
     const sections = [
       { heading: `À quoi sert votre ${lower} ?`, paragraphs: [seo.useCases] },
+      // Real formats / faces / matières / finitions available for THIS product.
+      ...(attrBullets.length >= 2
+        ? [{ heading: "Formats et options disponibles", bullets: attrBullets }]
+        : []),
       { heading: "Qualité d'impression et finitions", paragraphs: [seo.quality] },
       // Visible file-preparation advice — masked when data is insufficient.
       ...(seo.fileTips && seo.fileTips.length >= 3
