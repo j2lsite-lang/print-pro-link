@@ -1073,10 +1073,10 @@ export async function buildProductPages(): Promise<SeoPage[]> {
           // Prices are NEVER computed/asserted here — left undefined on purpose.
           fromPrice: null,
         }),
-        ...(seo.faq && seo.faq.length ? [faqLd(seo.faq)] : []),
+        ...(productFaq && productFaq.length ? [faqLd(productFaq)] : []),
       ],
       ogType: "product",
-      keywords: productKeywords(name),
+      keywords: productKw,
     });
   }
 
