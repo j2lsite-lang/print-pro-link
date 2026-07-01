@@ -19,6 +19,10 @@ import {
 } from "../../src/seo/data/semantic-keywords";
 import { isExcludedSku } from "../../src/config/excluded-products";
 import { twinDisplayName } from "../../src/seo/data/twin-products";
+import {
+  loadProductAttributes, productAttributePhrases, productAttributeBullets,
+  type ProductAttributes,
+} from "./product-attributes";
 import { loadGeo } from "./geo-data";
 import {
   SITE_KEYWORDS, cityKeywords, deptKeywords, regionKeywords,
@@ -942,7 +946,11 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     skusByTop.get(key)!.push(sku);
   }
 
-  for (const sku of publicSkus) {
+  // Real Print.com attributes (formats, faces, matières, finitions…) for every
+  // public SKU. Cached + refreshed defensively; drives factual, non-invented
+  // long-tail SEO expressions and a visible "Formats et options" block.
+  const attrMap = await loadProductAttributes(publicSkus, SB, ANON);
+
     const prod = catalog.get(sku)!;
     // Unique, factual display name for twin SKUs that share an identical
     // catalog name (prevents duplicate title/description/H1/intro).
