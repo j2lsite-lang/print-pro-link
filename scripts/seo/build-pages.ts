@@ -19,6 +19,10 @@ import {
 } from "../../src/seo/data/semantic-keywords";
 import { isExcludedSku } from "../../src/config/excluded-products";
 import { twinDisplayName } from "../../src/seo/data/twin-products";
+import {
+  loadProductAttributes, productAttributePhrases, productAttributeBullets,
+  type ProductAttributes,
+} from "./product-attributes";
 import { loadGeo } from "./geo-data";
 import {
   SITE_KEYWORDS, cityKeywords, deptKeywords, regionKeywords,
@@ -942,6 +946,11 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     skusByTop.get(key)!.push(sku);
   }
 
+  // Real Print.com attributes (formats, faces, matières, finitions…) for every
+  // public SKU. Cached + refreshed defensively; drives factual, non-invented
+  // long-tail SEO expressions and a visible "Formats et options" block.
+  const attrMap = await loadProductAttributes(publicSkus, SB, ANON);
+
   for (const sku of publicSkus) {
     const prod = catalog.get(sku)!;
     // Unique, factual display name for twin SKUs that share an identical
@@ -953,8 +962,17 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const lower = name.toLowerCase();
     const seed = seedFrom(sku);
 
+    // Real, factual attributes from the Print.com API (never invented).
+    const attrs: ProductAttributes | undefined = attrMap.get(sku);
+    const attrBullets = attrs ? productAttributeBullets(attrs) : [];
+    const attrPhrases = attrs ? productAttributePhrases(attrs, seed) : [];
+
     const sections = [
       { heading: `À quoi sert votre ${lower} ?`, paragraphs: [seo.useCases] },
+      // Real formats / faces / matières / finitions available for THIS product.
+      ...(attrBullets.length >= 2
+        ? [{ heading: "Formats et options disponibles", bullets: attrBullets }]
+        : []),
       { heading: "Qualité d'impression et finitions", paragraphs: [seo.quality] },
       // Visible file-preparation advice — masked when data is insufficient.
       ...(seo.fileTips && seo.fileTips.length >= 3
@@ -992,16 +1010,44 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const title = truncate(titleVariants[seed % titleVariants.length], 65);
     const description = truncate(descVariants[seed % descVariants.length], 158);
 
+    // Extra intro paragraph built ONLY from real available attributes.
+    const specSentence = attrs ? (() => {
+      const bits: string[] = [];
+      if (attrs.formats.length) bits.push(`formats ${attrs.formats.slice(0, 4).join(", ")}`);
+      if (attrs.faces.includes("recto verso")) bits.push("impression recto ou recto verso");
+      if (attrs.pelliculage.length) bits.push(`pelliculage ${attrs.pelliculage.join(", ")}`);
+      if (attrs.dorure) bits.push("dorure");
+      if (attrs.exterieur) bits.push("usage extérieur résistant");
+      return bits.length ? `Options réellement disponibles : ${frList(bits)}. Configurez le tout en ligne pour un prix immédiat.` : "";
+    })() : "";
+    const productIntro = specSentence ? [seo.intro, specSentence] : [seo.intro];
+
+    // FAQ enriched with a real-formats question when we have the data.
+    const productFaq = attrs && attrs.formats.length
+      ? [{ q: `Quels formats sont disponibles pour ${lower} ?`, a: `Les formats proposés sont : ${attrs.formats.slice(0, 8).join(", ")}. Sélectionnez le vôtre en ligne, avec un devis gratuit sur demande.` }, ...seo.faq].slice(0, 6)
+      : seo.faq;
+
+    // Merge name-based + attribute-derived keywords (deduped, order-stable).
+    const productKw = (() => {
+      const seen = new Set<string>();
+      const out: string[] = [];
+      for (const v of [...productKeywords(name), ...attrPhrases]) {
+        const k = v.trim().toLowerCase();
+        if (v && !seen.has(k)) { seen.add(k); out.push(v.trim()); }
+      }
+      return out;
+    })();
+
     pages.push({
       path,
       title,
       description,
       h1: name,
-      intro: [seo.intro],
+      intro: productIntro,
       breadcrumb: crumb,
       sections,
       cta: { label: "Demander un devis gratuit", path: "/#devis" },
-      faq: seo.faq,
+      faq: productFaq,
       internalLinks: [
         ...(related.length ? [{ heading: "Catégorie", links: related }] : []),
         ...(complementaryProducts.length ? [{ heading: "Produits complémentaires", links: complementaryProducts }] : []),
@@ -1027,10 +1073,10 @@ export async function buildProductPages(): Promise<SeoPage[]> {
           // Prices are NEVER computed/asserted here — left undefined on purpose.
           fromPrice: null,
         }),
-        ...(seo.faq && seo.faq.length ? [faqLd(seo.faq)] : []),
+        ...(productFaq && productFaq.length ? [faqLd(productFaq)] : []),
       ],
       ogType: "product",
-      keywords: productKeywords(name),
+      keywords: productKw,
     });
   }
 
