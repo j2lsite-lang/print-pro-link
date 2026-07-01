@@ -951,6 +951,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
   // long-tail SEO expressions and a visible "Formats et options" block.
   const attrMap = await loadProductAttributes(publicSkus, SB, ANON);
 
+  for (const sku of publicSkus) {
     const prod = catalog.get(sku)!;
     // Unique, factual display name for twin SKUs that share an identical
     // catalog name (prevents duplicate title/description/H1/intro).
