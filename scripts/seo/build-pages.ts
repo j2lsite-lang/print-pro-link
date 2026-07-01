@@ -1010,16 +1010,44 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const title = truncate(titleVariants[seed % titleVariants.length], 65);
     const description = truncate(descVariants[seed % descVariants.length], 158);
 
+    // Extra intro paragraph built ONLY from real available attributes.
+    const specSentence = attrs ? (() => {
+      const bits: string[] = [];
+      if (attrs.formats.length) bits.push(`formats ${attrs.formats.slice(0, 4).join(", ")}`);
+      if (attrs.faces.includes("recto verso")) bits.push("impression recto ou recto verso");
+      if (attrs.pelliculage.length) bits.push(`pelliculage ${attrs.pelliculage.join(", ")}`);
+      if (attrs.dorure) bits.push("dorure");
+      if (attrs.exterieur) bits.push("usage extérieur résistant");
+      return bits.length ? `Options réellement disponibles : ${frList(bits)}. Configurez le tout en ligne pour un prix immédiat.` : "";
+    })() : "";
+    const productIntro = specSentence ? [seo.intro, specSentence] : [seo.intro];
+
+    // FAQ enriched with a real-formats question when we have the data.
+    const productFaq = attrs && attrs.formats.length
+      ? [{ q: `Quels formats sont disponibles pour ${lower} ?`, a: `Les formats proposés sont : ${attrs.formats.slice(0, 8).join(", ")}. Sélectionnez le vôtre en ligne, avec un devis gratuit sur demande.` }, ...seo.faq].slice(0, 6)
+      : seo.faq;
+
+    // Merge name-based + attribute-derived keywords (deduped, order-stable).
+    const productKw = (() => {
+      const seen = new Set<string>();
+      const out: string[] = [];
+      for (const v of [...productKeywords(name), ...attrPhrases]) {
+        const k = v.trim().toLowerCase();
+        if (v && !seen.has(k)) { seen.add(k); out.push(v.trim()); }
+      }
+      return out;
+    })();
+
     pages.push({
       path,
       title,
       description,
       h1: name,
-      intro: [seo.intro],
+      intro: productIntro,
       breadcrumb: crumb,
       sections,
       cta: { label: "Demander un devis gratuit", path: "/#devis" },
-      faq: seo.faq,
+      faq: productFaq,
       internalLinks: [
         ...(related.length ? [{ heading: "Catégorie", links: related }] : []),
         ...(complementaryProducts.length ? [{ heading: "Produits complémentaires", links: complementaryProducts }] : []),
