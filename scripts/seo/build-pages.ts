@@ -952,6 +952,11 @@ export async function buildProductPages(): Promise<SeoPage[]> {
   // long-tail SEO expressions and a visible "Formats et options" block.
   const attrMap = await loadProductAttributes(publicSkus, SB, ANON);
 
+  // Real HT price for each product's DEFAULT configuration (identical to the
+  // configurator). Cached + refreshed defensively; drives the Product JSON-LD
+  // `offers` block. Never alters visible prices, the cart or the quote flow.
+  const priceMap = await loadProductPrices(publicSkus, SB, ANON);
+
   for (const sku of publicSkus) {
     const prod = catalog.get(sku)!;
     // Unique, factual display name for twin SKUs that share an identical
