@@ -23,6 +23,7 @@ import {
   loadProductAttributes, productAttributePhrases, productAttributeBullets,
   type ProductAttributes,
 } from "./product-attributes";
+import { loadProductPrices } from "./product-prices";
 import { loadGeo } from "./geo-data";
 import {
   SITE_KEYWORDS, cityKeywords, deptKeywords, regionKeywords,
