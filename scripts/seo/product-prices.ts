@@ -256,7 +256,6 @@ async function resolvePrice(
     const data = await callPrice(sb, anon, sku, body);
     if (data && !data.error && !data.errorMessage) return { data, copies };
     lastError = data?.errorMessage || data?.error || "";
-    if (process.env.SEO_PRICE_DEBUG) console.log(`[dbg ${sku}] attempt ${attempt + 1}`, JSON.stringify(body), "=>", lastError.slice(0, 200));
 
     const missing = parseMissingProps(lastError);
     if (missing.length) {
