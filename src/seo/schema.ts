@@ -112,14 +112,15 @@ export function productLd(opts: {
     brand: { "@type": "Brand", name: SITE_NAME },
   };
   if (opts.image) ld.image = opts.image;
-  // Use AggregateOffer with lowPrice ("à partir de") — the price varies with the
-  // chosen options, so we never assert a single fixed price.
+  // Real `Offer` built from the exact HT price the configurator shows for the
+  // product's DEFAULT configuration. Never invented, never a rating/review.
   if (opts.fromPrice && opts.fromPrice > 0) {
     ld.offers = {
-      "@type": "AggregateOffer",
+      "@type": "Offer",
+      price: Number(opts.fromPrice.toFixed(2)),
       priceCurrency: "EUR",
-      lowPrice: opts.fromPrice,
       availability: "https://schema.org/InStock",
+      url: `${SITE_URL}${opts.path}`,
       seller: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
     };
   }
