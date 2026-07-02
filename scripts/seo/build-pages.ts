@@ -23,6 +23,7 @@ import {
   loadProductAttributes, productAttributePhrases, productAttributeBullets,
   type ProductAttributes,
 } from "./product-attributes";
+import { loadProductPrices } from "./product-prices";
 import { loadGeo } from "./geo-data";
 import {
   SITE_KEYWORDS, cityKeywords, deptKeywords, regionKeywords,
@@ -951,6 +952,11 @@ export async function buildProductPages(): Promise<SeoPage[]> {
   // long-tail SEO expressions and a visible "Formats et options" block.
   const attrMap = await loadProductAttributes(publicSkus, SB, ANON);
 
+  // Real HT price for each product's DEFAULT configuration (identical to the
+  // configurator). Cached + refreshed defensively; drives the Product JSON-LD
+  // `offers` block. Never alters visible prices, the cart or the quote flow.
+  const priceMap = await loadProductPrices(publicSkus, SB, ANON);
+
   for (const sku of publicSkus) {
     const prod = catalog.get(sku)!;
     // Unique, factual display name for twin SKUs that share an identical
@@ -1070,8 +1076,9 @@ export async function buildProductPages(): Promise<SeoPage[]> {
           sku,
           path,
           image: prod.thumbnailUrl || null,
-          // Prices are NEVER computed/asserted here — left undefined on purpose.
-          fromPrice: null,
+          // Real HT price of the DEFAULT configuration (from the configurator).
+          // Undefined when the API can't resolve one → `offers` is simply omitted.
+          fromPrice: priceMap.get(sku)?.price ?? null,
         }),
         ...(productFaq && productFaq.length ? [faqLd(productFaq)] : []),
       ],
