@@ -220,8 +220,15 @@ async function callPrice(sb: string, anon: string, sku: string, body: Record<str
       `${sb}/functions/v1/printcom-proxy?action=get-price&sku=${encodeURIComponent(sku)}&lang=fr-FR`,
       { method: "POST", headers: { apikey: anon, Authorization: `Bearer ${anon}`, "Content-Type": "application/json" }, body: JSON.stringify(body) },
     );
-    if (!r.ok) return { error: `HTTP ${r.status}` };
-    return await r.json();
+    const text = await r.text();
+    if (!r.ok) {
+      // Keep the API's own validation message so the resolver can react to
+      // "missing required property" / "excluded configuration" errors.
+      let msg = text;
+      try { msg = JSON.parse(text)?.errorMessage || text; } catch { /* raw text */ }
+      return { error: msg || `HTTP ${r.status}` };
+    }
+    try { return JSON.parse(text); } catch { return { error: "invalid JSON" }; }
   } catch (e: any) {
     return { error: e?.message || String(e) };
   }
