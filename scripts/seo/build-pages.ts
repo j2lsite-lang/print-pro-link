@@ -1076,8 +1076,9 @@ export async function buildProductPages(): Promise<SeoPage[]> {
           sku,
           path,
           image: prod.thumbnailUrl || null,
-          // Prices are NEVER computed/asserted here — left undefined on purpose.
-          fromPrice: null,
+          // Real HT price of the DEFAULT configuration (from the configurator).
+          // Undefined when the API can't resolve one → `offers` is simply omitted.
+          fromPrice: priceMap.get(sku)?.price ?? null,
         }),
         ...(productFaq && productFaq.length ? [faqLd(productFaq)] : []),
       ],
