@@ -31,10 +31,28 @@
 const CANONICAL_HOST  = "j2lprint.fr";
 const CANONICAL_ORIGIN = "https://j2lprint.fr";
 const ORIGIN_HOST = "origin.j2lprint.fr";
-const PAGE_REDIRECTS = {
-  "/devis": "/#devis",
-  "/contact": "/#devis",
-};
+ const PAGE_REDIRECTS = {
+   "/devis": "/#devis",
+   "/contact": "/#devis",
+   // Anciennes pages statiques / index disparus -> équivalent réel
+   "/produits": "/catalogue",
+   "/produit": "/catalogue",
+   "/product": "/catalogue",
+   "/categories": "/catalogue",
+   "/categorie": "/catalogue",
+   "/services": "/catalogue",
+   "/service": "/catalogue",
+   "/villes": "/imprimerie",
+   "/ville": "/imprimerie",
+   "/theme": "/themes",
+   "/collections": "/themes",
+ };
+ 
+ // Anciens slugs de fiches produits (renommés / retirés) -> fiche réelle.
+ // Ne jamais rediriger vers un produit inexistant.
+ const PRODUCT_SLUG_REDIRECTS = {
+   "election-posters-fr": "posters",
+ };
 // LOVABLE_ORIGIN_HOST retiré : provoquait une boucle de redirection (voir 7.2).
 // const LOVABLE_ORIGIN_HOST = "print-pro-link.lovable.app";
 
