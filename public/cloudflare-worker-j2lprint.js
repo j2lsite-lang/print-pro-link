@@ -314,7 +314,43 @@ function isManagedCategoryPath(pathname) {
   return false;
 }
 
-/** HTML mis en cache (ni dynamique, ni asset, ni sitemap). */
+/**
+ * Calcule une cible de redirection 301 pour un ancien chemin / slug.
+ * Ne renvoie JAMAIS vers une URL inexistante : si l'équivalent est inconnu,
+ * on retombe sur une page générique réelle (/catalogue) plutôt qu'une 404.
+ * Retourne null quand aucune redirection ne s'applique.
+ */
+function computeLegacyRedirect(pathname) {
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts.length === 0) return null;
+
+  // Anciens préfixes de fiches produits : /produits/:slug, /produit/:slug,
+  // /product/:slug -> /products/:slug (si le produit existe, sinon catalogue).
+  if (["produits", "produit", "product"].includes(parts[0]) && parts.length >= 2) {
+    let slug = parts[1];
+    if (PRODUCT_SLUG_REDIRECTS[slug]) slug = PRODUCT_SLUG_REDIRECTS[slug];
+    return PRODUCT_SLUGS.has(slug) ? `/products/${slug}` : "/catalogue";
+  }
+
+  // Fiche produit connue mais slug renommé/retiré -> fiche réelle.
+  if (parts[0] === "products" && parts.length === 2) {
+    const target = PRODUCT_SLUG_REDIRECTS[parts[1]];
+    if (target && PRODUCT_SLUGS.has(target)) return `/products/${target}`;
+  }
+
+  // Ancien préfixe catégorie en anglais/pluriel -> /categorie/...
+  if (parts[0] === "categories" && parts.length >= 2) {
+    const rebuilt = `/categorie/${parts.slice(1).join("/")}`;
+    return isManagedCategoryPath(rebuilt) ? rebuilt : "/catalogue";
+  }
+
+  // Anciennes pages services regroupées -> catalogue.
+  if (parts[0] === "services" && parts.length >= 2) return "/catalogue";
+
+  return null;
+}
+
+
 function isCacheableHtml(pathname) {
   if (isNoCachePath(pathname)) return false;
   if (isImmutableAsset(pathname)) return false;
