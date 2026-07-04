@@ -31,10 +31,28 @@
 const CANONICAL_HOST  = "j2lprint.fr";
 const CANONICAL_ORIGIN = "https://j2lprint.fr";
 const ORIGIN_HOST = "origin.j2lprint.fr";
-const PAGE_REDIRECTS = {
-  "/devis": "/#devis",
-  "/contact": "/#devis",
-};
+ const PAGE_REDIRECTS = {
+   "/devis": "/#devis",
+   "/contact": "/#devis",
+   // Anciennes pages statiques / index disparus -> équivalent réel
+   "/produits": "/catalogue",
+   "/produit": "/catalogue",
+   "/product": "/catalogue",
+   "/categories": "/catalogue",
+   "/categorie": "/catalogue",
+   "/services": "/catalogue",
+   "/service": "/catalogue",
+   "/villes": "/imprimerie",
+   "/ville": "/imprimerie",
+   "/theme": "/themes",
+   "/collections": "/themes",
+ };
+ 
+ // Anciens slugs de fiches produits (renommés / retirés) -> fiche réelle.
+ // Ne jamais rediriger vers un produit inexistant.
+ const PRODUCT_SLUG_REDIRECTS = {
+   "election-posters-fr": "posters",
+ };
 // LOVABLE_ORIGIN_HOST retiré : provoquait une boucle de redirection (voir 7.2).
 // const LOVABLE_ORIGIN_HOST = "print-pro-link.lovable.app";
 
@@ -214,6 +232,7 @@ const KNOWN_SITEMAPS = [
   "/sitemaps/static.xml",
   "/sitemaps/categories.xml",
   "/sitemaps/subcategories.xml",
+  "/sitemaps/themes.xml",
   "/sitemaps/products.xml",
   "/sitemaps/cities.xml",
   "/sitemaps/departments.xml",
@@ -296,7 +315,43 @@ function isManagedCategoryPath(pathname) {
   return false;
 }
 
-/** HTML mis en cache (ni dynamique, ni asset, ni sitemap). */
+/**
+ * Calcule une cible de redirection 301 pour un ancien chemin / slug.
+ * Ne renvoie JAMAIS vers une URL inexistante : si l'équivalent est inconnu,
+ * on retombe sur une page générique réelle (/catalogue) plutôt qu'une 404.
+ * Retourne null quand aucune redirection ne s'applique.
+ */
+function computeLegacyRedirect(pathname) {
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts.length === 0) return null;
+
+  // Anciens préfixes de fiches produits : /produits/:slug, /produit/:slug,
+  // /product/:slug -> /products/:slug (si le produit existe, sinon catalogue).
+  if (["produits", "produit", "product"].includes(parts[0]) && parts.length >= 2) {
+    let slug = parts[1];
+    if (PRODUCT_SLUG_REDIRECTS[slug]) slug = PRODUCT_SLUG_REDIRECTS[slug];
+    return PRODUCT_SLUGS.has(slug) ? `/products/${slug}` : "/catalogue";
+  }
+
+  // Fiche produit connue mais slug renommé/retiré -> fiche réelle.
+  if (parts[0] === "products" && parts.length === 2) {
+    const target = PRODUCT_SLUG_REDIRECTS[parts[1]];
+    if (target && PRODUCT_SLUGS.has(target)) return `/products/${target}`;
+  }
+
+  // Ancien préfixe catégorie en anglais/pluriel -> /categorie/...
+  if (parts[0] === "categories" && parts.length >= 2) {
+    const rebuilt = `/categorie/${parts.slice(1).join("/")}`;
+    return isManagedCategoryPath(rebuilt) ? rebuilt : "/catalogue";
+  }
+
+  // Anciennes pages services regroupées -> catalogue.
+  if (parts[0] === "services" && parts.length >= 2) return "/catalogue";
+
+  return null;
+}
+
+
 function isCacheableHtml(pathname) {
   if (isNoCachePath(pathname)) return false;
   if (isImmutableAsset(pathname)) return false;
@@ -391,6 +446,18 @@ export default {
       const target = new URL(pageRedirect, CANONICAL_ORIGIN);
       return Response.redirect(target.toString(), 301);
     }
+
+    // 7.1a — Anciens slugs / anciens préfixes d'URL -> 301 vers la page réelle
+    // la plus proche (jamais vers une 404). Évite les « Introuvable 404 »
+    // remontés par Search Console sur d'anciennes URL encore crawlées.
+    if (isRead) {
+      const legacyTarget = computeLegacyRedirect(normalizedPath);
+      if (legacyTarget && legacyTarget !== normalizedPath) {
+        const target = new URL(legacyTarget, CANONICAL_ORIGIN);
+        return Response.redirect(target.toString(), 301);
+      }
+    }
+
 
     // 7.1b — Diagnostic public : si cette route affiche l'app ou une 404,
     // le Worker Cloudflare n'est pas déployé/routé sur j2lprint.fr.
