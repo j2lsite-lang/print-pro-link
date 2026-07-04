@@ -446,6 +446,18 @@ export default {
       return Response.redirect(target.toString(), 301);
     }
 
+    // 7.1a — Anciens slugs / anciens préfixes d'URL -> 301 vers la page réelle
+    // la plus proche (jamais vers une 404). Évite les « Introuvable 404 »
+    // remontés par Search Console sur d'anciennes URL encore crawlées.
+    if (isRead) {
+      const legacyTarget = computeLegacyRedirect(normalizedPath);
+      if (legacyTarget && legacyTarget !== normalizedPath) {
+        const target = new URL(legacyTarget, CANONICAL_ORIGIN);
+        return Response.redirect(target.toString(), 301);
+      }
+    }
+
+
     // 7.1b — Diagnostic public : si cette route affiche l'app ou une 404,
     // le Worker Cloudflare n'est pas déployé/routé sur j2lprint.fr.
     if (p === "/__worker") {
