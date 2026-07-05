@@ -178,9 +178,10 @@ export const CATEGORY_KEYWORDS: Record<string, SemanticEntry> = {
     primaryKeyword: "publicité intérieure et PLV",
     secondary: [
       "roll-up personnalisé", "kakémono intérieur", "affiche point de vente",
-      "présentoir PLV", "stop-rayon", "totem d'accueil", "panneau léger",
-      "support de salon", "enrouleur publicitaire", "affichage intérieur",
-      "PLV carton", "communication en magasin",
+      "présentoir PLV", "présentoir publicitaire", "stop-rayon", "stop rayon",
+      "chevalet publicitaire", "comptoir promotionnel", "stand salon professionnel",
+      "totem d'accueil", "panneau léger", "support de salon",
+      "enrouleur publicitaire", "affichage intérieur", "PLV carton", "communication en magasin",
     ],
     synonyms: ["PLV", "publicité sur lieu de vente", "merchandising visuel"],
     longTail: [
