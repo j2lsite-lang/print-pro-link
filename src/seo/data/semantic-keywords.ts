@@ -635,7 +635,7 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
       "sticker personnalisé", "autocollant vinyle", "adhésif vitrine",
       "vitrophanie", "lettrage adhésif", "étiquette adhésive", "sticker découpé",
       "marquage au sol", "adhésif véhicule", "sticker logo", "adhésif mural",
-      "impression adhésif en ligne",
+      "étiquette en rouleau", "impression autocollant", "impression adhésif en ligne",
     ],
     synonyms: ["sticker", "autocollant", "vinyle", "vitrophanie"],
     longTail: [
