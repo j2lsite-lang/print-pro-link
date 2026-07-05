@@ -248,5 +248,8 @@ export function productKeywords(name: string): string[] {
     `tarif ${lower}`,
     `commander ${lower}`,
     `${lower} pas cher`,
+    `impression ${lower} pas cher`,
+    `${lower} rapide`,
+    `impression ${lower} en ligne`,
   ]);
 }
