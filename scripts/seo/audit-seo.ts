@@ -95,8 +95,10 @@ function jsonLdIssues(p: SeoPage): { invalid: number; fake: number } {
     const s = JSON.stringify(block).toLowerCase();
     if (!block || !block["@context"] || !block["@type"]) invalid++;
     if (FAKE_KEYS.some((k) => s.includes(`"${k}"`))) fake++;
-    // Product/Offer must never assert an invented price/availability here.
-    if (s.includes('"offers"') && (s.includes('"price"') || s.includes('"availability"'))) fake++;
+    // Real, configurator-computed Offer prices (from product-prices.json) are
+    // legitimate and expected on fiches produits. An Offer that asserts
+    // availability WITHOUT a real price is still treated as fake data.
+    if (s.includes('"offers"') && s.includes('"availability"') && !s.includes('"price"')) fake++;
   }
   return { invalid, fake };
 }

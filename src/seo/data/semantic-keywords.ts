@@ -50,7 +50,8 @@ export const COMMERCIAL_VOCAB = [
   "impression en ligne", "fabrication", "impression professionnelle",
   "impression personnalisée", "avec logo", "petite quantité", "grande quantité",
   "sur mesure", "livraison", "fichier d'impression", "BAT", "recto verso",
-  "finition", "support", "format",
+  "finition", "support", "format", "pas cher", "impression rapide",
+  "impression pas chère", "petit format", "grand format", "devis impression",
 ];
 
 export const SECTORS_POOL = [
@@ -177,9 +178,10 @@ export const CATEGORY_KEYWORDS: Record<string, SemanticEntry> = {
     primaryKeyword: "publicité intérieure et PLV",
     secondary: [
       "roll-up personnalisé", "kakémono intérieur", "affiche point de vente",
-      "présentoir PLV", "stop-rayon", "totem d'accueil", "panneau léger",
-      "support de salon", "enrouleur publicitaire", "affichage intérieur",
-      "PLV carton", "communication en magasin",
+      "présentoir PLV", "présentoir publicitaire", "stop-rayon", "stop rayon",
+      "chevalet publicitaire", "comptoir promotionnel", "stand salon professionnel",
+      "totem d'accueil", "panneau léger", "support de salon",
+      "enrouleur publicitaire", "affichage intérieur", "PLV carton", "communication en magasin",
     ],
     synonyms: ["PLV", "publicité sur lieu de vente", "merchandising visuel"],
     longTail: [
@@ -518,9 +520,11 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     primaryKeyword: "brochures et dépliants personnalisés",
     secondary: [
       "impression brochure", "dépliant publicitaire", "plaquette commerciale",
-      "catalogue personnalisé", "dépliant 3 volets", "brochure piquée",
+      "catalogue personnalisé", "catalogue imprimé", "dépliant 3 volets",
+      "dépliant 2 volets", "brochure piquée", "livret publicitaire",
       "brochure dos carré collé", "plaquette entreprise", "dépliant roulé",
       "brochure A4", "impression catalogue", "dépliant accordéon",
+      "magazine personnalisé", "dossier de présentation",
     ],
     synonyms: ["dépliant", "plaquette", "catalogue", "prospectus plié"],
     longTail: [
@@ -556,8 +560,9 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     secondary: [
       "bâche publicitaire", "banderole personnalisée", "bâche PVC",
       "banderole événementielle", "bâche façade", "banderole sur mesure",
-      "bâche micro-perforée", "œillets renforcés", "bâche extérieure",
-      "banderole grand format", "impression bâche en ligne", "bâche chantier",
+      "bâche micro-perforée", "œillets renforcés", "bâche avec œillets",
+      "bâche extérieure", "bâche grand format", "banderole grand format",
+      "impression bâche en ligne", "bâche chantier", "stand publicitaire",
     ],
     synonyms: ["bâche", "banderole", "banner"],
     longTail: [
@@ -631,7 +636,7 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
       "sticker personnalisé", "autocollant vinyle", "adhésif vitrine",
       "vitrophanie", "lettrage adhésif", "étiquette adhésive", "sticker découpé",
       "marquage au sol", "adhésif véhicule", "sticker logo", "adhésif mural",
-      "impression adhésif en ligne",
+      "étiquette en rouleau", "impression autocollant", "impression adhésif en ligne",
     ],
     synonyms: ["sticker", "autocollant", "vinyle", "vitrophanie"],
     longTail: [
@@ -666,9 +671,11 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     primaryKeyword: "panneaux rigides personnalisés",
     secondary: [
       "panneau Dibond", "panneau Forex", "panneau Akilux", "panneau PVC",
-      "signalétique rigide", "panneau immobilier", "plaque professionnelle",
-      "panneau de chantier", "enseigne rigide", "panneau extérieur",
-      "panneau sur mesure", "impression panneau en ligne",
+      "signalétique rigide", "signalétique entreprise", "panneau immobilier",
+      "plaque professionnelle", "panneau de chantier", "panneau chantier",
+      "enseigne rigide", "enseigne personnalisée", "panneau extérieur",
+      "panneau publicitaire", "panneau sur mesure", "impression panneau rigide",
+      "impression panneau en ligne",
     ],
     synonyms: ["panneau", "plaque", "signalétique", "enseigne"],
     longTail: [
