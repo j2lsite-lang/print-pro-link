@@ -559,8 +559,9 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     secondary: [
       "bâche publicitaire", "banderole personnalisée", "bâche PVC",
       "banderole événementielle", "bâche façade", "banderole sur mesure",
-      "bâche micro-perforée", "œillets renforcés", "bâche extérieure",
-      "banderole grand format", "impression bâche en ligne", "bâche chantier",
+      "bâche micro-perforée", "œillets renforcés", "bâche avec œillets",
+      "bâche extérieure", "bâche grand format", "banderole grand format",
+      "impression bâche en ligne", "bâche chantier", "stand publicitaire",
     ],
     synonyms: ["bâche", "banderole", "banner"],
     longTail: [
