@@ -670,9 +670,11 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     primaryKeyword: "panneaux rigides personnalisés",
     secondary: [
       "panneau Dibond", "panneau Forex", "panneau Akilux", "panneau PVC",
-      "signalétique rigide", "panneau immobilier", "plaque professionnelle",
-      "panneau de chantier", "enseigne rigide", "panneau extérieur",
-      "panneau sur mesure", "impression panneau en ligne",
+      "signalétique rigide", "signalétique entreprise", "panneau immobilier",
+      "plaque professionnelle", "panneau de chantier", "panneau chantier",
+      "enseigne rigide", "enseigne personnalisée", "panneau extérieur",
+      "panneau publicitaire", "panneau sur mesure", "impression panneau rigide",
+      "impression panneau en ligne",
     ],
     synonyms: ["panneau", "plaque", "signalétique", "enseigne"],
     longTail: [
