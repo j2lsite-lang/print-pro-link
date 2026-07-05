@@ -50,7 +50,8 @@ export const COMMERCIAL_VOCAB = [
   "impression en ligne", "fabrication", "impression professionnelle",
   "impression personnalisée", "avec logo", "petite quantité", "grande quantité",
   "sur mesure", "livraison", "fichier d'impression", "BAT", "recto verso",
-  "finition", "support", "format",
+  "finition", "support", "format", "pas cher", "impression rapide",
+  "impression pas chère", "petit format", "grand format", "devis impression",
 ];
 
 export const SECTORS_POOL = [
