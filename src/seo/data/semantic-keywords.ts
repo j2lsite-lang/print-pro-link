@@ -519,9 +519,11 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     primaryKeyword: "brochures et dépliants personnalisés",
     secondary: [
       "impression brochure", "dépliant publicitaire", "plaquette commerciale",
-      "catalogue personnalisé", "dépliant 3 volets", "brochure piquée",
+      "catalogue personnalisé", "catalogue imprimé", "dépliant 3 volets",
+      "dépliant 2 volets", "brochure piquée", "livret publicitaire",
       "brochure dos carré collé", "plaquette entreprise", "dépliant roulé",
       "brochure A4", "impression catalogue", "dépliant accordéon",
+      "magazine personnalisé", "dossier de présentation",
     ],
     synonyms: ["dépliant", "plaquette", "catalogue", "prospectus plié"],
     longTail: [
