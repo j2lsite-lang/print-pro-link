@@ -21,13 +21,14 @@ import imgPdf from "@/assets/services/verification-pdf.jpg";
 
 /* ─── Data ─── */
 const services = [
-  { icon: FileText, title: "Impression numérique", desc: "Cartes de visite, flyers, dépliants, affiches en petite et grande série. Qualité professionnelle offset et numérique, livrée partout en France.", img: imgImpression, link: "/impression-numerique" },
-  { icon: Image, title: "Grand format", desc: "Bâches, banderoles, adhésifs, kakémonos et enseignes sur mesure. Impression haute résolution jusqu'à 1440 dpi pour une communication visuelle percutante.", img: imgGrandFormat, link: "/grand-format" },
-  { icon: Layers, title: "Supports publicitaires", desc: "Roll-ups, totems, PLV, comptoirs d'accueil et signalétique intérieure/extérieure. Idéal pour salons, événements et points de vente.", img: imgSupports, link: "/supports-publicitaires" },
-  { icon: Printer, title: "Personnalisation", desc: "Marquage textile (t-shirts, polos, sweats), objets publicitaires (mugs, stylos, clés USB) et goodies personnalisés pour votre entreprise.", img: imgPerso, link: "/personnalisation" },
-  { icon: Truck, title: "Livraison rapide France", desc: "Expédition en 3 à 5 jours ouvrés dans toute la France : Paris, Lyon, Marseille, Lille, Strasbourg, Bordeaux, Nantes et toutes les villes.", img: imgLivraison, link: "/livraison" },
-  { icon: CheckCircle, title: "Vérification PDF", desc: "Contrôle automatique de vos fichiers avant impression : résolution, fonds perdus, colorimétrie CMJN. Évitez les mauvaises surprises.", img: imgPdf, link: "/blog" },
+  { icon: FileText, title: "Impression professionnelle", desc: "Cartes de visite, flyers, dépliants, affiches, brochures et supports imprimés pour entreprises, commerces, associations et collectivités. Impression soignée, finitions de qualité et accompagnement personnalisé de la demande jusqu'à la livraison.", cta: "Voir les produits", img: imgImpression, link: "/impression-numerique" },
+  { icon: Image, title: "Grand format & signalétique", desc: "Bâches, panneaux, adhésifs, roll-ups, kakémonos, affiches grand format et signalétique intérieure ou extérieure. Des supports visibles, résistants et adaptés à vos opérations commerciales, événements et points de vente.", cta: "Découvrir les supports", img: imgGrandFormat, link: "/grand-format" },
+  { icon: Layers, title: "PLV & supports de communication", desc: "Présentoirs, comptoirs d'accueil, stands, totems, roll-ups et supports pour salons, boutiques, événements et campagnes locales. Des solutions prêtes à valoriser votre marque sur le terrain.", cta: "Voir la PLV", img: imgSupports, link: "/supports-publicitaires" },
+  { icon: Printer, title: "Objets & textiles personnalisés", desc: "Textiles marqués, goodies, stylos, mugs, clés USB, sacs, accessoires et objets publicitaires personnalisés avec votre logo. Idéal pour communiquer, fidéliser vos clients et équiper vos équipes.", cta: "Personnaliser un produit", img: imgPerso, link: "/personnalisation" },
+  { icon: Truck, title: "Livraison partout en France", desc: "Expédition suivie en 3 à 5 jours ouvrés dans toute la France, avec options express. Un interlocuteur dédié vous accompagne du devis à la réception de vos supports.", cta: "En savoir plus", img: imgLivraison, link: "/livraison" },
+  { icon: CheckCircle, title: "Vérification des fichiers", desc: "Contrôle attentif de chaque fichier avant impression : résolution, fonds perdus, colorimétrie CMJN. La garantie d'un rendu fidèle, sans mauvaise surprise.", cta: "En savoir plus", img: imgPdf, link: "/blog" },
 ];
+
 
 const faqItems = [
   { q: "Quels formats de fichiers acceptez-vous ?", a: "Nous acceptons les fichiers PDF, AI, PSD, EPS et images haute résolution (300 dpi min.)." },
@@ -261,8 +262,42 @@ export default function Index() {
         </div>
       </section>
 
+      {/* ─── ACCROCHE ─── */}
+      <section className="py-10">
+        <div className="container">
+          <div className="glass-card px-6 py-10 text-center md:px-12 md:py-14">
+            <h2 className="mx-auto max-w-3xl font-display text-2xl font-bold leading-tight text-foreground sm:text-3xl">
+              Votre imprimerie en ligne pour tous vos supports professionnels
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-[0.975rem] leading-relaxed text-muted-foreground">
+              J2L Print accompagne les entreprises, commerces, associations et collectivités dans la
+              création de supports imprimés, signalétiques et publicitaires. Demandez un devis
+              personnalisé selon vos quantités, formats, finitions et délais.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+              <Button
+                asChild
+                className="rounded-2xl bg-primary px-7 py-6 text-base font-bold text-primary-foreground transition-all duration-300 hover:scale-105 hover:brightness-95"
+              >
+                <Link to="/#devis">
+                  Demander un devis <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-2xl border-border px-7 py-6 text-base font-semibold"
+              >
+                <Link to="/products">Voir le catalogue</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── SERVICES ─── */}
       <section id="services" className="py-8">
+
         <div className="container">
           <h2 className="font-display text-2xl font-bold text-foreground text-center mb-8">
             Nos services
@@ -280,8 +315,9 @@ export default function Index() {
                   <h3 className="font-display text-[1.0625rem] font-semibold text-foreground">{s.title}</h3>
                   <p className="mt-1 text-[0.9375rem] text-muted-foreground">{s.desc}</p>
                   <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
-                    En savoir plus <ArrowRight className="h-3 w-3" />
+                    {s.cta} <ArrowRight className="h-3 w-3" />
                   </span>
+
                 </div>
               </Link>
             ))}
