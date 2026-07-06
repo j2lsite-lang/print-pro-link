@@ -281,8 +281,9 @@ export default function Index() {
                   <h3 className="font-display text-[1.0625rem] font-semibold text-foreground">{s.title}</h3>
                   <p className="mt-1 text-[0.9375rem] text-muted-foreground">{s.desc}</p>
                   <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
-                    En savoir plus <ArrowRight className="h-3 w-3" />
+                    {s.cta} <ArrowRight className="h-3 w-3" />
                   </span>
+
                 </div>
               </Link>
             ))}
