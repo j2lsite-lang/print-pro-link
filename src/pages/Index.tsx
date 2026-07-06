@@ -21,13 +21,14 @@ import imgPdf from "@/assets/services/verification-pdf.jpg";
 
 /* ─── Data ─── */
 const services = [
-  { icon: FileText, title: "Impression numérique", desc: "Cartes de visite, flyers, dépliants, affiches en petite et grande série. Qualité professionnelle offset et numérique, livrée partout en France.", img: imgImpression, link: "/impression-numerique" },
-  { icon: Image, title: "Grand format", desc: "Bâches, banderoles, adhésifs, kakémonos et enseignes sur mesure. Impression haute résolution jusqu'à 1440 dpi pour une communication visuelle percutante.", img: imgGrandFormat, link: "/grand-format" },
-  { icon: Layers, title: "Supports publicitaires", desc: "Roll-ups, totems, PLV, comptoirs d'accueil et signalétique intérieure/extérieure. Idéal pour salons, événements et points de vente.", img: imgSupports, link: "/supports-publicitaires" },
-  { icon: Printer, title: "Personnalisation", desc: "Marquage textile (t-shirts, polos, sweats), objets publicitaires (mugs, stylos, clés USB) et goodies personnalisés pour votre entreprise.", img: imgPerso, link: "/personnalisation" },
-  { icon: Truck, title: "Livraison rapide France", desc: "Expédition en 3 à 5 jours ouvrés dans toute la France : Paris, Lyon, Marseille, Lille, Strasbourg, Bordeaux, Nantes et toutes les villes.", img: imgLivraison, link: "/livraison" },
-  { icon: CheckCircle, title: "Vérification PDF", desc: "Contrôle automatique de vos fichiers avant impression : résolution, fonds perdus, colorimétrie CMJN. Évitez les mauvaises surprises.", img: imgPdf, link: "/blog" },
+  { icon: FileText, title: "Impression professionnelle", desc: "Cartes de visite, flyers, dépliants, affiches, brochures et supports imprimés pour entreprises, commerces, associations et collectivités. Impression soignée, finitions de qualité et accompagnement personnalisé de la demande jusqu'à la livraison.", cta: "Voir les produits", img: imgImpression, link: "/impression-numerique" },
+  { icon: Image, title: "Grand format & signalétique", desc: "Bâches, panneaux, adhésifs, roll-ups, kakémonos, affiches grand format et signalétique intérieure ou extérieure. Des supports visibles, résistants et adaptés à vos opérations commerciales, événements et points de vente.", cta: "Découvrir les supports", img: imgGrandFormat, link: "/grand-format" },
+  { icon: Layers, title: "PLV & supports de communication", desc: "Présentoirs, comptoirs d'accueil, stands, totems, roll-ups et supports pour salons, boutiques, événements et campagnes locales. Des solutions prêtes à valoriser votre marque sur le terrain.", cta: "Voir la PLV", img: imgSupports, link: "/supports-publicitaires" },
+  { icon: Printer, title: "Objets & textiles personnalisés", desc: "Textiles marqués, goodies, stylos, mugs, clés USB, sacs, accessoires et objets publicitaires personnalisés avec votre logo. Idéal pour communiquer, fidéliser vos clients et équiper vos équipes.", cta: "Personnaliser un produit", img: imgPerso, link: "/personnalisation" },
+  { icon: Truck, title: "Livraison partout en France", desc: "Expédition suivie en 3 à 5 jours ouvrés dans toute la France, avec options express. Un interlocuteur dédié vous accompagne du devis à la réception de vos supports.", cta: "En savoir plus", img: imgLivraison, link: "/livraison" },
+  { icon: CheckCircle, title: "Vérification des fichiers", desc: "Contrôle attentif de chaque fichier avant impression : résolution, fonds perdus, colorimétrie CMJN. La garantie d'un rendu fidèle, sans mauvaise surprise.", cta: "En savoir plus", img: imgPdf, link: "/blog" },
 ];
+
 
 const faqItems = [
   { q: "Quels formats de fichiers acceptez-vous ?", a: "Nous acceptons les fichiers PDF, AI, PSD, EPS et images haute résolution (300 dpi min.)." },
