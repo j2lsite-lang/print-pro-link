@@ -262,8 +262,42 @@ export default function Index() {
         </div>
       </section>
 
+      {/* ─── ACCROCHE ─── */}
+      <section className="py-10">
+        <div className="container">
+          <div className="glass-card px-6 py-10 text-center md:px-12 md:py-14">
+            <h2 className="mx-auto max-w-3xl font-display text-2xl font-bold leading-tight text-foreground sm:text-3xl">
+              Votre imprimerie en ligne pour tous vos supports professionnels
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-[0.975rem] leading-relaxed text-muted-foreground">
+              J2L Print accompagne les entreprises, commerces, associations et collectivités dans la
+              création de supports imprimés, signalétiques et publicitaires. Demandez un devis
+              personnalisé selon vos quantités, formats, finitions et délais.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+              <Button
+                asChild
+                className="rounded-2xl bg-primary px-7 py-6 text-base font-bold text-primary-foreground transition-all duration-300 hover:scale-105 hover:brightness-95"
+              >
+                <Link to="/#devis">
+                  Demander un devis <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-2xl border-border px-7 py-6 text-base font-semibold"
+              >
+                <Link to="/products">Voir le catalogue</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── SERVICES ─── */}
       <section id="services" className="py-8">
+
         <div className="container">
           <h2 className="font-display text-2xl font-bold text-foreground text-center mb-8">
             Nos services
