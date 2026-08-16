@@ -47,6 +47,9 @@ export default function Index() {
   const { toast } = useToast();
   const devisFormRef = useRef<HTMLFormElement>(null);
   const callbackFormRef = useRef<HTMLFormElement>(null);
+  // Verrous d'envoi en cours (anti double soumission / double e-mail).
+  const devisSendingRef = useRef(false);
+  const callbackSendingRef = useRef(false);
 
   useSEO({
     title: "J2L Print – Imprimerie en ligne | Impression & supports publicitaires",
@@ -100,6 +103,7 @@ export default function Index() {
         console.error("Notification devis non envoyée:", mailErr);
       }
     }
+    devisSendingRef.current = false;
     setDevisLoading(false);
     if (error) {
       toast({ title: "Erreur", description: "Impossible d'envoyer la demande. Veuillez réessayer.", variant: "destructive" });
@@ -111,6 +115,8 @@ export default function Index() {
 
   const handleCallbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (callbackSendingRef.current) return;
+    callbackSendingRef.current = true;
     setCallbackLoading(true);
     const form = callbackFormRef.current!;
     const formData = new FormData(form);
@@ -146,6 +152,7 @@ export default function Index() {
         console.error("Notification rappel non envoyée:", mailErr);
       }
     }
+    callbackSendingRef.current = false;
     setCallbackLoading(false);
     if (error) {
       toast({ title: "Erreur", description: "Impossible d'envoyer la demande. Veuillez réessayer.", variant: "destructive" });
