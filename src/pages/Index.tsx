@@ -238,85 +238,117 @@ export default function Index() {
                 </Link>
               </Button>
 
-              {/* Visuels produits réels — version mobile / tablette */}
+              {/* Visuels produits réels — version mobile / tablette (cliquables) */}
               <div className="mt-8 grid w-full grid-cols-3 gap-3 lg:hidden">
-                {["brochures-catalogues", "cartes-de-visite", "affiches-posters"].map((key, i) => (
-                  <figure key={key} className="overflow-hidden rounded-2xl border border-border shadow-lg">
+                {heroTiles.slice(0, 3).map((t, i) => (
+                  <Link
+                    key={t.key}
+                    to={t.to}
+                    aria-label={t.label}
+                    className="group overflow-hidden rounded-2xl border border-border shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  >
                     <img
-                      src={cdnImage(catalogVisuals[key].url, 300, 300)}
-                      alt={catalogVisuals[key].alt}
+                      src={cdnImage(catalogVisuals[t.key].url, 300, 300)}
+                      alt={`${t.label} — ${catalogVisuals[t.key].alt}`}
                       width={300}
                       height={300}
                       loading={i === 0 ? "eager" : "lazy"}
                       decoding="async"
-                      className="aspect-square h-full w-full object-cover"
+                      className="aspect-square h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                  </figure>
+                  </Link>
                 ))}
               </div>
             </div>
 
 
-            {/* Right visual — composition de vrais produits imprimés du catalogue */}
+            {/* Right visual — composition de vrais produits imprimés du catalogue (cliquables) */}
             <div className="relative hidden h-[480px] lg:col-span-5 lg:block">
               <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 gap-3">
-                <figure className="relative col-span-2 row-span-2 overflow-hidden rounded-2xl border border-border shadow-2xl">
+                <Link
+                  to={heroTiles[0].to}
+                  aria-label={heroTiles[0].label}
+                  className="group relative col-span-2 row-span-2 overflow-hidden rounded-2xl border border-border shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
                   <img
                     src={cdnImage(catalogVisuals["brochures-catalogues"].url, 720, 720)}
                     srcSet={`${cdnImage(catalogVisuals["brochures-catalogues"].url, 720, 720)} 1x, ${cdnImage(catalogVisuals["brochures-catalogues"].url, 1080, 1080)} 2x`}
-                    alt={catalogVisuals["brochures-catalogues"].alt}
+                    alt={`${heroTiles[0].label} — ${catalogVisuals["brochures-catalogues"].alt}`}
                     width={720}
                     height={720}
                     loading="eager"
                     decoding="async"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
-                  <figcaption className="absolute bottom-3 left-4 text-sm font-semibold text-foreground">
-                    Brochures & catalogues
-                  </figcaption>
-                </figure>
+                  <span className="absolute bottom-3 left-4 inline-flex items-center gap-1 text-sm font-semibold text-foreground">
+                    {heroTiles[0].label}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </Link>
 
-                <figure className="relative overflow-hidden rounded-2xl border border-border shadow-xl">
+                <Link
+                  to={heroTiles[1].to}
+                  aria-label={heroTiles[1].label}
+                  className="group relative overflow-hidden rounded-2xl border border-border shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
                   <img
                     src={cdnImage(catalogVisuals["cartes-de-visite"].url, 400, 400)}
-                    alt={catalogVisuals["cartes-de-visite"].alt}
+                    alt={`${heroTiles[1].label} — ${catalogVisuals["cartes-de-visite"].alt}`}
                     width={400}
                     height={400}
                     loading="eager"
                     decoding="async"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                </figure>
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+                  <span className="absolute bottom-2 left-3 text-xs font-semibold text-foreground">
+                    {heroTiles[1].label}
+                  </span>
+                </Link>
 
-                <figure className="relative overflow-hidden rounded-2xl border border-border shadow-xl">
+                <Link
+                  to={heroTiles[2].to}
+                  aria-label={heroTiles[2].label}
+                  className="group relative overflow-hidden rounded-2xl border border-border shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
                   <img
                     src={cdnImage(catalogVisuals["affiches-posters"].url, 400, 400)}
-                    alt={catalogVisuals["affiches-posters"].alt}
+                    alt={`${heroTiles[2].label} — ${catalogVisuals["affiches-posters"].alt}`}
                     width={400}
                     height={400}
                     loading="lazy"
                     decoding="async"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                </figure>
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+                  <span className="absolute bottom-2 left-3 text-xs font-semibold text-foreground">
+                    {heroTiles[2].label}
+                  </span>
+                </Link>
 
-                <figure className="relative col-span-3 overflow-hidden rounded-2xl border border-border shadow-xl">
+                <Link
+                  to={heroTiles[3].to}
+                  aria-label={heroTiles[3].label}
+                  className="group relative col-span-3 overflow-hidden rounded-2xl border border-border shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
                   <img
                     src={cdnImage(catalogVisuals["flyers-depliants"].url, 900, 340)}
-                    alt={catalogVisuals["flyers-depliants"].alt}
+                    alt={`${heroTiles[3].label} — ${catalogVisuals["flyers-depliants"].alt}`}
                     width={900}
                     height={340}
                     loading="lazy"
                     decoding="async"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-background/70 to-transparent" />
-                  <figcaption className="absolute bottom-3 right-4 text-sm font-semibold text-foreground">
-                    Flyers & dépliants
-                  </figcaption>
-                </figure>
+                  <span className="absolute bottom-3 right-4 inline-flex items-center gap-1 text-sm font-semibold text-foreground">
+                    {heroTiles[3].label}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </Link>
               </div>
+
 
               {/* Floating accent card */}
               <div className="absolute -bottom-6 -left-12 max-w-[280px] rounded-2xl border border-border bg-foreground/5 p-6 shadow-2xl backdrop-blur-xl">
