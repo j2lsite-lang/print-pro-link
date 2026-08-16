@@ -186,7 +186,7 @@ export default function CityPage() {
             d'<Link to="/grand-format" className="text-primary hover:underline">affiches et bâches grand format</Link>, 
             de <Link to="/supports-publicitaires" className="text-primary hover:underline">roll-ups et signalétique pour salons</Link> ou 
             d'<Link to="/personnalisation" className="text-primary hover:underline">objets publicitaires personnalisés</Link>, 
-            nous produisons et expédions vos commandes directement à {city.name}.
+            nous préparons et expédions vos commandes directement à {city.name}.
           </p>
 
           <h3 className="font-display text-lg font-semibold text-foreground pt-2">
