@@ -1,6 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors'
-import { SMTPClient } from 'https://deno.land/x/denomailer@1.6.0/mod.ts'
+import nodemailer from 'npm:nodemailer@6.9.16'
 
 // ── Hostinger SMTP configuration (values from Lovable secrets) ──
 const SMTP_HOST = Deno.env.get('SMTP_HOST') || 'smtp.hostinger.com'
@@ -398,18 +398,16 @@ Deno.serve(async (req) => {
     })
   }
 
-  const client = new SMTPClient({
-    connection: {
-      hostname: SMTP_HOST,
-      port: SMTP_PORT,
-      tls: SMTP_PORT === 465,
-      auth: { username: SMTP_USER, password: SMTP_PASSWORD },
-    },
+  const client = nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: { user: SMTP_USER, pass: SMTP_PASSWORD },
   })
 
   try {
     // 1) Notification interne → contact@j2lprint.fr, Reply-To = e-mail client
-    await client.send({
+    await client.sendMail({
       from: `${FROM_NAME} <${EMAIL_FROM}>`,
       to: EMAIL_TO,
       replyTo: payload.email || undefined,
@@ -422,7 +420,7 @@ Deno.serve(async (req) => {
     if (payload.email) {
       const firstName =
         payload.firstName || (payload.name ? payload.name.split(' ')[0] : '')
-      await client.send({
+      await client.sendMail({
         from: `${FROM_NAME} <${EMAIL_FROM}>`,
         to: payload.email,
         replyTo: EMAIL_TO,
@@ -432,7 +430,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    await client.close()
+    client.close()
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
@@ -441,7 +439,7 @@ Deno.serve(async (req) => {
   } catch (e) {
     console.error('SMTP send failed:', e)
     try {
-      await client.close()
+      client.close()
     } catch (_) {
       // ignore close error
     }
