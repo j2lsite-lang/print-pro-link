@@ -271,7 +271,20 @@ async function resolvePrice(
   const props = product.properties || product.configurableProperties || [];
   const excludes = product.excludes || [];
   const findProp = (slug: string) => props.find((p) => p.slug === slug);
-  let { options, copies } = resolveLocally(props, copiesProp, { ...baseOptions }, copies0, excludes, protectedKeys);
+  // Pré-remplissage : toute propriété REQUISE non encore valorisée reçoit sa
+  // vraie valeur Print.com AVANT le premier appel. Évite un premier appel
+  // get-price rejeté en 400 (« missing required property ») dans la console.
+  // Aucune valeur inventée : uniquement des options réelles de l'API.
+  const prefilled: Record<string, any> = { ...baseOptions };
+  for (const prop of props) {
+    if (!prop.required) continue;
+    if (prop.slug === "copies") continue;
+    if (prefilled[prop.slug] !== undefined && prefilled[prop.slug] !== "") continue;
+    const v = realOptionValue(prop);
+    if (v !== undefined) prefilled[prop.slug] = v;
+  }
+
+  let { options, copies } = resolveLocally(props, copiesProp, prefilled, copies0, excludes, protectedKeys);
   const seen = new Set<string>();
   let lastError = "";
 
