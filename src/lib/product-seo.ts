@@ -151,7 +151,7 @@ function buildGenericData(productName: string): ProductSEOData {
     ],
     whyChoose: [
       "Configuration en ligne et prix immédiat",
-      "Fabrication professionnelle sur mesure",
+      "Impression professionnelle sur mesure",
       "Vérification de vos fichiers avant impression",
       "Devis gratuit et livraison partout en France",
     ],
