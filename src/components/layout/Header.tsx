@@ -103,13 +103,14 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/82 backdrop-blur-lg">
-      <div className="container flex h-16 items-center justify-between gap-2">
+      <div className="container flex h-20 items-center justify-between gap-2">
         <Link to="/" className="flex items-center gap-3 shrink-0">
-          <img src={logoJ2L} alt="J2L Print" className="h-10 w-10 rounded-xl object-contain bg-primary/10 p-0.5" />
-          <span className="font-display text-base font-bold tracking-wide text-foreground hidden sm:inline">
+          <img src={logoJ2L} alt="J2L Print" width={512} height={512} className="h-12 w-auto md:h-14 object-contain" />
+          <span className="font-display text-lg md:text-xl font-bold tracking-wide text-foreground hidden sm:inline">
             J2L Print
           </span>
         </Link>
+
 
         <div ref={searchRef} className="relative hidden md:block flex-1 max-w-md mx-4">
           <form onSubmit={handleSubmit}>
