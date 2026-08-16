@@ -7,6 +7,8 @@ import Seo from "@/components/Seo";
 import pages from "@/seo/generated/pages.json";
 import type { SeoPage } from "@/seo/types";
 import NotFound from "@/pages/NotFound";
+import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
+import { visualForPath } from "@/seo/data/catalog-visuals";
 
 const PAGES = pages as unknown as Record<string, SeoPage>;
 
