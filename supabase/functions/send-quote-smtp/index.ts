@@ -406,8 +406,16 @@ Deno.serve(async (req) => {
   })
 
   try {
+    const sendMail = (message: Parameters<typeof client.sendMail>[0]) =>
+      new Promise<void>((resolve, reject) => {
+        client.sendMail(message, (error) => {
+          if (error) reject(error)
+          else resolve()
+        })
+      })
+
     // 1) Notification interne → contact@j2lprint.fr, Reply-To = e-mail client
-    await client.sendMail({
+    await sendMail({
       from: `${FROM_NAME} <${EMAIL_FROM}>`,
       to: EMAIL_TO,
       replyTo: payload.email || undefined,
@@ -420,7 +428,7 @@ Deno.serve(async (req) => {
     if (payload.email) {
       const firstName =
         payload.firstName || (payload.name ? payload.name.split(' ')[0] : '')
-      await client.sendMail({
+      await sendMail({
         from: `${FROM_NAME} <${EMAIL_FROM}>`,
         to: payload.email,
         replyTo: EMAIL_TO,
