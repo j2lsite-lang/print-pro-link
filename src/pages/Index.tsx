@@ -237,7 +237,25 @@ export default function Index() {
                   Voir le catalogue <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
+
+              {/* Visuels produits réels — version mobile / tablette */}
+              <div className="mt-8 grid w-full grid-cols-3 gap-3 lg:hidden">
+                {["brochures-catalogues", "cartes-de-visite", "affiches-posters"].map((key, i) => (
+                  <figure key={key} className="overflow-hidden rounded-2xl border border-border shadow-lg">
+                    <img
+                      src={cdnImage(catalogVisuals[key].url, 300, 300)}
+                      alt={catalogVisuals[key].alt}
+                      width={300}
+                      height={300}
+                      loading={i === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                      className="aspect-square h-full w-full object-cover"
+                    />
+                  </figure>
+                ))}
+              </div>
             </div>
+
 
             {/* Right visual — composition de vrais produits imprimés du catalogue */}
             <div className="relative hidden h-[480px] lg:col-span-5 lg:block">
