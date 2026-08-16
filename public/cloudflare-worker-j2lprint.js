@@ -53,6 +53,15 @@ const ORIGIN_HOST = "origin.j2lprint.fr";
  const PRODUCT_SLUG_REDIRECTS = {
    "election-posters-fr": "posters",
  };
+
+// Communes présentes en double dans la base géographique : une seule URL
+// indexable, l'autre est redirigée en 301. Synchronisé par generate.ts.
+const CITY_SLUG_REDIRECTS = {
+  "les-sables-d-olonne": "les-sables-dolonne",
+  "mayenne-ville": "mayenne",
+  "saint-paul-reunion": "saint-paul",
+  "saint-pierre-reunion": "saint-pierre"
+};
 // LOVABLE_ORIGIN_HOST retiré : provoquait une boucle de redirection (voir 7.2).
 // const LOVABLE_ORIGIN_HOST = "print-pro-link.lovable.app";
 
@@ -63,114 +72,11 @@ const XML_TTL   = 3600;      // 1 heure    — sitemaps & robots.txt
 /* ----------------------------------------------------------------------------
  * 2. Référentiel géographique national
  * ------------------------------------------------------------------------- */
-const CITIES = [
-  "abbeville", "agde", "agen", "aix-en-provence", "aix-les-bains", "ajaccio", "albert", "albertville", "albi",
-  "alencon", "ales", "algrange", "allonnes", "altkirch", "amberieu-en-bugey", "amboise", "amiens",
-  "amneville", "angers", "anglet", "angouleme", "annecy", "annemasse", "annonay", "antibes", "antony",
-  "arcachon", "argentan", "argenteuil", "arles", "arras", "asnieres-sur-seine", "aubagne", "aubenas",
-  "aubervilliers", "aubusson", "auch", "aulnay-sous-bois", "auray", "aureilhan", "aurillac", "autun",
-  "auxerre", "avignon", "avrille", "ay-champagne", "aytre", "baccarat", "bagneres-de-bigorre",
-  "bagnols-sur-ceze", "baie-mahault", "bains", "bains-les-bains", "bandol", "bar-le-duc", "bar-sur-aube",
-  "bar-sur-seine", "barr", "basse-terre", "bastia", "bayeux", "bayonne", "beaucaire", "beaucourt", "beaune",
-  "beauvais", "behren-les-forbach", "belfort", "benfeld", "bergerac", "besancon", "betheny", "beziers",
-  "biarritz", "biguglia", "biscarrosse", "bischheim", "bischwiller", "bitche", "blagnac", "blois", "bobigny",
-  "bogny-sur-meuse", "bordeaux", "borgo", "boulay-moselle", "bouligny", "boulogne-billancourt",
-  "boulogne-sur-mer", "bourg-en-bresse", "bourges", "bourgoin-jallieu", "bressuire", "brest", "briancon",
-  "briey", "brioude", "brive-la-gaillarde", "brumath", "brunstatt-didenheim", "bruyeres", "bulgneville",
-  "buxerolles", "caen", "cagnes-sur-mer", "cahors", "calais", "caluire-et-cuire", "calvi",
-  "canet-en-roussillon", "cannes", "capavenir-vosges", "carcassonne", "carpentras", "castelnaudary",
-  "castelsarrasin", "castres", "cavaillon", "cayenne", "ceret", "cergy", "cernay", "cesson-sevigne",
-  "challans", "chalon-sur-saone", "chalons-en-champagne", "chamalieres", "chambery", "chamonix-mont-blanc",
-  "champagney", "champigneulles", "champigny-sur-marne", "charleville-mezieres", "charmes", "chartres",
-  "chateau-gontier", "chateau-gontier-sur-mayenne", "chateau-salins", "chateaudun", "chateauroux",
-  "chatel-sur-moselle", "chatellerault", "chatenois", "chaumont", "chelles", "chenove", "cherbourg",
-  "cherbourg-en-cotentin", "chevigny-saint-sauveur", "chinon", "cholet", "clermont-ferrand", "clichy",
-  "clouange", "cluses", "cognac", "colmar", "colombes", "colomiers", "commercy", "compiegne", "concarneau",
-  "condom", "confolens", "contrexeville", "corbeil-essonnes", "corcieux", "cormontreuil", "cornimont",
-  "corte", "cosne-cours-sur-loire", "coulaines", "courbevoie", "cournon-d-auvergne", "couzeix", "creil",
-  "creteil", "creutzwald", "darney", "dax", "decize", "delle", "descartes", "dieppe", "dieuze",
-  "digne-les-bains", "dijon", "dinan", "dole", "dombasle-sur-meurthe", "dompaire", "douai", "draguignan",
-  "drancy", "dreux", "dunkerque", "dzaoudzi", "echirolles", "eckbolsheim", "eloyes", "embrun", "ensisheim",
-  "epernay", "epinal", "epinay-sur-seine", "erstein", "etain", "evreux", "evry-courcouronnes", "fameck",
-  "faulquemont", "fecamp", "figeac", "firminy", "fismes", "flers", "fleurance", "fleury-les-aubrais",
-  "florac", "florange", "foix", "forbach", "fort-de-france", "fougeres", "fraize", "frejus",
-  "freyming-merlebach", "frouard", "fumay", "gaillac", "gap", "geispolsheim", "gerardmer", "givet", "golbey",
-  "gourdon", "granges-aumontzey", "granville", "grasse", "gray", "grenoble", "guebwiller", "guenange",
-  "gueret", "guilherand-granges", "habsheim", "hagondange", "haguenau", "hayange", "heillecourt", "hericourt",
-  "herouville-saint-clair", "hoenheim", "homecourt", "honfleur", "hyeres", "illkirch-graffenstaden",
-  "illzach", "isle", "issoire", "issoudun", "ivry-sur-seine", "jarville-la-malgrange", "joeuf", "joigny",
-  "joinville", "joue-les-tours", "jussey", "kingersheim", "koungou", "kourou", "l-isle-jourdain",
-  "la-baule-escoublac", "la-bresse", "la-chapelle-saint-luc", "la-defense", "la-fleche", "la-roche-sur-yon",
-  "la-rochelle", "la-seyne-sur-mer", "la-souterraine", "lamarche", "lamballe-armor", "lanester", "langres",
-  "lannion", "laon", "laval", "laxou", "le-ban-saint-martin", "le-blanc", "le-creusot", "le-gosier",
-  "le-havre", "le-lamentin", "le-mans", "le-puy-en-velay", "le-robert", "le-tampon", "le-thillot", "le-tholy",
-  "lens", "les-abymes", "les-ponts-de-ce", "les-sables-d-olonne", "les-sables-dolonne", "levallois-perret",
-  "libourne", "lievin", "liffol-le-grand", "ligny-en-barrois", "lille", "limoges", "lingolsheim", "lisieux",
-  "liverdun", "longwy", "lons-le-saunier", "lorient", "loudun", "lourdes", "louviers", "luce", "ludres",
-  "lunel", "luneville", "lure", "lutterbach", "luxeuil-les-bains", "lyon", "macon", "maizieres-les-metz",
-  "mamoudzou", "manosque", "mantes-la-jolie", "marange-silvange", "marly", "marmande", "marnay", "marseille",
-  "martigues", "marvejols", "massy", "matoury", "mauriac", "maxeville", "mayenne", "mayenne-ville", "meaux",
-  "melun", "mende", "merignac", "metz", "millau", "mirecourt", "moissac", "molsheim", "monistrol-sur-loire",
-  "mont-de-marsan", "mont-saint-martin", "montargis", "montauban", "montbeliard", "montbrison", "montelimar",
-  "monthureux-sur-saone", "montigny-les-metz", "montlucon", "montpellier", "montreuil", "morhange", "morlaix",
-  "moulins", "mourmelon-le-grand", "moyeuvre-grande", "mulhouse", "mundolsheim", "munster", "muret", "nancy",
-  "nanterre", "nantes", "narbonne", "neufchateau", "neuilly-sur-seine", "neuves-maisons", "nevers", "nice",
-  "nimes", "niort", "nogent-haute-marne", "nogent-sur-seine", "noisy-le-grand", "nomexy", "nouzonville",
-  "obernai", "olivet", "orange", "orleans", "ostwald", "oyonnax", "pamiers", "panazol", "paris", "parthenay",
-  "pau", "perigueux", "perpignan", "pessac", "petite-rosselle", "pfastatt", "phalsbourg", "plerin",
-  "plombieres-les-bains", "pointe-a-pitre", "poissy", "poitiers", "pompey", "pont-a-mousson",
-  "pont-sainte-marie", "pontarlier", "pontault-combault", "pontivy", "pontoise", "port-sur-saone",
-  "porto-vecchio", "privas", "propriano", "provencheres-et-colroy", "quimper", "rambervillers",
-  "raon-l-etape", "reichshoffen", "reims", "remiremont", "rennes", "rethel", "revin", "reze", "ribeauville",
-  "riedisheim", "riom", "rioz", "rixheim", "roanne", "rochefort", "rodez", "romans-sur-isere", "rombas",
-  "romilly-sur-seine", "romorantin-lanthenay", "roubaix", "rouen", "royan", "rueil-malmaison",
-  "sable-sur-sarthe", "saint-amand-montrond", "saint-andre-les-vergers", "saint-avold", "saint-brieuc",
-  "saint-chamond", "saint-chely-d-apcher", "saint-claude", "saint-cyr-sur-loire", "saint-denis",
-  "saint-denis-reunion", "saint-die-des-vosges", "saint-dizier", "saint-esteve", "saint-etienne",
-  "saint-etienne-du-rouvray", "saint-flour", "saint-germain-en-laye", "saint-girons", "saint-herblain",
-  "saint-jean-de-la-ruelle", "saint-junien", "saint-laurent-du-maroni", "saint-lo", "saint-louis",
-  "saint-loup-sur-semouse", "saint-malo", "saint-martin-d-heres", "saint-maur-des-fosses", "saint-max",
-  "saint-mihiel", "saint-nazaire", "saint-nicolas-de-port", "saint-paul", "saint-paul-reunion",
-  "saint-pierre", "saint-pierre-des-corps", "saint-pierre-reunion", "saint-priest", "saint-quentin",
-  "saint-raphael", "saint-sebastien-sur-loire", "sainte-marie-aux-mines", "sainte-menehould", "sainte-savine",
-  "saintes", "salon-de-provence", "sanary-sur-mer", "sarcelles", "sarlat-la-caneda", "sarrebourg",
-  "sarreguemines", "sartene", "sartrouville", "saulxures-sur-moselotte", "saumur", "sausheim", "saverne",
-  "savigny-sur-orge", "schiltigheim", "schoelcher", "sedan", "selestat", "senlis", "senones", "sens", "sete",
-  "sezanne", "sisteron", "soissons", "sotteville-les-rouen", "souffelweyersheim", "soultz-haut-rhin",
-  "soyaux", "stenay", "stiring-wendel", "strasbourg", "talange", "talant", "talence", "tarbes", "thann",
-  "thaon-les-vosges", "thionville", "thonon-les-bains", "thouars", "tinqueux", "tomblaine", "toul", "toulon",
-  "toulouse", "tourcoing", "tournefeuille", "tours", "troyes", "tulle", "uckange", "ussel", "vagney",
-  "valdoie", "valence", "valenciennes", "vandoeuvre-les-nancy", "vannes", "varennes-vauzelles", "vaucouleurs",
-  "vaulx-en-velin", "vendenheim", "vendome", "venissieux", "ventron", "verdun", "vernon", "versailles",
-  "vesoul", "vichy", "vienne", "vierzon", "villefranche-de-rouergue", "villenave-d-ornon",
-  "villeneuve-d-ascq", "villeneuve-les-avignon", "villeneuve-sur-lot", "villers-les-nancy", "villerupt",
-  "villeurbanne", "vincey", "vitre", "vitry-le-francois", "vitry-sur-seine", "vittel", "voiron", "vouziers",
-  "vrigne-aux-bois", "wasselonne", "wassy", "wintzenheim", "wissembourg", "wittelsheim", "wittenheim",
-  "woippy", "xertigny", "yssingeaux", "yutz"
-];
+const CITIES = ["abbeville","agde","agen","aix-en-provence","aix-les-bains","ajaccio","albert","albertville","albi","alencon","ales","algrange","allonnes","altkirch","amberieu-en-bugey","amboise","amiens","amneville","angers","anglet","angouleme","annecy","annemasse","annonay","antibes","antony","arcachon","argentan","argenteuil","arles","arras","asnieres-sur-seine","aubagne","aubenas","aubervilliers","aubusson","auch","aulnay-sous-bois","auray","aureilhan","aurillac","autun","auxerre","avignon","avrille","ay-champagne","aytre","baccarat","bagneres-de-bigorre","bagnols-sur-ceze","baie-mahault","bains","bains-les-bains","bandol","bar-le-duc","bar-sur-aube","bar-sur-seine","barr","basse-terre","bastia","bayeux","bayonne","beaucaire","beaucourt","beaune","beauvais","behren-les-forbach","belfort","benfeld","bergerac","besancon","betheny","beziers","biarritz","biguglia","biscarrosse","bischheim","bischwiller","bitche","blagnac","blois","bobigny","bogny-sur-meuse","bordeaux","borgo","boulay-moselle","bouligny","boulogne-billancourt","boulogne-sur-mer","bourg-en-bresse","bourges","bourgoin-jallieu","bressuire","brest","briancon","briey","brioude","brive-la-gaillarde","brumath","brunstatt-didenheim","bruyeres","bulgneville","buxerolles","caen","cagnes-sur-mer","cahors","calais","caluire-et-cuire","calvi","canet-en-roussillon","cannes","capavenir-vosges","carcassonne","carpentras","castelnaudary","castelsarrasin","castres","cavaillon","cayenne","ceret","cergy","cernay","cesson-sevigne","challans","chalon-sur-saone","chalons-en-champagne","chamalieres","chambery","chamonix-mont-blanc","champagney","champigneulles","champigny-sur-marne","charleville-mezieres","charmes","chartres","chateau-gontier","chateau-gontier-sur-mayenne","chateau-salins","chateaudun","chateauroux","chatel-sur-moselle","chatellerault","chatenois","chaumont","chelles","chenove","cherbourg","cherbourg-en-cotentin","chevigny-saint-sauveur","chinon","cholet","clermont-ferrand","clichy","clouange","cluses","cognac","colmar","colombes","colomiers","commercy","compiegne","concarneau","condom","confolens","contrexeville","corbeil-essonnes","corcieux","cormontreuil","cornimont","corte","cosne-cours-sur-loire","coulaines","courbevoie","cournon-d-auvergne","couzeix","creil","creteil","creutzwald","darney","dax","decize","delle","descartes","dieppe","dieuze","digne-les-bains","dijon","dinan","dole","dombasle-sur-meurthe","dompaire","douai","draguignan","drancy","dreux","dunkerque","dzaoudzi","echirolles","eckbolsheim","eloyes","embrun","ensisheim","epernay","epinal","epinay-sur-seine","erstein","etain","evreux","evry-courcouronnes","fameck","faulquemont","fecamp","figeac","firminy","fismes","flers","fleurance","fleury-les-aubrais","florac","florange","foix","forbach","fort-de-france","fougeres","fraize","frejus","freyming-merlebach","frouard","fumay","gaillac","gap","geispolsheim","gerardmer","givet","golbey","gourdon","granges-aumontzey","granville","grasse","gray","grenoble","guebwiller","guenange","gueret","guilherand-granges","habsheim","hagondange","haguenau","hayange","heillecourt","hericourt","herouville-saint-clair","hoenheim","homecourt","honfleur","hyeres","illkirch-graffenstaden","illzach","isle","issoire","issoudun","ivry-sur-seine","jarville-la-malgrange","joeuf","joigny","joinville","joue-les-tours","jussey","kingersheim","koungou","kourou","l-isle-jourdain","la-baule-escoublac","la-bresse","la-chapelle-saint-luc","la-defense","la-fleche","la-roche-sur-yon","la-rochelle","la-seyne-sur-mer","la-souterraine","lamarche","lamballe-armor","lanester","langres","lannion","laon","laval","laxou","le-ban-saint-martin","le-blanc","le-creusot","le-gosier","le-havre","le-lamentin","le-mans","le-puy-en-velay","le-robert","le-tampon","le-thillot","le-tholy","lens","les-abymes","les-ponts-de-ce","les-sables-dolonne","levallois-perret","libourne","lievin","liffol-le-grand","ligny-en-barrois","lille","limoges","lingolsheim","lisieux","liverdun","longwy","lons-le-saunier","lorient","loudun","lourdes","louviers","luce","ludres","lunel","luneville","lure","lutterbach","luxeuil-les-bains","lyon","macon","maizieres-les-metz","mamoudzou","manosque","mantes-la-jolie","marange-silvange","marly","marmande","marnay","marseille","martigues","marvejols","massy","matoury","mauriac","maxeville","mayenne","meaux","melun","mende","merignac","metz","millau","mirecourt","moissac","molsheim","monistrol-sur-loire","mont-de-marsan","mont-saint-martin","montargis","montauban","montbeliard","montbrison","montelimar","monthureux-sur-saone","montigny-les-metz","montlucon","montpellier","montreuil","morhange","morlaix","moulins","mourmelon-le-grand","moyeuvre-grande","mulhouse","mundolsheim","munster","muret","nancy","nanterre","nantes","narbonne","neufchateau","neuilly-sur-seine","neuves-maisons","nevers","nice","nimes","niort","nogent-haute-marne","nogent-sur-seine","noisy-le-grand","nomexy","nouzonville","obernai","olivet","orange","orleans","ostwald","oyonnax","pamiers","panazol","paris","parthenay","pau","perigueux","perpignan","pessac","petite-rosselle","pfastatt","phalsbourg","plerin","plombieres-les-bains","pointe-a-pitre","poissy","poitiers","pompey","pont-a-mousson","pont-sainte-marie","pontarlier","pontault-combault","pontivy","pontoise","port-sur-saone","porto-vecchio","privas","propriano","provencheres-et-colroy","quimper","rambervillers","raon-l-etape","reichshoffen","reims","remiremont","rennes","rethel","revin","reze","ribeauville","riedisheim","riom","rioz","rixheim","roanne","rochefort","rodez","romans-sur-isere","rombas","romilly-sur-seine","romorantin-lanthenay","roubaix","rouen","royan","rueil-malmaison","sable-sur-sarthe","saint-amand-montrond","saint-andre-les-vergers","saint-avold","saint-brieuc","saint-chamond","saint-chely-d-apcher","saint-claude","saint-cyr-sur-loire","saint-denis","saint-denis-reunion","saint-die-des-vosges","saint-dizier","saint-esteve","saint-etienne","saint-etienne-du-rouvray","saint-flour","saint-germain-en-laye","saint-girons","saint-herblain","saint-jean-de-la-ruelle","saint-junien","saint-laurent-du-maroni","saint-lo","saint-louis","saint-loup-sur-semouse","saint-malo","saint-martin-d-heres","saint-maur-des-fosses","saint-max","saint-mihiel","saint-nazaire","saint-nicolas-de-port","saint-paul","saint-pierre","saint-pierre-des-corps","saint-priest","saint-quentin","saint-raphael","saint-sebastien-sur-loire","sainte-marie-aux-mines","sainte-menehould","sainte-savine","saintes","salon-de-provence","sanary-sur-mer","sarcelles","sarlat-la-caneda","sarrebourg","sarreguemines","sartene","sartrouville","saulxures-sur-moselotte","saumur","sausheim","saverne","savigny-sur-orge","schiltigheim","schoelcher","sedan","selestat","senlis","senones","sens","sete","sezanne","sisteron","soissons","sotteville-les-rouen","souffelweyersheim","soultz-haut-rhin","soyaux","stenay","stiring-wendel","strasbourg","talange","talant","talence","tarbes","thann","thaon-les-vosges","thionville","thonon-les-bains","thouars","tinqueux","tomblaine","toul","toulon","toulouse","tourcoing","tournefeuille","tours","troyes","tulle","uckange","ussel","vagney","valdoie","valence","valenciennes","vandoeuvre-les-nancy","vannes","varennes-vauzelles","vaucouleurs","vaulx-en-velin","vendenheim","vendome","venissieux","ventron","verdun","vernon","versailles","vesoul","vichy","vienne","vierzon","villefranche-de-rouergue","villenave-d-ornon","villeneuve-d-ascq","villeneuve-les-avignon","villeneuve-sur-lot","villers-les-nancy","villerupt","villeurbanne","vincey","vitre","vitry-le-francois","vitry-sur-seine","vittel","voiron","vouziers","vrigne-aux-bois","wasselonne","wassy","wintzenheim","wissembourg","wittelsheim","wittenheim","woippy","xertigny","yssingeaux","yutz"];
 
-const DEPARTMENTS = [
-  "ain", "aisne", "allier", "alpes-de-haute-provence", "alpes-maritimes", "ardeche", "ardennes", "ariege",
-  "aube", "aude", "aveyron", "bas-rhin", "bouches-du-rhone", "calvados", "cantal", "charente",
-  "charente-maritime", "cher", "correze", "corse-du-sud", "cote-d-or", "cotes-d-armor", "creuse",
-  "deux-sevres", "dordogne", "doubs", "drome", "essonne", "eure", "eure-et-loir", "finistere", "gard", "gers",
-  "gironde", "guadeloupe", "guyane", "haut-rhin", "haute-corse", "haute-garonne", "haute-loire",
-  "haute-marne", "haute-saone", "haute-savoie", "haute-vienne", "hautes-alpes", "hautes-pyrenees",
-  "hauts-de-seine", "herault", "ille-et-vilaine", "indre", "indre-et-loire", "isere", "jura", "la-reunion",
-  "landes", "loir-et-cher", "loire", "loire-atlantique", "loiret", "lot", "lot-et-garonne", "lozere",
-  "maine-et-loire", "manche", "marne", "martinique", "mayenne", "mayotte", "meurthe-et-moselle", "meuse",
-  "morbihan", "moselle", "nievre", "nord", "oise", "orne", "paris", "pas-de-calais", "puy-de-dome",
-  "pyrenees-atlantiques", "pyrenees-orientales", "rhone", "saone-et-loire", "sarthe", "savoie",
-  "seine-et-marne", "seine-maritime", "seine-saint-denis", "somme", "tarn", "tarn-et-garonne",
-  "territoire-de-belfort", "val-d-oise", "val-de-marne", "var", "vaucluse", "vendee", "vienne", "vosges",
-  "yonne", "yvelines"
-];
+const DEPARTMENTS = ["ain","aisne","allier","alpes-de-haute-provence","alpes-maritimes","ardeche","ardennes","ariege","aube","aude","aveyron","bas-rhin","bouches-du-rhone","calvados","cantal","charente","charente-maritime","cher","correze","corse-du-sud","cote-d-or","cotes-d-armor","creuse","deux-sevres","dordogne","doubs","drome","essonne","eure","eure-et-loir","finistere","gard","gers","gironde","guadeloupe","guyane","haut-rhin","haute-corse","haute-garonne","haute-loire","haute-marne","haute-saone","haute-savoie","haute-vienne","hautes-alpes","hautes-pyrenees","hauts-de-seine","herault","ille-et-vilaine","indre","indre-et-loire","isere","jura","la-reunion","landes","loir-et-cher","loire","loire-atlantique","loiret","lot","lot-et-garonne","lozere","maine-et-loire","manche","marne","martinique","mayenne","mayotte","meurthe-et-moselle","meuse","morbihan","moselle","nievre","nord","oise","orne","paris","pas-de-calais","puy-de-dome","pyrenees-atlantiques","pyrenees-orientales","rhone","saone-et-loire","sarthe","savoie","seine-et-marne","seine-maritime","seine-saint-denis","somme","tarn","tarn-et-garonne","territoire-de-belfort","val-d-oise","val-de-marne","var","vaucluse","vendee","vienne","vosges","yonne","yvelines"];
 
-const REGIONS = [
-  "auvergne-rhone-alpes", "bourgogne-franche-comte", "bretagne", "centre-val-de-loire", "corse", "grand-est",
-  "guadeloupe", "guyane", "hauts-de-france", "ile-de-france", "la-reunion", "martinique", "mayotte",
-  "normandie", "nouvelle-aquitaine", "occitanie", "pays-de-la-loire", "provence-alpes-cote-d-azur"
-];
+const REGIONS = ["auvergne-rhone-alpes","bourgogne-franche-comte","bretagne","centre-val-de-loire","corse","grand-est","guadeloupe","guyane","hauts-de-france","ile-de-france","la-reunion","martinique","mayotte","normandie","nouvelle-aquitaine","occitanie","pays-de-la-loire","provence-alpes-cote-d-azur"];
 
 // Thèmes / collections (slugs des pages /themes/:slug). Synchronisé par
 // scripts/seo/generate.ts avec les thèmes prérendus.
@@ -337,6 +243,12 @@ function computeLegacyRedirect(pathname) {
   if (parts[0] === "products" && parts.length === 2) {
     const target = PRODUCT_SLUG_REDIRECTS[parts[1]];
     if (target && PRODUCT_SLUGS.has(target)) return `/products/${target}`;
+  }
+
+  // Commune dupliquée (deux slugs pour la même ville) -> URL canonique.
+  if (parts[0] === "ville" && parts.length === 2) {
+    const target = CITY_SLUG_REDIRECTS[parts[1]];
+    if (target) return `/ville/${target}`;
   }
 
   // Ancien préfixe catégorie en anglais/pluriel -> /categorie/...
