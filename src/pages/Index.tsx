@@ -239,36 +239,65 @@ export default function Index() {
               </Button>
             </div>
 
-            {/* Right visual */}
+            {/* Right visual — composition de vrais produits imprimés du catalogue */}
             <div className="relative hidden h-[480px] lg:col-span-5 lg:block">
-              <div className="absolute inset-0 overflow-hidden rounded-2xl border border-border bg-gradient-to-tr from-primary/20 to-transparent shadow-2xl">
-                {/* Dotted print texture */}
-                <div
-                  className="absolute inset-0 opacity-20 mix-blend-overlay"
-                  style={{
-                    backgroundImage: "radial-gradient(hsl(var(--primary)) 1px, transparent 1px)",
-                    backgroundSize: "16px 16px",
-                  }}
-                />
-                <div className="absolute inset-12 flex flex-col justify-between">
-                  <div className="space-y-4">
-                    <div className="h-1.5 w-1/3 rounded-full bg-primary" />
-                    <div className="h-1.5 w-1/2 rounded-full bg-foreground/20" />
-                  </div>
-                  <div className="relative">
-                    <div className="-ml-8 select-none font-display text-[140px] font-bold leading-none text-foreground/5">
-                      CMYK
-                    </div>
-                    <div className="absolute bottom-0 right-0 p-8">
-                      <div className="flex gap-2">
-                        <span className="h-8 w-8 rounded-full opacity-60 mix-blend-screen" style={{ background: "#00FFFF" }} />
-                        <span className="h-8 w-8 rounded-full opacity-60 mix-blend-screen" style={{ background: "#FF00FF" }} />
-                        <span className="h-8 w-8 rounded-full opacity-60 mix-blend-screen" style={{ background: "#FFFF00" }} />
-                        <span className="h-8 w-8 rounded-full border border-border opacity-60 mix-blend-screen" style={{ background: "#000000" }} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 gap-3">
+                <figure className="relative col-span-2 row-span-2 overflow-hidden rounded-2xl border border-border shadow-2xl">
+                  <img
+                    src={cdnImage(catalogVisuals["brochures-catalogues"].url, 720, 720)}
+                    srcSet={`${cdnImage(catalogVisuals["brochures-catalogues"].url, 720, 720)} 1x, ${cdnImage(catalogVisuals["brochures-catalogues"].url, 1080, 1080)} 2x`}
+                    alt={catalogVisuals["brochures-catalogues"].alt}
+                    width={720}
+                    height={720}
+                    loading="eager"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+                  <figcaption className="absolute bottom-3 left-4 text-sm font-semibold text-foreground">
+                    Brochures & catalogues
+                  </figcaption>
+                </figure>
+
+                <figure className="relative overflow-hidden rounded-2xl border border-border shadow-xl">
+                  <img
+                    src={cdnImage(catalogVisuals["cartes-de-visite"].url, 400, 400)}
+                    alt={catalogVisuals["cartes-de-visite"].alt}
+                    width={400}
+                    height={400}
+                    loading="eager"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                </figure>
+
+                <figure className="relative overflow-hidden rounded-2xl border border-border shadow-xl">
+                  <img
+                    src={cdnImage(catalogVisuals["affiches-posters"].url, 400, 400)}
+                    alt={catalogVisuals["affiches-posters"].alt}
+                    width={400}
+                    height={400}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                </figure>
+
+                <figure className="relative col-span-3 overflow-hidden rounded-2xl border border-border shadow-xl">
+                  <img
+                    src={cdnImage(catalogVisuals["flyers-depliants"].url, 900, 340)}
+                    alt={catalogVisuals["flyers-depliants"].alt}
+                    width={900}
+                    height={340}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-background/70 to-transparent" />
+                  <figcaption className="absolute bottom-3 left-4 text-sm font-semibold text-foreground">
+                    Flyers & dépliants
+                  </figcaption>
+                </figure>
               </div>
 
               {/* Floating accent card */}
@@ -284,6 +313,7 @@ export default function Index() {
                 </p>
               </div>
             </div>
+
           </div>
         </div>
       </section>
