@@ -324,7 +324,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
 
     pages.push({
       path: `/categorie/${slug}`,
-      title: content.title,
+      title: fitTitle(content.name, [content.title, `${content.name} personnalisés | J2L Print`], 60),
       description: content.description,
       h1: content.h1,
       intro: content.intro,
@@ -388,7 +388,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         : sub.name;
       pages.push({
         path: `/categorie/${slug}/${sub.slug}`,
-        title: `${sub.name} — ${content.name}`,
+        title: fitTitle(sub.name, [
+          `${sub.name} — ${content.name} | J2L Print`,
+          `${sub.name} — ${content.name}`,
+          `${sub.name} personnalisés | J2L Print`,
+        ], 60),
         description: `${sub.name} : impression professionnelle en ligne (${content.name.toLowerCase()}). Formats, supports et finitions au choix, devis et livraison partout en France.`,
         h1: subH1,
         intro: [angles[si % angles.length]],
@@ -513,7 +517,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
 
     pages.push({
       path: `/ville/${gc.slug}`,
-      title: copy.title,
+      title: fitTitle(gc.name, [
+        copy.title,
+        `Imprimeur en ligne à ${gc.name}${gen.cp ? ` (${gen.cp})` : ""} | J2L Print`,
+        `Impression à ${gc.name}${gen.cp ? ` (${gen.cp})` : ""} | J2L Print`,
+      ], 60),
       description: copy.description,
       h1: copy.h1,
       hero: {
@@ -594,7 +602,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
 
     pages.push({
       path: `/departement/${gd.slug}`,
-      title: copy.title,
+      title: fitTitle(gd.name, [
+        copy.title,
+        `Imprimeur ${gd.code ? `(${gd.code}) ` : ""}${gd.name} | J2L Print`,
+        `Impression ${gd.name} | J2L Print`,
+      ], 60),
       description: copy.description,
       h1: copy.h1,
       hero: {
@@ -657,7 +669,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
 
     pages.push({
       path: `/region/${gr.slug}`,
-      title: copy.title,
+      title: fitTitle(gr.name, [
+        copy.title,
+        `Imprimeur en ligne ${gr.name} | J2L Print`,
+        `Impression ${gr.name} | J2L Print`,
+      ], 60),
       description: copy.description,
       h1: copy.h1,
       hero: {
@@ -713,7 +729,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       .map((s) => ({ label: s.name, path: `/${s.slug}` }));
     pages.push({
       path,
-      title: svc.title,
+      title: fitTitle(svc.name, [svc.title, `${svc.name} en ligne | J2L Print`], 60),
       description: svc.description,
       h1: svc.h1,
       intro: svc.intro,
