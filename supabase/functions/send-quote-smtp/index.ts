@@ -10,12 +10,22 @@ const SMTP_PASSWORD = Deno.env.get('SMTP_PASSWORD') || ''
 const EMAIL_FROM = Deno.env.get('EMAIL_FROM') || 'contact@j2lprint.fr'
 const EMAIL_TO = Deno.env.get('EMAIL_TO') || 'contact@j2lprint.fr'
 const FROM_NAME = 'J2L Print'
+const SITE_ORIGIN = 'https://j2lprint.fr'
 
 const esc = (v: unknown) =>
   String(v ?? '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+
+/** Texte multi-ligne -> HTML avec retours à la ligne conservés. */
+const escMultiline = (v: unknown) =>
+  esc(v).replace(/\r\n|\r|\n/g, '<br />')
+
+/** Valeur réellement renseignée ? (évite les champs vides / « — »). */
+const has = (v: unknown) =>
+  v !== null && v !== undefined && String(v).trim() !== '' && String(v).trim() !== '—'
 
 interface QuoteItem {
   productName?: string
@@ -51,99 +61,255 @@ interface QuotePayload {
 }
 
 const fmtMoney = (n?: number) =>
-  typeof n === 'number' ? `${n.toFixed(2)} €` : '—'
+  typeof n === 'number' ? `${n.toFixed(2)} € HT` : ''
 
-function buildItemsHtml(items: QuoteItem[], signed: Record<string, string>) {
-  if (!items.length) return '<p>Aucun produit précisé.</p>'
+const YELLOW = '#FFD100'
+const DARK = '#0B0B0B'
+const BORDER = '#e5e5e5'
+const MUTED = '#555555'
+
+/** Ligne « Libellé : valeur » — n'est rendue que si la valeur existe. */
+function row(label: string, valueHtml: string | null | undefined) {
+  if (!valueHtml) return ''
+  return `<tr><td style="padding:3px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:${MUTED};width:150px;vertical-align:top;">${esc(label)}</td><td style="padding:3px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:${DARK};vertical-align:top;">${valueHtml}</td></tr>`
+}
+
+function block(title: string, innerHtml: string) {
+  if (!innerHtml.trim()) return ''
+  return `<tr><td style="padding:0 24px 16px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border:1px solid ${BORDER};border-radius:6px;"><tr><td style="background:#fafafa;border-bottom:1px solid ${BORDER};padding:10px 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;letter-spacing:.5px;color:${DARK};text-transform:uppercase;">${esc(title)}</td></tr><tr><td style="padding:14px 16px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">${innerHtml}</table></td></tr></table></td></tr>`
+}
+
+/** Nom lisible d'une option technique (fallback : slug brut). */
+const prettyKey = (k: string) =>
+  k.replace(/[_-]+/g, ' ').replace(/^\w/, (c) => c.toUpperCase())
+
+const productUrlFor = (sku?: string | null) =>
+  sku && /^[a-z0-9][a-z0-9_-]*$/i.test(String(sku))
+    ? `${SITE_ORIGIN}/products/${String(sku).toLowerCase()}`
+    : ''
+
+function itemsHtml(items: QuoteItem[], signed: Record<string, string>) {
   return items
     .map((it) => {
-      const opts = it.options
+      const url = productUrlFor(it.sku)
+      const optionRows = it.options
         ? Object.entries(it.options)
-            .map(([k, v]) => `${esc(k)} : ${esc(v)}`)
-            .join('<br/>')
-        : '—'
-      const fileLine = it.fileName
+            .filter(([, v]) => has(v))
+            .map(([k, v]) => `${esc(prettyKey(k))} : <strong>${esc(v)}</strong>`)
+            .join('<br />')
+        : ''
+      const file = has(it.fileName)
         ? signed[it.fileUrl ?? '']
-          ? `<a href="${esc(signed[it.fileUrl ?? ''])}">${esc(it.fileName)}</a>`
+          ? `<a href="${esc(signed[it.fileUrl ?? ''])}" style="color:${DARK};">${esc(it.fileName)}</a> <span style="color:${MUTED};font-size:12px;">(lien sécurisé, valable 14 jours)</span>`
           : esc(it.fileName)
-        : 'Aucun fichier'
-      return `
-        <div style="border-left:3px solid #FFD100;padding:8px 12px;margin:0 0 12px;background:#fafafa;">
-          <p style="margin:0 0 4px;font-weight:bold;color:#0B0B0B;">${esc(it.productName || 'Produit')}</p>
-          <p style="margin:2px 0;font-size:13px;color:#333;">Référence : ${esc(it.sku || '—')}</p>
-          <p style="margin:2px 0;font-size:13px;color:#333;">Quantité : ${esc(it.quantity ?? '—')}</p>
-          <p style="margin:2px 0;font-size:13px;color:#333;">Dimensions / format : ${esc(it.dimensions || '—')}</p>
-          <p style="margin:2px 0;font-size:13px;color:#333;">Options : ${opts}</p>
-          <p style="margin:2px 0;font-size:13px;color:#333;">Fichier joint : ${fileLine}</p>
-        </div>`
+        : ''
+      const inner =
+        row('Produit', has(it.productName) ? `<strong>${esc(it.productName)}</strong>` : '') +
+        row('Référence / SKU', has(it.sku) ? esc(it.sku) : '') +
+        row('Fiche produit', url ? `<a href="${esc(url)}" style="color:${DARK};">${esc(url)}</a>` : '') +
+        row('Quantité', has(it.quantity) ? `<strong>${esc(it.quantity)}</strong>` : '') +
+        row('Format / dimensions', has(it.dimensions) ? esc(it.dimensions) : '') +
+        row('Options', optionRows) +
+        row('Fichier joint', file)
+      if (!inner) return ''
+      return `<tr><td style="padding:0 0 12px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-left:3px solid ${YELLOW};background:#fafafa;"><tr><td style="padding:10px 14px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">${inner}</table></td></tr></table></td></tr>`
     })
     .join('')
+}
+
+function button(label: string, href: string, primary: boolean) {
+  const bg = primary ? YELLOW : '#ffffff'
+  const color = DARK
+  return `<td style="padding:0 8px 8px 0;"><a href="${esc(href)}" style="display:inline-block;background:${bg};border:1px solid ${primary ? YELLOW : BORDER};border-radius:6px;padding:11px 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;color:${color};text-decoration:none;">${esc(label)}</a></td>`
 }
 
 function buildNotificationHtml(p: QuotePayload, signed: Record<string, string>) {
   const now = new Date().toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })
   const clientName =
-    p.name || [p.firstName, p.lastName].filter(Boolean).join(' ') || '—'
-  const fullAddress =
-    [p.address, [p.postalCode, p.city].filter(Boolean).join(' ')]
-      .filter(Boolean)
-      .join(', ') || '—'
+    p.name || [p.firstName, p.lastName].filter(Boolean).join(' ') || ''
+  const fullAddress = [p.address, [p.postalCode, p.city].filter(Boolean).join(' ')]
+    .filter((v) => has(v))
+    .join(', ')
+  const isCallback = p.type === 'callback'
+  const heading = isCallback
+    ? 'NOUVELLE DEMANDE DE RAPPEL — J2L PRINT'
+    : 'NOUVELLE DEMANDE DE DEVIS — J2L PRINT'
 
-  const totals =
+  const clientBlock = block(
+    'Client',
+    row('Nom et prénom', has(clientName) ? `<strong>${esc(clientName)}</strong>` : '') +
+      row('Société', has(p.company) ? esc(p.company) : '') +
+      row(
+        'E-mail',
+        has(p.email) ? `<a href="mailto:${esc(p.email)}" style="color:${DARK};">${esc(p.email)}</a>` : '',
+      ) +
+      row(
+        'Téléphone',
+        has(p.phone)
+          ? `<a href="tel:${esc(String(p.phone).replace(/[^\d+]/g, ''))}" style="color:${DARK};">${esc(p.phone)}</a>`
+          : '',
+      ) +
+      row('Adresse', has(fullAddress) ? esc(fullAddress) : '') +
+      row('Créneau de rappel', has(p.timeSlot) ? esc(p.timeSlot) : ''),
+  )
+
+  const items = p.items || []
+  const productInner = items.length
+    ? itemsHtml(items, signed)
+    : row('Produit demandé', has(p.product) ? `<strong>${esc(p.product)}</strong>` : '') +
+      row('Objet', !has(p.product) && has(p.subject) ? esc(p.subject) : '') +
+      row(
+        'Page consultée',
+        has(p.pageUrl) ? `<a href="${esc(p.pageUrl)}" style="color:${DARK};">${esc(p.pageUrl)}</a>` : '',
+      )
+  const productBlock = block('Produit demandé', productInner)
+
+  const totalsBlock =
     p.estimatedTotalHt != null
-      ? `<div style="border:1px solid #eee;border-radius:8px;padding:12px 16px;margin:0 0 16px;">
-          <p style="margin:2px 0;font-size:13px;">Sous-total produits HT : ${fmtMoney(p.productsTotalHt)}</p>
-          <p style="margin:2px 0;font-size:13px;">Forfait livraison HT : ${fmtMoney(p.shippingHt)}</p>
-          <p style="margin:6px 0 0;font-size:15px;font-weight:bold;">Total estimatif HT : ${fmtMoney(p.estimatedTotalHt)}</p>
-        </div>`
+      ? block(
+          'Estimation',
+          row('Sous-total produits', fmtMoney(p.productsTotalHt) ? esc(fmtMoney(p.productsTotalHt)) : '') +
+            row('Forfait livraison', fmtMoney(p.shippingHt) ? esc(fmtMoney(p.shippingHt)) : '') +
+            row('Total estimatif', `<strong>${esc(fmtMoney(p.estimatedTotalHt))}</strong>`),
+        )
       : ''
 
-  return `
-  <div style="font-family:Arial,Helvetica,sans-serif;max-width:640px;margin:0 auto;padding:24px;color:#0B0B0B;">
-    <h1 style="font-size:20px;margin:0 0 4px;">Nouvelle demande de devis</h1>
-    ${p.reference ? `<p style="font-size:13px;color:#555;margin:0 0 16px;font-weight:bold;">Référence : ${esc(p.reference)}</p>` : ''}
+  const messageBlock = has(p.message)
+    ? block(
+        'Message du client',
+        `<tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.55;color:${DARK};">${escMultiline(p.message)}</td></tr>`,
+      )
+    : ''
 
-    <div style="border:1px solid #eee;border-radius:8px;padding:12px 16px;margin:0 0 16px;background:#fafafa;">
-      <h2 style="font-size:15px;margin:0 0 10px;">Coordonnées client</h2>
-      <p style="margin:2px 0;font-size:13px;">Nom et prénom : ${esc(clientName)}</p>
-      <p style="margin:2px 0;font-size:13px;">Société : ${esc(p.company || '—')}</p>
-      <p style="margin:2px 0;font-size:13px;">E-mail : ${esc(p.email || '—')}</p>
-      <p style="margin:2px 0;font-size:13px;">Téléphone : ${esc(p.phone || '—')}</p>
-      <p style="margin:2px 0;font-size:13px;">Adresse / code postal de livraison : ${esc(fullAddress)}</p>
-      ${p.timeSlot ? `<p style="margin:2px 0;font-size:13px;">Créneau de rappel : ${esc(p.timeSlot)}</p>` : ''}
-    </div>
+  const firstUrl = items.map((i) => productUrlFor(i.sku)).find(Boolean) || (has(p.pageUrl) ? p.pageUrl! : '')
+  const buttons =
+    (has(p.email)
+      ? button(
+          'Répondre au client',
+          `mailto:${p.email}?subject=${encodeURIComponent(`Votre demande de devis — J2L Print${p.reference ? ` (${p.reference})` : ''}`)}`,
+          true,
+        )
+      : '') + (firstUrl ? button('Voir la fiche produit', firstUrl, false) : '')
 
-    <div style="margin:0 0 16px;">
-      <h2 style="font-size:15px;margin:0 0 10px;">Produit(s) / service(s) demandé(s)</h2>
-      ${p.product ? `<p style="margin:0 0 10px;font-size:13px;">${esc(p.product)}</p>` : ''}
-      ${buildItemsHtml(p.items || [], signed)}
-    </div>
+  const buttonsRow = buttons
+    ? `<tr><td style="padding:0 24px 20px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>${buttons}</tr></table></td></tr>`
+    : ''
 
-    ${totals}
+  const lines = [
+    '<!DOCTYPE html>',
+    '<html lang="fr"><head>',
+    '<meta charset="utf-8" />',
+    '<meta name="viewport" content="width=device-width,initial-scale=1" />',
+    `<title>${esc(heading)}</title>`,
+    '</head>',
+    '<body style="margin:0;padding:0;background:#f4f4f4;">',
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f4f4f4;padding:16px 0;">',
+    '<tr><td align="center">',
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="640" style="width:640px;max-width:100%;background:#ffffff;border:1px solid ' +
+      BORDER +
+      ';border-radius:8px;">',
+    `<tr><td style="background:${DARK};border-radius:8px 8px 0 0;padding:20px 24px;font-family:Arial,Helvetica,sans-serif;font-size:17px;font-weight:bold;color:${YELLOW};letter-spacing:.5px;">${esc(heading)}</td></tr>`,
+    p.reference
+      ? `<tr><td style="padding:14px 24px 4px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:${MUTED};">Référence interne : <strong style="color:${DARK};">${esc(p.reference)}</strong></td></tr>`
+      : '',
+    `<tr><td style="padding:14px 24px 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:${MUTED};">Reçue le ${esc(now)}</td></tr>`,
+    clientBlock,
+    productBlock,
+    totalsBlock,
+    messageBlock,
+    buttonsRow,
+    `<tr><td style="border-top:1px solid ${BORDER};padding:14px 24px 18px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${MUTED};">J2L Print — 22 B rue Robert Barret, 88390 Uxegney — 03 29 30 44 79 — contact@j2lprint.fr</td></tr>`,
+    '</table>',
+    '</td></tr>',
+    '</table>',
+    '</body></html>',
+  ]
 
-    <div style="border:1px solid #eee;border-radius:8px;padding:12px 16px;margin:0 0 16px;">
-      <h2 style="font-size:15px;margin:0 0 10px;">Message du client</h2>
-      <p style="margin:0;font-size:13px;white-space:pre-wrap;">${esc(p.message || 'Aucun message.')}</p>
-    </div>
+  // Une ligne par élément, sans espace de fin : évite les « =20 » ajoutés par
+  // l'encodage quoted-printable sur les espaces en fin de ligne.
+  return lines
+    .filter(Boolean)
+    .map((l) => l.replace(/[ \t]+$/g, ''))
+    .join('\n')
+}
 
-    <div style="font-size:12px;color:#777;">
-      <p style="margin:2px 0;">Page d'origine : ${esc(p.pageUrl || '—')}</p>
-      <p style="margin:2px 0;">Date et heure : ${esc(now)}</p>
-    </div>
-  </div>`
+/** Version texte brut (multipart/alternative) de la notification interne. */
+function buildNotificationText(p: QuotePayload, signed: Record<string, string>) {
+  const out: string[] = []
+  const clientName = p.name || [p.firstName, p.lastName].filter(Boolean).join(' ')
+  out.push(
+    p.type === 'callback'
+      ? 'NOUVELLE DEMANDE DE RAPPEL - J2L PRINT'
+      : 'NOUVELLE DEMANDE DE DEVIS - J2L PRINT',
+  )
+  if (has(p.reference)) out.push(`Reference interne : ${p.reference}`)
+  out.push('', 'CLIENT')
+  if (has(clientName)) out.push(`Nom : ${clientName}`)
+  if (has(p.company)) out.push(`Societe : ${p.company}`)
+  if (has(p.email)) out.push(`E-mail : ${p.email}`)
+  if (has(p.phone)) out.push(`Telephone : ${p.phone}`)
+  const addr = [p.address, [p.postalCode, p.city].filter(Boolean).join(' ')]
+    .filter((v) => has(v))
+    .join(', ')
+  if (has(addr)) out.push(`Adresse : ${addr}`)
+  if (has(p.timeSlot)) out.push(`Creneau de rappel : ${p.timeSlot}`)
+  out.push('', 'PRODUIT DEMANDE')
+  const items = p.items || []
+  if (items.length) {
+    for (const it of items) {
+      if (has(it.productName)) out.push(`- ${it.productName}`)
+      if (has(it.sku)) out.push(`  SKU : ${it.sku}`)
+      const url = productUrlFor(it.sku)
+      if (url) out.push(`  Fiche : ${url}`)
+      if (has(it.quantity)) out.push(`  Quantite : ${it.quantity}`)
+      if (has(it.dimensions)) out.push(`  Format : ${it.dimensions}`)
+      if (it.options) {
+        for (const [k, v] of Object.entries(it.options)) {
+          if (has(v)) out.push(`  ${prettyKey(k)} : ${v}`)
+        }
+      }
+      if (has(it.fileName)) {
+        out.push(`  Fichier : ${it.fileName}`)
+        const link = signed[it.fileUrl ?? '']
+        if (link) out.push(`  Lien : ${link}`)
+      }
+    }
+  } else {
+    if (has(p.product)) out.push(`Produit : ${p.product}`)
+    else if (has(p.subject)) out.push(`Objet : ${p.subject}`)
+    if (has(p.pageUrl)) out.push(`Page : ${p.pageUrl}`)
+  }
+  if (p.estimatedTotalHt != null) {
+    out.push('', 'ESTIMATION')
+    if (p.productsTotalHt != null) out.push(`Sous-total produits : ${fmtMoney(p.productsTotalHt)}`)
+    if (p.shippingHt != null) out.push(`Forfait livraison : ${fmtMoney(p.shippingHt)}`)
+    out.push(`Total estimatif : ${fmtMoney(p.estimatedTotalHt)}`)
+  }
+  if (has(p.message)) out.push('', 'MESSAGE DU CLIENT', String(p.message))
+  return out.map((l) => l.replace(/[ \t]+$/g, '')).join('\n')
 }
 
 function buildConfirmationHtml(firstName: string) {
-  return `
-  <div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#0B0B0B;">
-    <p>Bonjour ${esc(firstName || '')},</p>
-    <p>Nous avons bien reçu votre demande de devis sur J2L Print.</p>
-    <p>Nous allons l'étudier et vous répondrons dans les meilleurs délais.</p>
-    <p style="margin-top:24px;">Cordialement,</p>
-    <p style="margin:0;font-weight:bold;">J2L Print</p>
-    <p style="margin:0;"><a href="mailto:contact@j2lprint.fr">contact@j2lprint.fr</a></p>
-    <p style="margin:0;"><a href="https://www.j2lprint.fr">https://www.j2lprint.fr</a></p>
-  </div>`
+  const lines = [
+    '<!DOCTYPE html>',
+    '<html lang="fr"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /></head>',
+    '<body style="margin:0;padding:0;background:#f4f4f4;">',
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f4f4f4;padding:16px 0;"><tr><td align="center">',
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:600px;max-width:100%;background:#ffffff;border:1px solid ${BORDER};border-radius:8px;">`,
+    `<tr><td style="background:${DARK};border-radius:8px 8px 0 0;padding:18px 24px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:${YELLOW};">J2L PRINT</td></tr>`,
+    `<tr><td style="padding:20px 24px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:${DARK};">`,
+    `Bonjour ${esc(firstName || '')},<br /><br />`,
+    'Nous avons bien reçu votre demande de devis sur J2L Print.<br />',
+    'Nous allons l&#39;étudier et vous répondrons dans les meilleurs délais.<br /><br />',
+    'Cordialement,<br />',
+    '<strong>J2L Print</strong><br />',
+    `<a href="mailto:contact@j2lprint.fr" style="color:${DARK};">contact@j2lprint.fr</a><br />`,
+    `<a href="${SITE_ORIGIN}" style="color:${DARK};">j2lprint.fr</a>`,
+    '</td></tr>',
+    '</table></td></tr></table>',
+    '</body></html>',
+  ]
+  return lines.map((l) => l.replace(/[ \t]+$/g, '')).join('\n')
 }
 
 const confirmationText = (firstName: string) =>
@@ -157,7 +323,7 @@ Cordialement,
 
 J2L Print
 contact@j2lprint.fr
-https://www.j2lprint.fr`
+https://j2lprint.fr`
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -203,10 +369,34 @@ Deno.serve(async (req) => {
   }
 
   const clientLabel =
-    payload.company ||
     payload.name ||
     [payload.firstName, payload.lastName].filter(Boolean).join(' ') ||
-    'client'
+    payload.company ||
+    'Client'
+
+  const productLabel =
+    (payload.items || []).map((i) => i.productName).filter(Boolean)[0] ||
+    payload.product ||
+    payload.subject ||
+    ''
+
+  const subject =
+    payload.type === 'callback'
+      ? `Nouvelle demande de rappel J2L Print — ${clientLabel}${productLabel ? ` — ${productLabel}` : ''}`
+      : `Nouvelle demande de devis J2L Print — ${clientLabel}${productLabel ? ` — ${productLabel}` : ''}`
+
+  // Mode aperçu : renvoie le HTML sans rien envoyer (contrôle avant publication).
+  const url = new URL(req.url)
+  if (url.searchParams.get('preview') === '1') {
+    return new Response(buildNotificationHtml(payload, signed), {
+      status: 200,
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'text/html; charset=utf-8',
+        'X-Subject': encodeURIComponent(subject),
+      },
+    })
+  }
 
   const client = new SMTPClient({
     connection: {
@@ -223,7 +413,8 @@ Deno.serve(async (req) => {
       from: `${FROM_NAME} <${EMAIL_FROM}>`,
       to: EMAIL_TO,
       replyTo: payload.email || undefined,
-      subject: `Nouvelle demande de devis J2L Print — ${clientLabel}`,
+      subject,
+      content: buildNotificationText(payload, signed),
       html: buildNotificationHtml(payload, signed),
     })
 
@@ -236,8 +427,8 @@ Deno.serve(async (req) => {
         to: payload.email,
         replyTo: EMAIL_TO,
         subject: 'Votre demande de devis a bien été reçue — J2L Print',
-        html: buildConfirmationHtml(firstName),
         content: confirmationText(firstName),
+        html: buildConfirmationHtml(firstName),
       })
     }
 
