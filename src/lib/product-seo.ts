@@ -104,7 +104,7 @@ function buildUseCases(name: string, fam: SemanticEntry, seed: number): string {
 function buildQuality(fam: SemanticEntry, seed: number): string {
   const mat = naturalList(pickN(fam.materials, seed, 3));
   const fin = naturalList(pickN(fam.finitions, seed + 1, 3));
-  return `Fabrication professionnelle sur ${mat}, avec un choix de finitions : ${fin}. Vos fichiers PDF sont vérifiés avant impression et chaque commande est contrôlée avant expédition, partout en France métropolitaine.`;
+  return `Impression professionnelle sur ${mat}, avec un choix de finitions : ${fin}. Vos fichiers PDF sont vérifiés avant impression et chaque commande est contrôlée avant expédition, partout en France métropolitaine.`;
 }
 
 /** "Pourquoi choisir" benefit bullets (seeded, family-aware). */
@@ -133,7 +133,7 @@ function buildGenericData(productName: string): ProductSEOData {
       `Sélectionnez vos options ci-dessus pour adapter le produit à votre projet, ou demandez un devis personnalisé.`,
     quality:
       "Impression et finition professionnelles, contrôle qualité avant expédition et vérification de vos fichiers PDF. " +
-      "Livraison en France métropolitaine sous 3 à 5 jours ouvrés.",
+      "Livraison en France métropolitaine, selon le délai indiqué lors de la configuration.",
     faq: [
       { q: "Quels fichiers fournir pour l'impression ?", a: "Un fichier PDF haute résolution (300 dpi), en CMJN, avec les fonds perdus requis. Notre équipe vérifie votre fichier avant impression." },
       { q: "Comment obtenir un prix ?", a: "Configurez vos options ci-dessus : le prix se calcule automatiquement. Vous pouvez aussi demander un devis personnalisé." },
@@ -151,7 +151,7 @@ function buildGenericData(productName: string): ProductSEOData {
     ],
     whyChoose: [
       "Configuration en ligne et prix immédiat",
-      "Fabrication professionnelle sur mesure",
+      "Impression professionnelle sur mesure",
       "Vérification de vos fichiers avant impression",
       "Devis gratuit et livraison partout en France",
     ],

@@ -324,7 +324,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
 
     pages.push({
       path: `/categorie/${slug}`,
-      title: content.title,
+      title: fitTitle(content.name, [content.title, `${content.name} personnalisés | J2L Print`], 60),
       description: content.description,
       h1: content.h1,
       intro: content.intro,
@@ -388,7 +388,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         : sub.name;
       pages.push({
         path: `/categorie/${slug}/${sub.slug}`,
-        title: `${sub.name} — ${content.name}`,
+        title: fitTitle(sub.name, [
+          `${sub.name} — ${content.name} | J2L Print`,
+          `${sub.name} — ${content.name}`,
+          `${sub.name} personnalisés | J2L Print`,
+        ], 60),
         description: `${sub.name} : impression professionnelle en ligne (${content.name.toLowerCase()}). Formats, supports et finitions au choix, devis et livraison partout en France.`,
         h1: subH1,
         intro: [angles[si % angles.length]],
@@ -513,7 +517,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
 
     pages.push({
       path: `/ville/${gc.slug}`,
-      title: copy.title,
+      title: fitTitle(gc.name, [
+        copy.title,
+        `Imprimeur en ligne à ${gc.name}${gen.cp ? ` (${gen.cp})` : ""} | J2L Print`,
+        `Impression à ${gc.name}${gen.cp ? ` (${gen.cp})` : ""} | J2L Print`,
+      ], 60),
       description: copy.description,
       h1: copy.h1,
       hero: {
@@ -594,7 +602,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
 
     pages.push({
       path: `/departement/${gd.slug}`,
-      title: copy.title,
+      title: fitTitle(gd.name, [
+        copy.title,
+        `Imprimeur ${gd.code ? `(${gd.code}) ` : ""}${gd.name} | J2L Print`,
+        `Impression ${gd.name} | J2L Print`,
+      ], 60),
       description: copy.description,
       h1: copy.h1,
       hero: {
@@ -657,7 +669,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
 
     pages.push({
       path: `/region/${gr.slug}`,
-      title: copy.title,
+      title: fitTitle(gr.name, [
+        copy.title,
+        `Imprimeur en ligne ${gr.name} | J2L Print`,
+        `Impression ${gr.name} | J2L Print`,
+      ], 60),
       description: copy.description,
       h1: copy.h1,
       hero: {
@@ -713,7 +729,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       .map((s) => ({ label: s.name, path: `/${s.slug}` }));
     pages.push({
       path,
-      title: svc.title,
+      title: fitTitle(svc.name, [svc.title, `${svc.name} en ligne | J2L Print`], 60),
       description: svc.description,
       h1: svc.h1,
       intro: svc.intro,
@@ -801,8 +817,22 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     }
   }
 
+  // Dernier garde-fou SERP : meta description <= 158 caractères, coupée sur une
+  // phrase complète (jamais en plein mot) et sans jamais créer de doublon.
+  const seenDesc = new Set(pages.map((p) => p.description));
+  for (const p of pages) {
+    if (p.description.length <= 158) continue;
+    const short = truncate(p.description, 158);
+    if (short.length >= 90 && !seenDesc.has(short)) {
+      seenDesc.delete(p.description);
+      seenDesc.add(short);
+      p.description = short;
+    }
+  }
+
   return pages;
 }
+
 
 
 
@@ -885,8 +915,33 @@ async function fetchCatalogProducts(): Promise<Map<string, CatalogProductLite>> 
 function truncate(s: string, max = 158): string {
   const clean = s.replace(/\s+/g, " ").trim();
   if (clean.length <= max) return clean;
-  return `${clean.slice(0, max - 1).replace(/[\s,.;:]+\S*$/, "")}…`;
+  // Prefer keeping whole sentences (no mid-word cut, no ellipsis in SERP).
+  const sentences = clean.split(/(?<=[.!?])\s+/);
+  let out = "";
+  for (const sentence of sentences) {
+    const next = out ? `${out} ${sentence}` : sentence;
+    if (next.length > max) break;
+    out = next;
+  }
+  if (out.length >= Math.min(80, max * 0.5)) return out;
+  // Fallback: cut on a word boundary and close the sentence cleanly.
+  const cut = clean.slice(0, max).replace(/[\s,;:–-]+\S*$/, "").replace(/[.,;:–-]+$/, "");
+  return `${cut}.`;
 }
+
+/** Builds a SERP-safe title (<= max chars) without ever cutting mid-word. */
+function fitTitle(name: string, variants: string[], max = 60): string {
+  const clean = (s: string) => s.replace(/\s+/g, " ").trim();
+  for (const variant of variants) {
+    const v = clean(variant);
+    if (v.length <= max) return v;
+  }
+  const short = clean(`${name} | J2L Print`);
+  if (short.length <= max) return short;
+  const trimmedName = clean(name).slice(0, max - " | J2L Print".length).replace(/[\s,;:–-]+\S*$/, "");
+  return `${trimmedName} | J2L Print`;
+}
+
 
 export async function buildProductPages(): Promise<SeoPage[]> {
   const home: BreadcrumbItemLite = { name: "Accueil", path: "/" };
@@ -1013,8 +1068,14 @@ export async function buildProductPages(): Promise<SeoPage[]> {
       `Besoin de ${lower} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, devis gratuit et expédition soignée partout en France.`,
       `${name} imprimé sur mesure par J2L Print. Choisissez vos options, obtenez un prix immédiat et profitez d'un accompagnement et d'une livraison France entière.`,
     ];
-    const title = truncate(titleVariants[seed % titleVariants.length], 65);
+    const seededTitles = [
+      titleVariants[seed % titleVariants.length],
+      ...[...titleVariants].sort((a, b) => a.length - b.length),
+      `${name} personnalisé | J2L Print`,
+    ];
+    const title = fitTitle(name, seededTitles, 60);
     const description = truncate(descVariants[seed % descVariants.length], 158);
+
 
     // Extra intro paragraph built ONLY from real available attributes.
     const specSentence = attrs ? (() => {
@@ -1169,7 +1230,12 @@ export async function buildThemePages(): Promise<SeoPage[]> {
     ];
     pages.push({
       path,
-      title: truncate(`${t.name} – Thème impression personnalisée | J2L Print`, 65),
+      title: fitTitle(t.name, [
+        `${t.name} – Thème impression personnalisée | J2L Print`,
+        `Thème ${t.name} – Impression | J2L Print`,
+        `${t.name} | J2L Print`,
+      ], 60),
+
       description: desc,
       h1: t.name,
       intro: [
