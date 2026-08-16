@@ -1038,8 +1038,14 @@ export async function buildProductPages(): Promise<SeoPage[]> {
       `Besoin de ${lower} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, devis gratuit et expédition soignée partout en France.`,
       `${name} imprimé sur mesure par J2L Print. Choisissez vos options, obtenez un prix immédiat et profitez d'un accompagnement et d'une livraison France entière.`,
     ];
-    const title = truncate(titleVariants[seed % titleVariants.length], 65);
+    const seededTitles = [
+      titleVariants[seed % titleVariants.length],
+      ...[...titleVariants].sort((a, b) => a.length - b.length),
+      `${name} personnalisé | J2L Print`,
+    ];
+    const title = fitTitle(name, seededTitles, 60);
     const description = truncate(descVariants[seed % descVariants.length], 158);
+
 
     // Extra intro paragraph built ONLY from real available attributes.
     const specSentence = attrs ? (() => {
