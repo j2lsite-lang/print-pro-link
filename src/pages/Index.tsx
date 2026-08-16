@@ -62,6 +62,10 @@ export default function Index() {
 
   const handleDevisSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Garde anti double-envoi : un second submit (double-clic, Entrée répétée)
+    // pendant qu'une requête est en cours est ignoré.
+    if (devisSendingRef.current) return;
+    devisSendingRef.current = true;
     setDevisLoading(true);
     const form = devisFormRef.current!;
     const formData = new FormData(form);
