@@ -183,9 +183,23 @@ export default function SeoRoute() {
                 <p className="text-muted-foreground">{page.productGrid.intro}</p>
               )}
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {page.productGrid.cards.map((c) => {
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {page.productGrid.cards.map((c, i) => {
                 const Icon = ICONS[c.icon] || FileText;
+                const visual = visualForPath(c.path);
+                if (visual) {
+                  return (
+                    <VisualCategoryCard
+                      key={c.label}
+                      to={c.path}
+                      title={c.label}
+                      description={c.description}
+                      image={visual.url}
+                      imageAlt={`${c.label} — ${visual.alt}`}
+                      eager={i < 3}
+                    />
+                  );
+                }
                 return (
                   <Link
                     key={c.label}
@@ -204,6 +218,7 @@ export default function SeoRoute() {
                 );
               })}
             </div>
+
           </section>
         )}
 
