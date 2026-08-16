@@ -336,6 +336,35 @@ export default function Index() {
         </div>
       </section>
 
+      {/* ─── UNIVERS PRODUITS (visuels catalogue réels) ─── */}
+      <section id="univers" className="py-8">
+        <div className="container">
+          <h2 className="font-display text-2xl font-bold text-foreground text-center mb-2">
+            Nos univers produits
+          </h2>
+          <p className="text-center text-muted-foreground text-sm mb-8">
+            Plus de 900 produits imprimés et personnalisables, configurables en ligne.
+          </p>
+          <div className="grid gap-5 grid-cols-2 lg:grid-cols-4">
+            {homeUniverses.map((u) => {
+              const visual = categoryVisuals[u.slug];
+              return (
+                <VisualCategoryCard
+                  key={u.slug}
+                  to={`/categorie/${u.slug}`}
+                  title={u.title}
+                  description={u.desc}
+                  image={visual.url}
+                  imageAlt={`${u.title} — ${visual.alt}`}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+
+
       {/* ─── DEVIS ─── */}
       <section id="devis" className="py-12">
         <div className="container max-w-2xl">
