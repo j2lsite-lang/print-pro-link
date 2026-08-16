@@ -40,20 +40,20 @@ export default function GrandFormat() {
         {/* Produits */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
           {[
-            { icon: Image, title: "Bâches publicitaires", desc: "PVC 500g/m², micro-perforées, mesh. Finitions œillets, ourlets, fourreau. Toutes dimensions." },
-            { icon: Ruler, title: "Banderoles & calicots", desc: "Impression recto ou recto-verso. Idéal pour façades, événements sportifs et culturels." },
-            { icon: Shield, title: "Adhésifs & vinyles", desc: "Sol, vitrine, véhicule, mur. Vinyles polymères longue durée, laminés anti-UV et anti-rayures." },
-            { icon: Image, title: "Kakémonos & roll-ups", desc: "Structures auto-enroulantes, kakémonos suspendus. Transport facile, montage en 30 secondes." },
-            { icon: Ruler, title: "Enseignes & panneaux", desc: "Dibond, PVC expansé, Akilux, plexiglas. Découpe sur mesure, pose possible sur devis." },
-            { icon: Shield, title: "Décoration murale", desc: "Papier peint personnalisé, toiles tendues, panneaux acoustiques imprimés. Pour bureaux et commerces." },
+            { icon: Image, title: "Bâches publicitaires", to: "/products/category/baches-banderoles", desc: "PVC 500g/m², micro-perforées, mesh. Finitions œillets, ourlets, fourreau. Toutes dimensions." },
+            { icon: Ruler, title: "Banderoles & calicots", to: "/products/category/baches-banderoles", desc: "Impression recto ou recto-verso. Idéal pour façades, événements sportifs et culturels." },
+            { icon: Shield, title: "Adhésifs & vinyles", to: "/products/category/films-adhesifs-type", desc: "Sol, vitrine, véhicule, mur. Vinyles polymères longue durée, laminés anti-UV et anti-rayures." },
+            { icon: Image, title: "Kakémonos & roll-ups", to: "/products/category/roll-ups", desc: "Structures auto-enroulantes, kakémonos suspendus. Transport facile, montage en 30 secondes." },
+            { icon: Ruler, title: "Enseignes & panneaux", to: "/products/category/panneaux-baches-vinyles-toiles", desc: "Dibond, PVC expansé, Akilux, plexiglas. Découpe sur mesure, pose possible sur devis." },
+            { icon: Shield, title: "Décoration murale", to: "/products/category/toiles-textiles-deco-interieure", desc: "Papier peint personnalisé, toiles tendues, panneaux acoustiques imprimés. Pour bureaux et commerces." },
           ].map((item) => (
-            <div key={item.title} className="glass-card p-5">
+            <Link key={item.title} to={item.to} className="glass-card p-5 block transition-colors hover:bg-primary/5">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 mb-3">
                 <item.icon className="h-5 w-5 text-primary" />
               </div>
               <h3 className="font-display text-sm font-semibold text-foreground">{item.title}</h3>
               <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
-            </div>
+            </Link>
           ))}
         </div>
 

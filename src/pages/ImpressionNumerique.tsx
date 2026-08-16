@@ -43,20 +43,20 @@ export default function ImpressionNumerique() {
         {/* Produits */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
           {[
-            { icon: FileText, title: "Cartes de visite", desc: "Formats standard et personnalisés, papiers premium (couché, texturé, mat, brillant), finitions luxe." },
-            { icon: Printer, title: "Flyers & dépliants", desc: "A5, A4, DL, formats spéciaux. Impression recto-verso, plis roulés, accordéon, fenêtre." },
-            { icon: Layers, title: "Affiches & posters", desc: "De A3 à B0, papier couché ou photo. Idéal pour vitrine, événement ou décoration." },
-            { icon: FileText, title: "Brochures & catalogues", desc: "Piqûre à cheval, dos carré collé, reliure spirale. Jusqu'à 200 pages." },
-            { icon: CheckCircle, title: "Papeterie entreprise", desc: "Têtes de lettre, enveloppes, chemises à rabats, blocs-notes personnalisés." },
-            { icon: Printer, title: "Faire-part & invitations", desc: "Mariages, naissances, événements. Papiers texturés, dorure à chaud, découpe laser." },
+            { icon: FileText, title: "Cartes de visite", to: "/products/category/cartes-visite-enveloppes", desc: "Formats standard et personnalisés, papiers premium (couché, texturé, mat, brillant), finitions luxe." },
+            { icon: Printer, title: "Flyers & dépliants", to: "/products/category/flyers-depliants-affiches", desc: "A5, A4, DL, formats spéciaux. Impression recto-verso, plis roulés, accordéon, fenêtre." },
+            { icon: Layers, title: "Affiches & posters", to: "/products/category/flyers-depliants-affiches", desc: "De A3 à B0, papier couché ou photo. Idéal pour vitrine, événement ou décoration." },
+            { icon: FileText, title: "Brochures & catalogues", to: "/products/category/brochures-magazines", desc: "Piqûre à cheval, dos carré collé, reliure spirale. Jusqu'à 200 pages." },
+            { icon: CheckCircle, title: "Papeterie entreprise", to: "/products/category/papeterie", desc: "Têtes de lettre, enveloppes, chemises à rabats, blocs-notes personnalisés." },
+            { icon: Printer, title: "Faire-part & invitations", to: "/products/category/courriers-creatifs", desc: "Mariages, naissances, événements. Papiers texturés, dorure à chaud, découpe laser." },
           ].map((item) => (
-            <div key={item.title} className="glass-card p-5">
+            <Link key={item.title} to={item.to} className="glass-card p-5 block transition-colors hover:bg-primary/5">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 mb-3">
                 <item.icon className="h-5 w-5 text-primary" />
               </div>
               <h3 className="font-display text-sm font-semibold text-foreground">{item.title}</h3>
               <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
-            </div>
+            </Link>
           ))}
         </div>
 
