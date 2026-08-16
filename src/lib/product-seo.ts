@@ -133,7 +133,7 @@ function buildGenericData(productName: string): ProductSEOData {
       `Sélectionnez vos options ci-dessus pour adapter le produit à votre projet, ou demandez un devis personnalisé.`,
     quality:
       "Impression et finition professionnelles, contrôle qualité avant expédition et vérification de vos fichiers PDF. " +
-      "Livraison en France métropolitaine sous 3 à 5 jours ouvrés.",
+      "Livraison en France métropolitaine, selon le délai indiqué lors de la configuration.",
     faq: [
       { q: "Quels fichiers fournir pour l'impression ?", a: "Un fichier PDF haute résolution (300 dpi), en CMJN, avec les fonds perdus requis. Notre équipe vérifie votre fichier avant impression." },
       { q: "Comment obtenir un prix ?", a: "Configurez vos options ci-dessus : le prix se calcule automatiquement. Vous pouvez aussi demander un devis personnalisé." },
