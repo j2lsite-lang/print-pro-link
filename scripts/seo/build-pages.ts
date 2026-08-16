@@ -938,9 +938,26 @@ function fitTitle(name: string, variants: string[], max = 60): string {
   }
   const short = clean(`${name} | J2L Print`);
   if (short.length <= max) return short;
-  const trimmedName = clean(name).slice(0, max - " | J2L Print".length).replace(/[\s,;:–-]+\S*$/, "");
-  return `${trimmedName} | J2L Print`;
+  const suffix = " | J2L Print";
+  const room = max - suffix.length;
+  const full = clean(name);
+  // Le qualificatif final (après " - " ou " – ") distingue souvent deux produits
+  // jumeaux (offset/digital vs jet d'encre). On le conserve en priorité.
+  const parts = full.split(/\s[–-]\s/);
+  if (parts.length > 1) {
+    const qualifier = parts[parts.length - 1].trim();
+    const head = parts.slice(0, -1).join(" - ").trim();
+    const sep = " – ";
+    const headRoom = room - qualifier.length - sep.length;
+    if (headRoom >= 12) {
+      const cutHead = head.slice(0, headRoom).replace(/[\s,;:–-]+\S*$/, "");
+      return `${cutHead}${sep}${qualifier}${suffix}`;
+    }
+  }
+  const trimmedName = full.slice(0, room).replace(/[\s,;:–-]+\S*$/, "");
+  return `${trimmedName}${suffix}`;
 }
+
 
 
 export async function buildProductPages(): Promise<SeoPage[]> {
