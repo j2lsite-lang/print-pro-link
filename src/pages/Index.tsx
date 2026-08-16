@@ -293,8 +293,8 @@ export default function Index() {
                     decoding="async"
                     className="h-full w-full object-cover"
                   />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-background/70 to-transparent" />
-                  <figcaption className="absolute bottom-3 left-4 text-sm font-semibold text-foreground">
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-background/70 to-transparent" />
+                  <figcaption className="absolute bottom-3 right-4 text-sm font-semibold text-foreground">
                     Flyers & dépliants
                   </figcaption>
                 </figure>
