@@ -932,10 +932,14 @@ function truncate(s: string, max = 158): string {
 /** Builds a SERP-safe title (<= max chars) without ever cutting mid-word. */
 function fitTitle(name: string, variants: string[], max = 60): string {
   const clean = (s: string) => s.replace(/\s+/g, " ").trim();
+  // Le rendu ajoute " | J2L Print" quand la marque est absente : on mesure la
+  // longueur réellement affichée dans les SERP.
+  const rendered = (s: string) => (s.includes("J2L Print") ? s : `${s} | J2L Print`);
   for (const variant of variants) {
     const v = clean(variant);
-    if (v.length <= max) return v;
+    if (rendered(v).length <= max) return v;
   }
+
   const short = clean(`${name} | J2L Print`);
   if (short.length <= max) return short;
   const suffix = " | J2L Print";
