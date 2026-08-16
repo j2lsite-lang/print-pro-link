@@ -3,16 +3,18 @@ import { useLocation } from "react-router-dom";
 import { gaMeasurementId, trackPageView } from "@/lib/analytics";
 
 /**
- * Safety net for GA4 SPA tracking.
+ * GA4 SPA page_view control.
  *
- * GA4 already sends:
- *  - one page_view on the initial load (gtag config)
- *  - one page_view per browser-history change (enhanced measurement)
+ * gtag.js already sends:
+ *  - one page_view on the initial load (gtag "config")
+ *  - one page_view per browser-history change (GA4 enhanced measurement)
  *
- * This component therefore sends nothing when enhanced measurement is active;
- * it only fires a manual page_view if GA has not recorded any hit for the new
- * path after a short delay (i.e. enhanced measurement disabled in GA4).
+ * To guarantee exactly ONE page_view per navigation, this component sends a
+ * manual page_view only when GA's own history listener is unavailable
+ * (enhanced measurement disabled), detected by patching history.pushState.
  */
+const ENHANCED = "__gaEnhancedHistory";
+
 const PageViewTracker = () => {
   const location = useLocation();
   const first = useRef(true);
@@ -23,19 +25,14 @@ const PageViewTracker = () => {
       first.current = false; // initial page_view handled by gtag config
       return;
     }
-    const path = `${location.pathname}${location.search}`;
-    const timer = window.setTimeout(() => {
-      const dl = (window.dataLayer || []) as unknown[];
-      const alreadySent = dl.some((entry) => {
-        const args = Array.from(entry as ArrayLike<unknown>);
-        return args[0] === "event" && args[1] === "page_view";
-      });
-      // GA's own history listener records the view; only fall back if silent.
-      if (!alreadySent && window.location.pathname + window.location.search === path) {
-        trackPageView(path);
-      }
-    }, 800);
-    return () => window.clearTimeout(timer);
+    const w = window as unknown as Record<string, unknown>;
+    // gtag.js wraps history.pushState when enhanced measurement is enabled.
+    const enhanced =
+      w[ENHANCED] ??
+      (w[ENHANCED] = !/\[native code\]/.test(String(window.history.pushState)));
+    if (enhanced) return; // GA already sends the page_view for this navigation
+
+    trackPageView(`${location.pathname}${location.search}`);
   }, [location.pathname, location.search]);
 
   return null;
