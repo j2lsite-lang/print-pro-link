@@ -14,12 +14,12 @@ declare global {
 export const gaMeasurementId = MEASUREMENT_ID;
 
 // GA requires the raw `arguments` object to be pushed, not a plain array.
-export function gtag(...args: unknown[]) {
+export const gtag = function () {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
   // eslint-disable-next-line prefer-rest-params
   window.dataLayer.push(arguments);
-}
+} as (...args: unknown[]) => void;
 
 export function initAnalytics() {
   if (typeof window === "undefined" || !MEASUREMENT_ID) return;
