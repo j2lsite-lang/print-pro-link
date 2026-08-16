@@ -39,8 +39,10 @@ export function initAnalytics() {
   window.dataLayer = window.dataLayer || [];
   window.gtag = gtag;
   gtag("js", new Date());
-  // page_view is sent manually by the SPA route tracker (no duplicates)
-  gtag("config", MEASUREMENT_ID, { send_page_view: false });
+  // GA4 sends the initial page_view and, via enhanced measurement, one page_view
+  // per browser-history change (SPA navigation). We therefore do NOT send any
+  // manual page_view for history navigations, to avoid duplicates.
+  gtag("config", MEASUREMENT_ID);
 }
 
 export function trackPageView(path: string) {
