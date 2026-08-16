@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/personnalisation.jpg";
 import imgObjets from "@/assets/services/personnalisation-objets.jpg";
+import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
+import { catalogVisuals } from "@/seo/data/catalog-visuals";
 
 export default function Personnalisation() {
   useSEO({
