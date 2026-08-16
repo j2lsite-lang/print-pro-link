@@ -1200,7 +1200,12 @@ export async function buildThemePages(): Promise<SeoPage[]> {
     ];
     pages.push({
       path,
-      title: truncate(`${t.name} – Thème impression personnalisée | J2L Print`, 65),
+      title: fitTitle(t.name, [
+        `${t.name} – Thème impression personnalisée | J2L Print`,
+        `Thème ${t.name} – Impression | J2L Print`,
+        `${t.name} | J2L Print`,
+      ], 60),
+
       description: desc,
       h1: t.name,
       intro: [
