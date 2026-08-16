@@ -5,6 +5,8 @@ import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/impression-numerique.jpg";
 import imgCartes from "@/assets/services/impression-cartes-visite.jpg";
 import imgBrochures from "@/assets/services/impression-brochures.jpg";
+import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
+import { catalogVisuals } from "@/seo/data/catalog-visuals";
 
 export default function ImpressionNumerique() {
   useSEO({
