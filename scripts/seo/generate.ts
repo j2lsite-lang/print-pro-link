@@ -74,13 +74,19 @@ function syncWorker(productSlugs: string[], themeSlugs: string[]) {
   const products = arr(productSlugs);
   const themes = arr(themeSlugs);
   let src = readFileSync(wp, "utf8");
+  const cityRedirects = JSON.stringify(CITY_SLUG_REDIRECTS, null, 2);
   src = src
-    .replace(/const CITIES=\[[^\]]*\];/, `const CITIES=${cities};`)
-    .replace(/const DEPARTMENTS=\[[^\]]*\];/, `const DEPARTMENTS=${departments};`)
-    .replace(/const REGIONS=\[[^\]]*\];/, `const REGIONS=${regions};`)
+    .replace(/const CITIES\s*=\s*\[[\s\S]*?\];/, `const CITIES = ${cities};`)
+    .replace(/const DEPARTMENTS\s*=\s*\[[\s\S]*?\];/, `const DEPARTMENTS = ${departments};`)
+    .replace(/const REGIONS\s*=\s*\[[\s\S]*?\];/, `const REGIONS = ${regions};`)
     .replace(/const THEMES\s*=\s*\[[\s\S]*?\];/, `const THEMES = ${themes};`)
-    .replace(/const PRODUCTS\s*=\s*\[[\s\S]*?\];/, `const PRODUCTS = ${products};`);
+    .replace(/const PRODUCTS\s*=\s*\[[\s\S]*?\];/, `const PRODUCTS = ${products};`)
+    .replace(
+      /const CITY_SLUG_REDIRECTS\s*=\s*\{[\s\S]*?\};/,
+      `const CITY_SLUG_REDIRECTS = ${cityRedirects};`,
+    );
   writeFileSync(wp, src);
+
   console.log(
     `Worker synced: cities=${geo.cities.length} departments=${geo.departments.length} regions=${geo.regions.length} themes=${themeSlugs.length} products=${productSlugs.length}`,
   );
