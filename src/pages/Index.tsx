@@ -18,8 +18,23 @@ import imgSupports from "@/assets/services/supports-publicitaires.jpg";
 import imgPerso from "@/assets/services/personnalisation.jpg";
 import imgLivraison from "@/assets/services/livraison-express.jpg";
 import imgPdf from "@/assets/services/verification-pdf.jpg";
+import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
+import { categoryVisuals } from "@/seo/data/catalog-visuals";
+
+/* ─── Univers catalogue (visuels produits réels) ─── */
+const homeUniverses = [
+  { slug: "impression-papier", title: "Impression papier", desc: "Cartes de visite, flyers, dépliants, brochures." },
+  { slug: "panneaux-baches-vinyles-toiles", title: "Panneaux & bâches", desc: "Dibond, PVC, bâches et toiles grand format." },
+  { slug: "publicite-exterieure", title: "Publicité extérieure", desc: "Beach flags, banderoles, panneaux de chantier." },
+  { slug: "publicite-interieure", title: "PLV & intérieur", desc: "Roll-ups, totems, comptoirs et présentoirs." },
+  { slug: "etiquettes-stickers", title: "Étiquettes & stickers", desc: "Autocollants et étiquettes en rouleau." },
+  { slug: "textiles-accessoires", title: "Textiles personnalisés", desc: "T-shirts, polos, sweats marqués à votre logo." },
+  { slug: "objets-publicitaires-cadeaux", title: "Objets publicitaires", desc: "Mugs, stylos, clés USB, goodies d'entreprise." },
+  { slug: "emballages-sacs", title: "Emballages & sacs", desc: "Boîtes, sacs et packagings personnalisés." },
+];
 
 /* ─── Data ─── */
+
 const services = [
   { icon: FileText, title: "Impression professionnelle", desc: "Cartes de visite, flyers, dépliants, affiches, brochures et supports imprimés pour entreprises, commerces, associations et collectivités. Impression soignée, finitions de qualité et accompagnement personnalisé de la demande jusqu'à la livraison.", cta: "Voir les produits", img: imgImpression, link: "/impression-numerique" },
   { icon: Image, title: "Grand format & signalétique", desc: "Bâches, panneaux, adhésifs, roll-ups, kakémonos, affiches grand format et signalétique intérieure ou extérieure. Des supports visibles, résistants et adaptés à vos opérations commerciales, événements et points de vente.", cta: "Découvrir les supports", img: imgGrandFormat, link: "/grand-format" },
@@ -335,6 +350,35 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* ─── UNIVERS PRODUITS (visuels catalogue réels) ─── */}
+      <section id="univers" className="py-8">
+        <div className="container">
+          <h2 className="font-display text-2xl font-bold text-foreground text-center mb-2">
+            Nos univers produits
+          </h2>
+          <p className="text-center text-muted-foreground text-sm mb-8">
+            Plus de 900 produits imprimés et personnalisables, configurables en ligne.
+          </p>
+          <div className="grid gap-5 grid-cols-2 lg:grid-cols-4">
+            {homeUniverses.map((u) => {
+              const visual = categoryVisuals[u.slug];
+              return (
+                <VisualCategoryCard
+                  key={u.slug}
+                  to={`/categorie/${u.slug}`}
+                  title={u.title}
+                  description={u.desc}
+                  image={visual.url}
+                  imageAlt={`${u.title} — ${visual.alt}`}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+
 
       {/* ─── DEVIS ─── */}
       <section id="devis" className="py-12">

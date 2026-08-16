@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/supports-publicitaires.jpg";
 import imgSalon from "@/assets/services/supports-salon.jpg";
+import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
+import { catalogVisuals } from "@/seo/data/catalog-visuals";
 
 export default function SupportsPublicitaires() {
   useSEO({
@@ -38,24 +40,30 @@ export default function SupportsPublicitaires() {
         </div>
 
         {/* Produits */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-10">
           {[
-            { icon: Layers, title: "Roll-ups & enrouleurs", to: "/products/category/roll-ups", desc: "Structures légères et transportables. Impression HD, changement de visuel possible. De 60 à 200 cm de large." },
-            { icon: Flag, title: "Drapeaux & oriflammes", to: "/products/category/drapeaux-beachflags-accessoires", desc: "Beach flags, voiles, flammes. Impression sublimation recto-verso. Résistants au vent et aux intempéries." },
-            { icon: Tent, title: "Tentes & barnums", to: "/products/category/tonnelles-mobilier-exterieur", desc: "Tentes pliantes personnalisées 3x3, 3x4.5, 3x6. Structure aluminium, impression toile complète." },
-            { icon: Layers, title: "Totems & colonnes", to: "/products/category/bannieres-structures-fixation", desc: "Totems elliptiques, carrés, triangulaires. Éclairés ou non. Impressionnants et visibles de loin." },
-            { icon: Flag, title: "Comptoirs d'accueil", to: "/products/category/stands-materiel-expo", desc: "Comptoirs pliables avec impression graphique. Idéal pour accueil salon, inscription événement." },
-            { icon: Layers, title: "PLV & présentoirs", to: "/products/category/presentoirs-materiel-plv", desc: "Chevalets, porte-brochures, displays carton, kakémonos. Mise en valeur de vos produits en magasin." },
-          ].map((item) => (
-            <Link key={item.title} to={item.to} className="glass-card p-5 block transition-colors hover:bg-primary/5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 mb-3">
-                <item.icon className="h-5 w-5 text-primary" />
-              </div>
-              <h3 className="font-display text-sm font-semibold text-foreground">{item.title}</h3>
-              <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
-            </Link>
-          ))}
+            { key: "kakemonos-rollups", title: "Roll-ups & enrouleurs", to: "/products/category/roll-ups", desc: "Structures légères et transportables. Impression HD, changement de visuel possible. De 60 à 200 cm de large." },
+            { key: "drapeaux-oriflammes", title: "Drapeaux & oriflammes", to: "/products/category/drapeaux-beachflags-accessoires", desc: "Beach flags, voiles, flammes. Impression sublimation recto-verso. Résistants au vent et aux intempéries." },
+            { key: "tentes-barnums", title: "Tentes & barnums", to: "/products/category/tonnelles-mobilier-exterieur", desc: "Tentes pliantes personnalisées 3x3, 3x4.5, 3x6. Structure aluminium, impression toile complète." },
+            { key: "totems-colonnes", title: "Totems & colonnes", to: "/products/category/bannieres-structures-fixation", desc: "Totems elliptiques, carrés, triangulaires. Éclairés ou non. Impressionnants et visibles de loin." },
+            { key: "comptoirs-accueil", title: "Comptoirs d'accueil", to: "/products/category/stands-materiel-expo", desc: "Comptoirs pliables avec impression graphique. Idéal pour accueil salon, inscription événement." },
+            { key: "plv-presentoirs", title: "PLV & présentoirs", to: "/products/category/presentoirs-materiel-plv", desc: "Chevalets, porte-brochures, displays carton, kakémonos. Mise en valeur de vos produits en magasin." },
+          ].map((item, i) => {
+            const visual = catalogVisuals[item.key];
+            return (
+              <VisualCategoryCard
+                key={item.title}
+                to={item.to}
+                title={item.title}
+                description={item.desc}
+                image={visual.url}
+                imageAlt={`${item.title} — ${visual.alt}`}
+                eager={i < 3}
+              />
+            );
+          })}
         </div>
+
 
         {/* Visuel salon */}
         <div className="glass-card overflow-hidden mb-10">

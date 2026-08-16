@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/personnalisation.jpg";
 import imgObjets from "@/assets/services/personnalisation-objets.jpg";
+import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
+import { catalogVisuals } from "@/seo/data/catalog-visuals";
 
 export default function Personnalisation() {
   useSEO({
@@ -38,24 +40,30 @@ export default function Personnalisation() {
         </div>
 
         {/* Produits */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-10">
           {[
-            { icon: Shirt, title: "T-shirts & polos", to: "/products/category/vetements", desc: "Coton bio, polyester technique, coupe homme/femme/enfant. Marquage sérigraphie, transfert ou DTF." },
-            { icon: Shirt, title: "Sweats & vestes", to: "/products/category/vetements", desc: "Sweats zippés, hoodies, softshells, polaires. Broderie ou impression, petites et grandes séries." },
-            { icon: Coffee, title: "Mugs & thermos", to: "/products/category/verrerie-vaisselle-gourdes", desc: "Mugs céramique, thermos inox, gourdes. Impression sublimation haute qualité, lavable en machine." },
-            { icon: Printer, title: "Stylos & papeterie", to: "/products/category/articles-papeterie", desc: "Stylos bille, roller, feutres. Carnets, bloc-notes, agendas personnalisés à votre logo." },
-            { icon: Coffee, title: "Sacs & bagagerie", to: "/products/category/sacs-tote-bags", desc: "Tote bags, sacs shopping, sacoches, valises. Impression sérigraphie ou numérique directe." },
-            { icon: Printer, title: "High-tech & USB", to: "/products/category/gadgets", desc: "Clés USB, batteries externes, enceintes, supports téléphone. Gravure laser ou impression." },
-          ].map((item) => (
-            <Link key={item.title} to={item.to} className="glass-card p-5 block transition-colors hover:bg-primary/5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 mb-3">
-                <item.icon className="h-5 w-5 text-primary" />
-              </div>
-              <h3 className="font-display text-sm font-semibold text-foreground">{item.title}</h3>
-              <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
-            </Link>
-          ))}
+            { key: "tshirts-polos", title: "T-shirts & polos", to: "/products/category/vetements", desc: "Coton bio, polyester technique, coupe homme/femme/enfant. Marquage sérigraphie, transfert ou DTF." },
+            { key: "sweats-vestes", title: "Sweats & vestes", to: "/products/category/vetements", desc: "Sweats zippés, hoodies, softshells, polaires. Broderie ou impression, petites et grandes séries." },
+            { key: "mugs-thermos", title: "Mugs & thermos", to: "/products/category/verrerie-vaisselle-gourdes", desc: "Mugs céramique, thermos inox, gourdes. Impression sublimation haute qualité, lavable en machine." },
+            { key: "stylos-papeterie", title: "Stylos & papeterie", to: "/products/category/articles-papeterie", desc: "Stylos bille, roller, feutres. Carnets, bloc-notes, agendas personnalisés à votre logo." },
+            { key: "sacs-bagagerie", title: "Sacs & bagagerie", to: "/products/category/sacs-tote-bags", desc: "Tote bags, sacs shopping, sacoches, valises. Impression sérigraphie ou numérique directe." },
+            { key: "hightech-usb", title: "High-tech & USB", to: "/products/category/gadgets", desc: "Clés USB, batteries externes, enceintes, supports téléphone. Gravure laser ou impression." },
+          ].map((item, i) => {
+            const visual = catalogVisuals[item.key];
+            return (
+              <VisualCategoryCard
+                key={item.title}
+                to={item.to}
+                title={item.title}
+                description={item.desc}
+                image={visual.url}
+                imageAlt={`${item.title} — ${visual.alt}`}
+                eager={i < 3}
+              />
+            );
+          })}
         </div>
+
 
         {/* Visuel objets */}
         <div className="glass-card overflow-hidden mb-10">
