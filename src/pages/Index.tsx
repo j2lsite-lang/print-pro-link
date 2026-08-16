@@ -22,6 +22,13 @@ import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
 import { categoryVisuals, catalogVisuals, cdnImage } from "@/seo/data/catalog-visuals";
 
 /* ─── Univers catalogue (visuels produits réels) ─── */
+const heroTiles = [
+  { key: "brochures-catalogues", label: "Brochures & catalogues", to: "/categorie/impression-papier/brochures-magazines" },
+  { key: "cartes-de-visite", label: "Cartes de visite", to: "/categorie/impression-papier/cartes-visite-enveloppes" },
+  { key: "affiches-posters", label: "Affiches & posters", to: "/categorie/impression-papier/flyers-depliants-affiches" },
+  { key: "flyers-depliants", label: "Flyers & dépliants", to: "/categorie/impression-papier/flyers-depliants-affiches" },
+] as const;
+
 const homeUniverses = [
   { slug: "impression-papier", title: "Impression papier", desc: "Cartes de visite, flyers, dépliants, brochures." },
   { slug: "panneaux-baches-vinyles-toiles", title: "Panneaux & bâches", desc: "Dibond, PVC, bâches et toiles grand format." },
