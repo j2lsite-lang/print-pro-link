@@ -7,6 +7,7 @@ import { useCart } from "@/hooks/useCart";
 import { supabase } from "@/integrations/supabase/client";
 import { FLAT_SHIPPING_HT } from "@/lib/pricing";
 import { toast } from "sonner";
+import { trackGenerateLead } from "@/lib/analytics";
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
@@ -128,6 +129,7 @@ export default function Checkout() {
 
 
       clearCart();
+      trackGenerateLead("devis_panier");
       toast.success("Demande de devis envoyée avec succès ! Nous vous recontactons rapidement.");
       navigate("/");
     } catch (err: any) {
