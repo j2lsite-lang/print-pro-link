@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/hooks/useCart";
 import AppLayout from "@/components/layout/AppLayout";
 import Index from "./pages/Index";
+import PageViewTracker from "@/components/analytics/PageViewTracker";
 
 // Lazy-loaded routes — split into on-demand chunks to reduce the main bundle
 // and Total Blocking Time. The homepage (Index) stays eager for fast first paint.
@@ -49,6 +50,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <PageViewTracker />
             <Suspense fallback={null}>
               <Routes>
                 <Route element={<AppLayout />}>
