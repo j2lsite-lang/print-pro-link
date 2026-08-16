@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 
 export const SITE_URL = "https://j2lprint.fr";
@@ -35,6 +36,15 @@ export default function Seo({
   const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
   const canonical = `${SITE_URL}${path}`;
   const blocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+
+  // Le HTML prérendu contient déjà les mêmes blocs JSON-LD. Helmet réinjecte
+  // les siens côté client : on retire les blocs prérendus pour garantir UNE
+  // seule occurrence de chaque schéma (WebPage, BreadcrumbList, FAQPage…).
+  useEffect(() => {
+    document
+      .querySelectorAll('script[type="application/ld+json"][data-prerendered-ldjson]')
+      .forEach((el) => el.remove());
+  }, [path]);
 
   return (
     <Helmet>
