@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/supports-publicitaires.jpg";
 import imgSalon from "@/assets/services/supports-salon.jpg";
+import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
+import { catalogVisuals } from "@/seo/data/catalog-visuals";
 
 export default function SupportsPublicitaires() {
   useSEO({
