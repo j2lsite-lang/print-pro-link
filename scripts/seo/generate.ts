@@ -7,7 +7,7 @@
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 import { buildAllPages, buildProductPages, buildThemePages } from "./build-pages";
-import { loadGeo, CITY_SLUG_REDIRECTS } from "./geo-data";
+import { loadGeo, CITY_SLUG_REDIRECTS, REMOVED_GEO_PATHS } from "./geo-data";
 import type { SeoPage } from "../../src/seo/types";
 
 const BASE_URL = "https://j2lprint.fr";
