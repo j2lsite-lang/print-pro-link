@@ -90,8 +90,36 @@ export function loadGeo(): GeoData {
   if (cache) return cache;
   const p = resolve("src/seo/data/geography-national.json");
   const raw = JSON.parse(readFileSync(p, "utf8")) as GeoData;
-  const cities = dedupeCities(raw.cities || []);
+  const allCities = dedupeCities(raw.cities || []);
+
+  // --- Exclusion DOM-TOM (Guyane, Martinique, Mayotte, La Réunion) ---------
+  const excluded = (regionSlug: string) => EXCLUDED_REGION_SLUGS.has(regionSlug);
+  const removedCities = allCities.filter((c) => excluded(c.regionSlug));
+  const cities = allCities.filter((c) => !excluded(c.regionSlug));
+  const removedDepartments = (raw.departments || []).filter((d) => excluded(d.regionSlug));
+  const departmentsKept = (raw.departments || []).filter((d) => !excluded(d.regionSlug));
+  const removedRegions = (raw.regions || []).filter((r) => excluded(r.slug));
+  const regions = (raw.regions || []).filter((r) => !excluded(r.slug));
+
+  const removedCitySlugs = new Set(removedCities.map((c) => c.slug));
+  // Un ancien slug redirigé vers une ville supprimée devient lui aussi une
+  // URL supprimée (301 /catalogue), jamais une 301 vers une page inexistante.
+  for (const [from, to] of Object.entries(CITY_SLUG_REDIRECTS)) {
+    if (removedCitySlugs.has(to)) {
+      delete CITY_SLUG_REDIRECTS[from];
+      removedCitySlugs.add(from);
+    }
+  }
+  REMOVED_GEO_PATHS.length = 0;
+  REMOVED_GEO_PATHS.push(
+    ...[...removedCitySlugs].flatMap((s) => [`/ville/${s}`, `/imprimerie/${s}`]),
+    ...removedDepartments.map((d) => `/departement/${d.slug}`),
+    ...removedRegions.map((r) => `/region/${r.slug}`),
+  );
+  REMOVED_GEO_PATHS.sort();
+
   const validSlugs = new Set(cities.map((c) => c.slug));
+  const validDeptSlugs = new Set(departmentsKept.map((d) => d.slug));
   cache = {
     cities: cities.map((c) => ({
       ...c,
@@ -99,14 +127,21 @@ export function loadGeo(): GeoData {
         .map((s) => CITY_SLUG_REDIRECTS[s] || s)
         .filter((s, i, arr) => s !== c.slug && validSlugs.has(s) && arr.indexOf(s) === i),
     })),
-    departments: (raw.departments || []).map((d) => ({
+    departments: departmentsKept.map((d) => ({
       ...d,
       citySlugs: (d.citySlugs || [])
         .map((s) => CITY_SLUG_REDIRECTS[s] || s)
         .filter((s, i, arr) => validSlugs.has(s) && arr.indexOf(s) === i),
+      neighborDepartmentSlugs: (d.neighborDepartmentSlugs || []).filter((s) =>
+        validDeptSlugs.has(s),
+      ),
     })),
-    regions: raw.regions || [],
+    regions: regions.map((r) => ({
+      ...r,
+      departmentSlugs: (r.departmentSlugs || []).filter((s) => validDeptSlugs.has(s)),
+    })),
   };
   return cache;
+
 }
 
