@@ -236,6 +236,9 @@ function computeLegacyRedirect(pathname) {
   const parts = pathname.split("/").filter(Boolean);
   if (parts.length === 0) return null;
 
+  // Pages géographiques supprimées (DOM-TOM) -> 301 /catalogue.
+  if (REMOVED_GEO_SET.has(pathname)) return "/catalogue";
+
   // Anciens préfixes de fiches produits : /produits/:slug, /produit/:slug,
   // /product/:slug -> /products/:slug (si le produit existe, sinon catalogue).
   if (["produits", "produit", "product"].includes(parts[0]) && parts.length >= 2) {
@@ -312,7 +315,7 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/4.5.1");
+  headers.set("X-Worker", "j2lprint-seo/4.6.0");
 }
 
 /** Fetch origine : on joint directement l'hôte d'origine dédié
@@ -387,7 +390,7 @@ export default {
       applySecurityHeaders(h);
       return new Response(JSON.stringify({
         ok: true,
-        worker: "j2lprint-seo/4.5.1",
+        worker: "j2lprint-seo/4.6.0",
         host: url.hostname,
         origin: ORIGIN_HOST,
         products: PRODUCTS.length,
@@ -395,6 +398,7 @@ export default {
         cities: CITIES.length,
         departments: DEPARTMENTS.length,
         regions: REGIONS.length,
+        removedGeoPaths: REMOVED_GEO_PATHS.length,
         fallbackToHome: false,
       }), { status: 200, headers: h });
     }
