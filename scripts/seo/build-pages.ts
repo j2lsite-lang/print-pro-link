@@ -817,8 +817,22 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     }
   }
 
+  // Dernier garde-fou SERP : meta description <= 158 caractères, coupée sur une
+  // phrase complète (jamais en plein mot) et sans jamais créer de doublon.
+  const seenDesc = new Set(pages.map((p) => p.description));
+  for (const p of pages) {
+    if (p.description.length <= 158) continue;
+    const short = truncate(p.description, 158);
+    if (short.length >= 90 && !seenDesc.has(short)) {
+      seenDesc.delete(p.description);
+      seenDesc.add(short);
+      p.description = short;
+    }
+  }
+
   return pages;
 }
+
 
 
 
