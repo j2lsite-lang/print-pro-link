@@ -54,14 +54,19 @@ const ORIGIN_HOST = "origin.j2lprint.fr";
    "election-posters-fr": "posters",
  };
 
+// Pages géographiques retirées du périmètre (DOM-TOM : Guyane, Martinique,
+// Mayotte, La Réunion). Toutes ces anciennes URL -> 301 /catalogue.
+// Synchronisé par scripts/seo/generate.ts. La Guadeloupe est conservée.
+const REMOVED_GEO_PATHS = [];
+const REMOVED_GEO_SET = new Set(REMOVED_GEO_PATHS);
+
 // Communes présentes en double dans la base géographique : une seule URL
 // indexable, l'autre est redirigée en 301. Synchronisé par generate.ts.
 const CITY_SLUG_REDIRECTS = {
   "les-sables-d-olonne": "les-sables-dolonne",
-  "mayenne-ville": "mayenne",
-  "saint-paul-reunion": "saint-paul",
-  "saint-pierre-reunion": "saint-pierre"
+  "mayenne-ville": "mayenne"
 };
+
 // LOVABLE_ORIGIN_HOST retiré : provoquait une boucle de redirection (voir 7.2).
 // const LOVABLE_ORIGIN_HOST = "print-pro-link.lovable.app";
 
