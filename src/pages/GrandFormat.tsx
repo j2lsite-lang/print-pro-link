@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import imgService from "@/assets/services/grand-format.jpg";
 import imgBache from "@/assets/services/grand-format-bache.jpg";
+import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
+import { catalogVisuals } from "@/seo/data/catalog-visuals";
 
 export default function GrandFormat() {
   useSEO({
