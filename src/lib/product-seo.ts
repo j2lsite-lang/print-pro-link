@@ -104,7 +104,7 @@ function buildUseCases(name: string, fam: SemanticEntry, seed: number): string {
 function buildQuality(fam: SemanticEntry, seed: number): string {
   const mat = naturalList(pickN(fam.materials, seed, 3));
   const fin = naturalList(pickN(fam.finitions, seed + 1, 3));
-  return `Fabrication professionnelle sur ${mat}, avec un choix de finitions : ${fin}. Vos fichiers PDF sont vérifiés avant impression et chaque commande est contrôlée avant expédition, partout en France métropolitaine.`;
+  return `Impression professionnelle sur ${mat}, avec un choix de finitions : ${fin}. Vos fichiers PDF sont vérifiés avant impression et chaque commande est contrôlée avant expédition, partout en France métropolitaine.`;
 }
 
 /** "Pourquoi choisir" benefit bullets (seeded, family-aware). */
