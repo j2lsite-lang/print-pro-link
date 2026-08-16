@@ -390,7 +390,11 @@ Deno.serve(async (req) => {
   if (url.searchParams.get('preview') === '1') {
     return new Response(buildNotificationHtml(payload, signed), {
       status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'text/html; charset=utf-8', 'X-Subject': subject },
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'text/html; charset=utf-8',
+        'X-Subject': encodeURIComponent(subject),
+      },
     })
   }
 
