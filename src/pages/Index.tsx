@@ -19,7 +19,7 @@ import imgPerso from "@/assets/services/personnalisation.jpg";
 import imgLivraison from "@/assets/services/livraison-express.jpg";
 import imgPdf from "@/assets/services/verification-pdf.jpg";
 import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
-import { categoryVisuals } from "@/seo/data/catalog-visuals";
+import { categoryVisuals, catalogVisuals, cdnImage } from "@/seo/data/catalog-visuals";
 
 /* ─── Univers catalogue (visuels produits réels) ─── */
 const homeUniverses = [
