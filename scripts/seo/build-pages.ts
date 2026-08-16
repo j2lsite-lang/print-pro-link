@@ -885,8 +885,33 @@ async function fetchCatalogProducts(): Promise<Map<string, CatalogProductLite>> 
 function truncate(s: string, max = 158): string {
   const clean = s.replace(/\s+/g, " ").trim();
   if (clean.length <= max) return clean;
-  return `${clean.slice(0, max - 1).replace(/[\s,.;:]+\S*$/, "")}…`;
+  // Prefer keeping whole sentences (no mid-word cut, no ellipsis in SERP).
+  const sentences = clean.split(/(?<=[.!?])\s+/);
+  let out = "";
+  for (const sentence of sentences) {
+    const next = out ? `${out} ${sentence}` : sentence;
+    if (next.length > max) break;
+    out = next;
+  }
+  if (out.length >= Math.min(80, max * 0.5)) return out;
+  // Fallback: cut on a word boundary and close the sentence cleanly.
+  const cut = clean.slice(0, max).replace(/[\s,;:–-]+\S*$/, "").replace(/[.,;:–-]+$/, "");
+  return `${cut}.`;
 }
+
+/** Builds a SERP-safe title (<= max chars) without ever cutting mid-word. */
+function fitTitle(name: string, variants: string[], max = 60): string {
+  const clean = (s: string) => s.replace(/\s+/g, " ").trim();
+  for (const variant of variants) {
+    const v = clean(variant);
+    if (v.length <= max) return v;
+  }
+  const short = clean(`${name} | J2L Print`);
+  if (short.length <= max) return short;
+  const trimmedName = clean(name).slice(0, max - " | J2L Print".length).replace(/[\s,;:–-]+\S*$/, "");
+  return `${trimmedName} | J2L Print`;
+}
+
 
 export async function buildProductPages(): Promise<SeoPage[]> {
   const home: BreadcrumbItemLite = { name: "Accueil", path: "/" };
