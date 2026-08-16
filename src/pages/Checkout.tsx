@@ -23,6 +23,9 @@ export default function Checkout() {
 
   const [fileUploads, setFileUploads] = useState<Record<string, { url: string; name: string; path: string }>>({});
   const [submitting, setSubmitting] = useState(false);
+  // Verrou d'envoi : empêche tout second appel (double-clic) de créer
+  // une deuxième demande et donc un deuxième e-mail interne.
+  const submittingRef = useRef(false);
 
   // Forfait de livraison fixe : 11,90 € HT, ajouté une seule fois par demande de devis.
   const productsTotalHt = total;
@@ -44,6 +47,8 @@ export default function Checkout() {
       toast.error("Veuillez remplir au minimum votre nom, prénom et email.");
       return;
     }
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
 
     try {
@@ -128,6 +133,7 @@ export default function Checkout() {
     } catch (err: any) {
       toast.error("Erreur: " + err.message);
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   };
