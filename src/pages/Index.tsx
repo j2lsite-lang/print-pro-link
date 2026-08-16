@@ -12,6 +12,7 @@ import { useSEO } from "@/hooks/useSEO";
 // Supabase is loaded on demand (only when a form is actually submitted) so its
 // client never weighs on the homepage's initial JavaScript / Total Blocking Time.
 import { useToast } from "@/hooks/use-toast";
+import { trackGenerateLead } from "@/lib/analytics";
 import imgImpression from "@/assets/services/impression-numerique.jpg";
 import imgGrandFormat from "@/assets/services/grand-format.jpg";
 import imgSupports from "@/assets/services/supports-publicitaires.jpg";
@@ -130,6 +131,8 @@ export default function Index() {
     if (error) {
       toast({ title: "Erreur", description: "Impossible d'envoyer la demande. Veuillez réessayer.", variant: "destructive" });
     } else {
+      // Conversion GA4 : envoyée uniquement après confirmation réelle.
+      trackGenerateLead("devis_accueil", { product: product || undefined });
       toast({ title: "Demande envoyée ✓", description: "Nous vous répondons sous 24h." });
       form.reset();
     }
@@ -179,6 +182,7 @@ export default function Index() {
     if (error) {
       toast({ title: "Erreur", description: "Impossible d'envoyer la demande. Veuillez réessayer.", variant: "destructive" });
     } else {
+      trackGenerateLead("rappel_telephonique");
       setCallbackSent(true);
       setTimeout(() => {
         setCallbackOpen(false);

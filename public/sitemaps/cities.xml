@@ -709,12 +709,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/ville/cayenne</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://j2lprint.fr/ville/ceret</loc>
     <lastmod>2026-08-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -1177,12 +1171,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/ville/dzaoudzi</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://j2lprint.fr/ville/echirolles</loc>
     <lastmod>2026-08-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -1328,12 +1316,6 @@
   </url>
   <url>
     <loc>https://j2lprint.fr/ville/forbach</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/ville/fort-de-france</loc>
     <lastmod>2026-08-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -1615,18 +1597,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/ville/koungou</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/ville/kourou</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://j2lprint.fr/ville/l-isle-jourdain</loc>
     <lastmod>2026-08-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -1765,12 +1735,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/ville/le-lamentin</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://j2lprint.fr/ville/le-mans</loc>
     <lastmod>2026-08-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -1778,18 +1742,6 @@
   </url>
   <url>
     <loc>https://j2lprint.fr/ville/le-puy-en-velay</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/ville/le-robert</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/ville/le-tampon</loc>
     <lastmod>2026-08-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -1987,12 +1939,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/ville/mamoudzou</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://j2lprint.fr/ville/manosque</loc>
     <lastmod>2026-08-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -2048,12 +1994,6 @@
   </url>
   <url>
     <loc>https://j2lprint.fr/ville/massy</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/ville/matoury</loc>
     <lastmod>2026-08-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -2779,12 +2719,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/ville/saint-denis-reunion</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://j2lprint.fr/ville/saint-die-des-vosges</loc>
     <lastmod>2026-08-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -2851,12 +2785,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://j2lprint.fr/ville/saint-laurent-du-maroni</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://j2lprint.fr/ville/saint-lo</loc>
     <lastmod>2026-08-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -2912,18 +2840,6 @@
   </url>
   <url>
     <loc>https://j2lprint.fr/ville/saint-nicolas-de-port</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/ville/saint-paul</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/ville/saint-pierre</loc>
     <lastmod>2026-08-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -3062,12 +2978,6 @@
   </url>
   <url>
     <loc>https://j2lprint.fr/ville/schiltigheim</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://j2lprint.fr/ville/schoelcher</loc>
     <lastmod>2026-08-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

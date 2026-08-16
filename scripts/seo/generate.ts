@@ -7,7 +7,7 @@
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 import { buildAllPages, buildProductPages, buildThemePages } from "./build-pages";
-import { loadGeo, CITY_SLUG_REDIRECTS } from "./geo-data";
+import { loadGeo, CITY_SLUG_REDIRECTS, REMOVED_GEO_PATHS } from "./geo-data";
 import type { SeoPage } from "../../src/seo/types";
 
 const BASE_URL = "https://j2lprint.fr";
@@ -84,13 +84,18 @@ function syncWorker(productSlugs: string[], themeSlugs: string[]) {
     .replace(
       /const CITY_SLUG_REDIRECTS\s*=\s*\{[\s\S]*?\};/,
       `const CITY_SLUG_REDIRECTS = ${cityRedirects};`,
+    )
+    .replace(
+      /const REMOVED_GEO_PATHS\s*=\s*\[[\s\S]*?\];/,
+      `const REMOVED_GEO_PATHS = ${JSON.stringify(REMOVED_GEO_PATHS)};`,
     );
   writeFileSync(wp, src);
 
   console.log(
-    `Worker synced: cities=${geo.cities.length} departments=${geo.departments.length} regions=${geo.regions.length} themes=${themeSlugs.length} products=${productSlugs.length}`,
+    `Worker synced: cities=${geo.cities.length} departments=${geo.departments.length} regions=${geo.regions.length} themes=${themeSlugs.length} products=${productSlugs.length} removedGeo=${REMOVED_GEO_PATHS.length}`,
   );
 }
+
 
 async function main() {
   const pages = await buildAllPages();

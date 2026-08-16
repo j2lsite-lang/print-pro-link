@@ -46,9 +46,14 @@ export function renderHead(page: SeoPage): string {
     `<meta name="twitter:title" content="${t}" />`,
     `<meta name="twitter:description" content="${d}" />`,
     `<meta name="twitter:image" content="${OG_IMAGE}" />`,
+    // data-prerendered-ldjson : ces blocs sont retirés à l'hydratation par
+    // <Seo> qui réinjecte exactement les mêmes schémas via Helmet.
+    // Objectif : une seule occurrence de chaque schéma dans le DOM final.
     ...page.jsonLd.map(
-      (b) => `<script type="application/ld+json">${JSON.stringify(b)}</script>`,
+      (b) =>
+        `<script type="application/ld+json" data-prerendered-ldjson="1">${JSON.stringify(b)}</script>`,
     ),
+
   ];
   return tags.join("\n    ");
 }
