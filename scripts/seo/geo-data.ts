@@ -41,11 +41,28 @@ export interface GeoData {
 let cache: GeoData | null = null;
 
 /**
+ * Régions/départements exclus du périmètre commercial J2L Print (DOM-TOM).
+ * Leurs pages villes / départements / régions ne sont plus générées ni
+ * référencées ; les anciennes URL sont redirigées en 301 vers /catalogue
+ * par le Worker (REMOVED_GEO_PATHS). La Guadeloupe est conservée.
+ */
+export const EXCLUDED_REGION_SLUGS = new Set([
+  "guyane",
+  "martinique",
+  "mayotte",
+  "la-reunion",
+]);
+
+/** Chemins des pages géographiques supprimées -> 301 /catalogue. */
+export const REMOVED_GEO_PATHS: string[] = [];
+
+/**
  * Communes présentes deux fois dans la base (même nom + même département,
  * deux slugs). On ne garde qu'une URL indexable ; l'ancien slug est
  * redirigé en 301 par le Worker (voir CITY_SLUG_REDIRECTS).
  */
 export const CITY_SLUG_REDIRECTS: Record<string, string> = {};
+
 
 function dedupeCities(cities: GeoCity[]): GeoCity[] {
   const byKey = new Map<string, GeoCity>();
