@@ -40,20 +40,20 @@ export default function SupportsPublicitaires() {
         {/* Produits */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
           {[
-            { icon: Layers, title: "Roll-ups & enrouleurs", desc: "Structures légères et transportables. Impression HD, changement de visuel possible. De 60 à 200 cm de large." },
-            { icon: Flag, title: "Drapeaux & oriflammes", desc: "Beach flags, voiles, flammes. Impression sublimation recto-verso. Résistants au vent et aux intempéries." },
-            { icon: Tent, title: "Tentes & barnums", desc: "Tentes pliantes personnalisées 3x3, 3x4.5, 3x6. Structure aluminium, impression toile complète." },
-            { icon: Layers, title: "Totems & colonnes", desc: "Totems elliptiques, carrés, triangulaires. Éclairés ou non. Impressionnants et visibles de loin." },
-            { icon: Flag, title: "Comptoirs d'accueil", desc: "Comptoirs pliables avec impression graphique. Idéal pour accueil salon, inscription événement." },
-            { icon: Layers, title: "PLV & présentoirs", desc: "Chevalets, porte-brochures, displays carton, kakémonos. Mise en valeur de vos produits en magasin." },
+            { icon: Layers, title: "Roll-ups & enrouleurs", to: "/products/category/roll-ups", desc: "Structures légères et transportables. Impression HD, changement de visuel possible. De 60 à 200 cm de large." },
+            { icon: Flag, title: "Drapeaux & oriflammes", to: "/products/category/drapeaux-beachflags-accessoires", desc: "Beach flags, voiles, flammes. Impression sublimation recto-verso. Résistants au vent et aux intempéries." },
+            { icon: Tent, title: "Tentes & barnums", to: "/products/category/tonnelles-mobilier-exterieur", desc: "Tentes pliantes personnalisées 3x3, 3x4.5, 3x6. Structure aluminium, impression toile complète." },
+            { icon: Layers, title: "Totems & colonnes", to: "/products/category/bannieres-structures-fixation", desc: "Totems elliptiques, carrés, triangulaires. Éclairés ou non. Impressionnants et visibles de loin." },
+            { icon: Flag, title: "Comptoirs d'accueil", to: "/products/category/stands-materiel-expo", desc: "Comptoirs pliables avec impression graphique. Idéal pour accueil salon, inscription événement." },
+            { icon: Layers, title: "PLV & présentoirs", to: "/products/category/presentoirs-materiel-plv", desc: "Chevalets, porte-brochures, displays carton, kakémonos. Mise en valeur de vos produits en magasin." },
           ].map((item) => (
-            <div key={item.title} className="glass-card p-5">
+            <Link key={item.title} to={item.to} className="glass-card p-5 block transition-colors hover:bg-primary/5">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 mb-3">
                 <item.icon className="h-5 w-5 text-primary" />
               </div>
               <h3 className="font-display text-sm font-semibold text-foreground">{item.title}</h3>
               <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
-            </div>
+            </Link>
           ))}
         </div>
 
