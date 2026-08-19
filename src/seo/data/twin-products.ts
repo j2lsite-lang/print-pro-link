@@ -70,7 +70,7 @@ export const TWIN_PRODUCT_NAMES: Record<string, string> = {
   "foldable-banners": "Bâche pliable",
   "framed-posters": "Affiche encadrée",
   "holographic-stickers": "Autocollant holographique",
-  "hoodie-premium-3": "Sweat à capuche B&C King",
+  "hoodie-premium-3": "Sweat à capuche B&C King 280 g/m²",
   "info-stands": "Présentoir d'information",
   "info-stands-deluxe": "Présentoir d'information deluxe",
   "interchangable-sling-deckchair": "Transat avec toile interchangeable",
