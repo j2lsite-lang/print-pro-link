@@ -347,7 +347,7 @@ export function cityCopy(c: GenCity): CityCopy {
     },
     {
       q: `J2L Print possède-t-il une boutique à ${c.name} ?`,
-      a: `Non. J2L Print est un imprimeur 100 % en ligne : configuration, validation du fichier, suivi et devis se font à distance, avec livraison à ${c.name}.`,
+      a: `Non. J2L Print est un spécialiste de l'impression 100 % en ligne : configuration, validation du fichier, suivi et devis se font à distance, avec livraison à ${c.name}.`,
     },
     {
       q: "Quels produits conviennent à un salon professionnel ?",
