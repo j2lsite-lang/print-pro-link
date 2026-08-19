@@ -195,7 +195,7 @@ async function main() {
   const ecoCount = (p: SeoPage) => linkPaths(p).filter((x) => ECO_PATHS.has(x)).length;
   const missingEcoCity = cities.filter((p) => ecoCount(p) < 1);
   const missingEcoDept = departments.filter((p) => ecoCount(p) < 2);
-  const missingEcoRegion = regions.filter((p) => ecoCount(p) < 4);
+  const missingEcoRegion = regions.filter((p) => ecoCount(p) < Math.min(4, J2L_ECOSYSTEM.length));
   const totalEcoLinks = local.reduce((n, p) => n + ecoCount(p), 0);
 
   console.log("=== SEO VALIDATION ===");
@@ -235,7 +235,7 @@ async function main() {
   console.log("liens écosystème ajoutés (total):", totalEcoLinks);
   console.log("villes sous quota écosystème (<1):", missingEcoCity.length);
   console.log("départements sous quota écosystème (<2):", missingEcoDept.length);
-  console.log("régions sous quota écosystème (<4):", missingEcoRegion.length);
+  console.log("régions sous quota écosystème (tous les sites du groupe):", missingEcoRegion.length);
 
   const anomalies =
     duplicates.length + broken.length + badExternal.length + noH1.length + noH2.length + noH3.length +
