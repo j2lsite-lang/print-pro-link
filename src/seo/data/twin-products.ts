@@ -92,7 +92,7 @@ export const TWIN_PRODUCT_NAMES: Record<string, string> = {
   "sweater-budget-2": "Sweat Fruit of the Loom Classic",
   "sweater-budget-3": "Sweat B&C Set In",
   "sweater-budget-8": "Sweat Fruit of the Loom Lightweight Raglan",
-  "table-stands": "Présentoir de table",
+  "table-stands": "Présentoir de comptoir sur pied",
   "textile-stickers": "Autocollant textile",
   "textile-stretcher-a-boards": "Chevalet A avec cadre textile",
   "wall-mount-textile-frame": "Fixation murale pour cadre textile",
