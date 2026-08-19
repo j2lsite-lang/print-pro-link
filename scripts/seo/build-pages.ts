@@ -1077,18 +1077,57 @@ export async function buildProductPages(): Promise<SeoPage[]> {
 
     // Commercial & seeded title/meta so snippets stay unique, vendeurs and
     // never reduced to a raw SKU.
-    const titleVariants = [
-      `${name} personnalisé | Devis gratuit – J2L Print`,
-      `${name} sur mesure – Impression en ligne | J2L Print`,
-      `${name} pas cher à personnaliser | J2L Print`,
-      `Imprimer ${lower} en ligne – J2L Print`,
-    ];
-    const descVariants = [
-      `Commandez ${lower} personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat, devis gratuit et livraison rapide partout en France.`,
-      `${name} de qualité professionnelle à personnaliser selon vos besoins. Configuration en ligne, tarif dégressif, fichiers vérifiés et livraison en France.`,
-      `Besoin de ${lower} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, devis gratuit et expédition soignée partout en France.`,
-      `${name} imprimé sur mesure par J2L Print. Choisissez vos options, obtenez un prix immédiat et profitez d'un accompagnement et d'une livraison France entière.`,
-    ];
+    // Commercial intent depends on the REAL product family: a printed support
+    // ("imprimer / impression") vs. a goodie or a textile ("personnalisé /
+    // marquage / avec logo"). Prevents "Imprimer un stylo en ligne".
+    const topSlug = crumb.find((c) => c.path.startsWith("/categorie/"))?.path.split("/")[2] || "";
+    const intent: "print" | "goodie" | "textile" =
+      topSlug === "objets-publicitaires-cadeaux" ? "goodie"
+        : topSlug === "textiles-accessoires" ? "textile"
+        : "print";
+
+    const titleVariants =
+      intent === "goodie"
+        ? [
+            `${name} personnalisé | Devis gratuit – J2L Print`,
+            `${name} publicitaire à personnaliser | J2L Print`,
+            `${name} avec logo – Objet publicitaire | J2L Print`,
+            `${name} personnalisable en ligne | J2L Print`,
+          ]
+        : intent === "textile"
+        ? [
+            `${name} personnalisé | Devis gratuit – J2L Print`,
+            `${name} avec logo – Textile personnalisé | J2L Print`,
+            `${name} personnalisable en ligne | J2L Print`,
+            `${name} floqué ou brodé sur mesure | J2L Print`,
+          ]
+        : [
+            `${name} personnalisé | Devis gratuit – J2L Print`,
+            `${name} sur mesure – Impression en ligne | J2L Print`,
+            `${name} pas cher à personnaliser | J2L Print`,
+            `Imprimer ${lower} en ligne – J2L Print`,
+          ];
+    const descVariants =
+      intent === "goodie"
+        ? [
+            `Commandez ${lower} personnalisé avec votre logo : coloris et options de marquage au choix. Prix immédiat, devis gratuit et livraison partout en France.`,
+            `${name} publicitaire à personnaliser selon vos besoins : configuration en ligne, tarif dégressif et livraison en France.`,
+            `Besoin de ${lower} publicitaire ? Personnalisez-le en quelques clics : options sur mesure, prix transparent et devis gratuit.`,
+            `${name} personnalisable avec votre logo par J2L Print. Choisissez vos options, obtenez un prix immédiat et un accompagnement dédié.`,
+          ]
+        : intent === "textile"
+        ? [
+            `Commandez ${lower} personnalisé avec votre logo : tailles, coloris et marquage au choix. Prix immédiat, devis gratuit et livraison en France.`,
+            `${name} à personnaliser pour vos équipes ou vos événements : configuration en ligne, tarif dégressif et livraison partout en France.`,
+            `Besoin de ${lower} personnalisé ? Choisissez tailles, coloris et marquage en ligne, avec un prix transparent et un devis gratuit.`,
+            `${name} personnalisé avec votre logo par J2L Print. Sélectionnez vos options, obtenez un prix immédiat et profitez d'un suivi dédié.`,
+          ]
+        : [
+            `Commandez ${lower} personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat, devis gratuit et livraison rapide partout en France.`,
+            `${name} de qualité professionnelle à personnaliser selon vos besoins. Configuration en ligne, tarif dégressif, fichiers vérifiés et livraison en France.`,
+            `Besoin de ${lower} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, devis gratuit et expédition soignée partout en France.`,
+            `${name} imprimé sur mesure par J2L Print. Choisissez vos options, obtenez un prix immédiat et profitez d'un accompagnement et d'une livraison France entière.`,
+          ];
     const seededTitles = [
       titleVariants[seed % titleVariants.length],
       ...[...titleVariants].sort((a, b) => a.length - b.length),
