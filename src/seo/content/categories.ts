@@ -24,7 +24,7 @@ export const CATEGORY_CONTENT: Record<string, CategoryContent> = {
     h1: "Impression papier pour les professionnels",
     intro: [
       "L'impression papier reste le socle de toute communication d'entreprise : un flyer bien conçu, une carte de visite soignée ou une brochure structurée portent votre message bien au-delà de l'écran. J2L Print regroupe ici l'ensemble des supports papier, du tirage unitaire aux grandes séries.",
-      "Chaque produit est calibré pour un rendu fidèle : choix du grammage, du type de papier (couché, offset, recyclé) et des finitions (pelliculage mat ou brillant, vernis sélectif). Vous configurez, nous imprimons, vous êtes livré.",
+      "Chaque produit est calibré pour un rendu fidèle : choix du grammage, du type de papier (couché, offset, recyclé) et des finitions (pelliculage mat ou brillant, vernis sélectif). Vous configurez en ligne, nous pilotons la production, vous êtes livré.",
     ],
     sections: [
       {
