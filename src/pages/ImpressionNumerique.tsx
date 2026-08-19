@@ -36,8 +36,8 @@ export default function ImpressionNumerique() {
             </h1>
             <p className="text-muted-foreground leading-relaxed">
               <strong>J2L Print</strong> vous propose un service d'impression numérique haut de gamme pour tous vos supports de communication. 
-              De la carte de visite au dépliant grand tirage, nous imprimons vos documents avec une qualité irréprochable 
-              et une livraison rapide partout en France.
+              De la carte de visite au dépliant grand tirage, vos documents sont produits avec une qualité irréprochable 
+              et livrés partout en France.
             </p>
           </div>
         </div>
