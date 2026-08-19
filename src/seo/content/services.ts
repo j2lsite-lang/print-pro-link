@@ -27,7 +27,7 @@ export const SERVICE_CONTENT: ServiceContent[] = [
       "Impression numérique professionnelle : flyers, cartes de visite, dépliants, affiches, brochures. Qualité offset et numérique, livraison rapide partout en France. Devis gratuit.",
     h1: "Impression numérique professionnelle en ligne",
     intro: [
-      "J2L Print vous propose un service d'impression numérique haut de gamme pour tous vos supports de communication. De la carte de visite au dépliant grand tirage, nous imprimons vos documents avec une qualité irréprochable et une livraison rapide partout en France.",
+      "J2L Print vous propose un service d'impression numérique haut de gamme pour tous vos supports de communication. De la carte de visite au dépliant grand tirage, vos documents sont produits avec une qualité irréprochable et livrés partout en France.",
     ],
     solutionsHeading: "Nos produits d'impression numérique",
     solutions: [

@@ -253,8 +253,8 @@ export function cityCopy(c: GenCity): CityCopy {
       `${econ} Tout se commande à distance — configuration, devis et suivi en ligne — pour une livraison ${dep.dans} et plus largement ${reg.dans}.`,
     ],
     [
-      `À ${c.name}, comme partout ${reg.dans}, J2L Print met l'impression professionnelle à portée de clic : choisissez votre format, vos finitions et votre quantité, et faites-vous livrer (${c.cp}) sans intermédiaire.`,
-      `${econ} ${audiences} Aucun déplacement n'est nécessaire : J2L Print est un imprimeur en ligne livrant ${dep.dans}.`,
+      `À ${c.name}, comme partout ${reg.dans}, J2L Print met l'impression professionnelle à portée de clic : choisissez votre format, vos finitions et votre quantité, et faites-vous livrer directement (${c.cp}).`,
+      `${econ} ${audiences} Aucun déplacement n'est nécessaire : J2L Print est un spécialiste de l'impression en ligne et des supports personnalisés, avec livraison ${dep.dans}.`,
     ],
     [
       `Besoin d'impression personnalisée à ${c.name} ? J2L Print réunit toute votre communication visuelle en ligne, du tirage unitaire à la grande série, avec un prix calculé selon votre configuration.`,
@@ -347,7 +347,7 @@ export function cityCopy(c: GenCity): CityCopy {
     },
     {
       q: `J2L Print possède-t-il une boutique à ${c.name} ?`,
-      a: `Non. J2L Print est un imprimeur 100 % en ligne : configuration, validation du fichier, suivi et devis se font à distance, avec livraison à ${c.name}.`,
+      a: `Non. J2L Print est un spécialiste de l'impression 100 % en ligne : configuration, validation du fichier, suivi et devis se font à distance, avec livraison à ${c.name}.`,
     },
     {
       q: "Quels produits conviennent à un salon professionnel ?",
