@@ -55,7 +55,7 @@ export const TWIN_PRODUCT_NAMES: Record<string, string> = {
   "re-board": "Panneau carton alvéolaire Re-board",
   "segrollr": "Roll-up textile SegRollR",
   "stormfix": "Banderole Stormfix résistante au vent",
-};
+
 
 
 /** Return the SEO display name for a SKU (override when twin, else original). */
