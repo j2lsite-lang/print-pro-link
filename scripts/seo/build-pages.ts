@@ -1228,16 +1228,31 @@ interface ThemeLite {
   sort_order: number;
 }
 
-export async function buildThemePages(): Promise<SeoPage[]> {
+export async function buildThemePages(productLabels: Record<string, string> = {}): Promise<SeoPage[]> {
   const home: BreadcrumbItemLite = { name: "Accueil", path: "/" };
 
-  const themes = (await rest<ThemeLite>(
-    "product_themes?select=slug,name,description,sort_order&order=sort_order",
+  const themes = (await rest<ThemeLite & { id: string }>(
+    "product_themes?select=id,slug,name,description,sort_order&order=sort_order",
   )).filter((t) => t?.slug && t?.name);
   if (!themes.length) return [];
 
+  // Real theme ↔ product mappings so each theme page links to existing,
+  // sellable product pages (no orphan theme page).
+  const themeMappings = await rest<{ sku: string; theme_id: string }>(
+    "product_theme_mappings?select=sku,theme_id",
+  );
+  const skusByTheme = new Map<string, string[]>();
+  for (const m of themeMappings) {
+    if (!m?.sku || !m?.theme_id) continue;
+    if (!productLabels[m.sku]) continue; // only sellable, prerendered products
+    const list = skusByTheme.get(m.theme_id) || [];
+    list.push(m.sku);
+    skusByTheme.set(m.theme_id, list);
+  }
+
   const themesCrumb = [home, { name: "Catalogue", path: "/catalogue" }, { name: "Thèmes", path: "/themes" }];
   const themeLinks: LinkItem[] = themes.map((t) => ({ label: t.name, path: `/themes/${t.slug}` }));
+
 
   const pages: SeoPage[] = [];
 
@@ -1278,6 +1293,10 @@ export async function buildThemePages(): Promise<SeoPage[]> {
           `Thème « ${t.name} » : découvrez une sélection de produits d'impression personnalisée adaptés à ${t.name.toLowerCase()}. Configuration en ligne, devis gratuit et livraison partout en France.`,
         );
     const others = themeLinks.filter((l) => l.path !== path).slice(0, 8);
+    const themeSkus = (skusByTheme.get(t.id) || []).slice().sort();
+    const themeProducts: LinkItem[] = themeSkus
+      .slice(0, 24)
+      .map((sku) => ({ label: productLabels[sku], path: `/products/${sku}` }));
     const faq = [
       {
         q: `Que contient le thème « ${t.name} » ?`,
@@ -1302,13 +1321,31 @@ export async function buildThemePages(): Promise<SeoPage[]> {
         `Découvrez la collection « ${t.name} » de J2L Print : une sélection de supports d'impression personnalisée à configurer en ligne et à recevoir partout en France.`,
       ],
       breadcrumb: crumb,
-      cta: { label: "Voir les produits du thème", path },
+      cta: themeProducts.length
+        ? { label: `Configurer ${themeProducts[0].label}`, path: themeProducts[0].path }
+        : { label: "Voir tout le catalogue", path: "/catalogue" },
       faq,
+      ...(themeProducts.length
+        ? {
+            productGrid: {
+              heading: `Produits du thème « ${t.name} »`,
+              intro: "Configurez votre produit en ligne : format, matière, finitions et quantité.",
+              cards: themeProducts.map((l) => ({
+                label: l.label,
+                path: l.path,
+                icon: "Package",
+                description: `${l.label} personnalisable en ligne, livré partout en France.`,
+              })),
+            },
+          }
+        : {}),
       internalLinks: [
+        ...(themeProducts.length ? [{ heading: "Produits associés", links: themeProducts }] : []),
         { heading: "Autres thèmes", links: others },
         { heading: "Catalogue", links: [{ label: "Voir tout le catalogue", path: "/catalogue" }] },
         { heading: "Nos services", links: SERVICE_LINKS },
       ],
+
       jsonLd: [
         breadcrumbLd(crumb),
         webPageLd({ name: t.name, description: desc, path }),
