@@ -1293,6 +1293,10 @@ export async function buildThemePages(productLabels: Record<string, string> = {}
           `Thème « ${t.name} » : découvrez une sélection de produits d'impression personnalisée adaptés à ${t.name.toLowerCase()}. Configuration en ligne, devis gratuit et livraison partout en France.`,
         );
     const others = themeLinks.filter((l) => l.path !== path).slice(0, 8);
+    const themeSkus = (skusByTheme.get(t.id) || []).slice().sort();
+    const themeProducts: LinkItem[] = themeSkus
+      .slice(0, 24)
+      .map((sku) => ({ label: productLabels[sku], path: `/products/${sku}` }));
     const faq = [
       {
         q: `Que contient le thème « ${t.name} » ?`,
@@ -1317,13 +1321,31 @@ export async function buildThemePages(productLabels: Record<string, string> = {}
         `Découvrez la collection « ${t.name} » de J2L Print : une sélection de supports d'impression personnalisée à configurer en ligne et à recevoir partout en France.`,
       ],
       breadcrumb: crumb,
-      cta: { label: "Voir les produits du thème", path },
+      cta: themeProducts.length
+        ? { label: `Configurer ${themeProducts[0].label}`, path: themeProducts[0].path }
+        : { label: "Voir tout le catalogue", path: "/catalogue" },
       faq,
+      ...(themeProducts.length
+        ? {
+            productGrid: {
+              heading: `Produits du thème « ${t.name} »`,
+              intro: "Configurez votre produit en ligne : format, matière, finitions et quantité.",
+              cards: themeProducts.map((l) => ({
+                label: l.label,
+                path: l.path,
+                icon: "Package",
+                description: `${l.label} personnalisable en ligne, livré partout en France.`,
+              })),
+            },
+          }
+        : {}),
       internalLinks: [
+        ...(themeProducts.length ? [{ heading: "Produits associés", links: themeProducts }] : []),
         { heading: "Autres thèmes", links: others },
         { heading: "Catalogue", links: [{ label: "Voir tout le catalogue", path: "/catalogue" }] },
         { heading: "Nos services", links: SERVICE_LINKS },
       ],
+
       jsonLd: [
         breadcrumbLd(crumb),
         webPageLd({ name: t.name, description: desc, path }),
