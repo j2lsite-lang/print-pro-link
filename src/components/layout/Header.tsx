@@ -108,8 +108,8 @@ export default function Header() {
           <img
             src={logoJ2L}
             alt="J2L Print — imprimerie en ligne"
-            width={651}
-            height={600}
+            width={607}
+            height={420}
             className="h-14 w-auto md:h-[68px] object-contain"
           />
         </Link>
