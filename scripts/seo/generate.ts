@@ -131,7 +131,12 @@ async function main() {
   // 1c. theme pages — /themes + /themes/:slug, prerendered separately
   //     (themes.json) for the same reason as products. Never affects the
   //     runtime /themes routes, prices, API, configurator or mappings.
-  const themePages = await buildThemePages();
+  const productLabels: Record<string, string> = {};
+  for (const p of productPages) {
+    productLabels[p.path.replace(/^\/products\//, "")] = (p.h1 || "").trim();
+  }
+  const themePages = await buildThemePages(productLabels);
+
   const themesByPath: Record<string, SeoPage> = {};
   for (const p of themePages) themesByPath[p.path] = p;
   writeFileSync(resolve(genDir, "themes.json"), JSON.stringify(themesByPath, null, 0));
