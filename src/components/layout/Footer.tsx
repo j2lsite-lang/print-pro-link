@@ -21,9 +21,8 @@ export default function Footer() {
         <div className="grid gap-8 md:grid-cols-[1.2fr_.8fr_.8fr_.8fr] items-start">
           {/* Brand + Address */}
           <div>
-            <div className="flex items-center gap-3 mb-4">
-              <img src={logoJ2L} alt="J2L Print" className="h-9 w-9 rounded-xl object-contain bg-primary/10 p-0.5" />
-              <span className="font-display text-base font-bold text-foreground">J2L Print</span>
+            <div className="mb-4">
+              <img src={logoJ2L} alt="J2L Print — imprimerie en ligne" className="h-14 w-auto object-contain" />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
               Votre imprimerie en ligne dans toute la France. Impression numérique, supports publicitaires, objets personnalisés.
