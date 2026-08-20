@@ -15,13 +15,13 @@
  *     fichier prérendu /…/index.html ; si le fichier manque -> vraie 404.
  *
  *  Données SEO (synchronisées par scripts/seo/generate.ts) :
- *   - 599 villes
- *   - 101 départements
- *   - 18 régions
+ *   - 580 villes
+ *   - 97 départements
+ *   - 14 régions
  *   - 4 services
  *   - 8 catégories / 47 sous-catégories
  *   - 14 thèmes
- *   - 940 fiches produits clientes (37 références techniques exclues)
+ *   - 947 fiches produits clientes (lookbooks/nuanciers/échantillons exclus)
  * ============================================================================
  */
 
@@ -268,8 +268,40 @@ function computeLegacyRedirect(pathname) {
   // Anciennes pages services regroupées -> catalogue.
   if (parts[0] === "services" && parts.length >= 2) return "/catalogue";
 
+
+
+
   return null;
 }
+
+/** Espaces d'URL entièrement gérés par le SEO : toute valeur inconnue dans
+ *  ces espaces est une vraie 404 (pas un repli SPA / soft-404). */
+function isUnknownSeoNamespacePath(pathname) {
+  if (isManagedSeoPath(pathname)) return false;
+  const parts = pathname.split("/").filter(Boolean);
+  if (!parts.length) return false;
+  if (/\.[a-z0-9]+$/i.test(pathname)) return false;
+  const [root] = parts;
+  if (root === "products") {
+    // /products (catalogue dynamique) et /products/category/:slug restent SPA.
+    if (parts.length === 1) return false;
+    if (parts[1] === "category") return false;
+    return true;
+  }
+  if (["categorie", "ville", "departement", "region", "imprimerie", "themes"].includes(root)) {
+    return true;
+  }
+  return false;
+}
+
+const NOT_FOUND_HTML = `<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="robots" content="noindex, follow"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page introuvable | J2L Print</title></head>
+<body style="font-family:system-ui,sans-serif;background:#0B0B0B;color:#fff;text-align:center;padding:80px 20px">
+<h1 style="color:#FFD100">Page introuvable</h1>
+<p>Cette page n'existe pas ou n'est plus disponible.</p>
+<p><a style="color:#FFD100" href="/catalogue">Voir le catalogue</a> — <a style="color:#FFD100" href="/">Accueil</a></p>
+</body></html>`;
 
 
 function isCacheableHtml(pathname) {
@@ -315,7 +347,7 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/4.6.1");
+  headers.set("X-Worker", "j2lprint-seo/4.6.2");
 }
 
 /** Fetch origine : on joint directement l'hôte d'origine dédié
@@ -378,6 +410,23 @@ export default {
       }
     }
 
+    // 7.1a-bis — Anti soft-404 : une URL inconnue dans un espace SEO géré
+    // (/products/:slug, /categorie/…, /ville/…, /departement/…, /region/…,
+    // /imprimerie/:slug, /themes/:slug) ne doit JAMAIS servir le shell SPA
+    // (page d'accueil, canonical "/" + index,follow). On renvoie une vraie
+    // 404 noindex. Les redirections légitimes ont déjà été traitées ci-dessus.
+    if (isRead && isUnknownSeoNamespacePath(normalizedPath)) {
+      const h = new Headers({
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-store",
+        "X-Robots-Tag": "noindex, follow",
+      });
+      applySecurityHeaders(h);
+      return new Response(NOT_FOUND_HTML, { status: 404, headers: h });
+    }
+
+
+
 
     // 7.1b — Diagnostic public : si cette route affiche l'app ou une 404,
     // le Worker Cloudflare n'est pas déployé/routé sur j2lprint.fr.
@@ -390,7 +439,7 @@ export default {
       applySecurityHeaders(h);
       return new Response(JSON.stringify({
         ok: true,
-        worker: "j2lprint-seo/4.6.1",
+        worker: "j2lprint-seo/4.6.2",
         host: url.hostname,
         origin: ORIGIN_HOST,
         products: PRODUCTS.length,
