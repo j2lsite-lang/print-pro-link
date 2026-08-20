@@ -22,7 +22,7 @@ export default function Footer() {
           {/* Brand + Address */}
           <div>
             <div className="mb-4">
-              <img src={logoJ2L} alt="J2L Print — imprimerie en ligne" className="h-14 w-auto object-contain" />
+              <img src={logoJ2L} alt="J2L Print — imprimerie en ligne" className="h-20 w-auto object-contain" />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
               Votre imprimerie en ligne dans toute la France. Impression numérique, supports publicitaires, objets personnalisés.
