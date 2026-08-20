@@ -9,7 +9,7 @@ export const ORGANIZATION = {
   name: SITE_NAME,
   legalName: "J2L Publicité",
   url: SITE_URL,
-  logo: `${SITE_URL}/og-image.jpg`,
+  logo: `${SITE_URL}/logo-j2l-square.png`,
   areaServed: "FR",
   description:
     "Imprimerie en ligne : impression professionnelle et supports de communication livrés partout en France.",

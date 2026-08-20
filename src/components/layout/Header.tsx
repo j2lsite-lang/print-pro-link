@@ -104,11 +104,14 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/82 backdrop-blur-lg">
       <div className="container flex h-20 items-center justify-between gap-2">
-        <Link to="/" className="flex items-center gap-3 shrink-0">
-          <img src={logoJ2L} alt="J2L Print" width={512} height={512} className="h-12 w-auto md:h-14 object-contain" />
-          <span className="font-display text-lg md:text-xl font-bold tracking-wide text-foreground hidden sm:inline">
-            J2L Print
-          </span>
+        <Link to="/" className="flex items-center shrink-0" aria-label="J2L Print — imprimerie en ligne">
+          <img
+            src={logoJ2L}
+            alt="J2L Print — imprimerie en ligne"
+            width={607}
+            height={420}
+            className="h-14 w-auto md:h-[68px] object-contain"
+          />
         </Link>
 
 
