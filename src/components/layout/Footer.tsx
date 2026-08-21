@@ -62,7 +62,7 @@ export default function Footer() {
             </div>
 
             <p className="text-xs text-muted-foreground mt-4">
-              © {new Date().getFullYear()} J2L Print (J2L Publicité). Tous droits réservés.
+              © {new Date().getFullYear()} J2L Publicité. Tous droits réservés.
             </p>
           </div>
 
