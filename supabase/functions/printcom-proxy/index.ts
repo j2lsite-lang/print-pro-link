@@ -130,24 +130,35 @@ Deno.serve(async (req: Request) => {
       case "combined-shipment":
         return proxyRequest("POST", "/shipping/combined-shipment", body, lang);
 
-      // ── Orders ──
-      case "create-order":
+      // ── Orders (authenticated only) ──
+      case "create-order": {
+        const auth = await requireUser(req);
+        if (!auth.ok) return jsonError(auth.error!, auth.status!);
         return proxyRequest("POST", "/orders", body, lang);
+      }
 
-      case "list-orders":
+      case "list-orders": {
+        const auth = await requireAdmin(req);
+        if (!auth.ok) return jsonError(auth.error!, auth.status!);
         return proxyRequest("GET", "/orders", null, lang);
+      }
 
       case "get-order": {
         const orderNumber = url.searchParams.get("orderNumber");
         if (!orderNumber) return jsonError("orderNumber required");
+        const owned = await assertOrderAccess(req, orderNumber);
+        if (owned) return owned;
         return proxyRequest("GET", `/orders/${orderNumber}`, null, lang);
       }
 
       case "update-order": {
         const orderNumber = url.searchParams.get("orderNumber");
         if (!orderNumber) return jsonError("orderNumber required");
+        const owned = await assertOrderAccess(req, orderNumber);
+        if (owned) return owned;
         return proxyRequest("PUT", `/orders/${orderNumber}`, body, lang);
       }
+
 
       // ── PDF ──
       case "pdf-preflight":
