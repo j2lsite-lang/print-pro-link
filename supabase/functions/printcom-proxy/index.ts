@@ -63,6 +63,33 @@ function jsonError(msg: string, status = 400): Response {
   });
 }
 
+/**
+ * Returns an error Response when the caller may NOT touch this order,
+ * or null when access is granted (owner, admin or internal service role).
+ */
+async function assertOrderAccess(req: Request, orderNumber: string): Promise<Response | null> {
+  const auth = await requireUser(req);
+  if (!auth.ok) return jsonError(auth.error!, auth.status!);
+  if (auth.isServiceRole) return null;
+  if (auth.userId && (await isAdminUser(auth.userId))) return null;
+
+  const admin = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
+  const { data } = await admin
+    .from("orders")
+    .select("id")
+    .eq("printcom_order_number", orderNumber)
+    .eq("user_id", auth.userId!)
+    .maybeSingle();
+
+  if (!data) return jsonError("Order not found", 404);
+  return null;
+}
+
+
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
