@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Wand2, CheckCircle, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
 
 interface CategoryStat {
   name: string;
@@ -11,6 +13,8 @@ interface CategoryStat {
 }
 
 export default function AdminCategories() {
+  const { user, session, loading: authLoading } = useAuth();
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [syncLoading, setSyncLoading] = useState(false);
   const [result, setResult] = useState<{ totalProducts?: number; totalMappings: number; imagesUpdated?: number } | null>(null);
@@ -37,7 +41,19 @@ export default function AdminCategories() {
     setStats(results);
   };
 
-  useEffect(() => { loadStats(); }, []);
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) { setIsAdmin(false); return; }
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [authLoading, user]);
+
+  useEffect(() => { if (isAdmin) loadStats(); }, [isAdmin]);
 
   const handleSyncMappings = async () => {
     setSyncLoading(true);
@@ -48,7 +64,7 @@ export default function AdminCategories() {
         method: "POST",
         headers: {
           "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          "Authorization": `Bearer ${session?.access_token ?? ""}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ triggered_by: "admin" }),
@@ -76,7 +92,7 @@ export default function AdminCategories() {
         method: "POST",
         headers: {
           "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          "Authorization": `Bearer ${session?.access_token ?? ""}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({}),
@@ -97,6 +113,30 @@ export default function AdminCategories() {
 
   const parentCats = stats.filter(s => !s.parent_name);
   const subCats = stats.filter(s => !!s.parent_name);
+
+  if (authLoading || isAdmin === null) {
+    return (
+      <div className="container py-20 flex justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="container py-20 max-w-lg text-center">
+        <h1 className="font-display text-2xl font-bold text-foreground">Accès restreint</h1>
+        <p className="mt-3 text-muted-foreground">
+          Cette page est réservée aux administrateurs.
+        </p>
+        {!user && (
+          <Button asChild className="mt-6">
+            <Link to="/auth">Se connecter</Link>
+          </Button>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="container py-10 max-w-3xl">

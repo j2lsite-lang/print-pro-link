@@ -1,9 +1,13 @@
 // printcom-proxy – Proxy for Print.com API
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireAdmin, requireUser, isAdminUser } from "../_shared/admin-auth.ts";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
 
 function getApiKey(): string {
   const apiKey = Deno.env.get("PRINTCOM_API_KEY");
@@ -58,6 +62,33 @@ function jsonError(msg: string, status = 400): Response {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 }
+
+/**
+ * Returns an error Response when the caller may NOT touch this order,
+ * or null when access is granted (owner, admin or internal service role).
+ */
+async function assertOrderAccess(req: Request, orderNumber: string): Promise<Response | null> {
+  const auth = await requireUser(req);
+  if (!auth.ok) return jsonError(auth.error!, auth.status!);
+  if (auth.isServiceRole) return null;
+  if (auth.userId && (await isAdminUser(auth.userId))) return null;
+
+  const admin = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
+  const { data } = await admin
+    .from("orders")
+    .select("id")
+    .eq("printcom_order_number", orderNumber)
+    .eq("user_id", auth.userId!)
+    .maybeSingle();
+
+  if (!data) return jsonError("Order not found", 404);
+  return null;
+}
+
+
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -126,24 +157,35 @@ Deno.serve(async (req: Request) => {
       case "combined-shipment":
         return proxyRequest("POST", "/shipping/combined-shipment", body, lang);
 
-      // ── Orders ──
-      case "create-order":
+      // ── Orders (authenticated only) ──
+      case "create-order": {
+        const auth = await requireUser(req);
+        if (!auth.ok) return jsonError(auth.error!, auth.status!);
         return proxyRequest("POST", "/orders", body, lang);
+      }
 
-      case "list-orders":
+      case "list-orders": {
+        const auth = await requireAdmin(req);
+        if (!auth.ok) return jsonError(auth.error!, auth.status!);
         return proxyRequest("GET", "/orders", null, lang);
+      }
 
       case "get-order": {
         const orderNumber = url.searchParams.get("orderNumber");
         if (!orderNumber) return jsonError("orderNumber required");
+        const owned = await assertOrderAccess(req, orderNumber);
+        if (owned) return owned;
         return proxyRequest("GET", `/orders/${orderNumber}`, null, lang);
       }
 
       case "update-order": {
         const orderNumber = url.searchParams.get("orderNumber");
         if (!orderNumber) return jsonError("orderNumber required");
+        const owned = await assertOrderAccess(req, orderNumber);
+        if (owned) return owned;
         return proxyRequest("PUT", `/orders/${orderNumber}`, body, lang);
       }
+
 
       // ── PDF ──
       case "pdf-preflight":

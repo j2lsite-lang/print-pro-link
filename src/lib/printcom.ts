@@ -2,6 +2,16 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const FUNCTION_NAME = "printcom-proxy";
 
+async function getAccessToken(): Promise<string | null> {
+  try {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function callProxy(
   action: string,
   params: Record<string, string> = {},
@@ -10,15 +20,19 @@ async function callProxy(
   const searchParams = new URLSearchParams({ action, ...params });
   const url = `${SUPABASE_URL}/functions/v1/${FUNCTION_NAME}?${searchParams.toString()}`;
 
+  // Order-related actions are authenticated server-side; forward the user session.
+  const token = (await getAccessToken()) ?? ANON_KEY;
+
   const res = await fetch(url, {
     method: body ? "POST" : "GET",
     headers: {
       apikey: ANON_KEY,
-      Authorization: `Bearer ${ANON_KEY}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
     body: body ? JSON.stringify(body) : undefined,
   });
+
 
   if (!res.ok) {
     const errBody = await res.text();
