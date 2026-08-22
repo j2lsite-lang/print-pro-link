@@ -10,7 +10,7 @@ import { catalogVisuals } from "@/seo/data/catalog-visuals";
 export default function GrandFormat() {
   useSEO({
     title: "Impression grand format – Bâches, banderoles, adhésifs, kakémonos | J2L Print",
-    description: "Impression grand format professionnelle : bâches, banderoles, adhésifs, kakémonos, enseignes. Haute résolution 1440 dpi, livraison rapide partout en France. Devis gratuit.",
+    description: "Impression grand format professionnelle : bâches, banderoles, adhésifs, kakémonos, enseignes. Configuration en ligne, livraison partout en France. Devis gratuit.",
     ogType: "website",
   });
 
@@ -32,9 +32,9 @@ export default function GrandFormat() {
               Impression grand format en ligne
             </h1>
             <p className="text-muted-foreground leading-relaxed">
-              <strong>J2L Print</strong> réalise tous vos supports de communication grand format : bâches publicitaires, 
-              banderoles, adhésifs, kakémonos et enseignes. Impression haute résolution jusqu'à 1440 dpi 
-              sur tous types de supports, livrée partout en France.
+              <strong>J2L Print</strong> est votre imprimerie en ligne pour tous vos supports de communication grand format :
+              bâches publicitaires, banderoles, adhésifs, kakémonos et enseignes. Configurez votre support
+              (dimensions, matière, finitions) directement en ligne et faites-vous livrer partout en France.
             </p>
           </div>
         </div>
@@ -65,12 +65,12 @@ export default function GrandFormat() {
         </div>
 
 
-        {/* Visuel atelier */}
+        {/* Visuel grand format */}
         <div className="glass-card overflow-hidden mb-10">
           <img src={imgBache} alt="Impression grand format sur imprimante professionnelle" className="w-full h-56 object-cover" loading="lazy" width={1280} height={720} />
           <div className="p-4">
-            <h3 className="font-display text-base font-semibold text-foreground">Notre atelier grand format</h3>
-            <p className="text-sm text-muted-foreground mt-1">Imprimantes Roland & Mimaki, largeur jusqu'à 3,20 m, résolution 1440 dpi.</p>
+            <h3 className="font-display text-base font-semibold text-foreground">Le grand format chez J2L Print</h3>
+            <p className="text-sm text-muted-foreground mt-1">Supports rigides et souples, dimensions et finitions au choix dans le configurateur.</p>
           </div>
         </div>
 
@@ -81,17 +81,17 @@ export default function GrandFormat() {
           </h2>
           <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
             <p>
-              Notre parc d'<strong>imprimantes grand format dernière génération</strong> (Roland, Mimaki) permet 
-              d'imprimer sur des largeurs allant jusqu'à 3,20 mètres avec une résolution de 1440 dpi. 
-              Les encres utilisées (éco-solvant, latex, UV) garantissent une <strong>tenue extérieure de 3 à 7 ans</strong> 
-              selon le support.
+              J2L Print est une <strong>imprimerie en ligne</strong> : nous sélectionnons pour chaque projet le support
+              et le mode d'impression adaptés, puis nous suivons votre commande jusqu'à la livraison. Les dimensions,
+              matières et finitions réellement disponibles sont celles proposées dans le configurateur de chaque produit.
             </p>
             <p>
-              Chaque impression est soumise à un <strong>profil ICC calibré</strong> pour une fidélité couleur optimale. 
-              Nous proposons également la découpe numérique (plotter de découpe Summa) pour des formes personnalisées : 
-              lettres découpées, logos, stickers de forme.
+              Vous choisissez votre support, vos dimensions et vos finitions en ligne, vous obtenez le prix
+              correspondant à votre configuration, puis vous transmettez vos fichiers. Une découpe sur mesure
+              ou une forme personnalisée est possible sur devis.
             </p>
           </div>
+
 
           <h3 className="font-display text-lg font-semibold text-foreground pt-2">
             Supports et finitions disponibles
