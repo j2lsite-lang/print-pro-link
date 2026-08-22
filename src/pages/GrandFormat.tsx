@@ -32,9 +32,9 @@ export default function GrandFormat() {
               Impression grand format en ligne
             </h1>
             <p className="text-muted-foreground leading-relaxed">
-              <strong>J2L Print</strong> réalise tous vos supports de communication grand format : bâches publicitaires, 
-              banderoles, adhésifs, kakémonos et enseignes. Impression haute résolution jusqu'à 1440 dpi 
-              sur tous types de supports, livrée partout en France.
+              <strong>J2L Print</strong> est votre imprimerie en ligne pour tous vos supports de communication grand format :
+              bâches publicitaires, banderoles, adhésifs, kakémonos et enseignes. Configurez votre support
+              (dimensions, matière, finitions) directement en ligne et faites-vous livrer partout en France.
             </p>
           </div>
         </div>
