@@ -10,7 +10,7 @@ import { catalogVisuals } from "@/seo/data/catalog-visuals";
 export default function GrandFormat() {
   useSEO({
     title: "Impression grand format – Bâches, banderoles, adhésifs, kakémonos | J2L Print",
-    description: "Impression grand format professionnelle : bâches, banderoles, adhésifs, kakémonos, enseignes. Haute résolution 1440 dpi, livraison rapide partout en France. Devis gratuit.",
+    description: "Impression grand format professionnelle : bâches, banderoles, adhésifs, kakémonos, enseignes. Configuration en ligne, livraison partout en France. Devis gratuit.",
     ogType: "website",
   });
 
