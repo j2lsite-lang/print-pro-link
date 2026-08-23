@@ -10,3 +10,6 @@ Disallow: /account
 Disallow: /admin
 
 Sitemap: https://j2lprint.fr/sitemap.xml
+
+# Guide pour les IA et agents conversationnels
+# https://j2lprint.fr/llms.txt

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MessageCircle, Phone } from "lucide-react";
+import { MessageCircle, Phone, Send } from "lucide-react";
 
 export default function FloatingContact() {
   // Mount the widgets after the main content is interactive (idle / first
