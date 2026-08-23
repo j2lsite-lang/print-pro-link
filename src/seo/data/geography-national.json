@@ -944,7 +944,8 @@
         "epinay-sur-seine",
         "montreuil",
         "noisy-le-grand",
-        "saint-denis"
+        "saint-denis",
+        "le-blanc-mesnil"
       ]
     },
     {
@@ -2025,7 +2026,8 @@
         "epinay-sur-seine",
         "montreuil",
         "noisy-le-grand",
-        "saint-denis"
+        "saint-denis",
+        "le-blanc-mesnil"
       ]
     },
     {
@@ -2189,7 +2191,8 @@
         "courbevoie",
         "la-defense",
         "levallois-perret",
-        "nanterre"
+        "nanterre",
+        "issy-les-moulineaux"
       ]
     },
     {
@@ -3772,7 +3775,8 @@
         "courbevoie",
         "la-defense",
         "levallois-perret",
-        "nanterre"
+        "nanterre",
+        "issy-les-moulineaux"
       ]
     },
     {
@@ -4371,7 +4375,8 @@
         "champigny-sur-marne",
         "ivry-sur-seine",
         "saint-maur-des-fosses",
-        "vitry-sur-seine"
+        "vitry-sur-seine",
+        "villejuif"
       ]
     },
     {
@@ -4802,7 +4807,8 @@
         "epinay-sur-seine",
         "montreuil",
         "noisy-le-grand",
-        "saint-denis"
+        "saint-denis",
+        "le-blanc-mesnil"
       ]
     },
     {
@@ -6510,6 +6516,26 @@
       ]
     },
     {
+      "name": "Issy-les-Moulineaux",
+      "slug": "issy-les-moulineaux",
+      "postalCodes": [
+        "92130"
+      ],
+      "departmentCode": "92",
+      "departmentName": "Hauts-de-Seine",
+      "departmentSlug": "hauts-de-seine",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "sourceSites": [
+        "j2lprint"
+      ],
+      "nearbyCitySlugs": [
+        "boulogne-billancourt",
+        "clichy",
+        "levallois-perret"
+      ]
+    },
+    {
       "name": "Ivry-sur-Seine",
       "slug": "ivry-sur-seine",
       "postalCodes": [
@@ -6529,7 +6555,8 @@
         "champigny-sur-marne",
         "creteil",
         "saint-maur-des-fosses",
-        "vitry-sur-seine"
+        "vitry-sur-seine",
+        "villejuif"
       ]
     },
     {
@@ -7257,6 +7284,26 @@
       ]
     },
     {
+      "name": "Le Blanc-Mesnil",
+      "slug": "le-blanc-mesnil",
+      "postalCodes": [
+        "93150"
+      ],
+      "departmentCode": "93",
+      "departmentName": "Seine-Saint-Denis",
+      "departmentSlug": "seine-saint-denis",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "sourceSites": [
+        "j2lprint"
+      ],
+      "nearbyCitySlugs": [
+        "drancy",
+        "aulnay-sous-bois",
+        "bobigny"
+      ]
+    },
+    {
       "name": "Le Creusot",
       "slug": "le-creusot",
       "postalCodes": [
@@ -7650,7 +7697,8 @@
         "colombes",
         "courbevoie",
         "la-defense",
-        "nanterre"
+        "nanterre",
+        "issy-les-moulineaux"
       ]
     },
     {
@@ -14455,6 +14503,26 @@
       ]
     },
     {
+      "name": "Villejuif",
+      "slug": "villejuif",
+      "postalCodes": [
+        "94800"
+      ],
+      "departmentCode": "94",
+      "departmentName": "Val-de-Marne",
+      "departmentSlug": "val-de-marne",
+      "regionName": "Île-de-France",
+      "regionSlug": "ile-de-france",
+      "sourceSites": [
+        "j2lprint"
+      ],
+      "nearbyCitySlugs": [
+        "ivry-sur-seine",
+        "vitry-sur-seine",
+        "creteil"
+      ]
+    },
+    {
       "name": "Villenave-d'Ornon",
       "slug": "villenave-d-ornon",
       "postalCodes": [
@@ -14734,7 +14802,8 @@
         "champigny-sur-marne",
         "creteil",
         "ivry-sur-seine",
-        "saint-maur-des-fosses"
+        "saint-maur-des-fosses",
+        "villejuif"
       ]
     },
     {
@@ -18055,6 +18124,7 @@
         "clichy",
         "colombes",
         "courbevoie",
+        "issy-les-moulineaux",
         "la-defense",
         "levallois-perret",
         "nanterre",
@@ -18090,6 +18160,7 @@
         "bobigny",
         "drancy",
         "epinay-sur-seine",
+        "le-blanc-mesnil",
         "montreuil",
         "noisy-le-grand",
         "saint-denis"
@@ -18122,6 +18193,7 @@
         "creteil",
         "ivry-sur-seine",
         "saint-maur-des-fosses",
+        "villejuif",
         "vitry-sur-seine"
       ],
       "neighborDepartmentSlugs": [
