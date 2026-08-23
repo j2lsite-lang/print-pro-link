@@ -121,15 +121,27 @@
     border-color: hsla(49,100%,50%,.55);
   }
 
-  /* Décale les boutons flottants au-dessus de la barre d'action mobile */
+  /* Boutons flottants : safe areas + décalage barre d'action mobile */
+  .floating-contact {
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    right: calc(0.75rem + env(safe-area-inset-right, 0px));
+    max-height: calc(100dvh - 6rem);
+  }
+  @media (min-width: 768px) {
+    .floating-contact {
+      bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+      right: calc(1.25rem + env(safe-area-inset-right, 0px));
+    }
+  }
   body.has-sticky-cta .floating-contact {
-    bottom: 6.5rem;
+    bottom: calc(6.25rem + env(safe-area-inset-bottom, 0px));
   }
   @media (min-width: 1024px) {
     body.has-sticky-cta .floating-contact {
-      bottom: 1.5rem;
+      bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
     }
   }
+
 
   .tag {
     @apply inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs;
