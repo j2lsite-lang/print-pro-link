@@ -150,7 +150,7 @@ export default function CityPage() {
             <Truck className="h-8 w-8 text-primary mx-auto mb-3" />
             <h3 className="font-display text-sm font-semibold text-foreground">Livraison à {city.name}</h3>
             <p className="text-xs text-muted-foreground mt-1">
-              Expédition rapide en 3-5 jours ouvrés directement à {city.name} ({city.cp})
+              Expédition directe à {city.name} ({city.cp}), délai indiqué produit par produit
             </p>
           </div>
           <div className="glass-card p-5 text-center">
