@@ -419,7 +419,9 @@ Deno.serve(async (req) => {
 
     // 1) Notification interne → contact@j2lprint.fr, Reply-To = e-mail client
     await sendMail({
-      from: `${FROM_NAME} <${EMAIL_FROM}>`,
+      from: `${FROM_NAME} <${NOTIFY_FROM}>`,
+      sender: `${FROM_NAME} <${NOTIFY_FROM}>`,
+      envelope: { from: SMTP_USER, to: EMAIL_TO },
       to: EMAIL_TO,
       replyTo: payload.email || undefined,
       subject,
