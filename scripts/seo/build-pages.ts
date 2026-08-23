@@ -928,7 +928,205 @@ async function fetchCatalogProducts(): Promise<Map<string, CatalogProductLite>> 
   return merged;
 }
 
+/* --------------------------------------------------------------------------
+ * Produit : paragraphe « Qualité d'impression et finitions » construit à
+ * partir des caractéristiques RÉELLES du SKU (Print.com). Aucun délai, prix
+ * ou caractéristique inventé : chaque bribe provient de `attrs`.
+ * ------------------------------------------------------------------------ */
+function realQualityParagraph(
+  name: string,
+  attrs: ProductAttributes | undefined,
+  seed: number,
+  fallback: string,
+  universe: string,
+): string {
+  const varied = () => {
+    // Pas d'attributs API : on varie sur le nom réel + l'univers réel.
+    const openers = [
+      `${name} est imprimé et façonné dans nos ateliers partenaires`,
+      `Chaque ${name.toLowerCase()} est produit par un imprimeur partenaire sélectionné`,
+      `La production de ${name.toLowerCase()} est confiée à un atelier spécialisé`,
+      `${name} est fabriqué sur commande`,
+    ];
+    const tails = [
+      "avec un contrôle de votre fichier PDF avant lancement.",
+      "après vérification de votre fichier PDF et de vos options.",
+      "avec relecture technique du fichier fourni avant impression.",
+      "et un contrôle visuel de la commande avant expédition.",
+    ];
+    const uni = universe ? ` Ce produit relève de notre univers ${universe.replace(/-/g, " ")}.` : "";
+    return `${openers[Math.abs(seed) % openers.length]} ${tails[Math.abs(seed >> 2) % tails.length]}${uni} Le délai exact est affiché lors de la configuration.`;
+  };
+  if (!attrs) return varied();
+
+  const bits: string[] = [];
+  if (attrs.matieres.length) {
+    bits.push(`sur ${attrs.matieres.slice(0, 3).map((m) => m.toLowerCase()).join(", ")}`);
+  }
+  if (attrs.grammageMin && attrs.grammageMax) {
+    bits.push(
+      attrs.grammageMin === attrs.grammageMax
+        ? `en ${attrs.grammageMin} g/m²`
+        : `en grammages de ${attrs.grammageMin} à ${attrs.grammageMax} g/m²`,
+    );
+  }
+  if (attrs.faces.length) bits.push(`en ${attrs.faces.join(" ou ")}`);
+
+  const fin: string[] = [];
+  for (const p of attrs.pelliculage) fin.push(`pelliculage ${p}`);
+  if (attrs.vernis.length) fin.push("vernis sélectif");
+  if (attrs.dorure) fin.push("dorure");
+  if (attrs.coinsArrondis) fin.push("coins arrondis");
+  if (attrs.decoupe) fin.push("découpe à la forme");
+  if (attrs.oeillets) fin.push("œillets");
+
+  const sentences: string[] = [];
+  if (bits.length) {
+    const heads = [
+      `${name} est imprimé`,
+      `Nous produisons ${name.toLowerCase()}`,
+      `La fabrication de ${name.toLowerCase()} se fait`,
+    ];
+    sentences.push(`${heads[Math.abs(seed) % heads.length]} ${frList(bits)}.`);
+  }
+  if (fin.length) {
+    sentences.push(
+      fin.length === 1
+        ? `Finition disponible sur ce produit : ${fin[0]}.`
+        : `Finitions réellement disponibles : ${frList(fin)}.`,
+    );
+  }
+  if (attrs.formats.length > 1) {
+    sentences.push(`${attrs.formats.length} formats sont proposés, dont ${attrs.formats.slice(0, 3).join(", ")}.`);
+  }
+  const qs = attrs.quantities || [];
+  if (qs.length > 1) {
+    sentences.push(`Les quantités vont de ${qs[0]} à ${qs[qs.length - 1]} exemplaires, avec un tarif dégressif.`);
+  }
+  if (attrs.exterieur) sentences.push("Les matières retenues sont adaptées à un usage extérieur.");
+  if (!sentences.length) return varied();
+  if (!sentences[0].toLowerCase().includes(name.toLowerCase().slice(0, 12))) {
+    const heads2 = [
+      `${name} est produit sur commande par notre imprimeur partenaire.`,
+      `Chaque ${name.toLowerCase()} est fabriqué à la commande.`,
+      `${name} est réalisé d'après le fichier que vous fournissez.`,
+    ];
+    sentences.unshift(heads2[Math.abs(seed) % heads2.length]);
+  }
+  sentences.push("Votre fichier PDF est vérifié avant impression et le délai est affiché lors de la configuration.");
+  return sentences.join(" ");
+}
+
+/* --------------------------------------------------------------------------
+ * Produit : FAQ enrichie avec les caractéristiques RÉELLES du SKU.
+ * ------------------------------------------------------------------------ */
+function realProductFaq(
+  name: string,
+  lower: string,
+  attrs: ProductAttributes | undefined,
+  famFaq: { q: string; a: string }[],
+  sectors: string[],
+  events: string[],
+): { q: string; a: string }[] {
+  const out: { q: string; a: string }[] = [];
+  if (attrs) {
+    if (attrs.formats.length) {
+      out.push({
+        q: `Quels formats sont disponibles pour ${lower} ?`,
+        a: `Les formats proposés sont : ${attrs.formats.slice(0, 8).join(", ")}. Sélectionnez le vôtre en ligne, avec un devis gratuit sur demande.`,
+      });
+    }
+    if ((attrs.dimensions || []).length) {
+      out.push({
+        q: `Quelles dimensions exactes pour ${lower} ?`,
+        a: `Les dimensions réellement proposées sont : ${(attrs.dimensions || []).slice(0, 6).join(", ")}. Elles s'affichent au moment de la configuration.`,
+      });
+    }
+    if ((attrs.grammages || []).length > 1) {
+      out.push({
+        q: `Quels grammages sont proposés pour ${lower} ?`,
+        a: `Les grammages disponibles sont : ${(attrs.grammages || []).join(", ")} g/m². Un grammage plus élevé donne un support plus rigide.`,
+      });
+    } else if (attrs.grammageMin && attrs.grammageMax && attrs.grammageMin !== attrs.grammageMax) {
+      out.push({
+        q: `Quel grammage choisir pour ${lower} ?`,
+        a: `Ce produit est proposé de ${attrs.grammageMin} à ${attrs.grammageMax} g/m². Le choix se fait directement dans le configurateur.`,
+      });
+    }
+    if (attrs.matieres.length) {
+      out.push({
+        q: `Sur quelles matières ${lower} est-il imprimé ?`,
+        a: `Les supports disponibles sont : ${attrs.matieres.join(", ")}.${attrs.exterieur ? " Certaines matières conviennent à un usage extérieur." : ""}`,
+      });
+    }
+    const fin: string[] = [];
+    for (const p of attrs.pelliculage) fin.push(`pelliculage ${p}`);
+    if (attrs.vernis.length) fin.push("vernis sélectif");
+    if (attrs.dorure) fin.push("dorure");
+    if (attrs.coinsArrondis) fin.push("coins arrondis");
+    if (attrs.decoupe) fin.push("découpe à la forme");
+    if (attrs.oeillets) fin.push("œillets");
+    if (fin.length) {
+      out.push({
+        q: `Quelles finitions sont possibles sur ${lower} ?`,
+        a: `Finitions réellement disponibles : ${fin.join(", ")}. Elles se sélectionnent dans le configurateur, le prix se met à jour immédiatement.`,
+      });
+    }
+    const qs = attrs.quantities || [];
+    if (qs.length > 1) {
+      out.push({
+        q: `Quelle quantité minimum pour ${lower} ?`,
+        a: `Les quantités proposées vont de ${qs[0]} à ${qs[qs.length - 1]} exemplaires (dont ${qs.slice(0, 5).join(", ")}), avec un tarif dégressif sur les volumes.`,
+      });
+    }
+    if (attrs.faces.includes("recto verso")) {
+      out.push({
+        q: `${name} peut-il être imprimé recto verso ?`,
+        a: `Oui : ce produit est proposé en ${attrs.faces.join(" ou ")}. L'option se choisit en ligne avant l'ajout au panier.`,
+      });
+    }
+  }
+  if (sectors.length) {
+    out.push({
+      q: `Qui commande ${lower} ?`,
+      a: `Principalement : ${sectors.slice(0, 3).map((s) => s.split(" :")[0].toLowerCase()).join(", ")}.`,
+    });
+  }
+  if (events.length) {
+    out.push({
+      q: `Pour quelles occasions utiliser ${lower} ?`,
+      a: `Notamment : ${events.slice(0, 3).map((e) => e.split(" :")[0].toLowerCase()).join(", ")}.`,
+    });
+  }
+  const seen = new Set<string>();
+  const merged: { q: string; a: string }[] = [];
+  for (const f of [...out, ...famFaq]) {
+    const k = f.q.trim().toLowerCase();
+    if (!seen.has(k)) { seen.add(k); merged.push(f); }
+  }
+  return merged.slice(0, 6);
+}
+
+/**
+ * Univers pour lesquels l'intention « publicitaire » est réellement
+ * pertinente (PLV, signalétique, textile, goodies, adhésifs de communication).
+ * Volontairement EXCLUS : impression-papier administrative et emballages-sacs.
+ */
+const AD_UNIVERSES = new Set([
+  "objets-publicitaires-cadeaux",
+  "textiles-accessoires",
+  "publicite-exterieure",
+  "publicite-interieure",
+  "panneaux-baches-vinyles-toiles",
+  "etiquettes-stickers",
+]);
+/** Familles papier où « publicitaire » reste exact (support de communication). */
+const AD_PRINT_FAMILIES = new Set([
+  "flyer", "affiche", "brochure", "roll-up", "banner", "panneau", "adhesif",
+]);
+
 function truncate(s: string, max = 158): string {
+
   const clean = s.replace(/\s+/g, " ").trim();
   if (clean.length <= max) return clean;
   // Prefer keeping whole sentences (no mid-word cut, no ellipsis in SERP).
@@ -1076,7 +1274,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
       ...(attrBullets.length >= 2
         ? [{ heading: "Formats et options disponibles", bullets: attrBullets }]
         : []),
-      { heading: "Qualité d'impression et finitions", paragraphs: [seo.quality] },
+      { heading: "Qualité d'impression et finitions", paragraphs: [realQualityParagraph(name, attrs, seed, seo.quality, topSlugEarly)] },
       // Visible file-preparation advice — masked when data is insufficient.
       ...(seo.fileTips && seo.fileTips.length >= 3
         ? [{ heading: "Conseils pour préparer votre fichier", bullets: seo.fileTips }]
@@ -1108,6 +1306,13 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     // ("imprimer / impression") vs. a goodie or a textile ("personnalisé /
     // marquage / avec logo"). Prevents "Imprimer un stylo en ligne".
     const topSlug = crumb.find((c) => c.path.startsWith("/categorie/"))?.path.split("/")[2] || "";
+    // Intention « publicitaire » : appliquée UNIQUEMENT aux univers et
+    // familles où elle est factuellement exacte (PLV, signalétique, adhésifs
+    // de communication, textile, goodies) — jamais aux emballages ni aux
+    // imprimés administratifs.
+    const famKey = detectFamily(name, sku);
+    const adRelevant =
+      AD_UNIVERSES.has(topSlug) || (famKey ? AD_PRINT_FAMILIES.has(famKey) : false);
     const intent: "print" | "goodie" | "textile" =
       topSlug === "objets-publicitaires-cadeaux" ? "goodie"
         : topSlug === "textiles-accessoires" ? "textile"
@@ -1127,6 +1332,13 @@ export async function buildProductPages(): Promise<SeoPage[]> {
             `${name} avec logo – Textile personnalisé | J2L Print`,
             `${name} personnalisable en ligne | J2L Print`,
             `${name} floqué ou brodé sur mesure | J2L Print`,
+          ]
+        : adRelevant
+        ? [
+            `${name} publicitaire personnalisé | J2L Print`,
+            `${name} publicitaire sur mesure – Impression | J2L Print`,
+            `${name} pas cher à personnaliser | J2L Print`,
+            `Imprimer ${lower} publicitaire en ligne – J2L Print`,
           ]
         : [
             `${name} personnalisé | Devis gratuit – J2L Print`,
@@ -1148,6 +1360,13 @@ export async function buildProductPages(): Promise<SeoPage[]> {
             `${name} à personnaliser pour vos équipes ou vos événements : configuration en ligne, tarif dégressif et livraison partout en France.`,
             `Besoin de ${lower} personnalisé ? Choisissez tailles, coloris et marquage en ligne, avec un prix transparent et un devis gratuit.`,
             `${name} personnalisé avec votre logo par J2L Print. Sélectionnez vos options, obtenez un prix immédiat et profitez d'un suivi dédié.`,
+          ]
+        : adRelevant
+        ? [
+            `Commandez ${lower} publicitaire personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat et devis gratuit.`,
+            `${name} publicitaire à personnaliser selon vos besoins : configuration en ligne, tarif dégressif et livraison partout en France.`,
+            `Besoin de ${lower} publicitaire ? Choisissez vos options en ligne : prix transparent, devis gratuit et expédition soignée.`,
+            `${name} publicitaire imprimé sur mesure par J2L Print. Sélectionnez vos options et obtenez un prix immédiat.`,
           ]
         : [
             `Commandez ${lower} personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat, devis gratuit et livraison partout en France.`,
@@ -1177,9 +1396,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const productIntro = specSentence ? [seo.intro, specSentence] : [seo.intro];
 
     // FAQ enriched with a real-formats question when we have the data.
-    const productFaq = attrs && attrs.formats.length
-      ? [{ q: `Quels formats sont disponibles pour ${lower} ?`, a: `Les formats proposés sont : ${attrs.formats.slice(0, 8).join(", ")}. Sélectionnez le vôtre en ligne, avec un devis gratuit sur demande.` }, ...seo.faq].slice(0, 6)
-      : seo.faq;
+    const productFaq = realProductFaq(name, lower, attrs, seo.faq, secBullets, evtBullets);
 
     // Merge name-based + attribute-derived keywords (deduped, order-stable).
     const productKw = (() => {
