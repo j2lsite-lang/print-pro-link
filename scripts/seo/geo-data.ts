@@ -38,6 +38,12 @@ export interface GeoData {
   regions: GeoRegion[];
 }
 
+interface GeoScope {
+  citySlugs: string[];
+  departmentSlugs: string[];
+  regionSlugs: string[];
+}
+
 let cache: GeoData | null = null;
 
 /**
@@ -90,16 +96,25 @@ export function loadGeo(): GeoData {
   if (cache) return cache;
   const p = resolve("src/seo/data/geography-national.json");
   const raw = JSON.parse(readFileSync(p, "utf8")) as GeoData;
+  const scopePath = resolve("src/seo/data/j2lprint-geography-scope.json");
+  const scope = JSON.parse(readFileSync(scopePath, "utf8")) as GeoScope;
+  const allowedCities = new Set(scope.citySlugs);
+  const allowedDepartments = new Set(scope.departmentSlugs);
+  const allowedRegions = new Set(scope.regionSlugs);
   const allCities = dedupeCities(raw.cities || []);
 
   // --- Exclusion DOM-TOM (Guyane, Martinique, Mayotte, La Réunion) ---------
   const excluded = (regionSlug: string) => EXCLUDED_REGION_SLUGS.has(regionSlug);
-  const removedCities = allCities.filter((c) => excluded(c.regionSlug));
-  const cities = allCities.filter((c) => !excluded(c.regionSlug));
-  const removedDepartments = (raw.departments || []).filter((d) => excluded(d.regionSlug));
-  const departmentsKept = (raw.departments || []).filter((d) => !excluded(d.regionSlug));
-  const removedRegions = (raw.regions || []).filter((r) => excluded(r.slug));
-  const regions = (raw.regions || []).filter((r) => !excluded(r.slug));
+  const cities = allCities.filter((c) => !excluded(c.regionSlug) && allowedCities.has(c.slug));
+  const removedCities = allCities.filter((c) => !cities.includes(c));
+  const departmentsKept = (raw.departments || []).filter(
+    (d) => !excluded(d.regionSlug) && allowedDepartments.has(d.slug),
+  );
+  const removedDepartments = (raw.departments || []).filter((d) => !departmentsKept.includes(d));
+  const regions = (raw.regions || []).filter(
+    (r) => !excluded(r.slug) && allowedRegions.has(r.slug),
+  );
+  const removedRegions = (raw.regions || []).filter((r) => !regions.includes(r));
 
   const removedCitySlugs = new Set(removedCities.map((c) => c.slug));
   // Un ancien slug redirigé vers une ville supprimée devient lui aussi une
