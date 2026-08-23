@@ -40,11 +40,11 @@ function rotate<T>(pool: T[], seed: number, n: number, salt = 0): T[] {
 
 const WHY_ARGS = [
   "Un configurateur en ligne pour composer chaque support (format, matière, finitions, quantité).",
-  "Un prix calculé en direct selon votre configuration, sans surprise.",
+  "Un prix calculé en direct selon la configuration que vous choisissez.",
   "La vérification de vos fichiers avant impression (résolution, fonds perdus, CMJN).",
   "L'impression numérique et offset, selon le tirage et le rendu recherchés.",
   "Le grand format pour vos affiches, bâches, panneaux et PLV.",
-  "Un devis personnalisé sous 24 h ouvrées lorsque votre projet le nécessite.",
+  "Un devis personnalisé lorsque votre projet le nécessite.",
   "La livraison partout en France, directement à votre adresse.",
   "Une gamme complète centralisée : papeterie, signalétique, textile, objets et emballages.",
 ];
@@ -150,7 +150,7 @@ export function regionCopy(r: GenRegion): RegionCopy {
     },
     {
       q: "Les fichiers sont-ils vérifiés avant impression ?",
-      a: "Oui, chaque fichier est contrôlé (résolution, fonds perdus, CMJN) avant production pour garantir un rendu fidèle.",
+      a: "Oui, chaque fichier est relu (résolution, fonds perdus, CMJN) avant production et toute anomalie vous est signalée.",
     },
   ];
   const faq = rotate(faqPool, s, 5, 5);

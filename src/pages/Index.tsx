@@ -49,7 +49,7 @@ const services = [
   { icon: Layers, title: "PLV & supports de communication", desc: "Présentoirs, comptoirs d'accueil, stands, totems, roll-ups et supports pour salons, boutiques, événements et campagnes locales. Des solutions prêtes à valoriser votre marque sur le terrain.", cta: "Voir la PLV", img: imgSupports, link: "/supports-publicitaires" },
   { icon: Printer, title: "Objets & textiles personnalisés", desc: "Textiles marqués, goodies, stylos, mugs, clés USB, sacs, accessoires et objets publicitaires personnalisés avec votre logo. Idéal pour communiquer, fidéliser vos clients et équiper vos équipes.", cta: "Personnaliser un produit", img: imgPerso, link: "/personnalisation" },
   { icon: Truck, title: "Livraison partout en France", desc: "Expédition suivie partout en France, selon le délai indiqué pour chaque produit, avec options express. Un interlocuteur dédié vous accompagne du devis à la réception de vos supports.", cta: "En savoir plus", img: imgLivraison, link: "/livraison" },
-  { icon: CheckCircle, title: "Vérification des fichiers", desc: "Contrôle attentif de chaque fichier avant impression : résolution, fonds perdus, colorimétrie CMJN. La garantie d'un rendu fidèle, sans mauvaise surprise.", cta: "En savoir plus", img: imgPdf, link: "/blog" },
+  { icon: CheckCircle, title: "Vérification des fichiers", desc: "Vos fichiers sont relus avant mise en production : résolution, fonds perdus, colorimétrie CMJN. En cas d'anomalie, nous vous prévenons avant de lancer l'impression.", cta: "En savoir plus", img: imgPdf, link: "/blog" },
 ];
 
 
@@ -133,7 +133,7 @@ export default function Index() {
     } else {
       // Conversion GA4 : envoyée uniquement après confirmation réelle.
       trackGenerateLead("devis_accueil", { product: product || undefined });
-      toast({ title: "Demande envoyée ✓", description: "Nous vous répondons sous 24h." });
+      toast({ title: "Demande envoyée ✓", description: "Nous revenons vers vous au plus vite." });
       form.reset();
     }
   };
@@ -234,7 +234,7 @@ export default function Index() {
               {/* Subtext */}
               <p className="mb-10 max-w-xl text-lg leading-relaxed text-muted-foreground">
                 Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires.{" "}
-                <span className="text-foreground/90">Commandez en ligne, nous livrons partout.</span> Devis gratuit sous 24h.
+                <span className="text-foreground/90">Commandez en ligne, nous livrons partout.</span> Devis gratuit et sans engagement.
               </p>
 
               {/* CTA */}
@@ -475,7 +475,7 @@ export default function Index() {
           <div className="glass-card p-6 md:p-8">
             <h2 className="font-display text-2xl font-bold text-foreground mb-2">Demande de devis</h2>
             <p className="text-muted-foreground text-sm mb-6">
-              Décrivez votre projet, nous vous répondons sous 24h.
+              Décrivez votre projet, nous revenons vers vous rapidement.
             </p>
             <form
               ref={devisFormRef}

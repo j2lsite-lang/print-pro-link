@@ -5,7 +5,7 @@ import imgLivraison from "@/assets/services/livraison-france.jpg";
 export default function Livraison() {
   useSEO({
     title: "Livraison – Délais et tarifs d'expédition",
-    description: "Informations sur la livraison J2L Print : délais 3-5 jours ouvrés, expédition France et Europe, suivi de colis. Livraison partout en France.",
+    description: "Informations sur la livraison J2L Print : délais indiqués produit par produit, expédition France et Europe, suivi de colis.",
   });
 
   return (
@@ -14,7 +14,7 @@ export default function Livraison() {
         <h1 className="font-display text-3xl font-bold text-foreground mb-4">Informations de livraison</h1>
 
         <div className="glass-card overflow-hidden mb-8">
-          <img src={imgLivraison} alt="Livraison rapide J2L Print partout en France" className="w-full h-48 md:h-56 object-cover" width={1280} height={720} />
+          <img src={imgLivraison} alt="Livraison J2L Print partout en France" className="w-full h-48 md:h-56 object-cover" width={1280} height={720} />
         </div>
 
         <div className="space-y-6 text-sm text-muted-foreground leading-relaxed">
@@ -25,8 +25,8 @@ export default function Livraison() {
               <p className="text-xs mt-1">Métropolitaine</p>
             </div>
             <div className="glass-card p-4 text-center">
-              <p className="font-semibold text-foreground">Délai standard</p>
-              <p className="text-xs mt-1">5 à 15 jours ouvrés</p>
+              <p className="font-semibold text-foreground">Délai indicatif</p>
+              <p className="text-xs mt-1">5 à 15 jours ouvrés selon produit</p>
             </div>
             <div className="glass-card p-4 text-center">
               <p className="font-semibold text-foreground">Suivi colis</p>
@@ -50,7 +50,7 @@ export default function Livraison() {
             <p>Avant toute mise en production, nous vous envoyons un <strong className="text-foreground">Bon À Tirer (BAT)</strong> pour validation. C'est un visuel de votre produit personnalisé que vous devez approuver.</p>
             <ol className="list-decimal pl-5 space-y-1">
               <li>Vous passez commande et nous transmettez vos fichiers (logo, textes)</li>
-              <li>Nous créons le BAT et vous l'envoyons par email sous 24-48h</li>
+              <li>Nous créons le BAT et vous l'envoyons par email</li>
               <li>Vous validez le BAT (ou demandez des modifications gratuites)</li>
               <li>Une fois validé + acompte reçu, la production démarre</li>
               <li>Livraison selon les délais indiqués ci-dessous</li>

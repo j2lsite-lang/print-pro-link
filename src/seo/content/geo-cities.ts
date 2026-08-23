@@ -153,11 +153,11 @@ const SECTOR_POOL = [
 // ── shared commercial pools ─────────────────────────────────────────────────
 const WHY_ARGS = [
   "Un configurateur en ligne pour composer chaque support (format, matière, finitions, quantité).",
-  "Un prix calculé en direct selon votre configuration, sans surprise.",
+  "Un prix calculé en direct selon la configuration que vous choisissez.",
   "La vérification de vos fichiers avant impression (résolution, fonds perdus, CMJN).",
   "L'impression numérique et offset, selon le tirage et le rendu recherchés.",
   "Le grand format pour vos affiches, bâches, panneaux et PLV.",
-  "Un devis personnalisé sous 24 h ouvrées lorsque votre projet le nécessite.",
+  "Un devis personnalisé lorsque votre projet le nécessite.",
   "La livraison partout en France, directement à votre adresse.",
   "Un interlocuteur professionnel pour vous accompagner sur vos projets.",
   "Une gamme complète centralisée : papeterie, signalétique, textile, objets et emballages.",
@@ -206,7 +206,7 @@ export function cityCopy(c: GenCity): CityCopy {
     [
       `Imprimerie en ligne à ${c.name} — impression & supports publicitaires`,
       `Impression en ligne à ${c.name} (${c.cp}) | flyers, affiches, PLV`,
-      `Imprimeur en ligne à ${c.name} — livraison rapide ${dep.dans}`,
+      `Imprimeur en ligne à ${c.name} — livraison ${dep.dans}`,
       `Supports de communication imprimés à ${c.name}`,
     ],
     s,
@@ -246,7 +246,7 @@ export function cityCopy(c: GenCity): CityCopy {
   const introAngles: string[][] = [
     [
       `${econ} À ${c.name} (${c.cp}), J2L Print imprime et livre l'ensemble de vos supports de communication : vous configurez votre produit en ligne, validez votre fichier, puis recevez votre commande sans vous déplacer.`,
-      `Imprimeur 100 % en ligne, J2L Print n'a pas de boutique à ${c.name} mais dessert toute la commune et ${dep.dans}, avec une livraison rapide ${reg.dans}. ${audiences}`,
+      `Imprimeur 100 % en ligne, J2L Print n'a pas de boutique à ${c.name} mais dessert toute la commune et ${dep.dans}, avec livraison ${reg.dans}. ${audiences}`,
     ],
     [
       `J2L Print accompagne les professionnels ${de(c.name)} avec une imprimerie en ligne complète : flyers, cartes de visite, affiches, banderoles, PLV et objets publicitaires, livrés directement à ${c.name} (${c.cp}).`,
@@ -335,7 +335,7 @@ export function cityCopy(c: GenCity): CityCopy {
     },
     {
       q: "Les fichiers sont-ils vérifiés avant production ?",
-      a: "Oui. Chaque fichier (PDF de préférence, 300 dpi, CMJN, fonds perdus) fait l'objet d'un contrôle avant impression pour éviter les mauvaises surprises.",
+      a: "Oui. Chaque fichier (PDF de préférence, 300 dpi, CMJN, fonds perdus) est relu avant impression et nous vous signalons toute anomalie détectée.",
     },
     {
       q: `Quels sont les délais de livraison à ${c.name} ?`,

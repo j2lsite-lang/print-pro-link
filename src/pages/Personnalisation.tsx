@@ -114,8 +114,8 @@ export default function Personnalisation() {
               "Marquage multi-techniques",
               "Petites séries dès 10 pièces",
               "Maquette gratuite avant production",
-              "Livraison rapide en 5-7 jours",
-              "Devis gratuit sous 24h",
+              "Délai indiqué produit par produit",
+              "Devis gratuit et sans engagement",
               "Échantillons sur demande",
               "Accompagnement personnalisé",
             ].map((item) => (

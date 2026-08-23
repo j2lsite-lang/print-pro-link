@@ -11,7 +11,7 @@ import { catalogVisuals } from "@/seo/data/catalog-visuals";
 export default function ImpressionNumerique() {
   useSEO({
     title: "Impression numérique en ligne – Flyers, cartes de visite, affiches | J2L Print",
-    description: "Impression numérique professionnelle : flyers, cartes de visite, dépliants, affiches, brochures. Qualité offset et numérique, livraison rapide partout en France. Devis gratuit.",
+    description: "Impression numérique professionnelle : flyers, cartes de visite, dépliants, affiches, brochures. Configuration en ligne, livraison partout en France. Devis gratuit.",
     ogType: "website",
   });
 
@@ -93,14 +93,13 @@ export default function ImpressionNumerique() {
           </h2>
           <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
             <p>
-              Notre atelier d'impression numérique utilise des <strong>presses de dernière génération</strong> garantissant 
-              une fidélité des couleurs exceptionnelle et une résolution jusqu'à 2400 dpi. Que vous ayez besoin de 50 ou 
-              50 000 exemplaires, nous adaptons le procédé (numérique ou offset) pour vous offrir le meilleur rapport qualité-prix.
+              J2L Print est une <strong>imprimerie en ligne</strong> : selon le produit, la quantité et le format que vous
+              choisissez, le procédé d'impression le mieux adapté (numérique ou offset) est retenu pour obtenir le meilleur
+              rapport qualité-prix. Les quantités réellement disponibles sont celles proposées dans le configurateur.
             </p>
             <p>
-              Chaque commande bénéficie d'un <strong>contrôle qualité automatique</strong> de vos fichiers : vérification 
-              de la résolution, des fonds perdus, de la colorimétrie CMJN et des zones de sécurité. Notre équipe de 
-              prépresse intervient si nécessaire pour garantir un résultat parfait.
+              Vos fichiers sont <strong>relus avant mise en production</strong> : résolution, fonds perdus, colorimétrie CMJN
+              et zones de sécurité. En cas d'anomalie détectée, nous revenons vers vous avant de lancer l'impression.
             </p>
           </div>
 
@@ -109,11 +108,11 @@ export default function ImpressionNumerique() {
           </h3>
           <ul className="grid gap-2 sm:grid-cols-2 text-sm text-muted-foreground">
             {[
-              "Impression HD jusqu'à 2400 dpi",
+              "Impression professionnelle numérique et offset",
               "Papiers certifiés FSC & PEFC",
-              "Vérification automatique des fichiers",
-              "Livraison en 3-5 jours ouvrés",
-              "Devis gratuit sous 24h",
+              "Relecture de vos fichiers avant production",
+              "Délai indiqué produit par produit",
+              "Devis gratuit et sans engagement",
               "Conception de maquettes dès 65 € HT",
             ].map((item) => (
               <li key={item} className="flex items-start gap-2">

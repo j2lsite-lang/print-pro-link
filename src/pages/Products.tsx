@@ -29,7 +29,7 @@ export default function Products() {
 
   useSEO({
     title: "Catalogue produits – Impression en ligne",
-    description: "Parcourez notre catalogue d'impression : flyers, cartes de visite, affiches, bâches, adhésifs, textiles, objets publicitaires. Commandez en ligne, livraison rapide en France.",
+    description: "Parcourez notre catalogue d'impression : flyers, cartes de visite, affiches, bâches, adhésifs, textiles, objets publicitaires. Commandez en ligne, livraison partout en France.",
   });
 
   const [products, setProducts] = useState<Product[]>([]);

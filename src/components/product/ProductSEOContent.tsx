@@ -174,7 +174,7 @@ export default function ProductSEOContent({ productName, sku, description, optio
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="glass-card p-5 text-center">
           <Truck className="h-7 w-7 text-primary mx-auto mb-2" />
-          <h3 className="font-display text-sm font-semibold text-foreground">Livraison rapide</h3>
+          <h3 className="font-display text-sm font-semibold text-foreground">Livraison en France</h3>
           <p className="text-xs text-muted-foreground mt-1">
             Délai affiché lors de la configuration, expédition partout en France métropolitaine
           </p>
@@ -183,12 +183,12 @@ export default function ProductSEOContent({ productName, sku, description, optio
           <FileText className="h-7 w-7 text-primary mx-auto mb-2" />
           <h3 className="font-display text-sm font-semibold text-foreground">Vérification fichiers</h3>
           <p className="text-xs text-muted-foreground mt-1">
-            Contrôle qualité automatique de vos fichiers PDF avant chaque impression
+            Vos fichiers PDF sont relus avant mise en production
           </p>
         </div>
         <div className="glass-card p-5 text-center">
           <Phone className="h-7 w-7 text-primary mx-auto mb-2" />
-          <h3 className="font-display text-sm font-semibold text-foreground">Devis gratuit sous 24h</h3>
+          <h3 className="font-display text-sm font-semibold text-foreground">Devis gratuit</h3>
           <p className="text-xs text-muted-foreground mt-1">
             Contactez notre équipe par téléphone ou email pour un accompagnement personnalisé
           </p>
@@ -220,7 +220,7 @@ export default function ProductSEOContent({ productName, sku, description, optio
             Besoin d'un devis pour votre {productName.toLowerCase()} ?
           </h3>
           <p className="text-sm text-muted-foreground">
-            Contactez-nous pour un devis personnalisé et gratuit, réponse garantie sous 24h.
+            Contactez-nous pour un devis personnalisé et gratuit, sans engagement.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
