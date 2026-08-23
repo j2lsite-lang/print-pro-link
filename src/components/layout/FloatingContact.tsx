@@ -38,26 +38,26 @@ export default function FloatingContact() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Nous contacter sur Messenger"
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-[#0084FF] text-white shadow-lg hover:scale-110 transition-transform"
+        className="flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-[#0084FF] text-white shadow-lg hover:scale-110 transition-transform"
       >
-        <Send className="h-6 w-6" />
+        <Send className="h-5 w-5 md:h-6 md:w-6" />
       </a>
       <a
         href="https://wa.me/33616737575"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Nous contacter sur WhatsApp"
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg hover:scale-110 transition-transform"
+        className="flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg hover:scale-110 transition-transform"
       >
-        <MessageCircle className="h-6 w-6" />
+        <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />
       </a>
 
       <a
         href="tel:+33329304479"
         aria-label="Appelez-nous"
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:scale-110 transition-transform"
+        className="flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:scale-110 transition-transform"
       >
-        <Phone className="h-6 w-6" />
+        <Phone className="h-5 w-5 md:h-6 md:w-6" />
       </a>
     </div>
   );
