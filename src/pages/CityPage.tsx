@@ -19,7 +19,7 @@ export default function CityPage() {
   useSEO({
     title: city ? `Imprimerie en ligne à ${city.name} (${city.cp}) – Flyers, bâches, objets pub` : "Imprimerie en ligne",
     description: city
-      ? `Imprimerie en ligne à ${city.name} (${city.cp}). Impression flyers, cartes de visite, bâches, roll-ups, objets publicitaires. Livraison rapide à ${city.name}. Devis gratuit J2L Print.`
+      ? `Imprimerie en ligne à ${city.name} (${city.cp}). Impression flyers, cartes de visite, bâches, roll-ups, objets publicitaires. Livraison à ${city.name}. Devis gratuit J2L Print.`
       : "",
     canonical: canonicalPath ? `${BASE_URL}${canonicalPath}` : undefined,
     jsonLd: city ? [
@@ -102,7 +102,7 @@ export default function CityPage() {
 
         {/* H1 enrichi */}
         <h1 className="font-display text-3xl font-bold text-foreground mb-4">
-          Imprimerie en ligne à {city.name} ({city.cp}) – Impression & livraison rapide
+          Imprimerie en ligne à {city.name} ({city.cp}) – Impression & livraison
         </h1>
         <p className="text-muted-foreground leading-relaxed mb-8">
           <strong>J2L Print</strong> est votre <strong>imprimerie en ligne</strong> pour {city.name} et sa région ({city.region}). 
@@ -157,7 +157,7 @@ export default function CityPage() {
             <CheckCircle className="h-8 w-8 text-primary mx-auto mb-3" />
             <h3 className="font-display text-sm font-semibold text-foreground">Devis gratuit</h3>
             <p className="text-xs text-muted-foreground mt-1">
-              Devis personnalisé sous 24h pour les professionnels de {city.name}
+              Devis personnalisé pour les professionnels de {city.name}
             </p>
           </div>
           <div className="glass-card p-5 text-center">
@@ -234,7 +234,7 @@ export default function CityPage() {
             <h3 className="font-display text-lg font-semibold text-foreground">
               Besoin d'un devis d'impression à {city.name} ?
             </h3>
-            <p className="text-sm text-muted-foreground">Réponse sous 24h, livraison rapide à {city.name} ({city.cp}).</p>
+            <p className="text-sm text-muted-foreground">Devis gratuit, livraison à {city.name} ({city.cp}).</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button asChild className="rounded-full">
