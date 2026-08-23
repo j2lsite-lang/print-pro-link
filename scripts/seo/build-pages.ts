@@ -30,6 +30,10 @@ import {
   categoryKeywords, subcategoryKeywords, productKeywords,
 } from "./geo-keywords";
 import {
+  sectorBullets, eventBullets, sectorEventKeywords,
+  geoSectorBullets, geoEventBullets, zoneSectorBullets, zoneEventBullets,
+} from "./sector-events";
+import {
   cityCopy, deptCopy, seedOf, cityArchetype, type GenCity, type GenDept, type NeighborRef,
 } from "../../src/seo/content/geo-cities";
 import { regionCopy, type GenRegion } from "../../src/seo/content/regions";
@@ -536,7 +540,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       },
       intro: copy.intro,
       breadcrumb: crumb,
-      sections: copy.sections,
+      sections: [
+        ...copy.sections,
+        { heading: `Professionnels accompagnés à ${gc.name}${gc.departmentCode ? ` (${gc.departmentName}, ${gc.departmentCode})` : ""}`, bullets: geoSectorBullets(gc.name, seedOf(gc.slug), 8) },
+        { heading: `Occasions fréquentes à ${gc.name}`, bullets: geoEventBullets(gc.name, seedOf(gc.slug), 5) },
+      ],
       productGrid: { heading: copy.productGridHeading, intro: copy.productGridIntro, cards: PRODUCT_CARDS },
       cta: { label: copy.ctaLabel, path: "/catalogue" },
       faq: copy.faq,
@@ -563,7 +571,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         serviceLd({ name: `Impression pour les professionnels à ${gc.name}`, description: `Impression en ligne avec livraison à ${gc.name} et ${dep.dans}.`, areaServed: gc.name }),
         faqLd(copy.faq),
       ],
-      keywords: cityKeywords(gc.name),
+      keywords: cityKeywords(gc.name, { department: gc.departmentName, code: (gc as any).departmentCode, region: gc.regionName }),
     });
   }
 
@@ -621,7 +629,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       },
       intro: copy.intro,
       breadcrumb: crumb,
-      sections: copy.sections,
+      sections: [
+        ...copy.sections,
+        { heading: `Professionnels accompagnés ${article(gd.name).dans}${gd.code ? ` (${gd.code})` : ""}`, bullets: zoneSectorBullets(article(gd.name).dans, seedOf(gd.slug), 8) },
+        { heading: `Occasions fréquentes ${article(gd.name).dans}`, bullets: zoneEventBullets(article(gd.name).dans, seedOf(gd.slug), 5) },
+      ],
       productGrid: { heading: copy.productGridHeading, intro: copy.productGridIntro, cards: PRODUCT_CARDS },
       cta: { label: copy.ctaLabel, path: "/catalogue" },
       faq: copy.faq,
@@ -641,7 +653,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         serviceLd({ name: `Impression ${article(gd.name).dans}`, description: `Impression en ligne avec livraison ${article(gd.name).dans}.`, areaServed: gd.name }),
         faqLd(copy.faq),
       ],
-      keywords: deptKeywords(gd.name, article(gd.name).dans),
+      keywords: deptKeywords(gd.name, article(gd.name).dans, gd.code),
     });
   }
 
@@ -688,7 +700,11 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       },
       intro: copy.intro,
       breadcrumb: crumb,
-      sections: copy.sections,
+      sections: [
+        ...copy.sections,
+        { heading: `Professionnels accompagnés ${art.dans}`, bullets: zoneSectorBullets(art.dans, seedOf(gr.slug), 8) },
+        { heading: `Occasions fréquentes ${art.dans}`, bullets: zoneEventBullets(art.dans, seedOf(gr.slug), 5) },
+      ],
       productGrid: { heading: copy.productGridHeading, intro: copy.productGridIntro, cards: PRODUCT_CARDS },
       cta: { label: copy.ctaLabel, path: "/catalogue" },
       faq: copy.faq,
@@ -1049,6 +1065,11 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const attrBullets = attrs ? productAttributeBullets(attrs) : [];
     const attrPhrases = attrs ? productAttributePhrases(attrs, seed) : [];
 
+    // Univers réel du produit (catégorie racine) → métiers & occasions.
+    const topSlugEarly = crumb.find((c) => c.path.startsWith("/categorie/"))?.path.split("/")[2] || "";
+    const secBullets = sectorBullets(topSlugEarly, seed, 5);
+    const evtBullets = eventBullets(topSlugEarly, seed, 3);
+
     const sections = [
       { heading: `À quoi sert votre ${lower} ?`, paragraphs: [seo.useCases] },
       // Real formats / faces / matières / finitions available for THIS product.
@@ -1059,6 +1080,12 @@ export async function buildProductPages(): Promise<SeoPage[]> {
       // Visible file-preparation advice — masked when data is insufficient.
       ...(seo.fileTips && seo.fileTips.length >= 3
         ? [{ heading: "Conseils pour préparer votre fichier", bullets: seo.fileTips }]
+        : []),
+      ...(secBullets.length
+        ? [{ heading: `Professionnels qui commandent ${lower}`, bullets: secBullets }]
+        : []),
+      ...(evtBullets.length
+        ? [{ heading: "Occasions et événements concernés", bullets: evtBullets }]
         : []),
     ];
 
@@ -1158,7 +1185,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const productKw = (() => {
       const seen = new Set<string>();
       const out: string[] = [];
-      for (const v of [...productKeywords(name), ...attrPhrases]) {
+      for (const v of [...productKeywords(name), ...attrPhrases, ...sectorEventKeywords(topSlugEarly, lower, seed)]) {
         const k = v.trim().toLowerCase();
         if (v && !seen.has(k)) { seen.add(k); out.push(v.trim()); }
       }

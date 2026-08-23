@@ -56,14 +56,93 @@ export const SITE_KEYWORDS: string[] = uniq([
   "impression publicitaire pour entreprise",
   "commander des supports imprimés",
   "catalogue imprimerie en ligne",
+  "imprimerie entreprise",
+  "impression entreprise",
+  "imprimerie pour TPE PME",
+  "impression supports de communication",
+  "supports communication personnalisés",
+  "prix imprimerie",
+  "tarif imprimerie",
+  "devis imprimerie",
+  "prix impression",
+  "tarif impression",
+  "impression pour association",
+  "impression pour collectivité",
+  "impression pour commerce",
+  "impression pour artisan",
+  "impression pour salon professionnel",
+  "impression pour événement",
 ]);
 
 /* -------------------------------------------------------------------------- */
 /* City queries — "à {Ville}" + natural variants + commercial + long-tail     */
 /* -------------------------------------------------------------------------- */
-export function cityKeywords(name: string): string[] {
+export function cityKeywords(
+  name: string,
+  ctx?: { department?: string; code?: string; region?: string },
+): string[] {
   const V = name;
+  const D = ctx?.department;
+  const N = ctx?.code;
+  const R = ctx?.region;
+  // Formes géographiques combinées : ville / département / numéro / région.
+  const geoForms: string[] = [];
+  if (D) geoForms.push(
+    `imprimerie ${V} ${D}`,
+    `imprimeur ${V} ${D}`,
+    `impression ${V} ${D}`,
+    `impression publicitaire ${V} ${D}`,
+  );
+  if (N) geoForms.push(
+    `imprimerie ${V} ${N}`,
+    `imprimeur ${V} ${N}`,
+    `impression ${V} ${N}`,
+    `imprimerie ${N}`,
+    `imprimeur ${N}`,
+  );
+  if (D && N) geoForms.push(
+    `imprimerie ${V} ${D} ${N}`,
+    `imprimeur ${D} ${N}`,
+    `impression ${D} ${N}`,
+    `flyers personnalisés ${V} ${N}`,
+    `panneaux publicitaires ${V} ${N}`,
+  );
+  if (R) geoForms.push(
+    `imprimerie ${V} ${R}`,
+    `imprimeur ${R}`,
+    `impression professionnelle ${R}`,
+  );
+  // Métiers / clientèles réellement adressés.
+  const sectorForms = [
+    `imprimeur pour artisan à ${V}`,
+    `impression pour commerce à ${V}`,
+    `impression pour restaurant à ${V}`,
+    `impression pour association à ${V}`,
+    `impression pour club sportif à ${V}`,
+    `impression pour mairie à ${V}`,
+    `impression pour agence immobilière à ${V}`,
+    `impression pour école à ${V}`,
+    `impression pour salle de sport à ${V}`,
+    `impression pour garage à ${V}`,
+    `supports publicitaires pour TPE PME à ${V}`,
+  ];
+  // Événements / occasions.
+  const eventForms = [
+    `flyers portes ouvertes ${V}`,
+    `affiche inauguration ${V}`,
+    `roll-up salon professionnel ${V}`,
+    `banderole événement sportif ${V}`,
+    `bâche club sportif ${V}`,
+    `panneau immobilier ${V}`,
+    `PLV ouverture magasin ${V}`,
+    `flyers opération commerciale ${V}`,
+    `affiche festival ${V}`,
+    `brochure salon professionnel ${V}`,
+  ];
   return uniq([
+    ...geoForms,
+    ...sectorForms,
+    ...eventForms,
     // Core local intent
     `imprimerie à ${V}`,
     `imprimeur à ${V}`,
@@ -154,8 +233,39 @@ export function cityKeywords(name: string): string[] {
 /* `dans` = the grammatical article form ("dans les Vosges", "en Moselle",    */
 /* "dans le Grand Est"); `name` = the bare administrative name.               */
 /* -------------------------------------------------------------------------- */
-function zoneKeywords(name: string, dans: string): string[] {
+function zoneKeywords(name: string, dans: string, code?: string): string[] {
+  const numForms = code ? [
+    `imprimerie ${code}`,
+    `imprimeur ${code}`,
+    `impression ${code}`,
+    `imprimerie ${name} ${code}`,
+    `imprimeur ${name} ${code}`,
+    `impression professionnelle ${name} ${code}`,
+    `devis imprimerie ${code}`,
+    `flyers personnalisés ${code}`,
+    `panneaux publicitaires ${code}`,
+    `roll-up personnalisé ${code}`,
+  ] : [];
+  const sectorForms = [
+    `impression pour artisan ${dans}`,
+    `impression pour commerce ${dans}`,
+    `impression pour association ${dans}`,
+    `impression pour club sportif ${dans}`,
+    `impression pour collectivité ${dans}`,
+    `impression pour restaurant ${dans}`,
+    `impression pour entreprise du BTP ${dans}`,
+  ];
+  const eventForms = [
+    `flyers portes ouvertes ${name}`,
+    `bâche événement sportif ${name}`,
+    `roll-up salon professionnel ${name}`,
+    `panneau de chantier ${name}`,
+    `affiche inauguration ${name}`,
+  ];
   return uniq([
+    ...numForms,
+    ...sectorForms,
+    ...eventForms,
     `imprimerie ${dans}`,
     `imprimeur ${dans}`,
     `imprimerie professionnelle ${dans}`,

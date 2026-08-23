@@ -44,6 +44,12 @@ export interface ProductAttributes {
   grammageMax?: number;
   /** Usage extérieur détecté dans les matières/finitions (résistant, UV…). */
   exterieur: boolean;
+  /** Dimensions chiffrées réellement proposées ("85 x 55 mm", "100 x 200 cm"). */
+  dimensions?: string[];
+  /** Grammages g/m² réellement listés (valeurs distinctes, triées). */
+  grammages?: number[];
+  /** Quantités (exemplaires) réellement proposées par le configurateur. */
+  quantities?: number[];
 }
 
 const SPECS_PATH = resolve("src/seo/generated/product-specs.json");
@@ -77,6 +83,33 @@ function extractFormats(prop: any): string[] {
     if (f && !seen.has(f.toLowerCase())) { seen.add(f.toLowerCase()); out.push(f); }
   }
   return out.slice(0, 10);
+}
+
+/** Real numeric dimensions offered by the size property ("85 x 55 mm"). */
+function extractDimensions(prop: any): string[] {
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const o of prop?.options || []) {
+    const n = optName(o);
+    const m = n.match(/(\d+(?:[.,]\d+)?)\s*[x×]\s*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)\b/i);
+    if (!m) continue;
+    const label = `${m[1].replace(",", ".")} x ${m[2].replace(",", ".")} ${m[3].toLowerCase()}`;
+    if (seen.has(label.toLowerCase())) continue;
+    seen.add(label.toLowerCase());
+    out.push(label);
+  }
+  return out.slice(0, 12);
+}
+
+/** Real order quantities offered by the "copies" property. */
+function extractQuantities(prop: any): number[] {
+  const set = new Set<number>();
+  for (const o of prop?.options || []) {
+    const raw = String(o?.name ?? o?.slug ?? "").replace(/[\s\u202f\u00a0.]/g, "");
+    const m = raw.match(/^(\d{1,7})$/);
+    if (m) set.add(Number(m[1]));
+  }
+  return [...set].sort((a, b) => a - b).slice(0, 40);
 }
 
 function extractFaces(prop: any): string[] {
@@ -122,6 +155,16 @@ function materialFamily(raw: string): string | null {
   return null;
 }
 
+/** Distinct real grammages (g/m²) listed by the material property. */
+function extractGrammages(prop: any): number[] {
+  const set = new Set<number>();
+  for (const o of prop?.options || []) {
+    const m = optName(o).match(/(\d{2,4})\s*g\/m/);
+    if (m) set.add(Number(m[1]));
+  }
+  return [...set].sort((a, b) => a - b).slice(0, 12);
+}
+
 function extractMaterials(prop: any): { matieres: string[]; grammageMin?: number; grammageMax?: number; exterieur: boolean } {
   const fams = new Set<string>();
   let gMin = Infinity, gMax = -Infinity;
@@ -157,12 +200,16 @@ export function extractAttributes(product: any): ProductAttributes | null {
   const spot = bySlug.get("spot_finish");
   const rounded = bySlug.get("rounded_corners");
   const die = bySlug.get("die_cut");
+  const sizeProp = bySlug.get("size");
   const holes = bySlug.get("drillholes") || bySlug.get("eyelets") || bySlug.get("oeillets");
 
   return {
     sku: product.sku,
     singular: String(product.titleSingle || product.name || product.sku).trim(),
-    formats: extractFormats(bySlug.get("size")),
+    formats: extractFormats(sizeProp),
+    dimensions: extractDimensions(sizeProp),
+    quantities: extractQuantities(bySlug.get("copies")),
+    grammages: extractGrammages(bySlug.get("material")),
     faces: extractFaces(bySlug.get("printtype") || bySlug.get("sides")),
     pelliculage: finish.pelliculage,
     vernis: finish.vernis,
@@ -280,12 +327,22 @@ export function productAttributePhrases(attrs: ProductAttributes, seed: number):
   for (const m of attrs.matieres.slice(0, 2)) out.push(`${base} ${lc(m)}`);
   // Usage extérieur.
   if (attrs.exterieur) out.push(`${base} extérieur résistant`);
+  // Dimensions chiffrées réellement proposées.
+  for (const d of pickN(attrs.dimensions || [], seed + 2, Math.min(2, (attrs.dimensions || []).length))) {
+    out.push(`${base} ${d}`);
+  }
+  // Grammages réels.
+  for (const g of (attrs.grammages || []).slice(0, 2)) out.push(`${base} ${g} g`);
+  // Quantités réelles.
+  for (const q of pickN(attrs.quantities || [], seed + 3, Math.min(3, (attrs.quantities || []).length))) {
+    out.push(`${base} ${q} exemplaires`);
+  }
 
   // Dedup + cap.
   const seen = new Set<string>();
   const uniq: string[] = [];
   for (const v of out) { const k = v.replace(/\s+/g, " ").trim().toLowerCase(); if (v && !seen.has(k)) { seen.add(k); uniq.push(v.replace(/\s+/g, " ").trim()); } }
-  return uniq.slice(0, 12);
+  return uniq.slice(0, 20);
 }
 
 /** Human "Formats et options disponibles" bullets (only real attributes). */
@@ -305,6 +362,14 @@ export function productAttributeBullets(attrs: ProductAttributes): string[] {
   if (attrs.decoupe) fin.push("découpe à la forme");
   if (attrs.oeillets) fin.push("œillets");
   if (fin.length) b.push(`Finitions : ${fin.join(", ")}.`);
+  if ((attrs.dimensions || []).length) b.push(`Dimensions proposées : ${(attrs.dimensions || []).slice(0, 6).join(", ")}.`);
+  if ((attrs.grammages || []).length > 1) b.push(`Grammages proposés : ${(attrs.grammages || []).join(", ")} g/m².`);
+  const qs = attrs.quantities || [];
+  if (qs.length) {
+    b.push(qs.length > 1
+      ? `Quantités disponibles : de ${qs[0]} à ${qs[qs.length - 1]} exemplaires (dont ${qs.slice(0, 6).join(", ")}).`
+      : `Quantité disponible : ${qs[0]} exemplaires.`);
+  }
   if (attrs.exterieur) b.push("Adapté à un usage extérieur résistant.");
   return b;
 }
