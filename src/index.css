@@ -121,6 +121,16 @@
     border-color: hsla(49,100%,50%,.55);
   }
 
+  /* Décale les boutons flottants au-dessus de la barre d'action mobile */
+  body.has-sticky-cta .floating-contact {
+    bottom: 6.5rem;
+  }
+  @media (min-width: 1024px) {
+    body.has-sticky-cta .floating-contact {
+      bottom: 1.5rem;
+    }
+  }
+
   .tag {
     @apply inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs;
     border: 1px solid hsla(49,100%,50%,.35);
