@@ -24,10 +24,10 @@ export const SERVICE_CONTENT: ServiceContent[] = [
     title:
       "Impression numérique en ligne – Flyers, cartes de visite, affiches | J2L Print",
     description:
-      "Impression numérique professionnelle : flyers, cartes de visite, dépliants, affiches, brochures. Qualité offset et numérique, livraison rapide partout en France. Devis gratuit.",
+      "Impression numérique professionnelle : flyers, cartes de visite, dépliants, affiches, brochures. Impression numérique et offset, livraison partout en France. Devis gratuit.",
     h1: "Impression numérique professionnelle en ligne",
     intro: [
-      "J2L Print vous propose un service d'impression numérique haut de gamme pour tous vos supports de communication. De la carte de visite au dépliant grand tirage, vos documents sont produits avec une qualité irréprochable et livrés partout en France.",
+      "J2L Print vous propose un service d'impression numérique haut de gamme pour tous vos supports de communication. De la carte de visite au dépliant grand tirage, vos documents sont imprimés avec soin et livrés partout en France.",
     ],
     solutionsHeading: "Nos produits d'impression numérique",
     solutions: [
@@ -44,7 +44,7 @@ export const SERVICE_CONTENT: ServiceContent[] = [
     faq: [
       { q: "Quels formats et papiers sont disponibles pour l'impression numérique ?", a: "Nous proposons des formats du A7 au B0 sur papiers couchés mats, brillants, satinés, recyclés, texturés et premium. Les cartes de visite disposent également de finitions luxe : vernis sélectif, dorure, découpe laser." },
       { q: "Quel délai de livraison pour une impression numérique ?", a: "Le délai de production est indiqué pour chaque produit au moment de la configuration, selon le support et la quantité. Une option express est disponible sur devis pour les besoins urgents." },
-      { q: "Puis-je recevoir un bon à tirer avant production ?", a: "Oui. Un BAT numérique est envoyé systématiquement par email pour validation avant lancement de l'impression. Un BAT physique est possible sur demande." },
+      { q: "Puis-je recevoir un bon à tirer avant production ?", a: "Oui. Un BAT numérique peut vous être transmis par email pour validation avant lancement de l'impression : précisez-le lors de votre commande ou de votre demande de devis." },
     ],
   },
   {
@@ -53,10 +53,10 @@ export const SERVICE_CONTENT: ServiceContent[] = [
     title:
       "Impression grand format – Bâches, banderoles, adhésifs, kakémonos | J2L Print",
     description:
-      "Impression grand format professionnelle : bâches, banderoles, adhésifs, kakémonos, enseignes. Haute résolution 1440 dpi, livraison rapide partout en France. Devis gratuit.",
+      "Impression grand format professionnelle : bâches, banderoles, adhésifs, kakémonos, enseignes. Configuration en ligne, livraison partout en France. Devis gratuit.",
     h1: "Impression grand format en ligne",
     intro: [
-      "J2L Print réalise tous vos supports de communication grand format : bâches publicitaires, banderoles, adhésifs, kakémonos et enseignes. Impression haute résolution jusqu'à 1440 dpi sur tous types de supports, livrée partout en France.",
+      "J2L Print est votre imprimerie en ligne pour tous vos supports de communication grand format : bâches publicitaires, banderoles, adhésifs, kakémonos et enseignes. Vous composez votre support en ligne (dimensions, matière, finitions) et vous êtes livré partout en France.",
     ],
     solutionsHeading: "Nos produits grand format",
     solutions: [
@@ -69,8 +69,8 @@ export const SERVICE_CONTENT: ServiceContent[] = [
     ],
     faq: [
       { q: "Quelle résolution d'image faut-il pour l'impression grand format ?", a: "Nous recommandons une résolution de 100 à 150 dpi à la taille finale minimum pour les bâches et banderoles. Pour les adhésifs de proximité, 200 à 300 dpi garantissent un rendu net. Nous vérifions vos fichiers gratuitement." },
-      { q: "Les bâches et adhésifs sont-ils résistants aux intempéries ?", a: "Oui. Les encres éco-solvantes, latex et UV offrent une tenue de 3 à 7 ans en extérieur selon le support. Les bâches PVC 500g/m² et les vinyles polymères sont traités anti-UV et anti-moisissure." },
-      { q: "Quels délais pour une impression grand format ?", a: "La production standard est de 5 à 7 jours ouvrés. Un service express est proposé sur devis pour les besoins urgents (salons, événements)." },
+      { q: "Les bâches et adhésifs sont-ils résistants aux intempéries ?", a: "Oui. Ces supports sont conçus pour un usage extérieur. La tenue dépend du support, de l'encre et de l'exposition : l'information précise figure sur la fiche du produit concerné." },
+      { q: "Quels délais pour une impression grand format ?", a: "Le délai de production est indiqué pour chaque produit au moment de la configuration, selon le support et la quantité. Pour un besoin urgent, indiquez-le dans votre demande de devis." },
     ],
   },
   {

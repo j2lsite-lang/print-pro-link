@@ -39,7 +39,7 @@ export function cityIntro(c: CityData): string[] {
   const p = profileFor(c);
   return [
     `${p.economy} J2L Print y livre tous vos supports de communication imprimés en ligne, sans déplacement : vous configurez, validez votre fichier, et recevez votre commande à ${c.name} (${c.cp}).`,
-    `${p.audiences} J2L Print n'a pas d'imprimerie physique à ${c.name} : c'est un service d'impression en ligne avec livraison rapide ${article(c.region).dans}, pensé pour commander à distance sans renoncer à la qualité.`,
+    `${p.audiences} J2L Print n'a pas d'imprimerie physique à ${c.name} : c'est un service d'impression en ligne avec livraison ${article(c.region).dans}, pensé pour commander à distance sans renoncer à la qualité.`,
   ];
 }
 

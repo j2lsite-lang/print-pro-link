@@ -275,7 +275,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     breadcrumb: [home, { name: "Catalogue", path: "/catalogue" }],
     visual: {
       image: "/seo/hero-atelier.jpg",
-      imageAlt: "Atelier d'impression et supports personnalisés J2L Print",
+      imageAlt: "Supports d'impression personnalisés J2L Print",
       keywords: SITE_KEYWORDS.slice(0, 8),
     },
     productGrid: {
@@ -1123,7 +1123,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
             `${name} personnalisé avec votre logo par J2L Print. Sélectionnez vos options, obtenez un prix immédiat et profitez d'un suivi dédié.`,
           ]
         : [
-            `Commandez ${lower} personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat, devis gratuit et livraison rapide partout en France.`,
+            `Commandez ${lower} personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat, devis gratuit et livraison partout en France.`,
             `${name} de qualité professionnelle à personnaliser selon vos besoins. Configuration en ligne, tarif dégressif, fichiers vérifiés et livraison en France.`,
             `Besoin de ${lower} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, devis gratuit et expédition soignée partout en France.`,
             `${name} imprimé sur mesure par J2L Print. Choisissez vos options, obtenez un prix immédiat et profitez d'un accompagnement et d'une livraison France entière.`,
