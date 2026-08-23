@@ -762,6 +762,14 @@ export default function ProductDetail() {
     return () => clearTimeout(timer);
   }, [fetchPrice]);
 
+  // Signale la barre d'action mobile pour décaler les boutons flottants
+  useEffect(() => {
+    document.body.classList.add("has-sticky-cta");
+    return () => document.body.classList.remove("has-sticky-cta");
+  }, []);
+
+
+
   // Build configurable props — filter out excluded options per property
   const configurableProps: ConfigurableProp[] = useMemo(() => {
     const allProps = product?.properties || product?.configurableProperties || [];
