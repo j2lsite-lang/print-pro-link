@@ -97,6 +97,13 @@ function syncWorker(productSlugs: string[], themeSlugs: string[]) {
 }
 
 
+/** Strip the build-only `keywords` field (never rendered) so the generated
+ *  JSON stays compact. Visible keyword chips live in `visual.keywords`. */
+function slim(p: SeoPage): SeoPage {
+  const { keywords, ...rest } = p as SeoPage & { keywords?: string[] };
+  return rest as SeoPage;
+}
+
 async function main() {
   const pages = await buildAllPages();
 
@@ -104,7 +111,7 @@ async function main() {
   const genDir = resolve("src/seo/generated");
   mkdirSync(genDir, { recursive: true });
   const byPath: Record<string, SeoPage> = {};
-  for (const p of pages) byPath[p.path] = p;
+  for (const p of pages) byPath[p.path] = slim(p);
   writeFileSync(resolve(genDir, "pages.json"), JSON.stringify(byPath, null, 0));
 
   // 1b. product pages — prerendered separately (products.json) so the runtime
@@ -112,7 +119,7 @@ async function main() {
   //     prerenderer reads this file. Never affects prices/API/configurator.
   const productPages = await buildProductPages();
   const productsByPath: Record<string, SeoPage> = {};
-  for (const p of productPages) productsByPath[p.path] = p;
+  for (const p of productPages) productsByPath[p.path] = slim(p);
   writeFileSync(resolve(genDir, "products.json"), JSON.stringify(productsByPath, null, 0));
   const productSlugs = productPages.map((p) => p.path.replace(/^\/products\//, ""));
 
@@ -138,7 +145,7 @@ async function main() {
   const themePages = await buildThemePages(productLabels);
 
   const themesByPath: Record<string, SeoPage> = {};
-  for (const p of themePages) themesByPath[p.path] = p;
+  for (const p of themePages) themesByPath[p.path] = slim(p);
   writeFileSync(resolve(genDir, "themes.json"), JSON.stringify(themesByPath, null, 0));
   const themeSlugs = themePages
     .map((p) => p.path.replace(/^\/themes\//, ""))
