@@ -25,8 +25,8 @@ export default function Livraison() {
               <p className="text-xs mt-1">Métropolitaine</p>
             </div>
             <div className="glass-card p-4 text-center">
-              <p className="font-semibold text-foreground">Délai standard</p>
-              <p className="text-xs mt-1">5 à 15 jours ouvrés</p>
+              <p className="font-semibold text-foreground">Délai indicatif</p>
+              <p className="text-xs mt-1">5 à 15 jours ouvrés selon produit</p>
             </div>
             <div className="glass-card p-4 text-center">
               <p className="font-semibold text-foreground">Suivi colis</p>
