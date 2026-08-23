@@ -8,6 +8,9 @@ const SMTP_PORT = Number(Deno.env.get('SMTP_PORT') || '465')
 const SMTP_USER = Deno.env.get('SMTP_USER') || 'contact@j2lprint.fr'
 const SMTP_PASSWORD = Deno.env.get('SMTP_PASSWORD') || ''
 const EMAIL_FROM = Deno.env.get('EMAIL_FROM') || 'contact@j2lprint.fr'
+// Expéditeur des notifications internes : distinct de la boîte de réception
+// pour éviter l'auto-envoi contact@ -> contact@ (classé en indésirables).
+const NOTIFY_FROM = Deno.env.get('NOTIFY_FROM') || 'no-reply@j2lprint.fr'
 const EMAIL_TO = Deno.env.get('EMAIL_TO') || 'contact@j2lprint.fr'
 const FROM_NAME = 'J2L Print'
 const SITE_ORIGIN = 'https://j2lprint.fr'
@@ -416,7 +419,9 @@ Deno.serve(async (req) => {
 
     // 1) Notification interne → contact@j2lprint.fr, Reply-To = e-mail client
     await sendMail({
-      from: `${FROM_NAME} <${EMAIL_FROM}>`,
+      from: `${FROM_NAME} <${NOTIFY_FROM}>`,
+      sender: `${FROM_NAME} <${NOTIFY_FROM}>`,
+      envelope: { from: SMTP_USER, to: EMAIL_TO },
       to: EMAIL_TO,
       replyTo: payload.email || undefined,
       subject,
