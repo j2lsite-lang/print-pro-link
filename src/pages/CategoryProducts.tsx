@@ -93,7 +93,7 @@ export default function CategoryProducts() {
   useSEO({
     title: category ? `${category.name} – Impression en ligne` : "Catégorie – J2L Print",
     description: category
-      ? `Découvrez notre gamme ${category.name} : impression professionnelle, devis gratuit et livraison rapide partout en France. J2L Print, votre imprimerie en ligne.`
+      ? `Découvrez notre gamme ${category.name} : impression professionnelle, devis gratuit et livraison partout en France. J2L Print, votre imprimerie en ligne.`
       : "Catégorie de produits J2L Print.",
     canonical: newPath ? `${BASE_URL}${newPath}` : undefined,
     jsonLd: category && newPath

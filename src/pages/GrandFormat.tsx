@@ -94,7 +94,7 @@ export default function GrandFormat() {
 
 
           <h3 className="font-display text-lg font-semibold text-foreground pt-2">
-            Supports et finitions disponibles
+            Supports et finitions couramment proposés
           </h3>
           <ul className="grid gap-2 sm:grid-cols-2 text-sm text-muted-foreground">
             {[
@@ -138,7 +138,7 @@ export default function GrandFormat() {
             <h3 className="font-display text-lg font-semibold text-foreground">
               Un projet grand format ?
             </h3>
-            <p className="text-sm text-muted-foreground">Devis gratuit sous 24h, livraison rapide.</p>
+            <p className="text-sm text-muted-foreground">Devis gratuit, livraison partout en France.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button asChild className="rounded-full">
