@@ -5,7 +5,7 @@ import { useCart } from "@/hooks/useCart";
 import { getCatalogProducts } from "@/lib/printcom";
 import { searchProducts } from "@/lib/search";
 import { isExcludedSku } from "@/config/excluded-products";
-import logoJ2L from "@/assets/logo-j2l.png";
+import logoJ2L from "@/assets/logo-j2l-mark.png";
 
 const navLinks = [
   { to: "/products", label: "Catalogue" },
