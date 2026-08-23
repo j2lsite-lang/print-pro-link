@@ -5,7 +5,7 @@ import { useCart } from "@/hooks/useCart";
 import { getCatalogProducts } from "@/lib/printcom";
 import { searchProducts } from "@/lib/search";
 import { isExcludedSku } from "@/config/excluded-products";
-import logoJ2L from "@/assets/logo-j2l.png";
+import logoJ2L from "@/assets/logo-j2l-mark.png";
 
 const navLinks = [
   { to: "/products", label: "Catalogue" },
@@ -104,15 +104,19 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/82 backdrop-blur-lg">
       <div className="container flex h-24 items-center justify-between gap-2">
-        <Link to="/" className="flex items-center shrink-0" aria-label="J2L Print — imprimerie en ligne">
+        <Link to="/" className="flex flex-col items-center shrink-0 leading-none" aria-label="J2L Print — imprimerie en ligne">
           <img
             src={logoJ2L}
             alt="J2L Print — imprimerie en ligne"
             width={702}
-            height={560}
-            className="h-16 w-auto md:h-[84px] object-contain"
+            height={470}
+            className="h-14 w-auto md:h-[68px] object-contain"
           />
+          <span className="mt-1 block w-full text-center text-[10px] md:text-xs font-semibold uppercase tracking-[0.18em] md:tracking-[0.22em] text-primary">
+            Imprimerie en ligne
+          </span>
         </Link>
+
 
 
 
