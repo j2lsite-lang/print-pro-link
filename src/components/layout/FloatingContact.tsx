@@ -34,6 +34,15 @@ export default function FloatingContact() {
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
       <a
+        href="https://m.me/343941282304726?ref=j2l-print"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Nous contacter sur Messenger"
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-[#0084FF] text-white shadow-lg hover:scale-110 transition-transform"
+      >
+        <Send className="h-6 w-6" />
+      </a>
+      <a
         href="https://wa.me/33616737575"
         target="_blank"
         rel="noopener noreferrer"
@@ -42,6 +51,7 @@ export default function FloatingContact() {
       >
         <MessageCircle className="h-6 w-6" />
       </a>
+
       <a
         href="tel:+33329304479"
         aria-label="Appelez-nous"
