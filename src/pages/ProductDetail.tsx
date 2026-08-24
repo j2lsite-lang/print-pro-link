@@ -952,95 +952,90 @@ export default function ProductDetail() {
               </span>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Quantity */}
-      {quantityOptions.length > 0 ? (
-        <div className="mb-6">
-          <OptionSelector
-            title="Quantité (exemplaires)"
-            slug="copies"
-            options={quantityOptions}
-            selectedValue={quantity}
-            onSelect={setQuantity}
-            required
-            inputType="select"
-          />
-        </div>
-      ) : (
-        <div className="mb-6">
-          <OptionSelector
-            title="Quantité (exemplaires)"
-            slug="copies"
-            options={[]}
-            selectedValue={quantity}
-            onSelect={setQuantity}
-            required
-            inputType="float"
-          />
-        </div>
-      )}
+          {/* Configurateur — sous la description, à droite de la photo */}
+          <div className="mt-6 space-y-6">
+            {/* Quantity */}
+            {quantityOptions.length > 0 ? (
+              <OptionSelector
+                title="Quantité (exemplaires)"
+                slug="copies"
+                options={quantityOptions}
+                selectedValue={quantity}
+                onSelect={setQuantity}
+                required
+                inputType="select"
+              />
+            ) : (
+              <OptionSelector
+                title="Quantité (exemplaires)"
+                slug="copies"
+                options={[]}
+                selectedValue={quantity}
+                onSelect={setQuantity}
+                required
+                inputType="float"
+              />
+            )}
 
-      {/* Main layout */}
-      <div className="grid gap-6 lg:gap-8 lg:grid-cols-[1fr_380px]">
-        <div className="space-y-5">
-          {mainProps.map((prop) => (
-            <OptionSelector
-              key={prop.slug}
-              title={prop.title}
-              slug={prop.slug}
-              options={prop.options}
-              selectedValue={selectedOptions[prop.slug] || ""}
-              onSelect={(val) => handleOptionChange(prop.slug, val)}
-              required={prop.required}
-              locked={prop.locked}
-              inputType={prop.inputType}
-            />
-          ))}
+            <div className="space-y-5">
+              {mainProps.map((prop) => (
+                <OptionSelector
+                  key={prop.slug}
+                  title={prop.title}
+                  slug={prop.slug}
+                  options={prop.options}
+                  selectedValue={selectedOptions[prop.slug] || ""}
+                  onSelect={(val) => handleOptionChange(prop.slug, val)}
+                  required={prop.required}
+                  locked={prop.locked}
+                  inputType={prop.inputType}
+                />
+              ))}
 
-          {booleanProps.length > 0 && (
-            <div className="space-y-3 pt-2">
-              <div className="flex items-center gap-2">
-                <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">Options</h3>
-                <div className="flex-1 h-px bg-border" />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {booleanProps.map((prop) => (
-                  <OptionSelector
-                    key={prop.slug}
-                    title={prop.title}
-                    slug={prop.slug}
-                    options={prop.options}
-                    selectedValue={selectedOptions[prop.slug] || ""}
-                    onSelect={(val) => handleOptionChange(prop.slug, val)}
-                    required={prop.required}
-                    locked={prop.locked}
-                    inputType={prop.inputType}
-                  />
-                ))}
-              </div>
+              {booleanProps.length > 0 && (
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">Options</h3>
+                    <div className="flex-1 h-px bg-border" />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {booleanProps.map((prop) => (
+                      <OptionSelector
+                        key={prop.slug}
+                        title={prop.title}
+                        slug={prop.slug}
+                        options={prop.options}
+                        selectedValue={selectedOptions[prop.slug] || ""}
+                        onSelect={(val) => handleOptionChange(prop.slug, val)}
+                        required={prop.required}
+                        locked={prop.locked}
+                        inputType={prop.inputType}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        <div className="space-y-4">
-          <PriceSummary
-            priceResult={priceResult}
-            priceLoading={priceLoading}
-            priceError={priceError}
-            onAddToCart={handleAddToCart}
-            onRetryPrice={fetchPrice}
-            disabled={!priceResult}
-            selectedOptions={selectedOptions}
-            configurableProps={configurableProps}
-            includeDesignFee={includeDesignFee}
-            onToggleDesignFee={setIncludeDesignFee}
-            shippingOptions={shippingOptions}
-            shippingLoading={shippingLoading}
-          />
+            <PriceSummary
+              priceResult={priceResult}
+              priceLoading={priceLoading}
+              priceError={priceError}
+              onAddToCart={handleAddToCart}
+              onRetryPrice={fetchPrice}
+              disabled={!priceResult}
+              selectedOptions={selectedOptions}
+              configurableProps={configurableProps}
+              includeDesignFee={includeDesignFee}
+              onToggleDesignFee={setIncludeDesignFee}
+              shippingOptions={shippingOptions}
+              shippingLoading={shippingLoading}
+            />
+          </div>
         </div>
       </div>
+
 
       {/* Use cases — moved below configurator */}
       <div className="mt-10 space-y-4">
