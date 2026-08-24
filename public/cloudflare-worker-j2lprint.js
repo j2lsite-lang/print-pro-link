@@ -3,8 +3,8 @@
  *  J2L Print — Cloudflare Worker SEO / Reverse Proxy
  * ============================================================================
  *  Rôle :
- *   - Sert le domaine canonique https://j2lprint.fr depuis l origine DNS Cloudflare
- *     origin.j2lprint.fr via cf.resolveOverride, sans repasser dans la route Worker.
+ *   - Sert le domaine canonique https://j2lprint.fr depuis l'hôte Lovable publié
+ *     print-pro-link.lovable.app, sans dépendre du sous-domaine origin.j2lprint.fr.
  *   - Force HTTPS + redirige www -> apex (301).
  *   - Cache HTML / assets / sitemaps avec des TTL adaptés.
  *   - Réécrit le domaine d origine vers le domaine canonique dans le HTML.
@@ -30,7 +30,7 @@
  * ------------------------------------------------------------------------- */
 const CANONICAL_HOST  = "j2lprint.fr";
 const CANONICAL_ORIGIN = "https://j2lprint.fr";
-const ORIGIN_HOST = "origin.j2lprint.fr";
+const ORIGIN_HOST = "print-pro-link.lovable.app";
  const PAGE_REDIRECTS = {
    "/devis": "/#devis",
    "/contact": "/#devis",
@@ -66,9 +66,6 @@ const CITY_SLUG_REDIRECTS = {
   "les-sables-d-olonne": "les-sables-dolonne",
   "mayenne-ville": "mayenne"
 };
-
-// LOVABLE_ORIGIN_HOST retiré : provoquait une boucle de redirection (voir 7.2).
-// const LOVABLE_ORIGIN_HOST = "print-pro-link.lovable.app";
 
 const HTML_TTL  = 300;       // 5 minutes  — pages HTML
 const ASSET_TTL = 31536000;  // 1 an       — assets immuables (hash dans le nom)
@@ -350,11 +347,7 @@ function applySecurityHeaders(headers) {
   headers.set("X-Worker", "j2lprint-seo/4.6.2");
 }
 
-/** Fetch origine : on joint directement l'hôte d'origine dédié
- *  (origin.j2lprint.fr), servi en 200 hors route Worker. Plus de
- *  cf.resolveOverride : il visait un enregistrement proxifié et déclenchait
- *  l'erreur Cloudflare 1000 « DNS points to prohibited IP » sur toutes les
- *  réponses (home, sitemaps, catégories…). */
+/** Fetch origine : on joint directement l'hôte Lovable publié. */
 function fetchOrigin(originRequest) {
   return fetch(originRequest, { redirect: "follow" });
 }
@@ -452,27 +445,23 @@ export default {
       }), { status: 200, headers: h });
     }
 
-    // 7.2 — Construit la requête vers lorigine dédiée Cloudflare.
+    // 7.2 — Construit la requête vers l'origine Lovable publiée.
     //        Pour une URL SEO propre (catégorie, sous-catégorie, ville,
     //        département, région, service, thème, fiche produit), on demande
     //        EXCLUSIVEMENT le fichier statique prérendu /…/index.html. Aucun
     //        repli vers l'URL propre n'est tenté : si le fichier manque, on
     //        renvoie une vraie 404 (jamais la page d'accueil).
-    //        On joint directement origin.j2lprint.fr (enregistrement servi en
-    //        200 hors route Worker). L'ancien cf.resolveOverride vers un
-    //        enregistrement proxifié provoquait une erreur Cloudflare 1000
-    //        « DNS points to prohibited IP » sur TOUTES les pages (home,
-    //        sitemaps, catégories…). On fetch donc l'hôte d'origine tel quel.
+    //        On joint directement print-pro-link.lovable.app afin d'éviter
+    //        l'erreur « Project not found » causée par le DNS défaillant de
+    //        origin.j2lprint.fr.
     const seoPathname = seoOriginPathname(p);
     const originUrl = new URL(request.url);
     originUrl.protocol = "https:";
     originUrl.hostname = ORIGIN_HOST;
     originUrl.port = "";
     originUrl.pathname = seoPathname || url.pathname;
-    //        Le Host est celui de l'origine dédiée (origin.j2lprint.fr), qui
-    //        sert directement le HTML prérendu / les sitemaps en 200 sans
-    //        boucle de redirection. On conserve le domaine canonique dans
-    //        X-Forwarded-Host pour la cohérence applicative.
+    //        Le Host est celui de l'application Lovable publiée. On conserve
+    //        le domaine canonique dans X-Forwarded-Host pour la cohérence.
     const originRequest = new Request(originUrl.toString(), request);
     originRequest.headers.set("Host", ORIGIN_HOST);
     originRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
