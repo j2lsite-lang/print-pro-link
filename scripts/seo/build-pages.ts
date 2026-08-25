@@ -313,6 +313,10 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     const subs = (cat && childrenOf.get(cat.id)) || [];
     const crumb = [home, { name: "Catalogue", path: "/catalogue" }, { name: content.name, path: `/categorie/${slug}` }];
     const subLinks: LinkItem[] = subs.map((s) => ({ label: s.name, path: `/categorie/${slug}/${s.slug}` }));
+    // Page éditoriale dédiée (hors arborescence catalogue) : kakémono.
+    if (slug === KAKEMONO_PARENT) {
+      subLinks.unshift({ label: "Kakémono (L-banner, X-banner, suspendu)", path: KAKEMONO_PATH });
+    }
     const relatedCats: LinkItem[] = CATEGORY_SLUGS.filter((s) => s !== slug).slice(0, 4)
       .map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` }));
     // Complementary universes from the semantic map (always valid category links).
