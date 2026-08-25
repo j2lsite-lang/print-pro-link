@@ -599,6 +599,9 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     });
   }
 
+  // ── Page éditoriale dédiée « kakémono » (hors arborescence catalogue) ──
+  pages.push(kakemonoPage(home));
+
   // ── Geographic pages (599 cities / 101 departments / 18 regions) ──
   const cityBySlug = new Map(geo.cities.map((c) => [c.slug, c]));
   const deptBySlug = new Map(geo.departments.map((d) => [d.slug, d]));
