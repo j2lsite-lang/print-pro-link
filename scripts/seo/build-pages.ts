@@ -216,6 +216,167 @@ const SERVICE_LINKS: LinkItem[] = [
   { label: "Personnalisation", path: "/personnalisation" },
 ];
 
+/* ── Page éditoriale dédiée « kakémono » ─────────────────────────────────────
+ * Intention de recherche forte (kakemono, L-banner, X-banner, kakémono
+ * suspendu) non couverte par une sous-catégorie du catalogue. La page est
+ * purement éditoriale : elle renvoie vers le catalogue existant, sans jamais
+ * interférer avec l'API produits ni le configurateur. */
+const KAKEMONO_PARENT = "publicite-interieure";
+const KAKEMONO_SLUG = "kakemono";
+const KAKEMONO_PATH = `/categorie/${KAKEMONO_PARENT}/${KAKEMONO_SLUG}`;
+
+const KAKEMONO_FAQ = [
+  {
+    q: "Quelle différence entre un kakémono, un roll-up et un X-banner ?",
+    a: "Le kakémono est une toile ou un film imprimé suspendu par des profilés haut et bas. Le roll-up intègre la toile dans une cassette enrouleuse posée au sol. Le X-banner est une bannière tendue sur une croisée de fibre de verre en X, très légère et repliable.",
+  },
+  {
+    q: "Quels sont les formats de kakémono les plus courants ?",
+    a: "Les formats les plus demandés sont 60 × 160 cm, 80 × 200 cm, 85 × 200 cm et 100 × 200 cm pour l'intérieur. Des formats sur mesure sont possibles en toile suspendue, notamment pour les hauteurs sous plafond importantes.",
+  },
+  {
+    q: "Quelle résolution prévoir pour le fichier ?",
+    a: "Prévoyez un fichier à l'échelle 1:1 en 100 à 150 dpi (ou à l'échelle 1:10 en 300 dpi), en CMJN, avec 3 mm de fonds perdus et les textes vectorisés. Gardez une marge basse de 10 à 15 cm : elle est souvent masquée par la cassette ou le pied.",
+  },
+  {
+    q: "Sur quel support imprime-t-on un kakémono ?",
+    a: "Le plus souvent sur toile polyester ou film polypropylène opaque pour l'intérieur, et sur bâche PVC pour les usages exposés. L'opacité évite la transparence du visuel côté verso.",
+  },
+  {
+    q: "Un kakémono est-il réutilisable ?",
+    a: "Oui. Les structures L-banner, X-banner et enrouleurs sont conçues pour être montées et démontées régulièrement, et la toile seule peut être remplacée pour changer de visuel sans racheter la structure.",
+  },
+  {
+    q: "Comment obtenir un devis pour plusieurs kakémonos ?",
+    a: "Configurez le produit en ligne pour un prix immédiat, ou envoyez votre demande via le formulaire de devis en précisant le format, la quantité et le type de structure : nous revenons vers vous avec un tarif dégressif.",
+  },
+];
+
+const KAKEMONO_KEYWORDS = [
+  "kakemono", "kakémono personnalisé", "impression kakemono", "kakemono publicitaire",
+  "l banner", "x banner", "kakemono suspendu", "kakemono 80x200", "kakemono 85x200",
+  "roll up kakemono", "kakemono sur mesure", "kakemono salon", "kakemono entreprise",
+  "prix kakemono", "devis kakemono",
+];
+
+function kakemonoPage(home: BreadcrumbItemLite): SeoPage {
+  const parent = CATEGORY_CONTENT[KAKEMONO_PARENT];
+  const crumb = [
+    home,
+    { name: "Catalogue", path: "/catalogue" },
+    { name: parent.name, path: `/categorie/${KAKEMONO_PARENT}` },
+    { name: "Kakémono", path: KAKEMONO_PATH },
+  ];
+  return {
+    path: KAKEMONO_PATH,
+    title: "Kakémono personnalisé : L-banner, X-banner, suspendu",
+    description:
+      "Impression de kakémonos personnalisés : L-banner, X-banner, kakémono suspendu et enrouleur. Formats 60×160 à 100×200 cm, toile opaque, devis gratuit et livraison en France.",
+    h1: "Kakémono personnalisé : L-banner, X-banner et kakémono suspendu",
+    intro: [
+      "Le kakémono est le support d'affichage vertical le plus utilisé en intérieur : léger, transportable et visible de loin, il structure un stand de salon, un hall d'accueil ou une opération commerciale en point de vente. Chez J2L Print, il s'imprime sur toile ou film opaque, à l'échelle 1:1, avec la structure de votre choix.",
+      "Selon l'usage, trois familles cohabitent : le L-banner (structure en L, montage instantané), le X-banner (croisée en X, ultra-léger et repliable) et le kakémono suspendu, fixé par profilés haut et bas pour les grandes hauteurs. À cela s'ajoute l'enrouleur roll-up, qui protège la toile dans sa cassette entre deux événements.",
+    ],
+    visual: {
+      image: "/seo/hero-rollup.jpg",
+      imageAlt: "Kakémono personnalisé imprimé pour salon et point de vente",
+      keywords: KAKEMONO_KEYWORDS.slice(0, 8),
+    },
+    sections: [
+      {
+        heading: "L-banner, X-banner, kakémono suspendu : lequel choisir ?",
+        paragraphs: [
+          "Le choix se fait sur trois critères : la fréquence d'utilisation, la hauteur disponible et le mode de fixation. Un support déplacé chaque semaine gagne à être protégé par une cassette ; un affichage permanent en hauteur se traite en toile suspendue.",
+        ],
+        bullets: [
+          "L-banner : structure en L, pied stable, montage en moins d'une minute — idéal pour l'accueil et les corners éphémères.",
+          "X-banner : croisée en fibre de verre, poids réduit, housse de transport — parfait pour les tournées commerciales et les salons.",
+          "Kakémono suspendu : profilés haut et bas, fixation par câbles ou crochets — adapté aux halls, vitrines et grandes hauteurs.",
+          "Enrouleur (roll-up) : toile rangée dans sa base, visuel protégé, changement de toile possible sans changer la structure.",
+        ],
+      },
+      {
+        heading: "Formats et supports d'impression",
+        paragraphs: [
+          "Les formats standards couvrent la majorité des besoins : 60 × 160 cm pour un espace réduit, 80 × 200 ou 85 × 200 cm en format passe-partout de salon, 100 × 200 cm pour un impact maximal. Le sur-mesure reste possible en toile suspendue.",
+          "L'impression se fait en général sur toile polyester ou film polypropylène opaque de 200 à 510 g/m², choisis pour leur tenue à plat et l'absence de transparence. Pour un usage exposé ou semi-extérieur, la bâche PVC prend le relais.",
+        ],
+        bullets: [
+          "Formats courants : 60 × 160, 80 × 200, 85 × 200, 100 × 200 cm",
+          "Toile polyester ou film opaque pour l'intérieur, bâche PVC pour les usages exposés",
+          "Impression quadri recto, finition anti-reflet possible selon le support",
+          "Ourlets, œillets ou profilés selon le mode d'accroche",
+        ],
+      },
+      {
+        heading: "Préparer son fichier d'impression",
+        paragraphs: [
+          "Un kakémono se lit debout, à deux ou trois mètres : le message principal doit se situer dans le tiers supérieur, au-dessus de 120 cm du sol. Placez le logo en haut, l'appel à l'action en bas, et évitez les textes trop proches des bords.",
+        ],
+        bullets: [
+          "PDF CMJN, échelle 1:1 en 100–150 dpi (ou 1:10 en 300 dpi)",
+          "3 mm de fonds perdus, textes vectorisés, images liées incorporées",
+          "Zone basse de 10 à 15 cm réservée à la cassette ou au pied",
+          "Contraste fort entre le texte et le fond pour la lecture à distance",
+        ],
+      },
+      {
+        heading: "Usages professionnels",
+        bullets: [
+          "Salons, congrès et forums : signalétique de stand et présentation d'offre",
+          "Points de vente : mise en avant d'une promotion, d'une nouveauté ou d'un service",
+          "Halls d'accueil et espaces d'attente : présentation d'entreprise et valeurs",
+          "Événements sportifs et associatifs : affichage des partenaires",
+          "Agences, cabinets et showrooms : orientation des visiteurs et affichage tarifaire",
+        ],
+      },
+    ],
+    productGrid: {
+      heading: "Configurer votre kakémono en ligne",
+      intro: "Choisissez le format, le support et la quantité dans le catalogue : le prix s'affiche immédiatement.",
+      cards: PRODUCT_CARDS,
+    },
+    cta: CATALOG_CTA,
+    faq: KAKEMONO_FAQ,
+    internalLinks: [
+      {
+        heading: "Catégorie",
+        links: [{ label: parent.name, path: `/categorie/${KAKEMONO_PARENT}` }],
+      },
+      {
+        heading: "Supports proches",
+        links: [
+          { label: "Roll-ups & enrouleurs", path: `/categorie/${KAKEMONO_PARENT}/roll-ups` },
+          { label: "Stands & matériel d'expo", path: `/categorie/${KAKEMONO_PARENT}/stands-materiel-expo` },
+          { label: "Présentoirs & matériel PLV", path: `/categorie/${KAKEMONO_PARENT}/presentoirs-materiel-plv` },
+          { label: "Panneaux, bâches, vinyles et toiles", path: "/categorie/panneaux-baches-vinyles-toiles" },
+          { label: "Publicité extérieure", path: "/categorie/publicite-exterieure" },
+        ],
+      },
+      { heading: "Nos services", links: SERVICE_LINKS },
+      {
+        heading: "Passer à l'action",
+        links: [
+          { label: "Demander un devis kakémono", path: "/#devis" },
+          { label: "Voir tout le catalogue", path: "/catalogue" },
+        ],
+      },
+    ],
+    jsonLd: [
+      breadcrumbLd(crumb),
+      webPageLd({
+        name: "Kakémono personnalisé : L-banner, X-banner et kakémono suspendu",
+        description:
+          "Guide et impression de kakémonos personnalisés : structures L-banner, X-banner, suspendu et enrouleur, formats standards et sur mesure.",
+        path: KAKEMONO_PATH,
+      }),
+      faqLd(KAKEMONO_FAQ),
+    ],
+    breadcrumb: crumb,
+    keywords: KAKEMONO_KEYWORDS,
+  };
+}
+
 export async function buildAllPages(): Promise<SeoPage[]> {
   const geo = loadGeo();
   const cats = await rest<{ id: string; slug: string; name: string; parent_id: string | null }>(
