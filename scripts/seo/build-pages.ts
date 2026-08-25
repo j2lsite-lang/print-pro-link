@@ -419,6 +419,10 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     internalLinks: [
       { heading: "Nos univers", links: CATEGORY_SLUGS.map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` })) },
       { heading: "Nos services", links: SERVICE_LINKS },
+      {
+        heading: "Supports à la une",
+        links: [{ label: "Kakémono personnalisé (L-banner, X-banner, suspendu)", path: KAKEMONO_PATH }],
+      },
     ],
     // Organization JSON-LD lives once in the static index.html shell (sitewide);
     // don't re-emit it here or the homepage would carry a duplicate.
