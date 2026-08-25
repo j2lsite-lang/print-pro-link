@@ -464,6 +464,12 @@ export default function Index() {
               );
             })}
           </div>
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Besoin d'un support d'affichage vertical ?{" "}
+            <Link to="/categorie/publicite-interieure/kakemono" className="font-semibold text-primary hover:underline">
+              Découvrir nos kakémonos personnalisés (L-banner, X-banner, suspendu)
+            </Link>
+          </p>
         </div>
       </section>
 
