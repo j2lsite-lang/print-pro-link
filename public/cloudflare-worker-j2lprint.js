@@ -99,7 +99,7 @@ const CATEGORIES = [
 const SUBCATEGORIES = {
   "impression-papier": ["cartes-visite-enveloppes", "papeterie", "catering-restaurants", "brochures-magazines", "flyers-depliants-affiches", "calendriers", "courriers-creatifs"],
   "publicite-exterieure": ["stop-trottoirs-panneaux", "panneaux-accessoires-ext", "tonnelles-mobilier-exterieur", "drapeaux-beachflags-accessoires", "bannieres-structures-fixation"],
-  "publicite-interieure": ["toiles-textiles-deco-interieure", "presentoirs-materiel-plv", "panneaux-accessoires-int", "stands-materiel-expo", "mobilier-interieur", "roll-ups"],
+  "publicite-interieure": ["kakemono", "toiles-textiles-deco-interieure", "presentoirs-materiel-plv", "panneaux-accessoires-int", "stands-materiel-expo", "mobilier-interieur", "roll-ups"],
   "etiquettes-stickers": ["accessoires-autocollants", "petits-autocollants", "autocollants-grand-format", "rubans-adhesifs", "films-adhesifs-type", "autocollants-rouleaux"],
   "emballages-sacs": ["sacs-tote-bags", "emballages-alimentaires", "emballages-expedition", "emballages-cadeaux"],
   "objets-publicitaires-cadeaux": ["saisonnalite", "gadgets", "bien-etre", "nourriture-boissons", "articles-papeterie", "verrerie-vaisselle-gourdes", "general"],
