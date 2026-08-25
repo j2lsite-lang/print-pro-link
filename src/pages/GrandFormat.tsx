@@ -45,7 +45,7 @@ export default function GrandFormat() {
             { key: "baches-publicitaires", title: "Bâches publicitaires", to: "/products/category/baches-banderoles", desc: "PVC 500g/m², micro-perforées, mesh. Finitions œillets, ourlets, fourreau. Toutes dimensions." },
             { key: "banderoles-calicots", title: "Banderoles & calicots", to: "/products/category/baches-banderoles", desc: "Impression recto ou recto-verso. Idéal pour façades, événements sportifs et culturels." },
             { key: "adhesifs-vinyles", title: "Adhésifs & vinyles", to: "/products/category/films-adhesifs-type", desc: "Sol, vitrine, véhicule, mur. Vinyles polymères longue durée, laminés anti-UV et anti-rayures." },
-            { key: "kakemonos-rollups", title: "Kakémonos & roll-ups", to: "/products/category/roll-ups", desc: "Structures auto-enroulantes, kakémonos suspendus. Transport facile, montage en 30 secondes." },
+            { key: "kakemonos-rollups", title: "Kakémonos & roll-ups", to: "/categorie/publicite-interieure/kakemono", desc: "L-banner, X-banner, kakémonos suspendus et structures auto-enroulantes. Transport facile, montage en 30 secondes." },
             { key: "enseignes-panneaux", title: "Enseignes & panneaux", to: "/products/category/panneaux-baches-vinyles-toiles", desc: "Dibond, PVC expansé, Akilux, plexiglas. Découpe sur mesure, pose possible sur devis." },
             { key: "decoration-murale", title: "Décoration murale", to: "/products/category/toiles-textiles-deco-interieure", desc: "Papier peint personnalisé, toiles tendues, panneaux acoustiques imprimés. Pour bureaux et commerces." },
           ].map((item, i) => {
