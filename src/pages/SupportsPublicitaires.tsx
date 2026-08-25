@@ -43,6 +43,7 @@ export default function SupportsPublicitaires() {
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-10">
           {[
             { key: "kakemonos-rollups", title: "Roll-ups & enrouleurs", to: "/products/category/roll-ups", desc: "Structures légères et transportables. Impression HD, changement de visuel possible. De 60 à 200 cm de large." },
+            { key: "kakemonos", title: "Kakémonos (L-banner, X-banner)", to: "/categorie/publicite-interieure/kakemono", desc: "Kakémonos suspendus, L-banner et X-banner. Formats 60×160 à 100×200 cm, toile opaque, montage immédiat." },
             { key: "drapeaux-oriflammes", title: "Drapeaux & oriflammes", to: "/products/category/drapeaux-beachflags-accessoires", desc: "Beach flags, voiles, flammes. Impression sublimation recto-verso. Résistants au vent et aux intempéries." },
             { key: "tentes-barnums", title: "Tentes & barnums", to: "/products/category/tonnelles-mobilier-exterieur", desc: "Tentes pliantes personnalisées 3x3, 3x4.5, 3x6. Structure aluminium, impression toile complète." },
             { key: "totems-colonnes", title: "Totems & colonnes", to: "/products/category/bannieres-structures-fixation", desc: "Totems elliptiques, carrés, triangulaires. Éclairés ou non. Impressionnants et visibles de loin." },
