@@ -156,7 +156,10 @@ export const TWIN_PRODUCT_NAMES: Record<string, string> = {
   "lunch-boxes-with-handle": "Lunch box avec poignée personnalisée",
   "latte-mug-small": "Mug latte macchiato",
   "slipcases": "Étui-coffret personnalisé",
+  "quartet-cards": "Jeu de cartes des familles personnalisé",
+  "stackable-pos-displays": "Présentoir PLV empilable personnalisé",
 };
+
 
 /** Return the SEO display name for a SKU (override when twin, else original). */
 export function twinDisplayName(sku: string, fallback: string): string {
