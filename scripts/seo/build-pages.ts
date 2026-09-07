@@ -630,8 +630,10 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         } : undefined,
         sections: subSecs,
         productGrid: (() => {
-          const cards = realProductCards(skusByCatId.get(sub.id) || [], 24, subSeed);
-          return cards.length >= 3
+          // Toutes les fiches de la sous-catégorie (aucune fiche orpheline),
+          // et grille affichée dès 1 produit réel rattaché.
+          const cards = realProductCards(skusByCatId.get(sub.id) || [], 60, subSeed);
+          return cards.length >= 1
             ? {
                 heading: `Produits disponibles dans « ${sub.name} »`,
                 intro: "Tous ces produits se configurent en ligne (format, quantité, finitions) avec un prix immédiat.",
