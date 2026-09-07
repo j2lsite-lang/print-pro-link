@@ -440,7 +440,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     path: "/",
     // Must match the runtime homepage (src/pages/Index.tsx useSEO + H1) so the
     // prerendered head/H1 is identical to what React renders — no divergence.
-    title: "J2L Print – Imprimerie en ligne | Impression & supports publicitaires",
+    title: "Imprimerie en ligne & impression personnalisée | J2L Print",
     description:
       "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. Devis gratuit, nous livrons partout.",
     h1: "J2L Print — Votre imprimerie en ligne",
