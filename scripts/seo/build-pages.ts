@@ -540,11 +540,32 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         keywords: visibleKeywords(entry),
       } : undefined,
       sections,
-      productGrid: {
-        heading: "Produits populaires",
-        intro: "Une sélection de supports parmi les plus demandés. Cliquez pour configurer le vôtre dans le catalogue en ligne.",
-        cards: PRODUCT_CARDS,
-      },
+      productGrid: (() => {
+        // Vrais produits de l'univers : round-robin entre sous-catégories pour
+        // couvrir toute la catégorie plutôt qu'une seule branche.
+        const buckets = subs.map((s) => skusByCatId.get(s.id) || []);
+        const own = skusByCatId.get(cat?.id || "") || [];
+        const picked: string[] = [...own];
+        for (let i = 0; picked.length < 12 && buckets.some((b) => b[i]); i++) {
+          for (const b of buckets) {
+            if (b[i] && !picked.includes(b[i])) picked.push(b[i]);
+            if (picked.length >= 12) break;
+          }
+        }
+        const cards = realProductCards(picked, 12, catSeed);
+        return cards.length >= 3
+          ? {
+              heading: `Produits ${content.name.toLowerCase()} à configurer`,
+              intro: "Une sélection de produits réellement disponibles dans cet univers. Cliquez pour configurer le vôtre et obtenir un prix immédiat.",
+              cards,
+            }
+          : {
+              heading: "Produits populaires",
+              intro: "Une sélection de supports parmi les plus demandés. Cliquez pour configurer le vôtre dans le catalogue en ligne.",
+              cards: PRODUCT_CARDS,
+            };
+      })(),
+
       faq,
       cta: CATALOG_CTA,
       internalLinks: [
