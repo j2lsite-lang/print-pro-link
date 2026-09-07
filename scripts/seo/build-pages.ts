@@ -629,11 +629,21 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           keywords: visibleKeywords(subEntry, subcategoryKeywords(subEntry, sub.name, subSeed)),
         } : undefined,
         sections: subSecs,
-        productGrid: {
-          heading: `Produits disponibles dans « ${sub.name} »`,
-          intro: "Configurez votre produit dans le catalogue en ligne.",
-          cards: PRODUCT_CARDS,
-        },
+        productGrid: (() => {
+          const cards = realProductCards(skusByCatId.get(sub.id) || [], 24, subSeed);
+          return cards.length >= 3
+            ? {
+                heading: `Produits disponibles dans « ${sub.name} »`,
+                intro: "Tous ces produits se configurent en ligne (format, quantité, finitions) avec un prix immédiat.",
+                cards,
+              }
+            : {
+                heading: `Produits disponibles dans « ${sub.name} »`,
+                intro: "Configurez votre produit dans le catalogue en ligne.",
+                cards: PRODUCT_CARDS,
+              };
+        })(),
+
         cta: CATALOG_CTA,
         faq: subFaq,
         internalLinks: [
