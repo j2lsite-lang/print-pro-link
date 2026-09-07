@@ -1080,6 +1080,37 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       p.description = short;
     }
   }
+  // Repli : si la coupe sur phrase n'a pas suffi (doublon ou trop courte), on
+  // coupe proprement sur un mot pour rester <= 158 caractères.
+  for (const p of pages) {
+    if (p.description.length <= 158) continue;
+    let short = p.description.slice(0, 157).replace(/[\s,;:–-]+\S*$/, "");
+    if (seenDesc.has(short)) short = `${short.slice(0, 150).replace(/[\s,;:–-]+\S*$/, "")}…`;
+    seenDesc.add(short);
+    p.description = short;
+  }
+
+  // Garde-fou SERP titles : <= 60 caractères, en conservant le suffixe de
+  // marque et le discriminant d'unicité éventuel ajouté plus haut.
+  const seenTitle = new Set<string>();
+  for (const p of pages) {
+    if (p.title.length > 60) {
+      const ctx = p.title.match(/\(([^()]*)\)\s*$/)?.[0] || "";
+      const base = (ctx ? p.title.slice(0, p.title.length - ctx.length) : p.title).trim();
+      const head = base.split("|")[0].trim();
+      const room = 60 - (ctx ? ctx.length + 1 : 0) - " | J2L Print".length;
+      const cut = head.length > room ? head.slice(0, Math.max(12, room)).replace(/[\s,;:–-]+\S*$/, "") : head;
+      p.title = `${cut} | J2L Print${ctx ? ` ${ctx}` : ""}`.trim();
+    }
+    // Ne jamais recréer de doublon après raccourcissement.
+    if (seenTitle.has(p.title)) {
+      const bc = p.breadcrumb || [];
+      const parent = bc[bc.length - 2]?.name;
+      if (parent) p.title = `${p.title} – ${parent}`;
+    }
+    seenTitle.add(p.title);
+  }
+
 
   return pages;
 }
