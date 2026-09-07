@@ -395,6 +395,38 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     subNameCount.set(k, (subNameCount.get(k) || 0) + 1);
   }
 
+  // ── Vrais produits par catégorie / sous-catégorie ─────────────────────
+  // Les pages catégorie et sous-catégorie ne liaient AUCUNE fiche produit
+  // (bloc générique identique sur 57 pages). On construit ici la liste réelle
+  // des SKU publics par catégorie afin de créer un maillage descendant.
+  const catalogLite = await fetchCatalogProducts().catch(() => new Map());
+  const mappingsLite = await rest<{ sku: string; category_id: string }>(
+    "product_category_mappings?select=sku,category_id",
+  ).catch(() => []);
+  const skusByCatId = new Map<string, string[]>();
+  for (const m of mappingsLite) {
+    if (!m?.sku || !m?.category_id) continue;
+    if (!catalogLite.has(m.sku) || isExcludedSku(m.sku)) continue;
+    if (!skusByCatId.has(m.category_id)) skusByCatId.set(m.category_id, []);
+    const arr = skusByCatId.get(m.category_id)!;
+    if (!arr.includes(m.sku)) arr.push(m.sku);
+  }
+  for (const arr of skusByCatId.values()) arr.sort();
+  /** Cartes produit RÉELLES (liens /products/<sku>) pour une liste de SKU. */
+  const realProductCards = (skus: string[], limit: number, seed: number) => {
+    const blurbs = [
+      "Configurez format, quantité et finitions en ligne.",
+      "Prix immédiat, options sur mesure et devis gratuit.",
+      "Personnalisation en ligne et livraison partout en France.",
+      "Choisissez vos options et obtenez votre tarif en direct.",
+    ];
+    return skus.slice(0, limit).map((sku, i) => ({
+      label: (catalogLite.get(sku)?.name || sku) as string,
+      description: blurbs[(seed + i) % blurbs.length],
+      icon: "FileText",
+      path: `/products/${sku}`,
+    }));
+  };
 
 
   const pages: SeoPage[] = [];
@@ -1552,7 +1584,19 @@ export async function buildProductPages(): Promise<SeoPage[]> {
       `${name} personnalisé | J2L Print`,
     ];
     const title = fitTitle(name, seededTitles, 60);
-    const description = truncate(descVariants[seed % descVariants.length], 158);
+    // Meta description : on choisit la 1re variante dont la version tronquée
+    // reste dans la fenêtre SERP utile (90–158 car.) — évite les snippets
+    // trop courts qui plombent le CTR.
+    const descCandidates = [
+      descVariants[seed % descVariants.length],
+      ...descVariants,
+    ];
+    const description =
+      descCandidates
+        .map((d) => truncate(d, 158))
+        .find((d) => d.length >= 90 && d.length <= 158) ||
+      truncate(descVariants[seed % descVariants.length], 158);
+
 
 
     // Extra intro paragraph built ONLY from real available attributes.
