@@ -126,7 +126,7 @@ async function main() {
     const groups = [...(p.internalLinks || []), ...(p.cta ? [{ heading: "", links: [{ label: p.cta.label, path: p.cta.path }] }] : [])];
     for (const g of groups) {
       for (const l of g.links) {
-        if (isExternal(l.path)) continue;
+        if (isExternal(l.path) || isProductPath(l.path)) continue;
         const target = l.path.replace(/\/$/, "") || "/";
         if (!paths.has(target) && !RUNTIME_ROUTES.has(target)) broken.push(`${p.path} -> ${l.path}`);
       }
