@@ -17,6 +17,9 @@ import type { SeoPage } from "../../src/seo/types";
 
 // Runtime routes that exist outside the prerendered page set (valid targets).
 const RUNTIME_ROUTES = new Set(["/", "/products", "/imprimerie", "/blog", "/cart", "/checkout"]);
+// Les fiches produit (/products/:sku) sont générées séparément (products.json).
+const isProductPath = (p: string) => p.startsWith("/products/");
+
 const isExternal = (p: string) => /^https?:\/\//.test(p) || p.startsWith("/#");
 const ECO_PATHS = new Set(J2L_ECOSYSTEM.map((l) => l.path));
 
@@ -123,7 +126,7 @@ async function main() {
     const groups = [...(p.internalLinks || []), ...(p.cta ? [{ heading: "", links: [{ label: p.cta.label, path: p.cta.path }] }] : [])];
     for (const g of groups) {
       for (const l of g.links) {
-        if (isExternal(l.path)) continue;
+        if (isExternal(l.path) || isProductPath(l.path)) continue;
         const target = l.path.replace(/\/$/, "") || "/";
         if (!paths.has(target) && !RUNTIME_ROUTES.has(target)) broken.push(`${p.path} -> ${l.path}`);
       }

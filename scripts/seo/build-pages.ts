@@ -395,6 +395,38 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     subNameCount.set(k, (subNameCount.get(k) || 0) + 1);
   }
 
+  // ── Vrais produits par catégorie / sous-catégorie ─────────────────────
+  // Les pages catégorie et sous-catégorie ne liaient AUCUNE fiche produit
+  // (bloc générique identique sur 57 pages). On construit ici la liste réelle
+  // des SKU publics par catégorie afin de créer un maillage descendant.
+  const catalogLite = await fetchCatalogProducts().catch(() => new Map());
+  const mappingsLite = await rest<{ sku: string; category_id: string }>(
+    "product_category_mappings?select=sku,category_id",
+  ).catch(() => []);
+  const skusByCatId = new Map<string, string[]>();
+  for (const m of mappingsLite) {
+    if (!m?.sku || !m?.category_id) continue;
+    if (!catalogLite.has(m.sku) || isExcludedSku(m.sku)) continue;
+    if (!skusByCatId.has(m.category_id)) skusByCatId.set(m.category_id, []);
+    const arr = skusByCatId.get(m.category_id)!;
+    if (!arr.includes(m.sku)) arr.push(m.sku);
+  }
+  for (const arr of skusByCatId.values()) arr.sort();
+  /** Cartes produit RÉELLES (liens /products/<sku>) pour une liste de SKU. */
+  const realProductCards = (skus: string[], limit: number, seed: number) => {
+    const blurbs = [
+      "Configurez format, quantité et finitions en ligne.",
+      "Prix immédiat, options sur mesure et devis gratuit.",
+      "Personnalisation en ligne et livraison partout en France.",
+      "Choisissez vos options et obtenez votre tarif en direct.",
+    ];
+    return skus.slice(0, limit).map((sku, i) => ({
+      label: (catalogLite.get(sku)?.name || sku) as string,
+      description: blurbs[(seed + i) % blurbs.length],
+      icon: "FileText",
+      path: `/products/${sku}`,
+    }));
+  };
 
 
   const pages: SeoPage[] = [];
@@ -408,7 +440,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     path: "/",
     // Must match the runtime homepage (src/pages/Index.tsx useSEO + H1) so the
     // prerendered head/H1 is identical to what React renders — no divergence.
-    title: "J2L Print – Imprimerie en ligne | Impression & supports publicitaires",
+    title: "Imprimerie en ligne & impression personnalisée | J2L Print",
     description:
       "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. Devis gratuit, nous livrons partout.",
     h1: "J2L Print — Votre imprimerie en ligne",
@@ -508,11 +540,32 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         keywords: visibleKeywords(entry),
       } : undefined,
       sections,
-      productGrid: {
-        heading: "Produits populaires",
-        intro: "Une sélection de supports parmi les plus demandés. Cliquez pour configurer le vôtre dans le catalogue en ligne.",
-        cards: PRODUCT_CARDS,
-      },
+      productGrid: (() => {
+        // Vrais produits de l'univers : round-robin entre sous-catégories pour
+        // couvrir toute la catégorie plutôt qu'une seule branche.
+        const buckets = subs.map((s) => skusByCatId.get(s.id) || []);
+        const own = skusByCatId.get(cat?.id || "") || [];
+        const picked: string[] = [...own];
+        for (let i = 0; picked.length < 12 && buckets.some((b) => b[i]); i++) {
+          for (const b of buckets) {
+            if (b[i] && !picked.includes(b[i])) picked.push(b[i]);
+            if (picked.length >= 12) break;
+          }
+        }
+        const cards = realProductCards(picked, 12, catSeed);
+        return cards.length >= 3
+          ? {
+              heading: `Produits ${content.name.toLowerCase()} à configurer`,
+              intro: "Une sélection de produits réellement disponibles dans cet univers. Cliquez pour configurer le vôtre et obtenir un prix immédiat.",
+              cards,
+            }
+          : {
+              heading: "Produits populaires",
+              intro: "Une sélection de supports parmi les plus demandés. Cliquez pour configurer le vôtre dans le catalogue en ligne.",
+              cards: PRODUCT_CARDS,
+            };
+      })(),
+
       faq,
       cta: CATALOG_CTA,
       internalLinks: [
@@ -576,11 +629,21 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           keywords: visibleKeywords(subEntry, subcategoryKeywords(subEntry, sub.name, subSeed)),
         } : undefined,
         sections: subSecs,
-        productGrid: {
-          heading: `Produits disponibles dans « ${sub.name} »`,
-          intro: "Configurez votre produit dans le catalogue en ligne.",
-          cards: PRODUCT_CARDS,
-        },
+        productGrid: (() => {
+          const cards = realProductCards(skusByCatId.get(sub.id) || [], 24, subSeed);
+          return cards.length >= 3
+            ? {
+                heading: `Produits disponibles dans « ${sub.name} »`,
+                intro: "Tous ces produits se configurent en ligne (format, quantité, finitions) avec un prix immédiat.",
+                cards,
+              }
+            : {
+                heading: `Produits disponibles dans « ${sub.name} »`,
+                intro: "Configurez votre produit dans le catalogue en ligne.",
+                cards: PRODUCT_CARDS,
+              };
+        })(),
+
         cta: CATALOG_CTA,
         faq: subFaq,
         internalLinks: [
@@ -1017,6 +1080,37 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       p.description = short;
     }
   }
+  // Repli : si la coupe sur phrase n'a pas suffi (doublon ou trop courte), on
+  // coupe proprement sur un mot pour rester <= 158 caractères.
+  for (const p of pages) {
+    if (p.description.length <= 158) continue;
+    let short = p.description.slice(0, 157).replace(/[\s,;:–-]+\S*$/, "");
+    if (seenDesc.has(short)) short = `${short.slice(0, 150).replace(/[\s,;:–-]+\S*$/, "")}…`;
+    seenDesc.add(short);
+    p.description = short;
+  }
+
+  // Garde-fou SERP titles : <= 60 caractères, en conservant le suffixe de
+  // marque et le discriminant d'unicité éventuel ajouté plus haut.
+  const seenTitle = new Set<string>();
+  for (const p of pages) {
+    if (p.title.length > 60) {
+      const ctx = p.title.match(/\(([^()]*)\)\s*$/)?.[0] || "";
+      const base = (ctx ? p.title.slice(0, p.title.length - ctx.length) : p.title).trim();
+      const head = base.split("|")[0].trim();
+      const room = 60 - (ctx ? ctx.length + 1 : 0) - " | J2L Print".length;
+      const cut = head.length > room ? head.slice(0, Math.max(12, room)).replace(/[\s,;:–-]+\S*$/, "") : head;
+      p.title = `${cut} | J2L Print${ctx ? ` ${ctx}` : ""}`.trim();
+    }
+    // Ne jamais recréer de doublon après raccourcissement.
+    if (seenTitle.has(p.title)) {
+      const bc = p.breadcrumb || [];
+      const parent = bc[bc.length - 2]?.name;
+      if (parent) p.title = `${p.title} – ${parent}`;
+    }
+    seenTitle.add(p.title);
+  }
+
 
   return pages;
 }
@@ -1552,7 +1646,19 @@ export async function buildProductPages(): Promise<SeoPage[]> {
       `${name} personnalisé | J2L Print`,
     ];
     const title = fitTitle(name, seededTitles, 60);
-    const description = truncate(descVariants[seed % descVariants.length], 158);
+    // Meta description : on choisit la 1re variante dont la version tronquée
+    // reste dans la fenêtre SERP utile (90–158 car.) — évite les snippets
+    // trop courts qui plombent le CTR.
+    const descCandidates = [
+      descVariants[seed % descVariants.length],
+      ...descVariants,
+    ];
+    const description =
+      descCandidates
+        .map((d) => truncate(d, 158))
+        .find((d) => d.length >= 90 && d.length <= 158) ||
+      truncate(descVariants[seed % descVariants.length], 158);
+
 
 
     // Extra intro paragraph built ONLY from real available attributes.

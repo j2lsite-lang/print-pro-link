@@ -100,7 +100,7 @@ export function useSEO({ title, description, canonical, ogTitle, ogDescription, 
 
     // Cleanup: restore defaults on unmount
     return () => {
-      document.title = `${SITE_NAME} – Imprimerie en ligne | Impression & supports publicitaires`;
+      document.title = `Imprimerie en ligne & impression personnalisée | ${SITE_NAME}`;
       if (metaDesc) metaDesc.setAttribute("content", "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. Devis gratuit, nous livrons partout.");
       if (link) link.href = `${BASE_URL}/`;
       const existing = document.getElementById(JSON_LD_ID);
