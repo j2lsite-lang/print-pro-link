@@ -2,7 +2,7 @@
 
 > J2L Print est un service d'impression en ligne français. Les clients
 > configurent leur support (format, matière, finitions, quantité), obtiennent
-> un prix en direct, transmettent leurs fichiers et sont livrés partout en France.
+> un prix en direct, transmettent leurs fichiers et sont livrés en France.
 > J2L Print n'exploite pas d'atelier d'impression en propre : la production est
 > confiée à des partenaires imprimeurs sélectionnés selon le support.
 

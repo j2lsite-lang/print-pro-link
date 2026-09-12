@@ -24,10 +24,10 @@ export const SERVICE_CONTENT: ServiceContent[] = [
     title:
       "Impression numérique en ligne – Flyers, cartes de visite, affiches | J2L Print",
     description:
-      "Impression numérique professionnelle : flyers, cartes de visite, dépliants, affiches, brochures. Impression numérique et offset, livraison partout en France. Devis gratuit.",
+      "Impression numérique professionnelle : flyers, cartes de visite, dépliants, affiches, brochures. Impression numérique et offset, livraison en France. Devis gratuit.",
     h1: "Impression numérique professionnelle en ligne",
     intro: [
-      "J2L Print vous propose un service d'impression numérique haut de gamme pour tous vos supports de communication. De la carte de visite au dépliant grand tirage, vos documents sont imprimés avec soin et livrés partout en France.",
+      "J2L Print vous propose un service d'impression numérique haut de gamme pour tous vos supports de communication. De la carte de visite au dépliant grand tirage, vos documents sont imprimés avec soin et livrés en France.",
     ],
     solutionsHeading: "Nos produits d'impression numérique",
     solutions: [
@@ -53,10 +53,10 @@ export const SERVICE_CONTENT: ServiceContent[] = [
     title:
       "Impression grand format – Bâches, banderoles, adhésifs, kakémonos | J2L Print",
     description:
-      "Impression grand format professionnelle : bâches, banderoles, adhésifs, kakémonos, enseignes. Configuration en ligne, livraison partout en France. Devis gratuit.",
+      "Impression grand format professionnelle : bâches, banderoles, adhésifs, kakémonos, enseignes. Configuration en ligne, livraison en France. Devis gratuit.",
     h1: "Impression grand format en ligne",
     intro: [
-      "J2L Print est votre imprimerie en ligne pour tous vos supports de communication grand format : bâches publicitaires, banderoles, adhésifs, kakémonos et enseignes. Vous composez votre support en ligne (dimensions, matière, finitions) et vous êtes livré partout en France.",
+      "J2L Print est votre imprimerie en ligne pour tous vos supports de communication grand format : bâches publicitaires, banderoles, adhésifs, kakémonos et enseignes. Vous composez votre support en ligne (dimensions, matière, finitions) et vous êtes livré en France.",
     ],
     solutionsHeading: "Nos produits grand format",
     solutions: [

@@ -85,7 +85,7 @@ function buildIntro(name: string, fam: SemanticEntry, seed: number): string {
   const sector = naturalList(pickN(fam.sectors, seed + 1, 3));
   const finition = pickOne(fam.finitions, seed + 2);
   const frames: string[] = [
-    `${cap(name)} : ${fam.primaryKeyword} à configurer en ligne chez J2L Print. Idéal pour ${usage}, ce support se commande sur mesure et se livre partout en France.`,
+    `${cap(name)} : ${fam.primaryKeyword} à configurer en ligne chez J2L Print. Idéal pour ${usage}, ce support se commande sur mesure et se livre en France.`,
     `Optez pour ${fam.primaryKeyword} avec ${low(name)} : un support adapté à ${sector}. Choisissez vos options en ligne et obtenez un prix immédiat.`,
     `${cap(name)} fait partie de notre offre de ${fam.primaryKeyword}. Pensé pour ${usage}, il se personnalise (format, ${finition}, quantité) directement en ligne.`,
     `Besoin de ${fam.primaryKeyword.toLowerCase()} ? ${cap(name)} se configure en ligne et s'adresse à ${sector}, avec une fabrication soignée et un devis gratuit.`,
@@ -104,7 +104,7 @@ function buildUseCases(name: string, fam: SemanticEntry, seed: number): string {
 function buildQuality(fam: SemanticEntry, seed: number): string {
   const mat = naturalList(pickN(fam.materials, seed, 3));
   const fin = naturalList(pickN(fam.finitions, seed + 1, 3));
-  return `Impression professionnelle sur ${mat}, avec un choix de finitions : ${fin}. Vos fichiers PDF sont vérifiés avant impression et chaque commande est contrôlée avant expédition, partout en France métropolitaine.`;
+  return `Impression professionnelle sur ${mat}, avec un choix de finitions : ${fin}. Vos fichiers PDF sont vérifiés avant impression et chaque commande est contrôlée avant expédition, en France métropolitaine.`;
 }
 
 /** "Pourquoi choisir" benefit bullets (seeded, family-aware). */
@@ -113,7 +113,7 @@ function buildWhyChoose(fam: SemanticEntry, seed: number): string[] {
     "Configuration en ligne et prix immédiat",
     `${cap(fam.primaryKeyword)} sur mesure`,
     "Vérification de vos fichiers avant impression",
-    "Devis gratuit et livraison partout en France",
+    "Devis gratuit et livraison en France",
   ];
   const extra = `Finitions au choix : ${naturalList(pickN(fam.finitions, seed, 2))}`;
   return [...base.slice(0, 3), extra, base[3]];
@@ -153,7 +153,7 @@ function buildGenericData(productName: string): ProductSEOData {
       "Configuration en ligne et prix immédiat",
       "Impression professionnelle sur mesure",
       "Vérification de vos fichiers avant impression",
-      "Devis gratuit et livraison partout en France",
+      "Devis gratuit et livraison en France",
     ],
     usagesList: ["Communication professionnelle", "Événements et opérations commerciales", "Image de marque"],
     sectors: pickN(SECTORS_POOL, seed, 5),

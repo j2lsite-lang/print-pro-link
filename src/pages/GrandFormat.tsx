@@ -10,7 +10,7 @@ import { catalogVisuals } from "@/seo/data/catalog-visuals";
 export default function GrandFormat() {
   useSEO({
     title: "Impression grand format – Bâches, banderoles, adhésifs, kakémonos | J2L Print",
-    description: "Impression grand format professionnelle : bâches, banderoles, adhésifs, kakémonos, enseignes. Configuration en ligne, livraison partout en France. Devis gratuit.",
+    description: "Impression grand format professionnelle : bâches, banderoles, adhésifs, kakémonos, enseignes. Configuration en ligne, livraison en France. Devis gratuit.",
     ogType: "website",
   });
 
@@ -34,7 +34,7 @@ export default function GrandFormat() {
             <p className="text-muted-foreground leading-relaxed">
               <strong>J2L Print</strong> est votre imprimerie en ligne pour tous vos supports de communication grand format :
               bâches publicitaires, banderoles, adhésifs, kakémonos et enseignes. Configurez votre support
-              (dimensions, matière, finitions) directement en ligne et faites-vous livrer partout en France.
+              (dimensions, matière, finitions) directement en ligne et faites-vous livrer en France.
             </p>
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function GrandFormat() {
             <h3 className="font-display text-lg font-semibold text-foreground">
               Un projet grand format ?
             </h3>
-            <p className="text-sm text-muted-foreground">Devis gratuit, livraison partout en France.</p>
+            <p className="text-sm text-muted-foreground">Devis gratuit, livraison en France.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button asChild className="rounded-full">

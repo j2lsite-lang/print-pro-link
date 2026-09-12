@@ -17,7 +17,7 @@ import ProductSEOContent from "@/components/product/ProductSEOContent";
 import PRODUCT_META_RAW from "@/seo/generated/product-meta.json";
 import { useSEO } from "@/hooks/useSEO";
 
-const PRODUCT_META = PRODUCT_META_RAW as Record<string, { name: string; image?: string }>;
+const PRODUCT_META = PRODUCT_META_RAW as Record<string, { name: string; image?: string; intro?: string; usage?: string }>;
 
 interface ProductOption {
   slug: string;
@@ -463,7 +463,7 @@ export default function ProductDetail() {
     title: `${productName} – Impression personnalisée`,
     description: product?.description
       ? product.description.slice(0, 155)
-      : `Commandez ${productName} en ligne chez J2L Print. Impression professionnelle, devis gratuit et livraison partout en France.`,
+      : `Commandez ${productName} en ligne chez J2L Print. Impression professionnelle, devis gratuit et livraison en France.`,
     ogType: "product",
     ogImage: productMetaImage,
   });
@@ -938,7 +938,7 @@ export default function ProductDetail() {
             </h1>
 
             <p className="text-sm text-muted-foreground leading-relaxed">
-              {getProductSEOData(productName, sku).intro}
+              {(sku && PRODUCT_META[sku]?.intro) || getProductSEOData(productName, sku).intro}
             </p>
 
             {product.description && (
@@ -1050,7 +1050,7 @@ export default function ProductDetail() {
           À quoi sert {productName.toLowerCase()} ?
         </h2>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          {getProductSEOData(productName, sku).useCases}
+          {(sku && PRODUCT_META[sku]?.usage) || getProductSEOData(productName, sku).useCases}
         </p>
       </div>
 

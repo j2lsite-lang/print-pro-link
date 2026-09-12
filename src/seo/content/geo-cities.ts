@@ -158,7 +158,7 @@ const WHY_ARGS = [
   "L'impression numérique et offset, selon le tirage et le rendu recherchés.",
   "Le grand format pour vos affiches, bâches, panneaux et PLV.",
   "Un devis personnalisé lorsque votre projet le nécessite.",
-  "La livraison partout en France, directement à votre adresse.",
+  "La livraison en France, directement à votre adresse.",
   "Un interlocuteur professionnel pour vous accompagner sur vos projets.",
   "Une gamme complète centralisée : papeterie, signalétique, textile, objets et emballages.",
   "Aucun déplacement nécessaire : tout se commande et se suit en ligne.",
