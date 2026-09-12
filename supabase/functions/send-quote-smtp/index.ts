@@ -298,6 +298,12 @@ function clientRow(label: string, value: string | null | undefined) {
   return `<tr><td style="padding:6px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#bbbbbb;width:130px;vertical-align:top;">${esc(label)}</td><td style="padding:6px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;color:#ffffff;vertical-align:top;">${esc(value)}</td></tr>`
 }
 
+/** Ligne totale client : identique mais visuellement marquée. */
+function clientTotalRow(label: string, value: string | null | undefined) {
+  if (!value || !has(value)) return ''
+  return `<tr><td style="padding:8px 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:${YELLOW};width:130px;vertical-align:top;border-top:1px solid #333333;">${esc(label)}</td><td style="padding:8px 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:#ffffff;vertical-align:top;border-top:1px solid #333333;">${esc(value)}</td></tr>`
+}
+
 function buildConfirmationHtml(p: QuotePayload, firstName: string) {
   const items = p.items || []
   const first = items[0] || {}
@@ -309,13 +315,17 @@ function buildConfirmationHtml(p: QuotePayload, firstName: string) {
     .filter(has)
     .map(String)
     .join(', ')
-  const estimation = fmtMoney(p.estimatedTotalHt)
+  const subtotal = fmtMoney(p.productsTotalHt)
+  const shipping = fmtMoney(p.shippingHt)
+  const total = fmtMoney(p.estimatedTotalHt)
   const hasFile = items.some((i) => has(i.fileName) || has(i.fileUrl))
 
   const recapInner =
     clientRow('Produit', productName) +
     clientRow('Quantité', quantities) +
-    clientRow('Estimation', estimation) +
+    clientRow('Sous-total produits', subtotal) +
+    clientRow('Livraison', shipping) +
+    clientTotalRow('Total estimatif', total) +
     (hasFile ? clientRow('Fichier transmis', 'Oui') : '')
   const recapBlock = recapInner
     ? `<tr><td style="padding:0 24px 20px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:${DARK};border-radius:6px;border-left:4px solid ${YELLOW};"><tr><td style="padding:12px 16px 4px;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;letter-spacing:1px;color:${YELLOW};text-transform:uppercase;">Récapitulatif</td></tr><tr><td style="padding:6px 16px 14px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">${recapInner}</table></td></tr></table></td></tr>`
@@ -354,16 +364,20 @@ function confirmationText(p: QuotePayload, firstName: string) {
     ? items.map((i) => i.productName).filter(has).join(', ')
     : has(p.product) ? String(p.product) : ''
   const quantities = items.map((i) => i.quantity).filter(has).map(String).join(', ')
-  const estimation = fmtMoney(p.estimatedTotalHt)
   const hasFile = items.some((i) => has(i.fileName) || has(i.fileUrl))
 
   const out: string[] = []
   out.push(has(firstName) ? `Bonjour ${firstName},` : 'Bonjour,')
   out.push('', 'Merci pour votre demande. Elle a bien été enregistrée par notre équipe.')
+  const subtotal = fmtMoney(p.productsTotalHt)
+  const shipping = fmtMoney(p.shippingHt)
+  const total = fmtMoney(p.estimatedTotalHt)
   const recap: string[] = []
   if (has(productName)) recap.push(`* Produit : ${productName}`)
   if (has(quantities)) recap.push(`* Quantité : ${quantities}`)
-  if (has(estimation)) recap.push(`* Estimation : ${estimation}`)
+  if (has(subtotal)) recap.push(`* Sous-total produits : ${subtotal}`)
+  if (has(shipping)) recap.push(`* Livraison : ${shipping}`)
+  if (has(total)) recap.push(`* Total estimatif : ${total}`)
   if (hasFile) recap.push('* Fichier transmis : Oui')
   if (recap.length) out.push('', 'Récapitulatif :', ...recap)
   out.push(
