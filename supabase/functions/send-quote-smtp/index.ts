@@ -370,10 +370,15 @@ function confirmationText(p: QuotePayload, firstName: string) {
   const out: string[] = []
   out.push(has(firstName) ? `Bonjour ${firstName},` : 'Bonjour,')
   out.push('', 'Merci pour votre demande. Elle a bien été enregistrée par notre équipe.')
+  const subtotal = fmtMoney(p.productsTotalHt)
+  const shipping = fmtMoney(p.shippingHt)
+  const total = fmtMoney(p.estimatedTotalHt)
   const recap: string[] = []
   if (has(productName)) recap.push(`* Produit : ${productName}`)
   if (has(quantities)) recap.push(`* Quantité : ${quantities}`)
-  if (has(estimation)) recap.push(`* Estimation : ${estimation}`)
+  if (has(subtotal)) recap.push(`* Sous-total produits : ${subtotal}`)
+  if (has(shipping)) recap.push(`* Livraison : ${shipping}`)
+  if (has(total)) recap.push(`* Total estimatif : ${total}`)
   if (hasFile) recap.push('* Fichier transmis : Oui')
   if (recap.length) out.push('', 'Récapitulatif :', ...recap)
   out.push(
