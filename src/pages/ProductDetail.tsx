@@ -17,7 +17,7 @@ import ProductSEOContent from "@/components/product/ProductSEOContent";
 import PRODUCT_META_RAW from "@/seo/generated/product-meta.json";
 import { useSEO } from "@/hooks/useSEO";
 
-const PRODUCT_META = PRODUCT_META_RAW as Record<string, { name: string; image?: string }>;
+const PRODUCT_META = PRODUCT_META_RAW as Record<string, { name: string; image?: string; intro?: string; usage?: string }>;
 
 interface ProductOption {
   slug: string;
