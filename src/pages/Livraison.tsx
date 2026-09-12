@@ -129,7 +129,6 @@ export default function Livraison() {
           </div>
 
           <p className="text-xs text-center text-muted-foreground">
-            <strong className="text-foreground">J2L Publicité</strong> — 22 B rue Robert Barret, 88390 Uxegney, France<br />
             Les présentes informations complètent nos <Link to="/cgv" className="text-primary hover:underline">Conditions Générales de Vente (CGV)</Link>. En cas de divergence, ce sont les CGV qui prévalent. Consultez également notre page <Link to="/politique-retours" className="text-primary hover:underline">Retours et remboursements</Link> pour connaître nos conditions de réclamation.
           </p>
         </div>

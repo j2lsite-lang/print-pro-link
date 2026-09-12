@@ -25,10 +25,7 @@ export default function Footer() {
               <img src={logoJ2L} alt="J2L Print — imprimerie en ligne" className="h-20 w-auto object-contain" />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
-              Votre imprimerie en ligne dans toute la France. Impression numérique, supports publicitaires, objets personnalisés.
-            </p>
-            <p className="text-sm text-muted-foreground mt-2">
-              22 B rue Robert Barret, 88390 Uxegney
+              Votre imprimerie en ligne en France. Impression numérique, supports publicitaires, objets personnalisés.
             </p>
             <p className="text-sm text-muted-foreground">
               Tél : <a href="tel:+33329304479" className="text-foreground hover:text-primary transition-colors">03 29 30 44 79</a>
