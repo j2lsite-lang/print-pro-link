@@ -315,13 +315,17 @@ function buildConfirmationHtml(p: QuotePayload, firstName: string) {
     .filter(has)
     .map(String)
     .join(', ')
-  const estimation = fmtMoney(p.estimatedTotalHt)
+  const subtotal = fmtMoney(p.productsTotalHt)
+  const shipping = fmtMoney(p.shippingHt)
+  const total = fmtMoney(p.estimatedTotalHt)
   const hasFile = items.some((i) => has(i.fileName) || has(i.fileUrl))
 
   const recapInner =
     clientRow('Produit', productName) +
     clientRow('Quantité', quantities) +
-    clientRow('Estimation', estimation) +
+    clientRow('Sous-total produits', subtotal) +
+    clientRow('Livraison', shipping) +
+    clientTotalRow('Total estimatif', total) +
     (hasFile ? clientRow('Fichier transmis', 'Oui') : '')
   const recapBlock = recapInner
     ? `<tr><td style="padding:0 24px 20px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:${DARK};border-radius:6px;border-left:4px solid ${YELLOW};"><tr><td style="padding:12px 16px 4px;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;letter-spacing:1px;color:${YELLOW};text-transform:uppercase;">Récapitulatif</td></tr><tr><td style="padding:6px 16px 14px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">${recapInner}</table></td></tr></table></td></tr>`
