@@ -158,6 +158,12 @@ export const TWIN_PRODUCT_NAMES: Record<string, string> = {
   "slipcases": "Étui-coffret personnalisé",
   "quartet-cards": "Jeu de cartes des familles personnalisé",
   "stackable-pos-displays": "Présentoir PLV empilable personnalisé",
+  "recycled-cardboard-notebook": "Carnet en carton recyclé",
+  "recycled-pu-notebook": "Carnet en PU recyclé",
+  "rpet-notebook": "Carnet en rPET recyclé",
+  "carrying-trays": "Plateau de transport en carton",
+  "flexxs-primer": "Primaire d'accrochage Flexxs",
+  "food-wrappers": "Bague de sandwich personnalisée",
 };
 
 
