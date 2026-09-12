@@ -22,7 +22,7 @@ export default function CitiesIndex() {
   useSEO({
     title: "Nos villes desservies – Imprimerie en ligne J2L Print",
     description:
-      "Découvrez les villes desservies par J2L Print : impression professionnelle livrée à Épinal, Nancy, Metz, Strasbourg, Mulhouse, Reims et dans le Grand Est.",
+      "Découvrez les villes desservies par J2L Print : impression professionnelle livrée à Paris, Lyon, Marseille, Toulouse, Bordeaux, Lille, Nantes et dans toute la France.",
     canonical: "https://j2lprint.fr/imprimerie",
   });
 

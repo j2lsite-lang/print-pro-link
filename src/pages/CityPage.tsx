@@ -175,7 +175,7 @@ export default function CityPage() {
             Pourquoi choisir J2L Print pour vos impressions à {city.name} ?
           </h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Basée dans les Vosges, l'entreprise <strong>J2L Publicité</strong> (marque J2L Print) accompagne 
+            L'entreprise <strong>J2L Publicité</strong> (marque J2L Print) accompagne 
             depuis 2012 les professionnels, associations et collectivités de {city.name} dans leurs projets de 
             <strong> communication visuelle</strong>. Grâce à notre plateforme en ligne, les entreprises de {city.name} ({city.cp}) 
             bénéficient des mêmes services et tarifs compétitifs que nos clients locaux.
@@ -264,7 +264,7 @@ export default function CityPage() {
             </div>
             <div className="flex items-center gap-2 text-muted-foreground sm:col-span-2">
               <MapPin className="h-4 w-4 text-primary" /> 
-              22 B rue Robert Barret, 88390 Uxegney (siège) — Livraison à {city.name} et dans toute la France
+              Livraison à {city.name} et dans toute la France
             </div>
           </div>
         </div>
