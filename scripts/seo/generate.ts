@@ -21,13 +21,13 @@ const SERVICE_PATHS = [
   "/personnalisation",
 ];
 
-interface Entry { path: string; priority: string; changefreq: string }
+interface Entry { path: string; priority: string; changefreq: string; lastmod?: string }
 
 function urlset(entries: Entry[]): string {
   const urls = entries.map((e) => [
     "  <url>",
     `    <loc>${BASE_URL}${e.path}</loc>`,
-    `    <lastmod>${BUILD_DATE}</lastmod>`,
+    `    <lastmod>${e.lastmod || BUILD_DATE}</lastmod>`,
     `    <changefreq>${e.changefreq}</changefreq>`,
     `    <priority>${e.priority}</priority>`,
     "  </url>",
@@ -49,7 +49,7 @@ function group(pages: SeoPage[]) {
   const indexable = pages.filter((p) => !p.noindex);
   const is = (p: SeoPage, pred: (seg: string[]) => boolean) => pred(p.path.split("/").filter(Boolean));
   return {
-    static: indexable.filter((p) => p.path === "/" || p.path === "/catalogue").map((p) => p.path)
+    static: indexable.filter((p) => p.path === "/" || p.path === "/catalogue" || p.path === "/imprimerie").map((p) => p.path)
       .concat(SERVICE_PATHS),
     categories: indexable.filter((p) => is(p, (s) => s[0] === "categorie" && s.length === 2)).map((p) => p.path),
     subcategories: indexable.filter((p) => is(p, (s) => s[0] === "categorie" && s.length === 3)).map((p) => p.path),
@@ -156,9 +156,18 @@ async function main() {
   mkdirSync(dir, { recursive: true });
   const g = group(pages);
   const files: string[] = [];
+  // Real per-page modification dates when the source provides one
+  // (product `updatedAt`); otherwise the sitemap falls back to the build date.
+  const lastmodByPath = new Map<string, string>();
+  for (const p of [...pages, ...productPages, ...themePages]) {
+    if (p.lastmod) lastmodByPath.set(p.path, p.lastmod);
+  }
   const write = (name: string, paths: string[], priority: string, freq: string) => {
     if (!paths.length) return;
-    writeFileSync(resolve(dir, name), urlset(paths.map((path) => ({ path, priority, changefreq: freq }))));
+    writeFileSync(
+      resolve(dir, name),
+      urlset(paths.map((path) => ({ path, priority, changefreq: freq, lastmod: lastmodByPath.get(path) }))),
+    );
     files.push(name);
   };
   write("static.xml", g.static, "0.9", "weekly");
