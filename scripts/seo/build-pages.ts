@@ -1281,10 +1281,81 @@ async function fetchCatalogProducts(): Promise<Map<string, CatalogProductLite>> 
 }
 
 /* --------------------------------------------------------------------------
+ * Produit sans famille sémantique détectée : l'intro et le bloc « à quoi sert »
+ * sont construits UNIQUEMENT à partir des données réelles du SKU (nom catalogue
+ * Print.com, univers réel, formats / matières / finitions / quantités réellement
+ * proposés par le configurateur). Aucune caractéristique inventée : si l'API ne
+ * renvoie rien, la phrase correspondante n'est pas écrite.
+ * ------------------------------------------------------------------------ */
+const UNIVERSE_LABEL: Record<string, string> = {
+  "impression-papier": "impression papier",
+  "publicite-exterieure": "publicité extérieure",
+  "publicite-interieure": "publicité intérieure",
+  "etiquettes-stickers": "étiquettes & stickers",
+  "emballages-sacs": "emballages & sacs",
+  "objets-publicitaires-cadeaux": "objets publicitaires & cadeaux",
+  "textiles-accessoires": "textiles & accessoires",
+  "panneaux-baches-vinyles-toiles": "panneaux, bâches, vinyles & toiles",
+};
+
+function realSpecBits(attrs?: ProductAttributes): string[] {
+  if (!attrs) return [];
+  const bits: string[] = [];
+  if (attrs.formats.length) bits.push(`${attrs.formats.length > 1 ? "formats" : "format"} ${attrs.formats.slice(0, 3).join(", ")}`);
+  if (attrs.dimensions?.length && !attrs.formats.length) bits.push(`dimensions ${attrs.dimensions.slice(0, 3).join(", ")}`);
+  if (attrs.matieres.length) bits.push(`support ${attrs.matieres.slice(0, 3).map((m) => m.toLowerCase()).join(", ")}`);
+  if (attrs.faces.length) bits.push(`impression ${attrs.faces.join(" ou ")}`);
+  const fin: string[] = [];
+  for (const p of attrs.pelliculage) fin.push(`pelliculage ${p}`);
+  if (attrs.vernis.length) fin.push("vernis sélectif");
+  if (attrs.dorure) fin.push("dorure");
+  if (attrs.coinsArrondis) fin.push("coins arrondis");
+  if (attrs.decoupe) fin.push("découpe à la forme");
+  if (attrs.oeillets) fin.push("œillets");
+  if (fin.length) bits.push(`finitions ${fin.slice(0, 3).join(", ")}`);
+  return bits;
+}
+
+function realIntro(name: string, attrs: ProductAttributes | undefined, universe: string, seed: number): string {
+  const uni = UNIVERSE_LABEL[universe];
+  const bits = realSpecBits(attrs);
+  const s = Math.abs(seed);
+  const heads = [
+    `${name} fait partie de notre gamme${uni ? ` ${uni}` : ""} et se configure directement en ligne.`,
+    `Commandez ${name.toLowerCase()} en ligne${uni ? `, dans notre univers ${uni}` : ""} : options et prix s'affichent immédiatement.`,
+    `${name}${uni ? `, référence de notre univers ${uni},` : ""} se personnalise et se commande en ligne.`,
+    `Configurez ${name.toLowerCase()} en ligne${uni ? ` parmi notre offre ${uni}` : ""} et obtenez un prix immédiat.`,
+  ];
+  const spec = bits.length ? ` Options réellement disponibles pour cette référence : ${frList(bits)}.` : "";
+  const qty = attrs?.quantities?.length
+    ? ` Quantités proposées par le configurateur : de ${attrs.quantities[0]} à ${attrs.quantities[attrs.quantities.length - 1]} exemplaires.`
+    : "";
+  return `${heads[s % heads.length]}${spec}${qty} Devis gratuit et livraison en France.`;
+}
+
+function realUseCases(name: string, attrs: ProductAttributes | undefined, universe: string, seed: number): string {
+  const uni = UNIVERSE_LABEL[universe];
+  const s = Math.abs(seed >> 3);
+  const heads = [
+    `${name} s'utilise dans le cadre de votre communication${uni ? ` ${uni}` : ""}.`,
+    `Les professionnels commandent ${name.toLowerCase()} pour leurs supports${uni ? ` ${uni}` : ""}.`,
+    `${name} complète vos supports${uni ? ` ${uni}` : ""} existants.`,
+  ];
+  const fmt = attrs?.formats.length
+    ? ` Choisissez le format (${attrs.formats.slice(0, 4).join(", ")}) adapté à votre usage.`
+    : attrs?.dimensions?.length
+    ? ` Choisissez la dimension (${attrs.dimensions.slice(0, 3).join(", ")}) adaptée à votre usage.`
+    : "";
+  const mat = attrs?.matieres.length ? ` Support au choix : ${attrs.matieres.slice(0, 3).map((m) => m.toLowerCase()).join(", ")}.` : "";
+  return `${heads[s % heads.length]}${fmt}${mat} Sélectionnez vos options ci-dessus pour l'adapter à votre projet ou demandez un devis personnalisé.`;
+}
+
+/* --------------------------------------------------------------------------
  * Produit : paragraphe « Qualité d'impression et finitions » construit à
  * partir des caractéristiques RÉELLES du SKU (Print.com). Aucun délai, prix
  * ou caractéristique inventé : chaque bribe provient de `attrs`.
  * ------------------------------------------------------------------------ */
+
 function realQualityParagraph(
   name: string,
   attrs: ProductAttributes | undefined,
