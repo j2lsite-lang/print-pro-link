@@ -1,3 +1,4 @@
+import { displayProductName } from "./product-name";
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const FUNCTION_NAME = "printcom-proxy";
@@ -83,7 +84,9 @@ export async function getCatalogProducts(lang = "fr-FR"): Promise<CatalogProduct
 
     merged.set(sku, {
       sku,
-      name: product?.titleSingle || product?.name || sku,
+      // Shared display-name rule (French overrides + current catalog data) so
+      // the visible name matches the prerendered/Googlebot name exactly.
+      name: displayProductName(sku, product?.titleSingle || product?.name, cmsProduct?.productName),
       thumbnailUrl,
       active: product?.active !== false,
     });
@@ -108,7 +111,7 @@ export async function getCatalogProducts(lang = "fr-FR"): Promise<CatalogProduct
 
     merged.set(sku, {
       sku,
-      name: (cmsProduct as any)?.productName || sku,
+      name: displayProductName(sku, null, (cmsProduct as any)?.productName),
       thumbnailUrl,
       active: true,
     });

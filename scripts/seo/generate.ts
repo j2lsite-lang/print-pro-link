@@ -21,13 +21,13 @@ const SERVICE_PATHS = [
   "/personnalisation",
 ];
 
-interface Entry { path: string; priority: string; changefreq: string }
+interface Entry { path: string; priority: string; changefreq: string; lastmod?: string }
 
 function urlset(entries: Entry[]): string {
   const urls = entries.map((e) => [
     "  <url>",
     `    <loc>${BASE_URL}${e.path}</loc>`,
-    `    <lastmod>${BUILD_DATE}</lastmod>`,
+    `    <lastmod>${e.lastmod || BUILD_DATE}</lastmod>`,
     `    <changefreq>${e.changefreq}</changefreq>`,
     `    <priority>${e.priority}</priority>`,
     "  </url>",
@@ -49,7 +49,7 @@ function group(pages: SeoPage[]) {
   const indexable = pages.filter((p) => !p.noindex);
   const is = (p: SeoPage, pred: (seg: string[]) => boolean) => pred(p.path.split("/").filter(Boolean));
   return {
-    static: indexable.filter((p) => p.path === "/" || p.path === "/catalogue").map((p) => p.path)
+    static: indexable.filter((p) => p.path === "/" || p.path === "/catalogue" || p.path === "/imprimerie").map((p) => p.path)
       .concat(SERVICE_PATHS),
     categories: indexable.filter((p) => is(p, (s) => s[0] === "categorie" && s.length === 2)).map((p) => p.path),
     subcategories: indexable.filter((p) => is(p, (s) => s[0] === "categorie" && s.length === 3)).map((p) => p.path),
@@ -123,6 +123,17 @@ async function main() {
   writeFileSync(resolve(genDir, "products.json"), JSON.stringify(productsByPath, null, 0));
   const productSlugs = productPages.map((p) => p.path.replace(/^\/products\//, ""));
 
+  // 1b-ter. product-meta.json — sku → displayed name + image, read by the
+  //         runtime fiche produit so the visitor sees EXACTLY the name that is
+  //         prerendered for Googlebot. Never affects SKUs, prices, the
+  //         configurator, the cart or product URLs.
+  const productMeta: Record<string, { name: string; image?: string }> = {};
+  for (const p of productPages) {
+    const sku = p.path.replace(/^\/products\//, "");
+    productMeta[sku] = { name: (p.h1 || "").trim(), ...(p.ogImage ? { image: p.ogImage } : {}) };
+  }
+  writeFileSync(resolve(genDir, "product-meta.json"), JSON.stringify(productMeta, null, 0));
+
   // 1b-bis. related-products.json — a SMALL sku→complementary-links map consumed
   //         by the runtime fiche-produit (ProductSEOContent) so the visible
   //         "Produits complémentaires" block matches the prerendered HTML and
@@ -156,9 +167,18 @@ async function main() {
   mkdirSync(dir, { recursive: true });
   const g = group(pages);
   const files: string[] = [];
+  // Real per-page modification dates when the source provides one
+  // (product `updatedAt`); otherwise the sitemap falls back to the build date.
+  const lastmodByPath = new Map<string, string>();
+  for (const p of [...pages, ...productPages, ...themePages]) {
+    if (p.lastmod) lastmodByPath.set(p.path, p.lastmod);
+  }
   const write = (name: string, paths: string[], priority: string, freq: string) => {
     if (!paths.length) return;
-    writeFileSync(resolve(dir, name), urlset(paths.map((path) => ({ path, priority, changefreq: freq }))));
+    writeFileSync(
+      resolve(dir, name),
+      urlset(paths.map((path) => ({ path, priority, changefreq: freq, lastmod: lastmodByPath.get(path) }))),
+    );
     files.push(name);
   };
   write("static.xml", g.static, "0.9", "weekly");

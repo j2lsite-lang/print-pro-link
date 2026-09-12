@@ -165,10 +165,14 @@ function buildGenericData(productName: string): ProductSEOData {
 /** Resolve the matching family key for a product (with guardrails). */
 export function detectFamily(productName: string, sku?: string): keyof typeof FAMILY_KEYWORDS | null {
   const search = normalize(`${productName} ${sku || ""}`);
+  // Whole-word matching only: a substring match would wrongly classify
+  // "Bague sandwich" as a "bag" (sac) or "cartes" as "carte de visite".
+  const hasWord = (token: string) =>
+    new RegExp(`(?:^|\\s)${normalize(token).replace(/\s+/g, "\\s")}(?:$|\\s)`).test(search);
   for (const detector of FAMILY_DETECTORS) {
-    const hasToken = detector.tokens.some((t) => search.includes(normalize(t)));
+    const hasToken = detector.tokens.some(hasWord);
     if (!hasToken) continue;
-    const forbidden = detector.forbid?.some((t) => search.includes(normalize(t)));
+    const forbidden = detector.forbid?.some(hasWord);
     if (forbidden) continue;
     return detector.key;
   }

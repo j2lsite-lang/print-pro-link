@@ -19,6 +19,7 @@ import {
 } from "../../src/seo/data/semantic-keywords";
 import { isExcludedSku } from "../../src/config/excluded-products";
 import { twinDisplayName } from "../../src/seo/data/twin-products";
+import { displayProductName } from "../../src/lib/product-name";
 import {
   loadProductAttributes, productAttributePhrases, productAttributeBullets,
   type ProductAttributes,
@@ -719,6 +720,77 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     cityHero.set(gc.slug, idx);
   }
 
+  // ── Zones desservies (/imprimerie) ──
+  // Véritable annuaire des zones couvertes : il sert de parent de fil d'Ariane
+  // aux 488 pages ville/département/région, qui pointaient jusqu'ici vers une
+  // URL inexistante (404). Contenu factuel, uniquement des liens réels.
+  {
+    const zoneCrumb = [home, { name: "Zones desservies", path: "/imprimerie" }];
+    const regionGroups = geo.regions
+      .slice()
+      .sort((a, b) => a.name.localeCompare(b.name, "fr"))
+      .map((r) => {
+        const deps = geo.departments
+          .filter((d) => d.regionSlug === r.slug)
+          .sort((a, b) => a.code.localeCompare(b.code, "fr"));
+        const cities = geo.cities
+          .filter((c) => c.regionSlug === r.slug)
+          .sort((a, b) => a.name.localeCompare(b.name, "fr"));
+        return {
+          heading: r.name,
+          links: [
+            { label: `Imprimerie en ${r.name}`, path: `/region/${r.slug}` },
+            ...deps.map((d) => ({ label: `${d.name} (${d.code})`, path: `/departement/${d.slug}` })),
+            ...cities.map((c) => ({ label: `Imprimerie ${c.name}`, path: `/ville/${c.slug}` })),
+          ],
+        };
+      });
+    pages.push({
+      path: "/imprimerie",
+      title: "Zones desservies – Imprimerie en ligne partout en France",
+      description:
+        `J2L Print imprime et livre partout en France : ${geo.regions.length} régions, ${geo.departments.length} départements et ${geo.cities.length} villes avec une page dédiée.`,
+      h1: "Zones desservies par J2L Print",
+      intro: [
+        `J2L Print est une imprimerie en ligne : votre commande se configure sur le site, se fabrique chez nos imprimeurs partenaires et se livre à l'adresse de votre choix, partout en France métropolitaine.`,
+        `Cet annuaire regroupe l'ensemble des zones pour lesquelles nous avons préparé une page dédiée : ${geo.regions.length} régions, ${geo.departments.length} départements et ${geo.cities.length} villes. Votre commune ne figure pas dans la liste ? Nous livrons malgré tout l'ensemble du territoire : demandez un devis.`,
+      ],
+      breadcrumb: zoneCrumb,
+      visual: {
+        image: "/seo/hero-livraison.jpg",
+        imageAlt: "Livraison des commandes J2L Print partout en France",
+        keywords: ["imprimerie en ligne France", "impression livrée partout en France", "imprimeur en ligne"],
+      },
+      sections: [
+        {
+          heading: "Comment fonctionne la livraison",
+          bullets: [
+            "Configuration et commande 100 % en ligne, sans déplacement.",
+            "Fabrication chez nos imprimeurs partenaires selon le support choisi.",
+            "Livraison à l'adresse de votre choix en France métropolitaine.",
+            "Délai indiqué pendant la configuration, avant validation de la commande.",
+          ],
+        },
+      ],
+      cta: { label: "Demander un devis gratuit", path: "/#devis" },
+      internalLinks: [
+        { heading: "Nos univers", links: CATEGORY_SLUGS.map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` })) },
+        ...regionGroups,
+      ],
+      jsonLd: [
+        breadcrumbLd(zoneCrumb),
+        collectionPageLd({
+          name: "Zones desservies par J2L Print",
+          description: "Régions, départements et villes couverts par l'imprimerie en ligne J2L Print.",
+          path: "/imprimerie",
+          items: geo.regions.map((r) => ({ name: r.name, path: `/region/${r.slug}` })),
+        }),
+      ],
+      ogType: "website",
+      keywords: SITE_KEYWORDS,
+    });
+  }
+
   // ── Cities ──
   for (const gc of geo.cities) {
     const profile = CITY_PROFILES[gc.slug];
@@ -1138,6 +1210,8 @@ interface CatalogProductLite {
   sku: string;
   name: string;
   thumbnailUrl?: string | null;
+  /** Real supplier "updatedAt" (ISO) — drives sitemap <lastmod>. */
+  updatedAt?: string | null;
 }
 
 function cmsAssetUrl(assetId: string | undefined, assets: Record<string, any> | undefined): string | null {
@@ -1179,7 +1253,12 @@ async function fetchCatalogProducts(): Promise<Map<string, CatalogProductLite>> 
       : null;
     const thumbnailUrl =
       p?.thumbnailUrl || p?.thumbnail_url || cmsAssetUrl(cmsProduct?.image?.id || cmsProduct?.icon?.id, assets);
-    merged.set(sku, { sku, name: p?.titleSingle || p?.name || sku, thumbnailUrl });
+    merged.set(sku, {
+      sku,
+      name: displayProductName(sku, p?.titleSingle || p?.name, cmsProduct?.productName),
+      thumbnailUrl,
+      updatedAt: p?.updatedAt || p?.createdAt || null,
+    });
   }
 
   for (const cmsProduct of Object.values(cmsProducts || {})) {
@@ -1191,7 +1270,12 @@ async function fetchCatalogProducts(): Promise<Map<string, CatalogProductLite>> 
       if (!existing.thumbnailUrl && thumbnailUrl) existing.thumbnailUrl = thumbnailUrl;
       continue;
     }
-    merged.set(sku, { sku, name: (cmsProduct as any)?.productName || sku, thumbnailUrl });
+    merged.set(sku, {
+      sku,
+      name: displayProductName(sku, null, (cmsProduct as any)?.productName),
+      thumbnailUrl,
+      updatedAt: null,
+    });
   }
   return merged;
 }
@@ -1728,6 +1812,10 @@ export async function buildProductPages(): Promise<SeoPage[]> {
         ...(productFaq && productFaq.length ? [faqLd(productFaq)] : []),
       ],
       ogType: "product",
+      // Real product photo as social preview when the catalog provides one.
+      ...(prod.thumbnailUrl ? { ogImage: prod.thumbnailUrl } : {}),
+      // Real supplier modification date → sitemap <lastmod>.
+      ...(prod.updatedAt ? { lastmod: String(prod.updatedAt).slice(0, 10) } : {}),
       keywords: productKw,
     });
   }

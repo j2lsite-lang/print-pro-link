@@ -78,7 +78,7 @@ const App = () => (
                   <Route path="/grand-format" element={<GrandFormat />} />
                   <Route path="/supports-publicitaires" element={<SupportsPublicitaires />} />
                   <Route path="/personnalisation" element={<Personnalisation />} />
-                  <Route path="/imprimerie" element={<CitiesIndex />} />
+                  <Route path="/imprimerie" element={<SeoRoute />} />
                   <Route path="/imprimerie/:slug" element={<CityPage />} />
                   {/* New SEO routes (prerendered content, shared model) */}
                   <Route path="/catalogue" element={<SeoRoute />} />
