@@ -14,6 +14,7 @@ import OptionSelector from "@/components/product/OptionSelector";
 import PriceSummary from "@/components/product/PriceSummary";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductSEOContent from "@/components/product/ProductSEOContent";
+import PRODUCT_META_RAW from "@/seo/generated/product-meta.json";
 import { useSEO } from "@/hooks/useSEO";
 
 interface ProductOption {
@@ -452,13 +453,17 @@ export default function ProductDetail() {
   // the successful price call — reused for shipping so payloads stay consistent.
   const resolvedOptionsRef = useRef<Record<string, any>>({});
 
-  const productName = product?.titleSingle || product?.name || sku || "Produit";
+  // Displayed name: identical to the prerendered (Googlebot) name.
+  const productName =
+    (sku && PRODUCT_META[sku]?.name) || product?.titleSingle || product?.name || sku || "Produit";
+  const productMetaImage = sku ? PRODUCT_META[sku]?.image : undefined;
   useSEO({
     title: `${productName} – Impression personnalisée`,
     description: product?.description
       ? product.description.slice(0, 155)
       : `Commandez ${productName} en ligne chez J2L Print. Impression professionnelle, devis gratuit et livraison partout en France.`,
     ogType: "product",
+    ogImage: productMetaImage,
   });
   useEffect(() => {
     if (!sku) return;
@@ -913,21 +918,21 @@ export default function ProductDetail() {
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <Link to="/products" className="hover:text-primary transition-colors">Catalogue</Link>
         <ChevronRight className="h-3 w-3" />
-        <span className="text-foreground">{product.titleSingle || product.name || sku}</span>
+        <span className="text-foreground">{productName}</span>
       </nav>
 
       <div className="mb-8 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
         <div className="w-full lg:w-[45%] shrink-0">
           <ProductGallery
             images={images}
-            productName={product.titleSingle || product.name || sku}
+            productName={productName}
             fallbackImage={categoryImageUrl || thumbnailUrl}
           />
         </div>
         <div className="w-full lg:w-[55%]">
           <div className="rounded-xl border border-border bg-card p-5 lg:p-6 space-y-4">
             <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
-              {product.titleSingle || product.name || sku}
+              {productName}
             </h1>
 
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -1074,7 +1079,7 @@ export default function ProductDetail() {
       <div className="h-20 lg:hidden" />
 
       <ProductSEOContent
-        productName={product.titleSingle || product.name || sku || "Produit"}
+        productName={productName}
         sku={sku}
         description={product.description}
         options={mainProps.map((p) => ({

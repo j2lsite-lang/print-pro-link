@@ -123,6 +123,17 @@ async function main() {
   writeFileSync(resolve(genDir, "products.json"), JSON.stringify(productsByPath, null, 0));
   const productSlugs = productPages.map((p) => p.path.replace(/^\/products\//, ""));
 
+  // 1b-ter. product-meta.json — sku → displayed name + image, read by the
+  //         runtime fiche produit so the visitor sees EXACTLY the name that is
+  //         prerendered for Googlebot. Never affects SKUs, prices, the
+  //         configurator, the cart or product URLs.
+  const productMeta: Record<string, { name: string; image?: string }> = {};
+  for (const p of productPages) {
+    const sku = p.path.replace(/^\/products\//, "");
+    productMeta[sku] = { name: (p.h1 || "").trim(), ...(p.ogImage ? { image: p.ogImage } : {}) };
+  }
+  writeFileSync(resolve(genDir, "product-meta.json"), JSON.stringify(productMeta, null, 0));
+
   // 1b-bis. related-products.json — a SMALL sku→complementary-links map consumed
   //         by the runtime fiche-produit (ProductSEOContent) so the visible
   //         "Produits complémentaires" block matches the prerendered HTML and
