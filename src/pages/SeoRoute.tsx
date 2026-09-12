@@ -35,6 +35,7 @@ export default function SeoRoute() {
         description={page.description}
         path={page.path}
         ogType={page.ogType}
+        ogImage={page.ogImage}
         noindex={page.noindex}
         jsonLd={page.jsonLd}
       />
