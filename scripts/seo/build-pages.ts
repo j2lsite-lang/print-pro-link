@@ -19,6 +19,7 @@ import {
 } from "../../src/seo/data/semantic-keywords";
 import { isExcludedSku } from "../../src/config/excluded-products";
 import { twinDisplayName } from "../../src/seo/data/twin-products";
+import { displayProductName } from "../../src/lib/product-name";
 import {
   loadProductAttributes, productAttributePhrases, productAttributeBullets,
   type ProductAttributes,
@@ -1138,6 +1139,8 @@ interface CatalogProductLite {
   sku: string;
   name: string;
   thumbnailUrl?: string | null;
+  /** Real supplier "updatedAt" (ISO) — drives sitemap <lastmod>. */
+  updatedAt?: string | null;
 }
 
 function cmsAssetUrl(assetId: string | undefined, assets: Record<string, any> | undefined): string | null {
@@ -1179,7 +1182,12 @@ async function fetchCatalogProducts(): Promise<Map<string, CatalogProductLite>> 
       : null;
     const thumbnailUrl =
       p?.thumbnailUrl || p?.thumbnail_url || cmsAssetUrl(cmsProduct?.image?.id || cmsProduct?.icon?.id, assets);
-    merged.set(sku, { sku, name: p?.titleSingle || p?.name || sku, thumbnailUrl });
+    merged.set(sku, {
+      sku,
+      name: displayProductName(sku, p?.titleSingle || p?.name, cmsProduct?.productName),
+      thumbnailUrl,
+      updatedAt: p?.updatedAt || p?.createdAt || null,
+    });
   }
 
   for (const cmsProduct of Object.values(cmsProducts || {})) {
@@ -1191,7 +1199,12 @@ async function fetchCatalogProducts(): Promise<Map<string, CatalogProductLite>> 
       if (!existing.thumbnailUrl && thumbnailUrl) existing.thumbnailUrl = thumbnailUrl;
       continue;
     }
-    merged.set(sku, { sku, name: (cmsProduct as any)?.productName || sku, thumbnailUrl });
+    merged.set(sku, {
+      sku,
+      name: displayProductName(sku, null, (cmsProduct as any)?.productName),
+      thumbnailUrl,
+      updatedAt: null,
+    });
   }
   return merged;
 }
