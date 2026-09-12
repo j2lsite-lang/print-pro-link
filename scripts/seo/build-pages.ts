@@ -1691,8 +1691,16 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const secBullets = sectorBullets(topSlugEarly, seed, 5);
     const evtBullets = eventBullets(topSlugEarly, seed, 3);
 
+    // Règle centrale : si aucune famille sémantique n'est détectée pour ce SKU,
+    // la description est reconstruite à partir des données RÉELLES (univers +
+    // attributs Print.com) au lieu du bloc générique.
+    const famEarly = detectFamily(name, sku);
+    const introText = famEarly ? seo.intro : realIntro(name, attrs, topSlugEarly, seed);
+    const usageText = famEarly ? seo.useCases : realUseCases(name, attrs, topSlugEarly, seed);
+
     const sections = [
-      { heading: `À quoi sert votre ${lower} ?`, paragraphs: [seo.useCases] },
+      { heading: `À quoi sert votre ${lower} ?`, paragraphs: [usageText] },
+
       // Real formats / faces / matières / finitions available for THIS product.
       ...(attrBullets.length >= 2
         ? [{ heading: "Formats et options disponibles", bullets: attrBullets }]
