@@ -12,7 +12,7 @@ export const ORGANIZATION = {
   logo: `${SITE_URL}/logo-j2l-square.png`,
   areaServed: "FR",
   description:
-    "Imprimerie en ligne : impression professionnelle et supports de communication livrés partout en France.",
+    "Imprimerie en ligne : impression professionnelle et supports de communication livrés en France.",
 };
 
 export function breadcrumbLd(items: BreadcrumbItem[]) {

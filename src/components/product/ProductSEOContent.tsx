@@ -176,7 +176,7 @@ export default function ProductSEOContent({ productName, sku, description, optio
           <Truck className="h-7 w-7 text-primary mx-auto mb-2" />
           <h3 className="font-display text-sm font-semibold text-foreground">Livraison en France</h3>
           <p className="text-xs text-muted-foreground mt-1">
-            Délai affiché lors de la configuration, expédition partout en France métropolitaine
+            Délai affiché lors de la configuration, expédition en France métropolitaine
           </p>
         </div>
         <div className="glass-card p-5 text-center">

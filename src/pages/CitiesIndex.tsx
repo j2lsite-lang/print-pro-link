@@ -37,7 +37,7 @@ export default function CitiesIndex() {
           Nos villes desservies
         </h1>
         <p className="text-muted-foreground leading-relaxed mb-10">
-          J2L Print imprime et livre vos supports de communication partout en France.
+          J2L Print imprime et livre vos supports de communication en France.
           Retrouvez ci-dessous les villes pour lesquelles nous avons préparé une page
           dédiée. Votre ville n'y figure pas&nbsp;? Nous livrons malgré tout l'ensemble
           du territoire&nbsp;: demandez simplement un devis.

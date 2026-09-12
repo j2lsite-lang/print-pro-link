@@ -20,7 +20,7 @@ export const CATEGORY_CONTENT: Record<string, CategoryContent> = {
     name: "Impression papier",
     title: "Impression papier professionnelle en ligne",
     description:
-      "Flyers, dépliants, cartes de visite, brochures et affiches imprimés sur papier de qualité, avec finitions au choix et livraison partout en France.",
+      "Flyers, dépliants, cartes de visite, brochures et affiches imprimés sur papier de qualité, avec finitions au choix et livraison en France.",
     h1: "Impression papier pour les professionnels",
     intro: [
       "L'impression papier reste le socle de toute communication d'entreprise : un flyer bien conçu, une carte de visite soignée ou une brochure structurée portent votre message bien au-delà de l'écran. J2L Print regroupe ici l'ensemble des supports papier, du tirage unitaire aux grandes séries.",

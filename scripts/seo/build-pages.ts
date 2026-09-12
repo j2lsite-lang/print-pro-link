@@ -162,7 +162,7 @@ function subcategoryFaq(entry: SemanticEntry, name: string, seed: number): { q: 
   const specific = [
     {
       q: `Peut-on commander « ${name} » en ligne ?`,
-      a: `Oui. La gamme « ${name} » se configure entièrement en ligne — format, support, finitions et quantité — puis est livrée partout en France, avec un devis gratuit sur demande.`,
+      a: `Oui. La gamme « ${name} » se configure entièrement en ligne — format, support, finitions et quantité — puis est livrée en France, avec un devis gratuit sur demande.`,
     },
   ];
   return mergeFaq([specific, pickN(entry.faq, seed, entry.faq.length)], 8);
@@ -418,7 +418,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     const blurbs = [
       "Configurez format, quantité et finitions en ligne.",
       "Prix immédiat, options sur mesure et devis gratuit.",
-      "Personnalisation en ligne et livraison partout en France.",
+      "Personnalisation en ligne et livraison en France.",
       "Choisissez vos options et obtenez votre tarif en direct.",
     ];
     return skus.slice(0, limit).map((sku, i) => ({
@@ -446,7 +446,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. Devis gratuit, nous livrons partout.",
     h1: "J2L Print — Votre imprimerie en ligne",
     intro: [
-      "J2L Print imprime tous vos supports de communication et vous livre partout en France. Configurez votre produit en ligne, validez votre fichier, recevez votre commande.",
+      "J2L Print imprime tous vos supports de communication et vous livre en France. Configurez votre produit en ligne, validez votre fichier, recevez votre commande.",
     ],
     breadcrumb: [home],
     internalLinks: [
@@ -600,7 +600,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       const subEntry: SemanticEntry = (famKey && FAMILY_KEYWORDS[famKey]) || entry || CATEGORY_KEYWORDS[slug];
       const subSeed = seedFrom(sub.slug);
       const angles = [
-        `Découvrez la sélection « ${sub.name} » de J2L Print, au sein de l'univers ${content.name}. ${cap1(subEntry.primaryKeyword)} à configurer en ligne — format, support et finitions — avec livraison partout en France.`,
+        `Découvrez la sélection « ${sub.name} » de J2L Print, au sein de l'univers ${content.name}. ${cap1(subEntry.primaryKeyword)} à configurer en ligne — format, support et finitions — avec livraison en France.`,
         `Pour vos besoins en « ${sub.name} », J2L Print propose une gamme professionnelle (${subEntry.primaryKeyword}) avec un rendu fidèle, des finitions au choix et des tarifs dégressifs.`,
         `La rubrique « ${sub.name} » regroupe nos produits ${content.name.toLowerCase()} adaptés à cet usage : ${frList(pickN(subEntry.usages, subSeed, 2).map((u) => u.toLowerCase()))}. Configurez vos options en ligne.`,
       ];
@@ -620,7 +620,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           `${sub.name} — ${content.name}`,
           `${sub.name} personnalisés | J2L Print`,
         ], 60),
-        description: `${sub.name} : impression professionnelle en ligne (${content.name.toLowerCase()}). Formats, supports et finitions au choix, devis et livraison partout en France.`,
+        description: `${sub.name} : impression professionnelle en ligne (${content.name.toLowerCase()}). Formats, supports et finitions au choix, devis et livraison en France.`,
         h1: subH1,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
@@ -747,19 +747,19 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       });
     pages.push({
       path: "/imprimerie",
-      title: "Zones desservies – Imprimerie en ligne partout en France",
+      title: "Zones desservies – Imprimerie en ligne en France",
       description:
-        `J2L Print imprime et livre partout en France : ${geo.regions.length} régions, ${geo.departments.length} départements et ${geo.cities.length} villes avec une page dédiée.`,
+        `J2L Print imprime et livre en France : ${geo.regions.length} régions, ${geo.departments.length} départements et ${geo.cities.length} villes avec une page dédiée.`,
       h1: "Zones desservies par J2L Print",
       intro: [
-        `J2L Print est une imprimerie en ligne : votre commande se configure sur le site, se fabrique chez nos imprimeurs partenaires et se livre à l'adresse de votre choix, partout en France métropolitaine.`,
+        `J2L Print est une imprimerie en ligne : votre commande se configure sur le site, se fabrique chez nos imprimeurs partenaires et se livre à l'adresse de votre choix, en France métropolitaine.`,
         `Cet annuaire regroupe l'ensemble des zones pour lesquelles nous avons préparé une page dédiée : ${geo.regions.length} régions, ${geo.departments.length} départements et ${geo.cities.length} villes. Votre commune ne figure pas dans la liste ? Nous livrons malgré tout l'ensemble du territoire : demandez un devis.`,
       ],
       breadcrumb: zoneCrumb,
       visual: {
         image: "/seo/hero-livraison.jpg",
-        imageAlt: "Livraison des commandes J2L Print partout en France",
-        keywords: ["imprimerie en ligne France", "impression livrée partout en France", "imprimeur en ligne"],
+        imageAlt: "Livraison des commandes J2L Print en France",
+        keywords: ["imprimerie en ligne France", "impression livrée en France", "imprimeur en ligne"],
       },
       sections: [
         {
@@ -1701,7 +1701,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const descVariants =
       intent === "goodie"
         ? [
-            `Commandez ${lower} personnalisé avec votre logo : coloris et options de marquage au choix. Prix immédiat, devis gratuit et livraison partout en France.`,
+            `Commandez ${lower} personnalisé avec votre logo : coloris et options de marquage au choix. Prix immédiat, devis gratuit et livraison en France.`,
             `${name} publicitaire à personnaliser selon vos besoins : configuration en ligne, tarif dégressif et livraison en France.`,
             `Besoin de ${lower} publicitaire ? Personnalisez-le en quelques clics : options sur mesure, prix transparent et devis gratuit.`,
             `${name} personnalisable avec votre logo par J2L Print. Choisissez vos options, obtenez un prix immédiat et un accompagnement dédié.`,
@@ -1709,21 +1709,21 @@ export async function buildProductPages(): Promise<SeoPage[]> {
         : intent === "textile"
         ? [
             `Commandez ${lower} personnalisé avec votre logo : tailles, coloris et marquage au choix. Prix immédiat, devis gratuit et livraison en France.`,
-            `${name} à personnaliser pour vos équipes ou vos événements : configuration en ligne, tarif dégressif et livraison partout en France.`,
+            `${name} à personnaliser pour vos équipes ou vos événements : configuration en ligne, tarif dégressif et livraison en France.`,
             `Besoin de ${lower} personnalisé ? Choisissez tailles, coloris et marquage en ligne, avec un prix transparent et un devis gratuit.`,
             `${name} personnalisé avec votre logo par J2L Print. Sélectionnez vos options, obtenez un prix immédiat et profitez d'un suivi dédié.`,
           ]
         : adRelevant
         ? [
             `Commandez ${lower} publicitaire personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat et devis gratuit.`,
-            `${name} publicitaire à personnaliser selon vos besoins : configuration en ligne, tarif dégressif et livraison partout en France.`,
+            `${name} publicitaire à personnaliser selon vos besoins : configuration en ligne, tarif dégressif et livraison en France.`,
             `Besoin de ${lower} publicitaire ? Choisissez vos options en ligne : prix transparent, devis gratuit et expédition soignée.`,
             `${name} publicitaire imprimé sur mesure par J2L Print. Sélectionnez vos options et obtenez un prix immédiat.`,
           ]
         : [
-            `Commandez ${lower} personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat, devis gratuit et livraison partout en France.`,
+            `Commandez ${lower} personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat, devis gratuit et livraison en France.`,
             `${name} de qualité professionnelle à personnaliser selon vos besoins. Configuration en ligne, tarif dégressif, fichiers vérifiés et livraison en France.`,
-            `Besoin de ${lower} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, devis gratuit et expédition soignée partout en France.`,
+            `Besoin de ${lower} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, devis gratuit et expédition soignée en France.`,
             `${name} imprimé sur mesure par J2L Print. Choisissez vos options, obtenez un prix immédiat et profitez d'un accompagnement et d'une livraison France entière.`,
           ];
     const seededTitles = [
@@ -1876,7 +1876,7 @@ export async function buildThemePages(productLabels: Record<string, string> = {}
       "Explorez nos thèmes : Écologique, Nouveautés, Hôtels & restaurants, Bureau, Saison estivale et plus. Retrouvez les produits associés à chaque thème.",
     h1: "Thèmes",
     intro: [
-      "Parcourez nos thèmes pour trouver rapidement les produits adaptés à chaque occasion et secteur. Chaque thème regroupe une sélection de supports d'impression à configurer en ligne et à recevoir partout en France.",
+      "Parcourez nos thèmes pour trouver rapidement les produits adaptés à chaque occasion et secteur. Chaque thème regroupe une sélection de supports d'impression à configurer en ligne et à recevoir en France.",
     ],
     breadcrumb: themesCrumb,
     internalLinks: [
@@ -1902,7 +1902,7 @@ export async function buildThemePages(productLabels: Record<string, string> = {}
     const desc = t.description?.trim()
       ? truncate(t.description)
       : truncate(
-          `Thème « ${t.name} » : découvrez une sélection de produits d'impression personnalisée adaptés à ${t.name.toLowerCase()}. Configuration en ligne, devis gratuit et livraison partout en France.`,
+          `Thème « ${t.name} » : découvrez une sélection de produits d'impression personnalisée adaptés à ${t.name.toLowerCase()}. Configuration en ligne, devis gratuit et livraison en France.`,
         );
     const others = themeLinks.filter((l) => l.path !== path).slice(0, 8);
     const themeSkus = (skusByTheme.get(t.id) || []).slice().sort();
@@ -1912,7 +1912,7 @@ export async function buildThemePages(productLabels: Record<string, string> = {}
     const faq = [
       {
         q: `Que contient le thème « ${t.name} » ?`,
-        a: `Le thème « ${t.name} » rassemble une sélection de produits d'impression à configurer en ligne — format, matière, finitions et quantité — livrés partout en France.`,
+        a: `Le thème « ${t.name} » rassemble une sélection de produits d'impression à configurer en ligne — format, matière, finitions et quantité — livrés en France.`,
       },
       {
         q: "Comment commander un produit du thème ?",
@@ -1930,7 +1930,7 @@ export async function buildThemePages(productLabels: Record<string, string> = {}
       description: desc,
       h1: t.name,
       intro: [
-        `Découvrez la collection « ${t.name} » de J2L Print : une sélection de supports d'impression personnalisée à configurer en ligne et à recevoir partout en France.`,
+        `Découvrez la collection « ${t.name} » de J2L Print : une sélection de supports d'impression personnalisée à configurer en ligne et à recevoir en France.`,
       ],
       breadcrumb: crumb,
       cta: themeProducts.length
@@ -1946,7 +1946,7 @@ export async function buildThemePages(productLabels: Record<string, string> = {}
                 label: l.label,
                 path: l.path,
                 icon: "Package",
-                description: `${l.label} personnalisable en ligne, livré partout en France.`,
+                description: `${l.label} personnalisable en ligne, livré en France.`,
               })),
             },
           }

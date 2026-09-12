@@ -14,7 +14,7 @@ export default function Livraison() {
         <h1 className="font-display text-3xl font-bold text-foreground mb-4">Informations de livraison</h1>
 
         <div className="glass-card overflow-hidden mb-8">
-          <img src={imgLivraison} alt="Livraison J2L Print partout en France" className="w-full h-48 md:h-56 object-cover" width={1280} height={720} />
+          <img src={imgLivraison} alt="Livraison J2L Print en France" className="w-full h-48 md:h-56 object-cover" width={1280} height={720} />
         </div>
 
         <div className="space-y-6 text-sm text-muted-foreground leading-relaxed">

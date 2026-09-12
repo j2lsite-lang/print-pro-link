@@ -11,7 +11,7 @@ import { catalogVisuals } from "@/seo/data/catalog-visuals";
 export default function ImpressionNumerique() {
   useSEO({
     title: "Impression numérique en ligne – Flyers, cartes de visite, affiches | J2L Print",
-    description: "Impression numérique professionnelle : flyers, cartes de visite, dépliants, affiches, brochures. Configuration en ligne, livraison partout en France. Devis gratuit.",
+    description: "Impression numérique professionnelle : flyers, cartes de visite, dépliants, affiches, brochures. Configuration en ligne, livraison en France. Devis gratuit.",
     ogType: "website",
   });
 
@@ -37,7 +37,7 @@ export default function ImpressionNumerique() {
             <p className="text-muted-foreground leading-relaxed">
               <strong>J2L Print</strong> vous propose un service d'impression numérique haut de gamme pour tous vos supports de communication. 
               De la carte de visite au dépliant grand tirage, vos documents sont produits avec une qualité irréprochable 
-              et livrés partout en France.
+              et livrés en France.
             </p>
           </div>
         </div>
