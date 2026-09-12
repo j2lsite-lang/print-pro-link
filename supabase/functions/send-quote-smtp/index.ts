@@ -292,20 +292,53 @@ function buildNotificationText(p: QuotePayload, signed: Record<string, string>) 
   return out.map((l) => l.replace(/[ \t]+$/g, '')).join('\n')
 }
 
-function buildConfirmationHtml(firstName: string) {
+/** Récapitulatif client : une ligne « Libellé » / valeur, uniquement si renseignée. */
+function clientRow(label: string, value: string | null | undefined) {
+  if (!value || !has(value)) return ''
+  return `<tr><td style="padding:6px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#bbbbbb;width:130px;vertical-align:top;">${esc(label)}</td><td style="padding:6px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;color:#ffffff;vertical-align:top;">${esc(value)}</td></tr>`
+}
+
+function buildConfirmationHtml(p: QuotePayload, firstName: string) {
+  const items = p.items || []
+  const first = items[0] || {}
+  const productName = items.length
+    ? items.map((i) => i.productName).filter(has).join(', ')
+    : has(p.product) ? String(p.product) : ''
+  const quantities = items
+    .map((i) => i.quantity)
+    .filter(has)
+    .map(String)
+    .join(', ')
+  const estimation = fmtMoney(p.estimatedTotalHt)
+  const hasFile = items.some((i) => has(i.fileName) || has(i.fileUrl))
+
+  const recapInner =
+    clientRow('Produit', productName) +
+    clientRow('Quantité', quantities) +
+    clientRow('Estimation', estimation) +
+    (hasFile ? clientRow('Fichier transmis', 'Oui') : '')
+  const recapBlock = recapInner
+    ? `<tr><td style="padding:0 24px 20px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:${DARK};border-radius:6px;border-left:4px solid ${YELLOW};"><tr><td style="padding:12px 16px 4px;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;letter-spacing:1px;color:${YELLOW};text-transform:uppercase;">Récapitulatif</td></tr><tr><td style="padding:6px 16px 14px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">${recapInner}</table></td></tr></table></td></tr>`
+    : ''
+
+  const greeting = has(firstName) ? `Bonjour ${esc(firstName)},` : 'Bonjour,'
   const lines = [
     '<!DOCTYPE html>',
     '<html lang="fr"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /></head>',
     '<body style="margin:0;padding:0;background:#f4f4f4;">',
     '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f4f4f4;padding:16px 0;"><tr><td align="center">',
     `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:600px;max-width:100%;background:#ffffff;border:1px solid ${BORDER};border-radius:8px;">`,
-    `<tr><td style="background:${DARK};border-radius:8px 8px 0 0;padding:18px 24px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:${YELLOW};">J2L PRINT</td></tr>`,
-    `<tr><td style="padding:20px 24px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:${DARK};">`,
-    `Bonjour ${esc(firstName || '')},<br /><br />`,
-    'Nous avons bien reçu votre demande de devis sur J2L Print.<br />',
-    'Nous allons l&#39;étudier et vous répondrons dans les meilleurs délais.<br /><br />',
+    `<tr><td style="background:${DARK};border-radius:8px 8px 0 0;padding:18px 24px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:${YELLOW};letter-spacing:.5px;">J2L PRINT</td></tr>`,
+    `<tr><td style="padding:22px 24px 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:${DARK};">`,
+    `${greeting}<br /><br />`,
+    'Merci pour votre demande. Elle a bien été enregistrée par notre équipe.',
+    '</td></tr>',
+    recapBlock,
+    `<tr><td style="padding:0 24px 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:${DARK};">`,
+    'Nous allons vérifier votre configuration, vos fichiers et le tarif. Vous recevrez une réponse personnalisée sous 48 heures ouvrées.<br /><br />',
+    'Pour toute précision, vous pouvez nous contacter au <a href="tel:+33329304479" style="color:' + DARK + ';font-weight:bold;">03 29 30 44 79</a> ou répondre directement à cet e-mail.<br /><br />',
     'Cordialement,<br />',
-    '<strong>J2L Print</strong><br />',
+    '<strong>L&#39;équipe J2L Print</strong><br />',
     `<a href="mailto:contact@j2lprint.fr" style="color:${DARK};">contact@j2lprint.fr</a><br />`,
     `<a href="${SITE_ORIGIN}" style="color:${DARK};">j2lprint.fr</a>`,
     '</td></tr>',
@@ -315,18 +348,37 @@ function buildConfirmationHtml(firstName: string) {
   return lines.map((l) => l.replace(/[ \t]+$/g, '')).join('\n')
 }
 
-const confirmationText = (firstName: string) =>
-  `Bonjour ${firstName || ''},
+function confirmationText(p: QuotePayload, firstName: string) {
+  const items = p.items || []
+  const productName = items.length
+    ? items.map((i) => i.productName).filter(has).join(', ')
+    : has(p.product) ? String(p.product) : ''
+  const quantities = items.map((i) => i.quantity).filter(has).map(String).join(', ')
+  const estimation = fmtMoney(p.estimatedTotalHt)
+  const hasFile = items.some((i) => has(i.fileName) || has(i.fileUrl))
 
-Nous avons bien reçu votre demande de devis sur J2L Print.
-
-Nous allons l'étudier et vous répondrons dans les meilleurs délais.
-
-Cordialement,
-
-J2L Print
-contact@j2lprint.fr
-https://j2lprint.fr`
+  const out: string[] = []
+  out.push(has(firstName) ? `Bonjour ${firstName},` : 'Bonjour,')
+  out.push('', 'Merci pour votre demande. Elle a bien été enregistrée par notre équipe.')
+  const recap: string[] = []
+  if (has(productName)) recap.push(`* Produit : ${productName}`)
+  if (has(quantities)) recap.push(`* Quantité : ${quantities}`)
+  if (has(estimation)) recap.push(`* Estimation : ${estimation}`)
+  if (hasFile) recap.push('* Fichier transmis : Oui')
+  if (recap.length) out.push('', 'Récapitulatif :', ...recap)
+  out.push(
+    '',
+    'Nous allons vérifier votre configuration, vos fichiers et le tarif. Vous recevrez une réponse personnalisée sous 48 heures ouvrées.',
+    '',
+    'Pour toute précision, vous pouvez nous contacter au 03 29 30 44 79 ou répondre directement à cet e-mail.',
+    '',
+    'Cordialement,',
+    "L'équipe J2L Print",
+    'contact@j2lprint.fr',
+    'https://j2lprint.fr',
+  )
+  return out.join('\n')
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
