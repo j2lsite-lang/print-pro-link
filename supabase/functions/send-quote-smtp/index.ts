@@ -417,16 +417,26 @@ Deno.serve(async (req) => {
         })
       })
 
+    const msgId = (tag: string) =>
+      `<${tag}-${crypto.randomUUID()}@j2lprint.fr>`
+
     // 1) Notification interne → contact@j2lprint.fr, Reply-To = e-mail client
+    // Expéditeur strictement aligné (en-tête From = enveloppe = compte SMTP)
+    // pour que SPF/DKIM/DMARC valident et éviter le classement en indésirables.
     await sendMail({
-      from: `${FROM_NAME} <${NOTIFY_FROM}>`,
-      sender: `${FROM_NAME} <${NOTIFY_FROM}>`,
+      from: `${FROM_NAME} <${SMTP_USER}>`,
       envelope: { from: SMTP_USER, to: EMAIL_TO },
       to: EMAIL_TO,
       replyTo: payload.email || undefined,
       subject,
-      content: buildNotificationText(payload, signed),
+      messageId: msgId('devis'),
+      date: new Date(),
+      text: buildNotificationText(payload, signed),
       html: buildNotificationHtml(payload, signed),
+      headers: {
+        'Auto-Submitted': 'auto-generated',
+        'X-Auto-Response-Suppress': 'OOF, AutoReply',
+      },
     })
 
     // 2) Accusé de réception → client (si e-mail fourni)
@@ -434,12 +444,19 @@ Deno.serve(async (req) => {
       const firstName =
         payload.firstName || (payload.name ? payload.name.split(' ')[0] : '')
       await sendMail({
-        from: `${FROM_NAME} <${EMAIL_FROM}>`,
+        from: `${FROM_NAME} <${SMTP_USER}>`,
+        envelope: { from: SMTP_USER, to: payload.email },
         to: payload.email,
         replyTo: EMAIL_TO,
         subject: 'Votre demande de devis a bien été reçue — J2L Print',
-        content: confirmationText(firstName),
+        messageId: msgId('ar'),
+        date: new Date(),
+        text: confirmationText(firstName),
         html: buildConfirmationHtml(firstName),
+        headers: {
+          'Auto-Submitted': 'auto-generated',
+          'X-Auto-Response-Suppress': 'OOF, AutoReply',
+        },
       })
     }
 
