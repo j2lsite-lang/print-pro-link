@@ -938,7 +938,7 @@ export default function ProductDetail() {
             </h1>
 
             <p className="text-sm text-muted-foreground leading-relaxed">
-              {getProductSEOData(productName, sku).intro}
+              {(sku && PRODUCT_META[sku]?.intro) || getProductSEOData(productName, sku).intro}
             </p>
 
             {product.description && (
@@ -1050,7 +1050,7 @@ export default function ProductDetail() {
           À quoi sert {productName.toLowerCase()} ?
         </h2>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          {getProductSEOData(productName, sku).useCases}
+          {(sku && PRODUCT_META[sku]?.usage) || getProductSEOData(productName, sku).useCases}
         </p>
       </div>
 

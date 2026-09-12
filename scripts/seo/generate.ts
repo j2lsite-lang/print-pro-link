@@ -127,10 +127,19 @@ async function main() {
   //         runtime fiche produit so the visitor sees EXACTLY the name that is
   //         prerendered for Googlebot. Never affects SKUs, prices, the
   //         configurator, the cart or product URLs.
-  const productMeta: Record<string, { name: string; image?: string }> = {};
+  const productMeta: Record<string, { name: string; image?: string; intro?: string; usage?: string }> = {};
   for (const p of productPages) {
     const sku = p.path.replace(/^\/products\//, "");
-    productMeta[sku] = { name: (p.h1 || "").trim(), ...(p.ogImage ? { image: p.ogImage } : {}) };
+    // intro + « à quoi sert » sont exportés pour que le visiteur lise EXACTEMENT
+    // le texte prérendu pour Googlebot (parité stricte).
+    const intro = (p.intro || [])[0];
+    const usage = (p.sections || []).find((s) => /À quoi sert/i.test(s.heading || ""))?.paragraphs?.[0];
+    productMeta[sku] = {
+      name: (p.h1 || "").trim(),
+      ...(p.ogImage ? { image: p.ogImage } : {}),
+      ...(intro ? { intro } : {}),
+      ...(usage ? { usage } : {}),
+    };
   }
   writeFileSync(resolve(genDir, "product-meta.json"), JSON.stringify(productMeta, null, 0));
 
