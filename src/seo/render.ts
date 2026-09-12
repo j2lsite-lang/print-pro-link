@@ -26,6 +26,7 @@ export function renderHead(page: SeoPage): string {
   const t = esc(fullTitle(page.title));
   const d = esc(page.description);
   const canonical = `${SITE_URL}${page.path}`;
+  const img = page.ogImage && /^https?:\/\//.test(page.ogImage) ? page.ogImage : OG_IMAGE;
   const robots = page.noindex
     ? "noindex, follow"
     : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
@@ -39,13 +40,13 @@ export function renderHead(page: SeoPage): string {
     `<meta property="og:description" content="${d}" />`,
     `<meta property="og:url" content="${canonical}" />`,
     `<meta property="og:type" content="${page.ogType || "website"}" />`,
-    `<meta property="og:image" content="${OG_IMAGE}" />`,
+    `<meta property="og:image" content="${img}" />`,
     `<meta property="og:site_name" content="${SITE_NAME}" />`,
     `<meta property="og:locale" content="fr_FR" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${t}" />`,
     `<meta name="twitter:description" content="${d}" />`,
-    `<meta name="twitter:image" content="${OG_IMAGE}" />`,
+    `<meta name="twitter:image" content="${img}" />`,
     // data-prerendered-ldjson : ces blocs sont retirés à l'hydratation par
     // <Seo> qui réinjecte exactement les mêmes schémas via Helmet.
     // Objectif : une seule occurrence de chaque schéma dans le DOM final.

@@ -1741,6 +1741,10 @@ export async function buildProductPages(): Promise<SeoPage[]> {
         ...(productFaq && productFaq.length ? [faqLd(productFaq)] : []),
       ],
       ogType: "product",
+      // Real product photo as social preview when the catalog provides one.
+      ...(prod.thumbnailUrl ? { ogImage: prod.thumbnailUrl } : {}),
+      // Real supplier modification date → sitemap <lastmod>.
+      ...(prod.updatedAt ? { lastmod: String(prod.updatedAt).slice(0, 10) } : {}),
       keywords: productKw,
     });
   }

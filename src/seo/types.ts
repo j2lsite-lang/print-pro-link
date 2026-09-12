@@ -100,6 +100,10 @@ export interface SeoPage {
   jsonLd: Record<string, unknown>[];
   noindex?: boolean;
   ogType?: string;
+  /** Absolute image URL used for og:image / twitter:image (real product photo). */
+  ogImage?: string;
+  /** Real last-modification date (YYYY-MM-DD) from the source data, for sitemaps. */
+  lastmod?: string;
   /**
    * Natural Google search expressions ("requêtes") matching this page.
    * Pure SEO metadata used by generated pages — never affects URLs, prices,
