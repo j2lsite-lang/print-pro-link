@@ -364,7 +364,6 @@ function confirmationText(p: QuotePayload, firstName: string) {
     ? items.map((i) => i.productName).filter(has).join(', ')
     : has(p.product) ? String(p.product) : ''
   const quantities = items.map((i) => i.quantity).filter(has).map(String).join(', ')
-  const estimation = fmtMoney(p.estimatedTotalHt)
   const hasFile = items.some((i) => has(i.fileName) || has(i.fileUrl))
 
   const out: string[] = []
