@@ -298,6 +298,12 @@ function clientRow(label: string, value: string | null | undefined) {
   return `<tr><td style="padding:6px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#bbbbbb;width:130px;vertical-align:top;">${esc(label)}</td><td style="padding:6px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;color:#ffffff;vertical-align:top;">${esc(value)}</td></tr>`
 }
 
+/** Ligne totale client : identique mais visuellement marquée. */
+function clientTotalRow(label: string, value: string | null | undefined) {
+  if (!value || !has(value)) return ''
+  return `<tr><td style="padding:8px 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:${YELLOW};width:130px;vertical-align:top;border-top:1px solid #333333;">${esc(label)}</td><td style="padding:8px 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:#ffffff;vertical-align:top;border-top:1px solid #333333;">${esc(value)}</td></tr>`
+}
+
 function buildConfirmationHtml(p: QuotePayload, firstName: string) {
   const items = p.items || []
   const first = items[0] || {}
