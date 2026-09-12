@@ -1741,7 +1741,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     // familles où elle est factuellement exacte (PLV, signalétique, adhésifs
     // de communication, textile, goodies) — jamais aux emballages ni aux
     // imprimés administratifs.
-    const famKey = detectFamily(name, sku);
+    const famKey = famEarly;
     const adRelevant =
       AD_UNIVERSES.has(topSlug) || (famKey ? AD_PRINT_FAMILIES.has(famKey) : false);
     const intent: "print" | "goodie" | "textile" =
@@ -1836,7 +1836,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
       if (attrs.exterieur) bits.push("usage extérieur résistant");
       return bits.length ? `Options réellement disponibles : ${frList(bits)}. Configurez le tout en ligne pour un prix immédiat.` : "";
     })() : "";
-    const productIntro = specSentence ? [seo.intro, specSentence] : [seo.intro];
+    const productIntro = specSentence ? [introText, specSentence] : [introText];
 
     // FAQ enriched with a real-formats question when we have the data.
     const productFaq = realProductFaq(name, lower, attrs, seo.faq, secBullets, evtBullets);
@@ -1880,7 +1880,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
         breadcrumbLd(crumb),
         productLd({
           name,
-          description: truncate(seo.intro, 300),
+          description: truncate(introText, 300),
           sku,
           path,
           image: prod.thumbnailUrl || null,
