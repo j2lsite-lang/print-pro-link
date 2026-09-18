@@ -288,7 +288,7 @@ function buildNotificationText(p: QuotePayload, signed: Record<string, string>) 
   if (has(addr)) out.push(`Adresse : ${addr}`)
   if (has(p.timeSlot)) out.push(`Creneau de rappel : ${p.timeSlot}`)
   out.push('', 'PRODUIT DEMANDE')
-  const items = p.items || []
+  const items = normalizeItems(p)
   if (items.length) {
     for (const it of items) {
       if (has(it.productName)) out.push(`- ${it.productName}`)
@@ -336,7 +336,7 @@ function clientTotalRow(label: string, value: string | null | undefined) {
 }
 
 function buildConfirmationHtml(p: QuotePayload, firstName: string) {
-  const items = p.items || []
+  const items = normalizeItems(p)
   const first = items[0] || {}
   const productName = items.length
     ? items.map((i) => i.productName).filter(has).join(', ')
@@ -390,7 +390,7 @@ function buildConfirmationHtml(p: QuotePayload, firstName: string) {
 }
 
 function confirmationText(p: QuotePayload, firstName: string) {
-  const items = p.items || []
+  const items = normalizeItems(p)
   const productName = items.length
     ? items.map((i) => i.productName).filter(has).join(', ')
     : has(p.product) ? String(p.product) : ''
@@ -449,10 +449,12 @@ Deno.serve(async (req) => {
 
   // ── Generate signed download links for any attached files (private bucket) ──
   const signed: Record<string, string> = {}
+  const attachments: { filename: string; content: Uint8Array }[] = []
+  let attachedBytes = 0
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
-    const paths = (payload.items || [])
+    const paths = normalizeItems(payload)
       .map((it) => it.fileUrl)
       .filter((v): v is string => !!v)
     if (supabaseUrl && serviceKey && paths.length) {
@@ -462,6 +464,24 @@ Deno.serve(async (req) => {
           .from('print-files')
           .createSignedUrl(path, 60 * 60 * 24 * 14) // 14 days
         if (data?.signedUrl) signed[path] = data.signedUrl
+
+        // Pièce jointe réelle : le fichier est téléchargé puis attaché à l'e-mail
+        // interne (limite 15 Mo cumulés pour rester acceptable par les serveurs).
+        try {
+          const { data: blob } = await supabase.storage.from('print-files').download(path)
+          if (blob) {
+            const bytes = new Uint8Array(await blob.arrayBuffer())
+            if (bytes.byteLength > 0 && attachedBytes + bytes.byteLength <= 15 * 1024 * 1024) {
+              attachedBytes += bytes.byteLength
+              attachments.push({
+                filename: path.split('/').pop() || 'fichier',
+                content: bytes,
+              })
+            }
+          }
+        } catch (err) {
+          console.error('Attachment download failed (non-blocking):', err)
+        }
       }
     }
   } catch (e) {
@@ -530,6 +550,7 @@ Deno.serve(async (req) => {
       date: new Date(),
       text: buildNotificationText(payload, signed),
       html: buildNotificationHtml(payload, signed),
+      attachments: attachments.length ? attachments : undefined,
       headers: {
         'Auto-Submitted': 'auto-generated',
         'X-Auto-Response-Suppress': 'OOF, AutoReply',
