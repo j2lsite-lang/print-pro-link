@@ -101,6 +101,22 @@ export default function Index() {
     const product = (formData.get("product") as string) || null;
     const message = (formData.get("message") as string) || null;
     const { supabase } = await import("@/integrations/supabase/client");
+
+    // Pièce jointe éventuelle : envoyée dans le bucket privé puis jointe à l'e-mail.
+    const file = (formData.get("file") as File) || null;
+    let filePath: string | null = null;
+    let fileName: string | null = null;
+    if (file && file.size > 0) {
+      const path = `quotes/${crypto.randomUUID()}-${file.name}`;
+      const { error: upErr } = await supabase.storage.from("print-files").upload(path, file);
+      if (upErr) {
+        toast({ title: "Fichier non envoyé", description: upErr.message, variant: "destructive" });
+      } else {
+        filePath = path;
+        fileName = file.name;
+      }
+    }
+
     const { error } = await supabase.from("devis_requests").insert({
       name,
       email,
@@ -120,6 +136,8 @@ export default function Index() {
             product,
             message,
             pageUrl: window.location.href,
+            fileUrl: filePath,
+            fileName,
           },
         });
       } catch (mailErr) {
@@ -507,6 +525,15 @@ export default function Index() {
                   <Label>Produit souhaité</Label>
                   <Input name="product" placeholder="Ex : 500 flyers A5" />
                 </div>
+              </div>
+              <div>
+                <Label>Fichier à imprimer (optionnel)</Label>
+                <Input
+                  name="file"
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png,.tif,.tiff,.ai,.eps"
+                  className="cursor-pointer file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1 file:text-primary-foreground file:text-xs file:font-semibold"
+                />
               </div>
               <div>
                 <Label>Message</Label>
