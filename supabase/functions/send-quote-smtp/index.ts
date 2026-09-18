@@ -33,6 +33,7 @@ const has = (v: unknown) =>
 interface QuoteItem {
   productName?: string
   sku?: string
+  productUrl?: string | null
   quantity?: number | string
   dimensions?: string
   options?: Record<string, unknown> | null
@@ -55,6 +56,9 @@ interface QuotePayload {
   city?: string
   message?: string
   pageUrl?: string
+  productUrl?: string | null
+  fileUrl?: string | null
+  fileName?: string | null
   timeSlot?: string
   subject?: string
   items?: QuoteItem[]
@@ -86,15 +90,35 @@ function block(title: string, innerHtml: string) {
 const prettyKey = (k: string) =>
   k.replace(/[_-]+/g, ' ').replace(/^\w/, (c) => c.toUpperCase())
 
-const productUrlFor = (sku?: string | null) =>
-  sku && /^[a-z0-9][a-z0-9_-]*$/i.test(String(sku))
+const productUrlFor = (sku?: string | null, explicit?: string | null) => {
+  if (explicit && /^https?:\/\//i.test(String(explicit))) return String(explicit)
+  return sku && /^[a-z0-9][a-z0-9_-]*$/i.test(String(sku))
     ? `${SITE_ORIGIN}/products/${String(sku).toLowerCase()}`
     : ''
+}
+
+/** Normalise le payload : un fichier joint envoyé à la racine devient un article. */
+function normalizeItems(p: QuotePayload): QuoteItem[] {
+  const items = [...(p.items || [])]
+  if (!items.length && (has(p.fileUrl) || has(p.fileName) || has(p.product))) {
+    items.push({
+      productName: p.product || p.subject || 'Demande',
+      productUrl: p.productUrl || null,
+      fileUrl: p.fileUrl || null,
+      fileName: p.fileName || null,
+    })
+  } else if (items.length && (has(p.fileUrl) || has(p.fileName))) {
+    if (!has(items[0].fileUrl) && !has(items[0].fileName)) {
+      items[0] = { ...items[0], fileUrl: p.fileUrl || null, fileName: p.fileName || null }
+    }
+  }
+  return items
+}
 
 function itemsHtml(items: QuoteItem[], signed: Record<string, string>) {
   return items
     .map((it) => {
-      const url = productUrlFor(it.sku)
+      const url = productUrlFor(it.sku, it.productUrl)
       const optionRows = it.options
         ? Object.entries(it.options)
             .filter(([, v]) => has(v))
@@ -156,9 +180,13 @@ function buildNotificationHtml(p: QuotePayload, signed: Record<string, string>) 
       row('Créneau de rappel', has(p.timeSlot) ? esc(p.timeSlot) : ''),
   )
 
-  const items = p.items || []
+  const items = normalizeItems(p)
   const productInner = items.length
-    ? itemsHtml(items, signed)
+    ? itemsHtml(items, signed) +
+      row(
+        'Page consultée',
+        has(p.pageUrl) ? `<a href="${esc(p.pageUrl)}" style="color:${DARK};">${esc(p.pageUrl)}</a>` : '',
+      )
     : row('Produit demandé', has(p.product) ? `<strong>${esc(p.product)}</strong>` : '') +
       row('Objet', !has(p.product) && has(p.subject) ? esc(p.subject) : '') +
       row(
@@ -184,7 +212,10 @@ function buildNotificationHtml(p: QuotePayload, signed: Record<string, string>) 
       )
     : ''
 
-  const firstUrl = items.map((i) => productUrlFor(i.sku)).find(Boolean) || (has(p.pageUrl) ? p.pageUrl! : '')
+  const firstUrl =
+    items.map((i) => productUrlFor(i.sku, i.productUrl)).find(Boolean) ||
+    (has(p.productUrl) ? String(p.productUrl) : '') ||
+    (has(p.pageUrl) ? p.pageUrl! : '')
   const buttons =
     (has(p.email)
       ? button(
@@ -257,12 +288,12 @@ function buildNotificationText(p: QuotePayload, signed: Record<string, string>) 
   if (has(addr)) out.push(`Adresse : ${addr}`)
   if (has(p.timeSlot)) out.push(`Creneau de rappel : ${p.timeSlot}`)
   out.push('', 'PRODUIT DEMANDE')
-  const items = p.items || []
+  const items = normalizeItems(p)
   if (items.length) {
     for (const it of items) {
       if (has(it.productName)) out.push(`- ${it.productName}`)
       if (has(it.sku)) out.push(`  SKU : ${it.sku}`)
-      const url = productUrlFor(it.sku)
+      const url = productUrlFor(it.sku, it.productUrl)
       if (url) out.push(`  Fiche : ${url}`)
       if (has(it.quantity)) out.push(`  Quantite : ${it.quantity}`)
       if (has(it.dimensions)) out.push(`  Format : ${it.dimensions}`)
@@ -305,7 +336,7 @@ function clientTotalRow(label: string, value: string | null | undefined) {
 }
 
 function buildConfirmationHtml(p: QuotePayload, firstName: string) {
-  const items = p.items || []
+  const items = normalizeItems(p)
   const first = items[0] || {}
   const productName = items.length
     ? items.map((i) => i.productName).filter(has).join(', ')
@@ -359,7 +390,7 @@ function buildConfirmationHtml(p: QuotePayload, firstName: string) {
 }
 
 function confirmationText(p: QuotePayload, firstName: string) {
-  const items = p.items || []
+  const items = normalizeItems(p)
   const productName = items.length
     ? items.map((i) => i.productName).filter(has).join(', ')
     : has(p.product) ? String(p.product) : ''
@@ -418,10 +449,12 @@ Deno.serve(async (req) => {
 
   // ── Generate signed download links for any attached files (private bucket) ──
   const signed: Record<string, string> = {}
+  const attachments: { filename: string; content: Uint8Array }[] = []
+  let attachedBytes = 0
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
-    const paths = (payload.items || [])
+    const paths = normalizeItems(payload)
       .map((it) => it.fileUrl)
       .filter((v): v is string => !!v)
     if (supabaseUrl && serviceKey && paths.length) {
@@ -431,6 +464,24 @@ Deno.serve(async (req) => {
           .from('print-files')
           .createSignedUrl(path, 60 * 60 * 24 * 14) // 14 days
         if (data?.signedUrl) signed[path] = data.signedUrl
+
+        // Pièce jointe réelle : le fichier est téléchargé puis attaché à l'e-mail
+        // interne (limite 15 Mo cumulés pour rester acceptable par les serveurs).
+        try {
+          const { data: blob } = await supabase.storage.from('print-files').download(path)
+          if (blob) {
+            const bytes = new Uint8Array(await blob.arrayBuffer())
+            if (bytes.byteLength > 0 && attachedBytes + bytes.byteLength <= 15 * 1024 * 1024) {
+              attachedBytes += bytes.byteLength
+              attachments.push({
+                filename: path.split('/').pop() || 'fichier',
+                content: bytes,
+              })
+            }
+          }
+        } catch (err) {
+          console.error('Attachment download failed (non-blocking):', err)
+        }
       }
     }
   } catch (e) {
@@ -499,6 +550,7 @@ Deno.serve(async (req) => {
       date: new Date(),
       text: buildNotificationText(payload, signed),
       html: buildNotificationHtml(payload, signed),
+      attachments: attachments.length ? attachments : undefined,
       headers: {
         'Auto-Submitted': 'auto-generated',
         'X-Auto-Response-Suppress': 'OOF, AutoReply',
