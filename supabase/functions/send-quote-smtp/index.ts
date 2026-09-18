@@ -33,6 +33,7 @@ const has = (v: unknown) =>
 interface QuoteItem {
   productName?: string
   sku?: string
+  productUrl?: string | null
   quantity?: number | string
   dimensions?: string
   options?: Record<string, unknown> | null
@@ -55,6 +56,9 @@ interface QuotePayload {
   city?: string
   message?: string
   pageUrl?: string
+  productUrl?: string | null
+  fileUrl?: string | null
+  fileName?: string | null
   timeSlot?: string
   subject?: string
   items?: QuoteItem[]
@@ -86,15 +90,35 @@ function block(title: string, innerHtml: string) {
 const prettyKey = (k: string) =>
   k.replace(/[_-]+/g, ' ').replace(/^\w/, (c) => c.toUpperCase())
 
-const productUrlFor = (sku?: string | null) =>
-  sku && /^[a-z0-9][a-z0-9_-]*$/i.test(String(sku))
+const productUrlFor = (sku?: string | null, explicit?: string | null) => {
+  if (explicit && /^https?:\/\//i.test(String(explicit))) return String(explicit)
+  return sku && /^[a-z0-9][a-z0-9_-]*$/i.test(String(sku))
     ? `${SITE_ORIGIN}/products/${String(sku).toLowerCase()}`
     : ''
+}
+
+/** Normalise le payload : un fichier joint envoyé à la racine devient un article. */
+function normalizeItems(p: QuotePayload): QuoteItem[] {
+  const items = [...(p.items || [])]
+  if (!items.length && (has(p.fileUrl) || has(p.fileName) || has(p.product))) {
+    items.push({
+      productName: p.product || p.subject || 'Demande',
+      productUrl: p.productUrl || null,
+      fileUrl: p.fileUrl || null,
+      fileName: p.fileName || null,
+    })
+  } else if (items.length && (has(p.fileUrl) || has(p.fileName))) {
+    if (!has(items[0].fileUrl) && !has(items[0].fileName)) {
+      items[0] = { ...items[0], fileUrl: p.fileUrl || null, fileName: p.fileName || null }
+    }
+  }
+  return items
+}
 
 function itemsHtml(items: QuoteItem[], signed: Record<string, string>) {
   return items
     .map((it) => {
-      const url = productUrlFor(it.sku)
+      const url = productUrlFor(it.sku, it.productUrl)
       const optionRows = it.options
         ? Object.entries(it.options)
             .filter(([, v]) => has(v))
@@ -156,9 +180,13 @@ function buildNotificationHtml(p: QuotePayload, signed: Record<string, string>) 
       row('Créneau de rappel', has(p.timeSlot) ? esc(p.timeSlot) : ''),
   )
 
-  const items = p.items || []
+  const items = normalizeItems(p)
   const productInner = items.length
-    ? itemsHtml(items, signed)
+    ? itemsHtml(items, signed) +
+      row(
+        'Page consultée',
+        has(p.pageUrl) ? `<a href="${esc(p.pageUrl)}" style="color:${DARK};">${esc(p.pageUrl)}</a>` : '',
+      )
     : row('Produit demandé', has(p.product) ? `<strong>${esc(p.product)}</strong>` : '') +
       row('Objet', !has(p.product) && has(p.subject) ? esc(p.subject) : '') +
       row(
@@ -184,7 +212,10 @@ function buildNotificationHtml(p: QuotePayload, signed: Record<string, string>) 
       )
     : ''
 
-  const firstUrl = items.map((i) => productUrlFor(i.sku)).find(Boolean) || (has(p.pageUrl) ? p.pageUrl! : '')
+  const firstUrl =
+    items.map((i) => productUrlFor(i.sku, i.productUrl)).find(Boolean) ||
+    (has(p.productUrl) ? String(p.productUrl) : '') ||
+    (has(p.pageUrl) ? p.pageUrl! : '')
   const buttons =
     (has(p.email)
       ? button(
@@ -262,7 +293,7 @@ function buildNotificationText(p: QuotePayload, signed: Record<string, string>) 
     for (const it of items) {
       if (has(it.productName)) out.push(`- ${it.productName}`)
       if (has(it.sku)) out.push(`  SKU : ${it.sku}`)
-      const url = productUrlFor(it.sku)
+      const url = productUrlFor(it.sku, it.productUrl)
       if (url) out.push(`  Fiche : ${url}`)
       if (has(it.quantity)) out.push(`  Quantite : ${it.quantity}`)
       if (has(it.dimensions)) out.push(`  Format : ${it.dimensions}`)
