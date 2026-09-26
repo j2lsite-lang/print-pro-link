@@ -824,8 +824,19 @@ export default function ProductDetail() {
       .filter((p) => p.options.length > 0);
   }, [product, selectedOptions]);
 
-  const mainProps = configurableProps.filter((p) => !p.isBoolean && !p.isQuantity);
-  const booleanProps = configurableProps.filter((p) => p.isBoolean);
+  // Règle globale : seuls les choix indispensables au prix restent visibles.
+  // Les propriétés à une seule option sont appliquées automatiquement (masquées).
+  const ESSENTIAL_RE = /(size|format|dimension|width|height|taille|printingmethod|printtype|printing|sides|colou?rs?|impression|recto|material|paper|papier|mati[eè]re|grammage|weight)/i;
+  const EXCLUDE_RE = /(finish|lamin|coating|pellic|vernis|fold|pli|corner|coin|packag|emball|delivery|livraison|proof|bat|perfor|drill|trou|numbering)/i;
+  const isEssential = (p: { slug: string; title: string }) => {
+    const key = `${p.slug} ${p.title}`;
+    return ESSENTIAL_RE.test(key) && !EXCLUDE_RE.test(key);
+  };
+  const choiceProps = configurableProps.filter((p) => !p.isQuantity && p.options.length > 1);
+  const mainProps = choiceProps.filter((p) => !p.isBoolean && isEssential(p));
+  const advancedSelectProps = choiceProps.filter((p) => !p.isBoolean && !isEssential(p));
+  const booleanProps = choiceProps.filter((p) => p.isBoolean);
+  const advancedCount = advancedSelectProps.length + booleanProps.length;
 
   const handleAddToCart = () => {
     if (!sku || !product) return;
@@ -1000,14 +1011,15 @@ export default function ProductDetail() {
                 />
               ))}
 
-              {booleanProps.length > 0 && (
-                <div className="space-y-3 pt-2">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">Options</h3>
-                    <div className="flex-1 h-px bg-border" />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {booleanProps.map((prop) => (
+              {advancedCount > 0 && (
+                <details className="group rounded-lg border border-border bg-card/40">
+                  <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-xs font-bold uppercase tracking-wider text-foreground">
+                    <span>Options avancées ({advancedCount})</span>
+                    <span className="text-muted-foreground transition-transform group-open:rotate-180">▾</span>
+                  </summary>
+                  <div className="space-y-5 px-4 pb-4 pt-1">
+                    <p className="text-xs text-muted-foreground">Choix les plus courants déjà présélectionnés — à modifier seulement si besoin.</p>
+                    {advancedSelectProps.map((prop) => (
                       <OptionSelector
                         key={prop.slug}
                         title={prop.title}
@@ -1020,8 +1032,25 @@ export default function ProductDetail() {
                         inputType={prop.inputType}
                       />
                     ))}
+                    {booleanProps.length > 0 && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {booleanProps.map((prop) => (
+                          <OptionSelector
+                            key={prop.slug}
+                            title={prop.title}
+                            slug={prop.slug}
+                            options={prop.options}
+                            selectedValue={selectedOptions[prop.slug] || ""}
+                            onSelect={(val) => handleOptionChange(prop.slug, val)}
+                            required={prop.required}
+                            locked={prop.locked}
+                            inputType={prop.inputType}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
+                </details>
               )}
             </div>
 
