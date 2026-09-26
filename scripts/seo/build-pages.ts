@@ -530,8 +530,8 @@ export async function buildAllPages(): Promise<SeoPage[]> {
 
     pages.push({
       path: `/categorie/${slug}`,
-      title: fitTitle(content.name, [content.title, `${content.name} personnalisés | J2L Print`], 60),
-      description: content.description,
+      title: fitTitle(content.name, [`${content.name} : impression en ligne et devis`, content.title, `${content.name} en ligne`], 60),
+      description: catMetaDescription(content.name, content.description, subs.map((x) => x.name)),
       h1: content.h1,
       intro: content.intro,
       breadcrumb: crumb,
@@ -616,11 +616,12 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       pages.push({
         path: `/categorie/${slug}/${sub.slug}`,
         title: fitTitle(sub.name, [
-          `${sub.name} — ${content.name} | J2L Print`,
-          `${sub.name} — ${content.name}`,
-          `${sub.name} personnalisés | J2L Print`,
+          `${sub.name} : impression en ligne – ${content.name}`,
+          `${sub.name} : impression et devis en ligne`,
+          `${sub.name} – ${content.name}`,
+          `${sub.name} en ligne`,
         ], 60),
-        description: `${sub.name} : impression professionnelle en ligne (${content.name.toLowerCase()}). Formats, supports et finitions au choix, devis et livraison en France.`,
+        description: subMetaDescription(sub.name, content.name, skusByCatId.get(sub.id) || []),
         h1: subH1,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
@@ -1548,6 +1549,38 @@ const AD_PRINT_FAMILIES = new Set([
   "flyer", "affiche", "brochure", "roll-up", "banner", "panneau", "adhesif",
 ]);
 
+/** Meta produit factuelle : nom API + options réelles + promesse vérifiée. */
+function productMetaDescription(name: string, attrs: ProductAttributes | undefined, intent: string): string {
+  if (!attrs) return "";
+  const bits: string[] = [];
+  if (attrs.formats.length) bits.push(`format${attrs.formats.length > 1 ? "s" : ""} ${attrs.formats.slice(0, 3).join(", ")}`);
+  if (attrs.faces.includes("recto verso")) bits.push("recto ou recto verso");
+  if (attrs.pelliculage.length) bits.push(`pelliculage ${attrs.pelliculage.slice(0, 2).join(", ")}`);
+  if (attrs.dorure) bits.push("dorure");
+  if (attrs.exterieur) bits.push("usage extérieur");
+  if (!bits.length) return "";
+  const verb = intent === "print" ? "à imprimer" : "à personnaliser avec votre logo";
+  return `${name} ${verb} : ${bits.join(", ")}. Prix affiché en ligne, devis gratuit et livraison en France.`;
+}
+
+/** Meta sous-catégorie : produits API réels rattachés (nombre + exemples). */
+function subMetaDescription(subName: string, catName: string, skus: string[]): string {
+  const names = skus.map((s) => catalog.get(s)?.name).filter(Boolean).slice(0, 3) as string[];
+  const n = skus.length;
+  const base = n
+    ? `${subName} : ${n} produit${n > 1 ? "s" : ""} à configurer en ligne${names.length ? ` (${names.join(", ")})` : ""}.`
+    : `${subName} : impression professionnelle en ligne (${catName.toLowerCase()}).`;
+  const full = `${base} Prix affiché, devis gratuit, livraison en France.`;
+  return full.length <= 158 ? full : truncate(`${subName} : ${n} produit${n > 1 ? "s" : ""} à configurer en ligne. Prix affiché, devis gratuit, livraison en France.`, 158);
+}
+
+/** Meta catégorie : description éditoriale + sous-rubriques réelles si place. */
+function catMetaDescription(catName: string, desc: string, subs: string[]): string {
+  const withSubs = `${catName} : ${subs.slice(0, 3).join(", ").toLowerCase()} et plus. Prix affiché en ligne, devis gratuit, livraison en France.`;
+  if (subs.length && withSubs.length <= 158) return withSubs;
+  return truncate(desc, 158);
+}
+
 function truncate(s: string, max = 158): string {
 
   const clean = s.replace(/\s+/g, " ").trim();
@@ -1805,16 +1838,29 @@ export async function buildProductPages(): Promise<SeoPage[]> {
             `Besoin de ${lower} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, devis gratuit et expédition soignée en France.`,
             `${name} imprimé sur mesure par J2L Print. Choisissez vos options, obtenez un prix immédiat et profitez d'un accompagnement et d'une livraison France entière.`,
           ];
-    const seededTitles = [
-      titleVariants[seed % titleVariants.length],
-      ...[...titleVariants].sort((a, b) => a.length - b.length),
-      `${name} personnalisé | J2L Print`,
-    ];
+    // Règle globale : nom API exact en tête + spécification réelle (1er format
+    // API) + intention d'achat. Plus de « pas cher » ni d'accord de genre faux.
+    const spec = attrs && attrs.formats.length ? attrs.formats[0] : "";
+    const parentName = [...crumb].reverse().find((c) => c.path.startsWith("/categorie/"))?.name || "";
+    const intentTitles =
+      intent === "goodie"
+        ? [`${name} avec logo – Objet publicitaire`, `${name} avec logo`]
+        : intent === "textile"
+        ? [`${name} avec logo – Marquage textile`, `${name} avec logo`]
+        : [
+            ...(spec ? [`${name} ${spec} – Impression en ligne`] : []),
+            ...(parentName ? [`${name} – Impression en ligne, ${parentName}`] : []),
+            `${name} – Impression en ligne`,
+            `Impression ${name} en ligne`,
+          ];
+    const seededTitles = [...intentTitles, name];
     const title = fitTitle(name, seededTitles, 60);
     // Meta description : on choisit la 1re variante dont la version tronquée
     // reste dans la fenêtre SERP utile (90–158 car.) — évite les snippets
     // trop courts qui plombent le CTR.
+    const factualDesc = productMetaDescription(name, attrs, intent);
     const descCandidates = [
+      ...(factualDesc ? [factualDesc] : []),
       descVariants[seed % descVariants.length],
       ...descVariants,
     ];
