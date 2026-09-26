@@ -4,7 +4,7 @@
 // `vite build` (writeBundle) so it executes on every Lovable publish.
 // Fully defensive: never throws, so a content issue can't break the build.
 import type { Plugin } from "vite";
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "fs";
 import { resolve, dirname } from "path";
 import { injectIntoShell } from "../../src/seo/render";
 import type { SeoPage } from "../../src/seo/types";
@@ -34,7 +34,16 @@ export function prerenderPlugin(): Plugin {
         const themes: Record<string, SeoPage> = existsSync(themesPath)
           ? (JSON.parse(readFileSync(themesPath, "utf8")) as Record<string, SeoPage>)
           : {};
-        const allPages = [...Object.values(byPath), ...Object.values(products), ...Object.values(themes)];
+        const localPages: SeoPage[] = [];
+        const localDir = resolve("public/seo-local");
+        if (existsSync(localDir)) {
+          for (const scope of readdirSync(localDir)) {
+            for (const f of readdirSync(resolve(localDir, scope))) {
+              localPages.push(...Object.values(JSON.parse(readFileSync(resolve(localDir, scope, f), "utf8")) as Record<string, SeoPage>));
+            }
+          }
+        }
+        const allPages = [...localPages, ...Object.values(byPath), ...Object.values(products), ...Object.values(themes)];
         let count = 0;
         for (const page of allPages) {
           if (page.path === "/") {
@@ -48,7 +57,7 @@ export function prerenderPlugin(): Plugin {
           writeFileSync(file, injectIntoShell(shell, page));
           count++;
         }
-        console.log(`[prerender] wrote ${count} static HTML pages (${Object.keys(products).length} products, ${Object.keys(themes).length} themes)`);
+        console.log(`[prerender] wrote ${count} static HTML pages (${Object.keys(products).length} products, ${Object.keys(themes).length} themes, ${localPages.length} local)`);
       } catch (err) {
         console.warn("[prerender] skipped due to error:", (err as Error).message);
       }
