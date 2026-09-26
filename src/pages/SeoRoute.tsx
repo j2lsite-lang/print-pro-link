@@ -1,4 +1,5 @@
 import { useLocation, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   FileText, CreditCard, Image as ImageIcon, Flag, Gift, Shirt,
   LayoutPanelTop, Sticker, ArrowRight, ExternalLink, type LucideIcon,
@@ -24,7 +25,21 @@ const ICONS: Record<string, LucideIcon> = {
  */
 export default function SeoRoute() {
   const { pathname } = useLocation();
-  const page = PAGES[pathname] || PAGES[pathname.replace(/\/$/, "")];
+  const clean = pathname.replace(/\/$/, "");
+  const localMatch = clean.match(/^\/(ville|departement|region)\/([^/]+)\/[^/]+$/);
+  const [local, setLocal] = useState<{ key: string; pages: Record<string, SeoPage> | null } | null>(null);
+  const localKey = localMatch ? `${localMatch[1]}/${localMatch[2]}` : null;
+  useEffect(() => {
+    if (!localKey || local?.key === localKey) return;
+    let off = false;
+    fetch(`/seo-local/${localKey}.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null)
+      .then((pages) => { if (!off) setLocal({ key: localKey, pages }); });
+    return () => { off = true; };
+  }, [localKey, local?.key]);
+  const page = PAGES[pathname] || PAGES[clean] || (local?.key === localKey ? local?.pages?.[clean] : undefined);
+  if (localKey && local?.key !== localKey) return <div className="min-h-[60vh]" />;
   if (!page) return <NotFound />;
   const linkGroups = page.internalLinks || [];
 
