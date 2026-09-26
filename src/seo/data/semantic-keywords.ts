@@ -46,7 +46,7 @@ export interface SemanticEntry {
 
 /** Shared, reusable vocabulary pools (referenced, not dumped, per page). */
 export const COMMERCIAL_VOCAB = [
-  "personnaliser", "configurer", "commander", "prix", "devis gratuit",
+  "personnaliser", "configurer", "commander", "prix", "prix affiché en ligne",
   "impression en ligne", "fabrication", "impression professionnelle",
   "impression personnalisée", "avec logo", "petite quantité", "grande quantité",
   "sur mesure", "livraison", "fichier d'impression", "BAT", "recto verso",
@@ -122,7 +122,7 @@ export const CATEGORY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["papier couché", "papier offset", "papier recyclé", "papier création"],
     formats: ["A7", "A6", "A5", "A4", "A3", "carré", "format DL"],
     finitions: ["pelliculage mat", "pelliculage brillant", "vernis sélectif", "coins arrondis", "dorure à chaud"],
-    commercialIntents: ["devis gratuit", "petite quantité", "grande quantité", "recto verso", "BAT"],
+    commercialIntents: ["prix affiché en ligne", "petite quantité", "grande quantité", "recto verso", "BAT"],
     faq: [
       { q: "Quel grammage choisir pour des flyers ?", a: "Pour une distribution, un papier 135 à 170 g/m² offre un bon équilibre coût/tenue. Pour un document premium, optez pour 250 à 350 g/m²." },
       { q: "Puis-je commander une petite quantité ?", a: "Oui, de nombreux produits papier sont disponibles dès de faibles quantités, le prix unitaire diminuant à mesure que le tirage augmente." },
@@ -131,7 +131,7 @@ export const CATEGORY_KEYWORDS: Record<string, SemanticEntry> = {
       { q: "Peut-on imprimer en recto verso ?", a: "Oui, la plupart des supports papier s'impriment en recto seul ou recto verso selon votre maquette." },
       { q: "Mes fichiers sont-ils vérifiés avant impression ?", a: "Oui, un contrôle des fichiers PDF (résolution, fonds perdus, mode colorimétrique) est réalisé avant chaque production." },
       { q: "Proposez-vous des papiers recyclés ?", a: "Oui, plusieurs supports sont disponibles en papier recyclé ou certifié pour une démarche plus responsable." },
-      { q: "Comment obtenir un devis ?", a: "Configurez votre produit en ligne pour un prix immédiat, ou décrivez votre besoin via le formulaire de devis gratuit." },
+      { q: "Comment obtenir un devis ?", a: "Configurez votre produit en ligne pour un prix immédiat, ou décrivez votre besoin via le formulaire de prix affiché en ligne." },
     ],
     complementary: ["objets-publicitaires-cadeaux", "etiquettes-stickers", "emballages-sacs"],
     anchors: ["impression papier professionnelle", "flyers et dépliants", "cartes de visite premium", "brochures et catalogues"],
@@ -161,7 +161,7 @@ export const CATEGORY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["bâche PVC", "panneau Dibond", "panneau Akilux", "vinyle adhésif"],
     formats: ["formats sur mesure", "grand format", "très grand format"],
     finitions: ["œillets", "ourlets renforcés", "fourreaux", "micro-perforation"],
-    commercialIntents: ["sur mesure", "devis gratuit", "livraison", "fabrication"],
+    commercialIntents: ["sur mesure", "prix affiché en ligne", "livraison", "fabrication"],
     faq: [
       { q: "Les bâches résistent-elles à la pluie ?", a: "Oui, le PVC et les encres utilisées sont conçus pour un usage extérieur prolongé, sous la pluie comme au soleil." },
       { q: "Comment fixer un panneau ou une bâche ?", a: "Les bâches sont livrées avec œillets pour tendeurs ou colliers ; les panneaux rigides se vissent ou se posent sur structure." },
@@ -199,7 +199,7 @@ export const CATEGORY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["toile polyester", "carton PLV", "papier couché", "structure aluminium"],
     formats: ["85x200 cm", "100x200 cm", "formats stand", "A1", "A0"],
     finitions: ["enrouleur avec housse", "structure réutilisable", "montage sans outil"],
-    commercialIntents: ["réutilisable", "montage rapide", "devis gratuit", "personnalisée"],
+    commercialIntents: ["réutilisable", "montage rapide", "prix affiché en ligne", "personnalisée"],
     faq: [
       { q: "Un roll-up est-il réutilisable ?", a: "Oui, l'enrouleur se déploie et se range en quelques secondes ; seule la toile imprimée peut éventuellement être remplacée." },
       { q: "Quelle résolution pour une affiche intérieure ?", a: "Visez 150 dpi à taille réelle pour un rendu net en lecture rapprochée." },
@@ -273,14 +273,14 @@ export const CATEGORY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["papier kraft", "papier couché", "carton", "non-tissé", "matières recyclées"],
     formats: ["petit", "moyen", "grand", "format sur mesure"],
     finitions: ["poignées torsadées", "poignées plates", "pelliculage mat", "impression recto/verso"],
-    commercialIntents: ["à votre marque", "sur mesure", "devis gratuit", "grande quantité"],
+    commercialIntents: ["à votre marque", "sur mesure", "prix affiché en ligne", "grande quantité"],
     faq: [
       { q: "Quel sac choisir pour une boutique ?", a: "Un sac papier kraft à poignées torsadées offre une bonne tenue ; le pelliculage mat apporte une finition premium." },
       { q: "Peut-on imprimer sur les deux faces ?", a: "Oui, l'impression recto/verso permet d'exploiter toute la surface du sac ou de la boîte." },
       { q: "Proposez-vous des emballages écologiques ?", a: "Oui, des matières recyclées et recyclables sont disponibles pour une démarche plus responsable." },
       { q: "Quel emballage pour la vente à emporter ?", a: "Des sacs et boîtes adaptés au transport alimentaire valorisent votre marque tout en restant pratiques." },
       { q: "À partir de quelle quantité commander ?", a: "Les emballages se commandent généralement par lots, avec un coût unitaire dégressif selon le volume." },
-      { q: "Comment obtenir un devis personnalisé ?", a: "Décrivez votre besoin (dimensions, matière, quantité) dans le formulaire de devis gratuit." },
+      { q: "Comment obtenir un devis personnalisé ?", a: "Décrivez votre besoin (dimensions, matière, quantité) dans le formulaire de prix affiché en ligne." },
     ],
     complementary: ["etiquettes-stickers", "impression-papier", "objets-publicitaires-cadeaux"],
     anchors: ["sacs papier personnalisés", "boîtes et coffrets", "emballages à votre marque", "packaging sur mesure"],
@@ -317,7 +317,7 @@ export const CATEGORY_KEYWORDS: Record<string, SemanticEntry> = {
       { q: "Quel objet pour un salon professionnel ?", a: "Privilégiez un objet utile et durable (mug, gourde, tote bag) : il reste sous les yeux du destinataire longtemps." },
       { q: "Peut-on recevoir un échantillon ?", a: "Selon les modèles, un échantillon ou un BAT peut être réalisé avant le lancement de la production." },
       { q: "Proposez-vous des objets éco-responsables ?", a: "Oui, des objets réutilisables et en matières recyclées sont disponibles pour une communication plus durable." },
-      { q: "Comment obtenir un devis goodies ?", a: "Décrivez votre projet (objet, quantité, marquage) dans le formulaire de devis gratuit." },
+      { q: "Comment obtenir un devis goodies ?", a: "Décrivez votre projet (objet, quantité, marquage) dans le formulaire de prix affiché en ligne." },
     ],
     complementary: ["textiles-accessoires", "emballages-sacs", "impression-papier"],
     anchors: ["mugs et gourdes", "tote bags publicitaires", "cadeaux d'entreprise", "goodies de salon"],
@@ -384,14 +384,14 @@ export const CATEGORY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["Dibond", "Akilux", "PVC", "vinyle adhésif", "toile polyester"],
     formats: ["A4", "A2", "A0", "grand format", "format sur mesure"],
     finitions: ["perçage de fixation", "angles arrondis", "pelliculage anti-UV", "châssis bois"],
-    commercialIntents: ["sur mesure", "devis gratuit", "fabrication", "livraison"],
+    commercialIntents: ["sur mesure", "prix affiché en ligne", "fabrication", "livraison"],
     faq: [
       { q: "Quelle différence entre Dibond et Akilux ?", a: "Le Dibond est un panneau aluminium rigide et durable, idéal pour une signalétique pérenne ; l'Akilux, alvéolaire et plus léger, convient aux usages temporaires." },
       { q: "Le vinyle s'enlève-t-il sans trace ?", a: "Les adhésifs monomères s'enlèvent facilement pour une pose courte ; un vinyle coulé est plus adapté à une pose longue durée." },
       { q: "Peut-on imprimer un panneau recto-verso ?", a: "Oui, sur Dibond et Forex notamment, idéal pour les panneaux suspendus visibles des deux côtés." },
       { q: "Quel support pour l'extérieur ?", a: "Privilégiez des matières et encres résistantes aux UV ; le Dibond et la bâche PVC sont adaptés à un usage extérieur prolongé." },
       { q: "Proposez-vous le covering de véhicule ?", a: "Le vinyle adhésif permet l'habillage partiel ou total de véhicule à partir de votre fichier vectoriel." },
-      { q: "Comment obtenir un devis grand format ?", a: "Indiquez vos dimensions et le support souhaité dans le formulaire de devis gratuit." },
+      { q: "Comment obtenir un devis grand format ?", a: "Indiquez vos dimensions et le support souhaité dans le formulaire de prix affiché en ligne." },
     ],
     complementary: ["publicite-exterieure", "publicite-interieure", "etiquettes-stickers"],
     anchors: ["panneaux rigides", "bâches grand format", "adhésifs vinyle", "toiles décoratives"],
@@ -466,7 +466,7 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["papier couché", "papier photo satiné", "papier mat"],
     formats: ["A3", "A2", "A1", "A0", "format sur mesure"],
     finitions: ["pelliculage anti-UV", "contrecollage", "format affichage"],
-    commercialIntents: ["sur mesure", "grand format", "devis gratuit", "petite quantité"],
+    commercialIntents: ["sur mesure", "grand format", "prix affiché en ligne", "petite quantité"],
     faq: [
       { q: "Quelle différence entre affiche intérieure et extérieure ?", a: "Les affiches intérieures sont sur papier couché classique ; pour l'extérieur, des supports résistants à l'eau et aux UV sont utilisés." },
       { q: "Puis-je imprimer une photo en poster grand format ?", a: "Oui, envoyez votre photo en haute résolution pour une impression nette jusqu'aux grands formats." },
@@ -503,7 +503,7 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["papier couché 350 g", "papier création", "papier coton", "papier recyclé"],
     formats: ["85x55 mm", "carré", "format sur mesure"],
     finitions: ["pelliculage mat", "pelliculage soft touch", "vernis sélectif", "coins arrondis", "dorure à chaud"],
-    commercialIntents: ["premium", "recto verso", "avec logo", "devis gratuit"],
+    commercialIntents: ["premium", "recto verso", "avec logo", "prix affiché en ligne"],
     faq: [
       { q: "Quel papier pour une carte de visite premium ?", a: "Le papier 350 g/m² avec pelliculage soft touch et vernis sélectif offre un rendu luxueux ; le coton épais est idéal pour un style épuré." },
       { q: "La carte peut-elle être recto verso ?", a: "Oui, le recto verso permet d'ajouter coordonnées, logo ou QR code au dos." },
@@ -542,7 +542,7 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["papier couché", "papier offset", "papier recyclé"],
     formats: ["A6", "A5", "A4", "DL", "carré"],
     finitions: ["piqûre à cheval", "dos carré collé", "pli roulé", "pli accordéon", "pelliculage"],
-    commercialIntents: ["sur mesure", "devis gratuit", "petite quantité", "grande quantité"],
+    commercialIntents: ["sur mesure", "prix affiché en ligne", "petite quantité", "grande quantité"],
     faq: [
       { q: "Quelle reliure choisir pour une brochure ?", a: "La piqûre à cheval convient aux faibles paginations ; le dos carré collé donne un rendu livre sur les documents plus épais." },
       { q: "Quels types de pliage proposez-vous ?", a: "Selon le produit : pli roulé, accordéon, portefeuille ou économique, pour dépliants et plaquettes." },
@@ -580,7 +580,7 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["bâche PVC", "bâche micro-perforée", "maille mesh"],
     formats: ["format sur mesure", "grand format"],
     finitions: ["œillets", "ourlets renforcés", "fourreaux"],
-    commercialIntents: ["sur mesure", "devis gratuit", "grand format", "fabrication"],
+    commercialIntents: ["sur mesure", "prix affiché en ligne", "grand format", "fabrication"],
     faq: [
       { q: "Ma banderole résiste-t-elle à la pluie et au vent ?", a: "Oui, les bâches PVC sont conçues pour un usage extérieur prolongé ; pour les zones très ventées, optez pour une bâche micro-perforée." },
       { q: "Quelles finitions de fixation proposez-vous ?", a: "Œillets métalliques, ourlets renforcés et fourreaux selon le mode de pose souhaité." },
@@ -617,7 +617,7 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["toile polyester anti-reflet", "film polypropylène", "structure aluminium"],
     formats: ["85x200 cm", "100x200 cm", "formats stand"],
     finitions: ["enrouleur avec housse", "structure réutilisable", "toile remplaçable"],
-    commercialIntents: ["réutilisable", "personnalisé", "devis gratuit", "montage rapide"],
+    commercialIntents: ["réutilisable", "personnalisé", "prix affiché en ligne", "montage rapide"],
     faq: [
       { q: "Quelle est la durée de vie d'un roll-up ?", a: "Avec une utilisation régulière, un roll-up dure en moyenne 3 à 5 ans grâce à des encres résistantes." },
       { q: "Puis-je changer la toile de mon roll-up ?", a: "Oui, la plupart des modèles permettent de remplacer la toile tout en conservant la structure." },
@@ -654,7 +654,7 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["vinyle monomère", "vinyle polymère", "vinyle transparent", "film micro-perforé"],
     formats: ["découpe à la forme", "format sur mesure", "planche", "rouleau"],
     finitions: ["pelliculage anti-UV", "adhésif permanent", "adhésif repositionnable", "découpe numérique"],
-    commercialIntents: ["sur mesure", "avec logo", "petite quantité", "devis gratuit"],
+    commercialIntents: ["sur mesure", "avec logo", "petite quantité", "prix affiché en ligne"],
     faq: [
       { q: "Quelle est la durée de vie d'un adhésif extérieur ?", a: "Un vinyle polymère avec pelliculage dure 5 à 7 ans en extérieur ; un vinyle monomère offre 1 à 3 ans." },
       { q: "L'adhésif est-il repositionnable ?", a: "Des vinyles à colle repositionnable existent pour les usages temporaires, et à colle permanente pour les poses durables." },
@@ -693,7 +693,7 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["Dibond", "Forex", "Akilux", "Plexiglas", "carton plume"],
     formats: ["A4", "A2", "A0", "grand format", "format sur mesure"],
     finitions: ["perçage de fixation", "angles arrondis", "découpe sur mesure", "impression recto-verso"],
-    commercialIntents: ["sur mesure", "devis gratuit", "fabrication", "extérieur"],
+    commercialIntents: ["sur mesure", "prix affiché en ligne", "fabrication", "extérieur"],
     faq: [
       { q: "Quel support choisir pour un usage extérieur ?", a: "Le Dibond (aluminium composite) est la référence extérieure : rigide, léger et résistant ; l'Akilux est économique pour un usage temporaire." },
       { q: "Comment fixer mon panneau ?", a: "Vis et chevilles (pré-perçage possible), entretoises, rails de fixation ou adhésif double-face selon le support." },
@@ -878,7 +878,7 @@ export const FAMILY_KEYWORDS: Record<string, SemanticEntry> = {
     materials: ["papier couché", "papier plastifié", "papier recyclé"],
     formats: ["A4", "A5", "DL", "format sur mesure"],
     finitions: ["pelliculage protecteur", "recto verso", "pli central"],
-    commercialIntents: ["sur mesure", "devis gratuit", "recto verso", "petite quantité"],
+    commercialIntents: ["sur mesure", "prix affiché en ligne", "recto verso", "petite quantité"],
     faq: [
       { q: "Peut-on plastifier un menu pour le protéger ?", a: "Oui, un pelliculage protecteur prolonge la durée de vie d'un menu manipulé fréquemment." },
       { q: "Quels formats pour une carte de restaurant ?", a: "Les formats A4, A5 et DL sont courants, avec des formats sur mesure selon le produit." },

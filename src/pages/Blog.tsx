@@ -43,7 +43,7 @@ const posts = [
     slug: "impression-flyers-reussie",
     title: "Réussir l'impression de vos flyers : guide complet",
     excerpt: "Format, grammage, quantité, distribution : tout ce qu'il faut savoir pour des flyers efficaces.",
-    content: `Le flyer reste un outil de communication puissant quand il est bien conçu. Choisissez le bon **format** : A5 pour un tract généraliste, A6 ou DL pour une distribution en boîtes aux lettres. Le **grammage** recommandé est de 135g/m² pour un bon rapport qualité/prix, ou 250g/m² avec pelliculage pour un rendu premium. Côté **impression**, privilégiez le recto-verso pour maximiser votre message. J2L Print propose l'impression de flyers dans les quantités disponibles au configurateur, avec livraison en France. Demandez un **devis gratuit** en ligne.`,
+    content: `Le flyer reste un outil de communication puissant quand il est bien conçu. Choisissez le bon **format** : A5 pour un tract généraliste, A6 ou DL pour une distribution en boîtes aux lettres. Le **grammage** recommandé est de 135g/m² pour un bon rapport qualité/prix, ou 250g/m² avec pelliculage pour un rendu premium. Côté **impression**, privilégiez le recto-verso pour maximiser votre message. J2L Print propose l'impression de flyers dans les quantités disponibles au configurateur, avec livraison en France. Demandez un **prix affiché en ligne** en ligne.`,
     date: "2025-08-28",
     tag: "Conseils",
     links: ["/products", "/#devis"],
@@ -127,7 +127,7 @@ export default function Blog() {
               <ArrowRight className="h-3 w-3 text-primary" /> Catalogue complet de produits
             </Link>
             <Link to="/#devis" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
-              <ArrowRight className="h-3 w-3 text-primary" /> Demande de devis gratuit
+              <ArrowRight className="h-3 w-3 text-primary" /> Demande de prix affiché en ligne
             </Link>
             <Link to="/livraison" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
               <ArrowRight className="h-3 w-3 text-primary" /> Informations livraison
