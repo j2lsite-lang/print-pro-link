@@ -530,7 +530,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
 
     pages.push({
       path: `/categorie/${slug}`,
-      title: fitTitle(content.name, [`${content.name} : impression en ligne et devis`, content.title, `${content.name} en ligne`], 60),
+      title: fitTitle(content.name, [`${content.name} sur mesure : prix et devis en ligne`, content.title, `${content.name} en ligne`], 60),
       description: catMetaDescription(content.name, content.description, subs.map((x) => x.name)),
       h1: content.h1,
       intro: content.intro,
@@ -1559,6 +1559,7 @@ function productMetaDescription(name: string, attrs: ProductAttributes | undefin
   if (attrs.dorure) bits.push("dorure");
   if (attrs.exterieur) bits.push("usage extérieur");
   if (!bits.length) return "";
+  bits.splice(3);
   const verb = intent === "print" ? "à imprimer" : "à personnaliser avec votre logo";
   return `${name} ${verb} : ${bits.join(", ")}. Prix affiché en ligne, devis gratuit et livraison en France.`;
 }
@@ -1840,7 +1841,9 @@ export async function buildProductPages(): Promise<SeoPage[]> {
           ];
     // Règle globale : nom API exact en tête + spécification réelle (1er format
     // API) + intention d'achat. Plus de « pas cher » ni d'accord de genre faux.
-    const spec = attrs && attrs.formats.length ? attrs.formats[0] : "";
+    const spec = attrs && attrs.formats.length
+      ? (["A5", "A4", "A6", "DL", "A3"].map((f) => attrs.formats.find((x) => x === f)).find(Boolean) || attrs.formats[0])
+      : "";
     const parentName = [...crumb].reverse().find((c) => c.path.startsWith("/categorie/"))?.name || "";
     const intentTitles =
       intent === "goodie"
@@ -1854,16 +1857,21 @@ export async function buildProductPages(): Promise<SeoPage[]> {
             `Impression ${name} en ligne`,
           ];
     const seededTitles = [...intentTitles, name];
-    const title = fitTitle(name, seededTitles, 60);
+    const dedupe = (x: string) => x
+      .replace(/\b(personnalisée?s?)\s+personnalisée?s?\b/gi, "$1")
+      .replace(/\b(publicitaires?)\s+publicitaires?\b/gi, "$1")
+      .replace(/\b(\p{L}+)\s+\1\b/giu, "$1");
+    const title = dedupe(fitTitle(name, seededTitles, 60));
     // Meta description : on choisit la 1re variante dont la version tronquée
     // reste dans la fenêtre SERP utile (90–158 car.) — évite les snippets
     // trop courts qui plombent le CTR.
     const factualDesc = productMetaDescription(name, attrs, intent);
-    const descCandidates = [
+    const descCandidates0 = [
       ...(factualDesc ? [factualDesc] : []),
       descVariants[seed % descVariants.length],
       ...descVariants,
     ];
+    const descCandidates = descCandidates0.map(dedupe);
     const description =
       descCandidates
         .map((d) => truncate(d, 158))
