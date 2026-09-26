@@ -1553,7 +1553,9 @@ const AD_PRINT_FAMILIES = new Set([
 function productMetaDescription(name: string, attrs: ProductAttributes | undefined, intent: string): string {
   if (!attrs) return "";
   const bits: string[] = [];
-  if (attrs.formats.length) bits.push(`format${attrs.formats.length > 1 ? "s" : ""} ${attrs.formats.slice(0, 3).join(", ")}`);
+  const pref = ["A5", "A4", "A6", "DL", "A3"];
+  const fmts = [...attrs.formats].sort((a, b) => (pref.indexOf(a) + 1 || 99) - (pref.indexOf(b) + 1 || 99));
+  if (fmts.length) bits.push(`format${fmts.length > 1 ? "s" : ""} ${fmts.slice(0, 3).join(", ")}`);
   if (attrs.faces.includes("recto verso")) bits.push("recto ou recto verso");
   if (attrs.pelliculage.length) bits.push(`pelliculage ${attrs.pelliculage.slice(0, 2).join(", ")}`);
   if (attrs.dorure) bits.push("dorure");
