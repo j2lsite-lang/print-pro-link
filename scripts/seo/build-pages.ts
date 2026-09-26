@@ -621,7 +621,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           `${sub.name} – ${content.name}`,
           `${sub.name} en ligne`,
         ], 60),
-        description: subMetaDescription(sub.name, content.name, skusByCatId.get(sub.id) || []),
+        description: subMetaDescription(sub.name, content.name, (skusByCatId.get(sub.id) || []).map((k) => displayProductName(k, catalogLite.get(k)?.name, null))),
         h1: subH1,
         intro: [angles[si % angles.length]],
         breadcrumb: subCrumb,
@@ -1565,7 +1565,7 @@ function productMetaDescription(name: string, attrs: ProductAttributes | undefin
 
 /** Meta sous-catégorie : produits API réels rattachés (nombre + exemples). */
 function subMetaDescription(subName: string, catName: string, skus: string[]): string {
-  const names = skus.map((s) => catalog.get(s)?.name).filter(Boolean).slice(0, 3) as string[];
+  const names = skus.filter(Boolean).slice(0, 3);
   const n = skus.length;
   const base = n
     ? `${subName} : ${n} produit${n > 1 ? "s" : ""} à configurer en ligne${names.length ? ` (${names.join(", ")})` : ""}.`
