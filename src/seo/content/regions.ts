@@ -83,7 +83,7 @@ export function regionCopy(r: GenRegion): RegionCopy {
   const description = pick(
     [
       `J2L Print imprime et livre ${art.dans} : flyers, affiches, bâches, PLV, textiles et objets publicitaires. Commande en ligne, livraison dans tous les départements.`,
-      `Imprimerie en ligne livrant ${art.dans} et ses ${nbDep} départements : supports professionnels, devis gratuit et livraison locale.`,
+      `Imprimerie en ligne livrant ${art.dans} et ses ${nbDep} départements : supports professionnels, prix affiché en ligne et livraison locale.`,
     ],
     s,
     3,

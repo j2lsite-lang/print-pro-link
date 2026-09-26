@@ -225,7 +225,7 @@ export function cityCopy(c: GenCity): CityCopy {
   const description = pick(
     [
       `Impression professionnelle livrée à ${c.name} (${c.cp}) : flyers, cartes de visite, affiches, banderoles et PLV. Commande en ligne, livraison ${dep.dans}.`,
-      `J2L Print, imprimeur en ligne livrant à ${c.name} : supports de communication, devis gratuit et livraison ${dep.dans} sans déplacement.`,
+      `J2L Print, imprimeur en ligne livrant à ${c.name} : supports de communication, prix affiché en ligne et livraison ${dep.dans} sans déplacement.`,
       `Commandez vos supports imprimés en ligne et faites-vous livrer à ${c.name} (${c.cp}) : impression, finitions et grand format livrés ${reg.dans}.`,
     ],
     s,
