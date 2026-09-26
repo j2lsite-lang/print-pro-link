@@ -149,7 +149,7 @@ const KNOWN_SITEMAPS = [
 
 /* Pages locales : (ville | département | région) × univers / produit phare.
  * Synchronisé automatiquement par scripts/seo/generate.ts. */
-const LOCAL_OFFERS = [];
+const LOCAL_OFFERS = ["affiches","baches-publicitaires","beach-flags","brochures","cartes-de-visite","depliants","emballages-sacs","etiquettes-stickers","flyers","impression-papier","mugs-personnalises","objets-publicitaires","panneaux-baches-grand-format","papier-en-tete","publicite-exterieure","publicite-interieure-plv","roll-up","sacs-en-toile","stickers","textiles-personnalises"];
 const LOCAL_OFFER_SET = new Set(LOCAL_OFFERS);
 const CITY_SET = new Set(CITIES);
 const DEPARTMENT_SET = new Set(DEPARTMENTS);
