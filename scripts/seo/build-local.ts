@@ -15,30 +15,37 @@ interface Offer {
   kind: "cat" | "product";
   ref: string;           // /categorie/x or /products/x
   label: string;         // plural label used in H1 ("Flyers")
-  singular: string;      // lower-case noun ("flyers")
+  noun: string;          // bare noun phrase with the correct number
+  search: string;        // phrase after "Vous cherchez"
+  possessive: string;    // phrase after "vos/votre"
+  definite: string;      // phrase after "Livrez-vous"
+  configured: string;    // gender/number-aware past participle
+  printed: string;
+  delivered: string;
+  available: string;
 }
 
 export const LOCAL_OFFERS: Offer[] = [
-  { slug: "impression-papier", kind: "cat", ref: "/categorie/impression-papier", label: "Impression papier", singular: "impression papier" },
-  { slug: "publicite-exterieure", kind: "cat", ref: "/categorie/publicite-exterieure", label: "Publicité extérieure", singular: "publicité extérieure" },
-  { slug: "publicite-interieure-plv", kind: "cat", ref: "/categorie/publicite-interieure", label: "Publicité intérieure et PLV", singular: "PLV et publicité intérieure" },
-  { slug: "etiquettes-stickers", kind: "cat", ref: "/categorie/etiquettes-stickers", label: "Étiquettes et stickers", singular: "étiquettes et stickers" },
-  { slug: "emballages-sacs", kind: "cat", ref: "/categorie/emballages-sacs", label: "Emballages et sacs personnalisés", singular: "emballages personnalisés" },
-  { slug: "objets-publicitaires", kind: "cat", ref: "/categorie/objets-publicitaires-cadeaux", label: "Objets publicitaires", singular: "objets publicitaires" },
-  { slug: "textiles-personnalises", kind: "cat", ref: "/categorie/textiles-accessoires", label: "Textiles personnalisés", singular: "textiles personnalisés" },
-  { slug: "panneaux-baches-grand-format", kind: "cat", ref: "/categorie/panneaux-baches-vinyles-toiles", label: "Panneaux et bâches grand format", singular: "impression grand format" },
-  { slug: "flyers", kind: "product", ref: "/products/flyers", label: "Flyers", singular: "flyers" },
-  { slug: "cartes-de-visite", kind: "product", ref: "/products/businesscards", label: "Cartes de visite", singular: "cartes de visite" },
-  { slug: "depliants", kind: "product", ref: "/products/folders", label: "Dépliants", singular: "dépliants" },
-  { slug: "affiches", kind: "product", ref: "/products/posters", label: "Affiches", singular: "affiches" },
-  { slug: "brochures", kind: "product", ref: "/products/stapled-magazines", label: "Brochures", singular: "brochures" },
-  { slug: "papier-en-tete", kind: "product", ref: "/products/printed-letterheads", label: "Papier à en-tête", singular: "papier à en-tête" },
-  { slug: "stickers", kind: "product", ref: "/products/stickers", label: "Stickers", singular: "stickers" },
-  { slug: "baches-publicitaires", kind: "product", ref: "/products/banners", label: "Bâches publicitaires", singular: "bâches publicitaires" },
-  { slug: "roll-up", kind: "product", ref: "/products/roller-banners", label: "Roll-up", singular: "roll-up" },
-  { slug: "beach-flags", kind: "product", ref: "/products/beachflags", label: "Beach flags", singular: "beach flags" },
-  { slug: "sacs-en-toile", kind: "product", ref: "/products/canvas-tote-bags", label: "Sacs en toile personnalisés", singular: "sacs en toile" },
-  { slug: "mugs-personnalises", kind: "product", ref: "/products/mugs", label: "Mugs personnalisés", singular: "mugs personnalisés" },
+  { slug: "impression-papier", kind: "cat", ref: "/categorie/impression-papier", label: "Impression papier", noun: "impressions papier", search: "des impressions papier", possessive: "vos impressions papier", definite: "les impressions papier", configured: "configurées", printed: "imprimées", delivered: "livrées", available: "disponibles" },
+  { slug: "publicite-exterieure", kind: "cat", ref: "/categorie/publicite-exterieure", label: "Publicité extérieure", noun: "publicité extérieure", search: "de la publicité extérieure", possessive: "votre publicité extérieure", definite: "la publicité extérieure", configured: "configurée", printed: "imprimée", delivered: "livrée", available: "disponible" },
+  { slug: "publicite-interieure-plv", kind: "cat", ref: "/categorie/publicite-interieure", label: "Publicité intérieure et PLV", noun: "supports de PLV et de publicité intérieure", search: "des supports de PLV et de publicité intérieure", possessive: "vos supports de PLV et de publicité intérieure", definite: "les supports de PLV et de publicité intérieure", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
+  { slug: "etiquettes-stickers", kind: "cat", ref: "/categorie/etiquettes-stickers", label: "Étiquettes et stickers", noun: "étiquettes et stickers", search: "des étiquettes et stickers", possessive: "vos étiquettes et stickers", definite: "les étiquettes et stickers", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
+  { slug: "emballages-sacs", kind: "cat", ref: "/categorie/emballages-sacs", label: "Emballages et sacs personnalisés", noun: "emballages et sacs personnalisés", search: "des emballages et sacs personnalisés", possessive: "vos emballages et sacs personnalisés", definite: "les emballages et sacs personnalisés", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
+  { slug: "objets-publicitaires", kind: "cat", ref: "/categorie/objets-publicitaires-cadeaux", label: "Objets publicitaires", noun: "objets publicitaires", search: "des objets publicitaires", possessive: "vos objets publicitaires", definite: "les objets publicitaires", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
+  { slug: "textiles-personnalises", kind: "cat", ref: "/categorie/textiles-accessoires", label: "Textiles personnalisés", noun: "textiles personnalisés", search: "des textiles personnalisés", possessive: "vos textiles personnalisés", definite: "les textiles personnalisés", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
+  { slug: "panneaux-baches-grand-format", kind: "cat", ref: "/categorie/panneaux-baches-vinyles-toiles", label: "Panneaux et bâches grand format", noun: "panneaux et bâches grand format", search: "des panneaux et bâches grand format", possessive: "vos panneaux et bâches grand format", definite: "les panneaux et bâches grand format", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
+  { slug: "flyers", kind: "product", ref: "/products/flyers", label: "Flyers", noun: "flyers", search: "des flyers", possessive: "vos flyers", definite: "les flyers", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
+  { slug: "cartes-de-visite", kind: "product", ref: "/products/businesscards", label: "Cartes de visite", noun: "cartes de visite", search: "des cartes de visite", possessive: "vos cartes de visite", definite: "les cartes de visite", configured: "configurées", printed: "imprimées", delivered: "livrées", available: "disponibles" },
+  { slug: "depliants", kind: "product", ref: "/products/folders", label: "Dépliants", noun: "dépliants", search: "des dépliants", possessive: "vos dépliants", definite: "les dépliants", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
+  { slug: "affiches", kind: "product", ref: "/products/posters", label: "Affiches", noun: "affiches", search: "des affiches", possessive: "vos affiches", definite: "les affiches", configured: "configurées", printed: "imprimées", delivered: "livrées", available: "disponibles" },
+  { slug: "brochures", kind: "product", ref: "/products/stapled-magazines", label: "Brochures", noun: "brochures", search: "des brochures", possessive: "vos brochures", definite: "les brochures", configured: "configurées", printed: "imprimées", delivered: "livrées", available: "disponibles" },
+  { slug: "papier-en-tete", kind: "product", ref: "/products/printed-letterheads", label: "Papier à en-tête", noun: "papier à en-tête", search: "du papier à en-tête", possessive: "votre papier à en-tête", definite: "le papier à en-tête", configured: "configuré", printed: "imprimé", delivered: "livré", available: "disponible" },
+  { slug: "stickers", kind: "product", ref: "/products/stickers", label: "Stickers", noun: "stickers", search: "des stickers", possessive: "vos stickers", definite: "les stickers", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
+  { slug: "baches-publicitaires", kind: "product", ref: "/products/banners", label: "Bâches publicitaires", noun: "bâches publicitaires", search: "des bâches publicitaires", possessive: "vos bâches publicitaires", definite: "les bâches publicitaires", configured: "configurées", printed: "imprimées", delivered: "livrées", available: "disponibles" },
+  { slug: "roll-up", kind: "product", ref: "/products/roller-banners", label: "Roll-up", noun: "roll-up", search: "des roll-up", possessive: "vos roll-up", definite: "les roll-up", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
+  { slug: "beach-flags", kind: "product", ref: "/products/beachflags", label: "Beach flags", noun: "beach flags", search: "des beach flags", possessive: "vos beach flags", definite: "les beach flags", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
+  { slug: "sacs-en-toile", kind: "product", ref: "/products/canvas-tote-bags", label: "Sacs en toile personnalisés", noun: "sacs en toile personnalisés", search: "des sacs en toile personnalisés", possessive: "vos sacs en toile personnalisés", definite: "les sacs en toile personnalisés", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
+  { slug: "mugs-personnalises", kind: "product", ref: "/products/mugs", label: "Mugs personnalisés", noun: "mugs personnalisés", search: "des mugs personnalisés", possessive: "vos mugs personnalisés", definite: "les mugs personnalisés", configured: "configurés", printed: "imprimés", delivered: "livrés", available: "disponibles" },
 ];
 
 const pick = <T,>(arr: T[], seed: number, i = 0): T => arr[(seed + i) % arr.length];
@@ -54,10 +61,21 @@ function specOf(p: SeoPage): string {
 interface Place {
   scope: LocalScope; slug: string; name: string;
   where: string;          // "à Saint-Lô" | "dans la Manche" | "en Normandie"
+  from: string;           // "depuis Saint-Lô" | "depuis la Manche" | "depuis la Normandie"
   code?: string; cp?: string;
   crumb: { name: string; path: string }[];
   up: LinkItem[];         // parent territories
   siblings: { slug: string; name: string }[];
+}
+
+function fromArticle(name: string): string {
+  return article(name).de
+    .replace(/^de l'/, "depuis l'")
+    .replace(/^de la /, "depuis la ")
+    .replace(/^du /, "depuis le ")
+    .replace(/^des /, "depuis les ")
+    .replace(/^de /, "depuis ")
+    .replace(/^d'/, "depuis ");
 }
 
 export function buildLocalPages(pages: Record<string, SeoPage>, products: Record<string, SeoPage>): SeoPage[] {
@@ -71,7 +89,7 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
   for (const c of geo.cities) {
     const d = deptBySlug.get(c.departmentSlug);
     places.push({
-      scope: "ville", slug: c.slug, name: c.name, where: `à ${c.name}`, cp: c.postalCodes[0], code: c.departmentCode,
+      scope: "ville", slug: c.slug, name: c.name, where: `à ${c.name}`, from: `depuis ${c.name}`, cp: c.postalCodes[0], code: c.departmentCode,
       crumb: [home, zones, { name: c.regionName, path: `/region/${c.regionSlug}` }, { name: c.departmentName, path: `/departement/${c.departmentSlug}` }, { name: c.name, path: `/ville/${c.slug}` }],
       up: [
         { label: `Imprimerie à ${c.name}`, path: `/ville/${c.slug}` },
@@ -84,7 +102,7 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
   }
   for (const d of geo.departments) {
     places.push({
-      scope: "departement", slug: d.slug, name: d.name, where: article(d.name).dans.startsWith("à ") ? `${article(d.name).dans} (${d.code})` : article(d.name).dans, code: d.code,
+      scope: "departement", slug: d.slug, name: d.name, where: article(d.name).dans.startsWith("à ") ? `${article(d.name).dans} (${d.code})` : article(d.name).dans, from: fromArticle(d.name), code: d.code,
       crumb: [home, zones, { name: d.regionName, path: `/region/${d.regionSlug}` }, { name: d.name, path: `/departement/${d.slug}` }],
       up: [
         { label: `Imprimerie ${article(d.name).dans}`, path: `/departement/${d.slug}` },
@@ -96,7 +114,7 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
   }
   for (const r of geo.regions) {
     places.push({
-      scope: "region", slug: r.slug, name: r.name, where: article(r.name).dans,
+      scope: "region", slug: r.slug, name: r.name, where: article(r.name).dans, from: fromArticle(r.name),
       crumb: [home, zones, { name: r.name, path: `/region/${r.slug}` }],
       up: [
         { label: `Imprimerie ${article(r.name).dans}`, path: `/region/${r.slug}` },
@@ -142,9 +160,9 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
       }
 
       const openers = [
-        `Vous cherchez des ${o.singular} ${pl.where} ? J2L Print vous permet de configurer votre commande en ligne et de voir le prix immédiatement, avant l'envoi de vos fichiers.`,
-        `Pour vos ${o.singular} ${pl.where}, J2L Print réunit sur une même page la configuration, le prix affiché et la vérification de vos fichiers par notre équipe.`,
-        `Commandez vos ${o.singular} depuis ${loc} : choisissez format, quantité et finitions, le tarif se met à jour à chaque option.`,
+        `Vous cherchez ${o.search} ${pl.where} ? J2L Print vous permet de configurer votre commande en ligne et de voir le prix immédiatement, avant l'envoi de vos fichiers.`,
+        `Pour ${o.possessive} ${pl.where}, J2L Print réunit sur une même page la configuration, le prix affiché et la vérification de vos fichiers par notre équipe.`,
+        `Commandez ${o.possessive} ${pl.from} : choisissez format, quantité et finitions, le tarif se met à jour à chaque option.`,
       ];
       const deliver = [
         `Les commandes sont fabriquées par nos partenaires d'impression puis livrées ${pl.where}, au bureau comme sur un lieu d'événement.`,
@@ -161,7 +179,7 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
       const intro = [pick(openers, seed), [facts, pick(deliver, seed, 1)].filter(Boolean).join(" ")];
       const sections = [
         {
-          heading: `Pourquoi commander vos ${o.singular} en ligne ${pl.where}`,
+          heading: `Pourquoi commander ${o.possessive} en ligne ${pl.where}`,
           bullets: [
             "Prix affiché en ligne dès la configuration",
             "Contrôle de vos fichiers avant impression",
@@ -170,15 +188,15 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
           ],
         },
         {
-          heading: `Comment se passe une commande depuis ${pl.name}`,
+          heading: `Comment se passe une commande ${pl.from}`,
           paragraphs: [
             `Ouvrez la fiche ${o.kind === "cat" ? "d'un produit de l'univers" : "produit"}, sélectionnez vos options puis ajoutez-la à votre demande. Notre équipe vérifie la configuration et vos fichiers, puis vous répond sous 48 heures ouvrées.`,
           ],
         },
       ];
       const faq: FaqItem[] = [
-        { q: `Livrez-vous les ${o.singular} ${pl.where} ?`, a: `Oui, nous livrons ${pl.where}. Le délai estimé s'affiche pendant la configuration, selon les options choisies.` },
-        { q: `Comment connaître le prix de mes ${o.singular} ?`, a: `Le prix se calcule en ligne à chaque choix de format, de quantité et de finition. Il est affiché hors taxes, hors livraison.` },
+        { q: `Livrez-vous ${o.definite} ${pl.where} ?`, a: `Oui, nous livrons ${pl.where}. Le délai estimé s'affiche pendant la configuration, selon les options choisies.` },
+        { q: `Comment connaître le prix de ${o.possessive} ?`, a: `Le prix se calcule en ligne à chaque choix de format, de quantité et de finition. Il est affiché hors taxes, hors livraison.` },
         { q: `Puis-je envoyer mon propre fichier ?`, a: `Oui. Vous pouvez joindre votre fichier à la demande ; il est vérifié avant impression. Une conception de maquette est aussi proposée.` },
       ];
 
@@ -200,9 +218,9 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
         description,
         h1,
         hero: {
-          image, imageAlt: `${o.label} imprimés – livraison ${pl.where}`,
+          image, imageAlt: `${o.label} ${o.printed} – livraison ${pl.where}`,
           eyebrow: `Livraison ${pl.where}`,
-          tagline: `${cap(o.singular)} configurés en ligne et livrés ${pl.where}.`,
+          tagline: `${cap(o.noun)} ${o.configured} en ligne et ${o.delivered} ${pl.where}.`,
           ctas: [
             { label: o.kind === "cat" ? "Voir les produits" : "Configurer et voir le prix", path: o.ref, variant: "primary" },
             { label: "Demander un devis", path: "/#devis", variant: "secondary" },
@@ -211,7 +229,7 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
         intro,
         breadcrumb: crumb,
         sections,
-        productGrid: { heading: `${o.label} disponibles ${pl.where}`, cards },
+        productGrid: { heading: `${o.label} ${o.available} ${pl.where}`, cards },
         cta: { label: o.kind === "cat" ? "Voir les produits" : "Configurer et voir le prix", path: o.ref },
         faq,
         internalLinks: [
@@ -223,7 +241,7 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
         jsonLd: [
           breadcrumbLd(crumb),
           webPageLd({ name: h1, description, path }),
-          serviceLd({ name: h1, description: `${cap(o.singular)} imprimés et livrés ${pl.where}.`, areaServed: pl.name }),
+          serviceLd({ name: h1, description: `${cap(o.noun)} ${o.printed} et ${o.delivered} ${pl.where}.`, areaServed: pl.name }),
           faqLd(faq),
         ],
       } as SeoPage);
