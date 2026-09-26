@@ -84,7 +84,7 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
   }
   for (const d of geo.departments) {
     places.push({
-      scope: "departement", slug: d.slug, name: d.name, where: article(d.name).dans, code: d.code,
+      scope: "departement", slug: d.slug, name: d.name, where: article(d.name).dans.startsWith("à ") ? `${article(d.name).dans} (${d.code})` : article(d.name).dans, code: d.code,
       crumb: [home, zones, { name: d.regionName, path: `/region/${d.regionSlug}` }, { name: d.name, path: `/departement/${d.slug}` }],
       up: [
         { label: `Imprimerie ${article(d.name).dans}`, path: `/departement/${d.slug}` },
