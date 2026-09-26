@@ -188,9 +188,21 @@ function resolveLocally(
   const find = (s: string) => props.find((p) => p.slug === s);
   const rank = (s: string) =>
     s === "size" || s === "material" ? 4 : s === "copies" ? 3 : protectedKeys.has(s) ? 2 : 1;
+  // Print.com applies a property's nullable option (e.g. finish "geen") when
+  // it is omitted — exclusions must be checked against that implicit value.
+  const implicit = (o: Record<string, any>) => {
+    const out: Record<string, any> = { ...o };
+    for (const p of props) {
+      if (out[p.slug] !== undefined || p.slug === "copies") continue;
+      const n = (p.options || []).find((x) => x.nullable && x.slug != null);
+      if (n) out[p.slug] = String(n.slug);
+    }
+    return out;
+  };
+  const isExcl = (o: Record<string, any>) => isExcludedCombination(implicit(o), excludes);
   let it = 60;
   while (it-- > 0) {
-    const sel = { ...options, copies: String(copies) };
+    const sel = implicit({ ...options, copies: String(copies) });
     if (!isExcludedCombination(sel, excludes)) break;
     let acted = false;
     for (const g of excludes) {
@@ -203,7 +215,7 @@ function resolveLocally(
       for (const c of ordered) {
         if (c.property === "copies") {
           for (const cc of copiesCandidates(copiesProp, options.printingmethod)) {
-            if (!isExcludedCombination({ ...options, copies: cc }, excludes)) {
+            if (!isExcl({ ...options, copies: cc })) {
               copies = Number(cc);
               acted = true;
               break;
@@ -217,7 +229,7 @@ function resolveLocally(
             .map((o) => String(o.slug));
           for (const cand of cands) {
             if (cand === options[c.property]) continue;
-            if (!isExcludedCombination({ ...options, [c.property]: cand, copies: String(copies) }, excludes)) {
+            if (!isExcl({ ...options, [c.property]: cand, copies: String(copies) })) {
               options[c.property] = cand;
               acted = true;
               break;
@@ -230,7 +242,7 @@ function resolveLocally(
     }
     if (!acted) {
       // Last resort: drop an extras property whose every value is excluded.
-      const sel2 = { ...options, copies: String(copies) };
+      const sel2 = implicit({ ...options, copies: String(copies) });
       let dropped = false;
       for (const g of excludes) {
         const violated = g.every((c) => {
@@ -289,9 +301,11 @@ async function resolvePrice(
 
   let { options, copies } = resolveLocally(props, copiesProp, prefilled, copies0, excludes, protectedKeys);
   const seen = new Set<string>();
+  const triedSupplier = new Set<string>();
+  let supplierBase: Record<string, any> | null = null;
   let lastError = "";
 
-  for (let attempt = 0; attempt < 14; attempt++) {
+  for (let attempt = 0; attempt < 30; attempt++) {
     const body = { ...options, copies };
     const stateKey = JSON.stringify(body);
     if (seen.has(stateKey)) break;
@@ -368,6 +382,41 @@ async function resolvePrice(
       }
     }
 
+    // 3. "no supplier prices found": the combination is valid but not produced.
+    // Try other REAL values of non-protected properties (never size/material
+    // or options the user touched), one change at a time.
+    if (/no supplier prices/i.test(lastError)) {
+      if (!supplierBase) supplierBase = { ...options };
+      let changed = false;
+      for (const prop of props) {
+        const slug = prop.slug;
+        if (slug === "copies" || slug === "size" || slug === "material") continue;
+        if (protectedKeys.has(slug) || options[slug] === undefined) continue;
+        if (triedSupplier.has(slug)) continue;
+        const cands = (prop.options || [])
+          .filter((o) => !o.nullable && o.slug != null)
+          .map((o) => String(o.slug))
+          .filter((c) => c !== String(options[slug]));
+        for (const cand of cands) {
+          const next = { ...options, [slug]: cand };
+          const r = resolveLocally(props, copiesProp, { ...next }, copies, excludes, protectedKeys);
+          const key = JSON.stringify({ ...r.options, copies: r.copies });
+          if (seen.has(key)) continue;
+          console.log(`[price] no supplier price, trying '${slug}' -> '${cand}'`);
+          ({ options, copies } = r);
+          changed = true;
+          break;
+        }
+        if (!changed) {
+          triedSupplier.add(slug);
+          // Exhausted: restore the original value before trying the next property.
+          if (supplierBase && supplierBase[slug] !== undefined) options[slug] = supplierBase[slug];
+        }
+        if (changed) break;
+      }
+      if (changed) continue;
+    }
+
     break; // Unrecognised / unresolvable error
   }
 
@@ -400,9 +449,36 @@ function buildValidDefaults(
     }
   }
 
+  // Omitted properties are priced by Print.com with their nullable option
+  // (e.g. finish "geen"): check exclusions against that implicit value, and
+  // give such a property a real visible default when the implicit one is excluded.
+  const withImplicit = (d: Record<string, string>) => {
+    const out = { ...d };
+    for (const p of allProps) {
+      if (out[p.slug] !== undefined || p.slug === "copies" || hiddenSlugs.has(p.slug)) continue;
+      const n = (p.options || []).find((o) => o.nullable && o.slug != null);
+      if (n) out[p.slug] = String(n.slug);
+    }
+    return out;
+  };
+  for (const g of excludes || []) {
+    const sel = withImplicit(defaults);
+    const hit = g.every((c) => sel[c.property] !== undefined && c.options.includes(sel[c.property]));
+    if (!hit) continue;
+    for (const c of g) {
+      if (defaults[c.property] !== undefined) continue;
+      const prop = allProps.find((p) => p.slug === c.property);
+      const alt = prop?.options.find(
+        (o) => !o.nullable && o.slug != null &&
+          !isExcludedCombination(withImplicit({ ...defaults, [c.property]: String(o.slug) }), excludes),
+      );
+      if (alt) { defaults[c.property] = String(alt.slug); break; }
+    }
+  }
+
   // Second pass: fix any excluded combinations
   let maxIterations = 10;
-  while (maxIterations-- > 0 && isExcludedCombination(defaults, excludes)) {
+  while (maxIterations-- > 0 && isExcludedCombination(withImplicit(defaults), excludes)) {
     let fixed = false;
     for (const prop of allProps) {
       if (prop.slug === "copies" || !prop.options?.length) continue;
@@ -412,7 +488,7 @@ function buildValidDefaults(
       const nonNullable = prop.options.filter((o) => !o.nullable);
       for (const opt of nonNullable) {
         const test = { ...defaults, [prop.slug]: String(opt.slug) };
-        if (!isExcludedCombination(test, excludes)) {
+        if (!isExcludedCombination(withImplicit(test), excludes)) {
           defaults[prop.slug] = String(opt.slug);
           fixed = true;
           break;
@@ -694,6 +770,14 @@ export default function ProductDetail() {
       );
 
       resolvedOptionsRef.current = options;
+      // Keep the visible selection identical to what was actually priced.
+      const sync: Record<string, string> = {};
+      for (const prop of allProps) {
+        if (prop.slug === "copies" || hiddenSlugs.has(prop.slug)) continue;
+        const v = options[prop.slug];
+        if (v !== undefined && String(v) !== selectedOptions[prop.slug]) sync[prop.slug] = String(v);
+      }
+      if (Object.keys(sync).length) setSelectedOptions((prev) => ({ ...prev, ...sync }));
       setPriceResult(data);
       // Fetch shipping estimate for France with the resolved config.
       fetchShipping(resolvedCopies);
