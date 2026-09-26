@@ -7,6 +7,8 @@
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 import { buildAllPages, buildProductPages, buildThemePages } from "./build-pages";
+import { buildLocalPages, LOCAL_OFFERS } from "./build-local";
+import { rmSync } from "fs";
 import { loadGeo, CITY_SLUG_REDIRECTS, REMOVED_GEO_PATHS } from "./geo-data";
 import type { SeoPage } from "../../src/seo/types";
 
@@ -63,7 +65,7 @@ function group(pages: SeoPage[]) {
  *  worker so its SEO-managed set matches EXACTLY the prerendered pages (no
  *  product served via the SPA fallback). Leaves all worker logic untouched —
  *  only the data lines are replaced. */
-function syncWorker(productSlugs: string[], themeSlugs: string[]) {
+function syncWorker(productSlugs: string[], themeSlugs: string[], localOffers: string[] = []) {
   const wp = resolve("public/cloudflare-worker-j2lprint.js");
   if (!existsSync(wp)) return;
   const geo = loadGeo();
@@ -81,6 +83,7 @@ function syncWorker(productSlugs: string[], themeSlugs: string[]) {
     .replace(/const REGIONS\s*=\s*\[[\s\S]*?\];/, `const REGIONS = ${regions};`)
     .replace(/const THEMES\s*=\s*\[[\s\S]*?\];/, `const THEMES = ${themes};`)
     .replace(/const PRODUCTS\s*=\s*\[[\s\S]*?\];/, `const PRODUCTS = ${products};`)
+    .replace(/const LOCAL_OFFERS\s*=\s*\[[\s\S]*?\];/, `const LOCAL_OFFERS = ${arr(localOffers)};`)
     .replace(
       /const CITY_SLUG_REDIRECTS\s*=\s*\{[\s\S]*?\};/,
       `const CITY_SLUG_REDIRECTS = ${cityRedirects};`,
@@ -171,6 +174,23 @@ async function main() {
     .map((p) => p.path.replace(/^\/themes\//, ""))
     .filter((s) => s && s !== "/themes" && !s.startsWith("/"));
 
+  // 1d. local pages (lieu × univers/produit phare) — one JSON per territory in
+  //     public/seo-local (fetched at runtime, read by the prerenderer).
+  const localPages = buildLocalPages(byPath, productsByPath);
+  const localDir = resolve("public/seo-local");
+  rmSync(localDir, { recursive: true, force: true });
+  const byPlace: Record<string, Record<string, SeoPage>> = {};
+  for (const p of localPages) {
+    const [, scope, slug] = p.path.split("/");
+    (byPlace[`${scope}/${slug}`] ||= {})[p.path] = p;
+  }
+  for (const [key, map] of Object.entries(byPlace)) {
+    const f = resolve(localDir, `${key}.json`);
+    mkdirSync(resolve(f, ".."), { recursive: true });
+    writeFileSync(f, JSON.stringify(map));
+  }
+  const localOfferSlugs = [...new Set(localPages.map((p) => p.path.split("/")[3]))];
+
   // 2. sitemaps — only these live, indexable pages
   const dir = resolve("public/sitemaps");
   mkdirSync(dir, { recursive: true });
@@ -198,10 +218,17 @@ async function main() {
   write("cities.xml", g.cities, "0.6", "monthly");
   write("departments.xml", g.departments, "0.5", "monthly");
   write("regions.xml", g.regions, "0.6", "monthly");
+  const byScope = (sc: string) => localPages.filter((p) => p.path.startsWith(`/${sc}/`)).map((p) => p.path);
+  const cityLocal = byScope("ville");
+  const CHUNK = 5000;
+  for (let i = 0; i < cityLocal.length; i += CHUNK) write(`local-villes-${i / CHUNK + 1}.xml`, cityLocal.slice(i, i + CHUNK), "0.5", "monthly");
+  write("local-departements.xml", byScope("departement"), "0.5", "monthly");
+  write("local-regions.xml", byScope("region"), "0.5", "monthly");
   writeFileSync(resolve("public/sitemap.xml"), index(files));
 
   // 3. keep the Cloudflare worker geographic + product + theme arrays in sync
-  syncWorker(productSlugs, themeSlugs);
+  syncWorker(productSlugs, themeSlugs, localOfferSlugs);
+  console.log(`Local pages: ${localPages.length} (offers=${localOfferSlugs.length})`);
 
   console.log(`SEO build: ${pages.length} pages + ${productPages.length} products + ${themePages.length} themes`);
   console.log(`Sitemaps: static=${g.static.length} categories=${g.categories.length} subcategories=${g.subcategories.length} themes=${themePages.length} products=${productPages.length} cities=${g.cities.length} departments=${g.departments.length} regions=${g.regions.length}`);

@@ -87,6 +87,9 @@ const App = () => (
                   <Route path="/ville/:slug" element={<SeoRoute />} />
                   <Route path="/departement/:slug" element={<SeoRoute />} />
                   <Route path="/region/:slug" element={<SeoRoute />} />
+                  <Route path="/ville/:slug/:offre" element={<SeoRoute />} />
+                  <Route path="/departement/:slug/:offre" element={<SeoRoute />} />
+                  <Route path="/region/:slug/:offre" element={<SeoRoute />} />
                   <Route path="/unsubscribe" element={<Unsubscribe />} />
                   <Route path="/__worker" element={<WorkerDiagnostic />} />
                 </Route>

@@ -32,4 +32,20 @@
     <loc>https://j2lprint.fr/sitemaps/regions.xml</loc>
     <lastmod>2026-09-26</lastmod>
   </sitemap>
+  <sitemap>
+    <loc>https://j2lprint.fr/sitemaps/local-villes-1.xml</loc>
+    <lastmod>2026-09-26</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://j2lprint.fr/sitemaps/local-villes-2.xml</loc>
+    <lastmod>2026-09-26</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://j2lprint.fr/sitemaps/local-departements.xml</loc>
+    <lastmod>2026-09-26</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://j2lprint.fr/sitemaps/local-regions.xml</loc>
+    <lastmod>2026-09-26</lastmod>
+  </sitemap>
 </sitemapindex>
