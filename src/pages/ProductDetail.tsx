@@ -302,6 +302,7 @@ async function resolvePrice(
   let { options, copies } = resolveLocally(props, copiesProp, prefilled, copies0, excludes, protectedKeys);
   const seen = new Set<string>();
   const triedSupplier = new Set<string>();
+  let supplierBase: Record<string, any> | null = null;
   let lastError = "";
 
   for (let attempt = 0; attempt < 30; attempt++) {
@@ -385,6 +386,7 @@ async function resolvePrice(
     // Try other REAL values of non-protected properties (never size/material
     // or options the user touched), one change at a time.
     if (/no supplier prices/i.test(lastError)) {
+      if (!supplierBase) supplierBase = { ...options };
       let changed = false;
       for (const prop of props) {
         const slug = prop.slug;
@@ -405,7 +407,11 @@ async function resolvePrice(
           changed = true;
           break;
         }
-        if (!changed) triedSupplier.add(slug);
+        if (!changed) {
+          triedSupplier.add(slug);
+          // Exhausted: restore the original value before trying the next property.
+          if (supplierBase && supplierBase[slug] !== undefined) options[slug] = supplierBase[slug];
+        }
         if (changed) break;
       }
       if (changed) continue;
