@@ -191,7 +191,8 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
 
       const crumb = [...pl.crumb, { name: o.label, path }];
       const title = trunc(`${h1} – J2L Print`.length <= 60 ? `${h1} – J2L Print` : h1, 60);
-      const description = trunc(`${o.label} ${pl.where}${pl.scope === "ville" && pl.cp ? ` (${pl.cp})` : ""} : configuration en ligne, prix affiché et livraison ${pl.where}. ${facts ? facts.split(":")[0].replace("L'univers couvre notamment", cards.length + " produits réels à configurer").replace(/^Options disponibles pour .*/, "Fichiers vérifiés avant impression") + "." : ""}`.replace(/\.\./g, "."), 158);
+      const tail = o.kind === "cat" ? `${cards.length} produits réels à configurer.` : "Fichiers vérifiés avant impression.";
+      const description = trunc(`${o.label} ${pl.where}${pl.scope === "ville" && pl.cp ? ` (${pl.cp})` : ""} : configuration en ligne, prix affiché et livraison ${pl.where}. ${tail}`, 158);
 
       out.push({
         path,
