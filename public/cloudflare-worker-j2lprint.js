@@ -147,6 +147,24 @@ const KNOWN_SITEMAPS = [
   "/sitemaps/regions.xml",
 ];
 
+/* Pages locales : (ville | département | région) × univers / produit phare.
+ * Synchronisé automatiquement par scripts/seo/generate.ts. */
+const LOCAL_OFFERS = [];
+const LOCAL_OFFER_SET = new Set(LOCAL_OFFERS);
+const CITY_SET = new Set(CITIES);
+const DEPARTMENT_SET = new Set(DEPARTMENTS);
+const REGION_SET = new Set(REGIONS);
+
+/** /ville/:slug/:offre, /departement/:slug/:offre, /region/:slug/:offre */
+function isLocalOfferPath(pathname) {
+  const p = pathname.replace(/\/$/, "").split("/").filter(Boolean);
+  if (p.length !== 3 || !LOCAL_OFFER_SET.has(p[2])) return false;
+  if (p[0] === "ville") return CITY_SET.has(p[1]);
+  if (p[0] === "departement") return DEPARTMENT_SET.has(p[1]);
+  if (p[0] === "region") return REGION_SET.has(p[1]);
+  return false;
+}
+
 /* Ensemble de tous les chemins SEO gérés (lookup O(1)). */
 const MANAGED_SEO_PATHS = new Set([
   ...STATIC_SEO_PATHS,
@@ -312,6 +330,7 @@ function isCacheableHtml(pathname) {
 function isManagedSeoPath(pathname) {
   return (
     MANAGED_SEO_PATHS.has(pathname) ||
+    isLocalOfferPath(pathname) ||
     isManagedCategoryPath(pathname) ||
     isProductDetail(pathname)
   );
