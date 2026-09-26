@@ -802,8 +802,8 @@ export default function ProductDetail() {
       .map((prop) => {
         const isBooleanToggle =
           prop.options.length === 2 &&
-          prop.options.some((o) => ["non", "no", "sans"].includes(o.name.toLowerCase())) &&
-          prop.options.some((o) => ["oui", "yes", "avec"].includes(o.name.toLowerCase()));
+          prop.options.some((o) => ["non", "no", "sans"].includes(String(o.name ?? o.slug ?? "").toLowerCase())) &&
+          prop.options.some((o) => ["oui", "yes", "avec"].includes(String(o.name ?? o.slug ?? "").toLowerCase()));
 
         // Filter out options that would create excluded combinations
         const filteredOptions = prop.options
