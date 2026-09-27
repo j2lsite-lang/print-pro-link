@@ -387,6 +387,22 @@ async function resolvePrice(
       }
     }
 
+    // 1c. "copies does not match any range set": the quantity is not offered
+    // for the current printing method (e.g. folders offset starts at 500).
+    // Snap to the nearest real Print.com rangeset value — never invented.
+    if (/copies does not match any range set/i.test(lastError)) {
+      const cands = copiesCandidates(copiesProp, options.printingmethod)
+        .map(Number)
+        .filter((n) => !Number.isNaN(n))
+        .sort((a, b) => a - b);
+      const nextQty = cands.find((n) => n >= copies) ?? cands[cands.length - 1];
+      if (nextQty !== undefined && nextQty !== copies) {
+        console.log(`[price] copies ${copies} not in range set, snapping to real value ${nextQty}`);
+        copies = nextQty;
+        continue;
+      }
+    }
+
     // 2. Resolve excluded combinations the API reports but we couldn't see locally.
     const groups = parseExcludedGroups(lastError);
     if (groups.length) {
