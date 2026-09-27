@@ -459,7 +459,12 @@ async function resolvePrice(
         if (changed) break;
       }
       if (changed) {
-        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys));
+        // Ne PAS repasser par resolveLocally ici : il ne connaît que les
+        // exclusions locales et retirerait la valeur que l'API vient de
+        // demander (ex. folders "pallet_delivery"), recréant la même erreur
+        // en boucle. L'API est la source de vérité : si la nouvelle
+        // combinaison viole une exclusion locale, elle le signalera au
+        // prochain essai et l'étape 2 la traitera.
         continue;
       }
     }
