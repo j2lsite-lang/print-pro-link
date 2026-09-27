@@ -255,6 +255,8 @@ function resolveLocally(
     }
     if (!acted) {
       // Last resort: drop an extras property whose every value is excluded.
+      // Never drop a REQUIRED property — Print.com needs it for pricing
+      // (e.g. folders "printingmethod"); dropping it loops forever.
       const sel2 = implicit({ ...options, copies: String(copies) });
       let dropped = false;
       for (const g of excludes) {
@@ -265,7 +267,10 @@ function resolveLocally(
         if (!violated) continue;
         const cand = [...g]
           .sort((a, b) => rank(a.property) - rank(b.property))
-          .find((c) => rank(c.property) === 1 && options[c.property] !== undefined);
+          .find((c) => {
+            const p = find(c.property);
+            return rank(c.property) === 1 && options[c.property] !== undefined && !p?.required;
+          });
         if (cand) {
           console.log(`[price] dropping fully-excluded extras prop '${cand.property}' (Print.com auto-fills it)`);
           delete options[cand.property];
