@@ -5,7 +5,7 @@
  * MARGIN_COEFFICIENT: multiplier applied to the supplier price
  * to calculate the resale price for the customer.
  */
-export const MARGIN_COEFFICIENT = 1.5;
+export const MARGIN_COEFFICIENT = 1.3;
 
 /**
  * Design/mockup fees (conception de maquette)
