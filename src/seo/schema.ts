@@ -101,6 +101,8 @@ export function productLd(opts: {
   image?: string | null;
   /** Real "starting from" price computed from the default configuration. */
   fromPrice?: number | null;
+  /** Real Print.com colour of the priced default configuration. */
+  color?: string | null;
 }) {
   const ld: Record<string, any> = {
     "@context": "https://schema.org",
@@ -110,8 +112,10 @@ export function productLd(opts: {
     description: opts.description,
     url: `${SITE_URL}${opts.path}`,
     brand: { "@type": "Brand", name: SITE_NAME },
+    itemCondition: "https://schema.org/NewCondition",
   };
   if (opts.image) ld.image = opts.image;
+  if (opts.color) ld.color = opts.color;
   // Real `Offer` built from the exact HT price the configurator shows for the
   // product's DEFAULT configuration. Never invented, never a rating/review.
   if (opts.fromPrice && opts.fromPrice > 0) {
@@ -120,6 +124,13 @@ export function productLd(opts: {
       price: Number(opts.fromPrice.toFixed(2)),
       priceCurrency: "EUR",
       availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: Number(opts.fromPrice.toFixed(2)),
+        priceCurrency: "EUR",
+        valueAddedTaxIncluded: false,
+      },
       url: `${SITE_URL}${opts.path}`,
       seller: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
     };
