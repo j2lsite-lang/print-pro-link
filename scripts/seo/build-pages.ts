@@ -1943,6 +1943,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
           // Real HT price of the DEFAULT configuration (from the configurator).
           // Undefined when the API can't resolve one → `offers` is simply omitted.
           fromPrice: priceMap.get(sku)?.price ?? null,
+          color: priceMap.get(sku)?.color ?? null,
         }),
         ...(productFaq && productFaq.length ? [faqLd(productFaq)] : []),
       ],
