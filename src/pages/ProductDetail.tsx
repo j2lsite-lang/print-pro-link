@@ -273,7 +273,7 @@ function resolveLocally(
           .sort((a, b) => rank(a.property) - rank(b.property))
           .find((c) => {
             const p = find(c.property);
-            return rank(c.property) === 1 && options[c.property] !== undefined && !p?.required;
+            return rank(c.property) === 1 && options[c.property] !== undefined && !p?.required && !pinnedKeys.has(c.property);
           });
         if (cand) {
           console.log(`[price] dropping fully-excluded extras prop '${cand.property}' (Print.com auto-fills it)`);
