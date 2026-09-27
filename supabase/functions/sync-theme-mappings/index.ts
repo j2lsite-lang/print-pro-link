@@ -75,7 +75,7 @@ const MANUAL_THEMES: { slug: string; name: string; skus: string[] }[] = [
  * app.print.com/catalogue/themes) and links each theme to its products.
  *
  * Themes are an ADDITIONAL browse axis: it never touches categories,
- * mappings, prices or the ×1.5 coefficient. Every theme SKU is intersected
+ * mappings, prices or the ×1.3 coefficient. Every theme SKU is intersected
  * with the existing public catalogue so every product page/configurator works.
  */
 Deno.serve(async (req: Request) => {

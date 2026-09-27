@@ -9,7 +9,7 @@
 //   3. inject hidden REQUIRED properties (e.g. printingmethod) with their real
 //      Print.com value,
 //   4. call get-price with the same self-correcting resolver as the UI,
-//   5. apply the SAME resale pricing (getResalePrice → ×1.5, arrondi 0,10 €).
+//   5. apply the SAME resale pricing (getResalePrice → ×1.3, arrondi 0,10 €).
 //
 // The number we cache is therefore byte-for-byte the HT price shown in the
 // configurator for the default configuration. We NEVER invent a price: if the
@@ -21,12 +21,14 @@
 // ============================================================================
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { resolve } from "path";
-import { getResalePrice } from "../../src/lib/pricing";
+import { getResalePrice, getSupplierPrice } from "../../src/lib/pricing";
 
 export interface ProductPrice {
   sku: string;
   /** Resale HT price for the default configuration (EUR), matching the UI. */
   price: number;
+  /** Raw Print.com supplier price (EUR HT) for the same configuration. */
+  supplier?: number;
   /** Default quantity (copies) used to compute the price. */
   copies: number;
   /** Real Print.com colour name of the priced default configuration, if any. */
@@ -379,7 +381,8 @@ async function computePrice(sb: string, anon: string, sku: string): Promise<Prod
     const opt = (prop.options || []).find((o) => String(o.slug) === String(val) && !o.nullable);
     if (opt?.name) { color = String(opt.name).trim(); break; }
   }
-  return color ? { sku, price, copies: resolved.copies, color } : { sku, price, copies: resolved.copies };
+  const supplier = getSupplierPrice(resolved.data);
+  return color ? { sku, price, supplier, copies: resolved.copies, color } : { sku, price, supplier, copies: resolved.copies };
 }
 
 /* --------------------------------------------------------------------------

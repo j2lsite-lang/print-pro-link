@@ -5,7 +5,7 @@
  * MARGIN_COEFFICIENT: multiplier applied to the supplier price
  * to calculate the resale price for the customer.
  */
-export const MARGIN_COEFFICIENT = 1.5;
+export const MARGIN_COEFFICIENT = 1.3;
 
 /**
  * Design/mockup fees (conception de maquette)
@@ -23,7 +23,7 @@ export const FLAT_SHIPPING_HT = 11.9;
  * Round a price up to the nearest 0.10 € for clean display
  */
 function roundUp10(value: number): number {
-  return Math.ceil(value * 10) / 10;
+  return Math.ceil(value * 10 - 1e-9) / 10;
 }
 
 /**
