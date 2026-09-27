@@ -320,6 +320,8 @@ async function resolvePrice(
   let { options, copies } = resolveLocally(props, copiesProp, prefilled, copies0, excludes, protectedKeys);
   const seen = new Set<string>();
   const triedSupplier = new Set<string>();
+  // Values the API has already rejected per property — never retry them.
+  const triedValues = new Map<string, Set<string>>();
   let supplierBase: Record<string, any> | null = null;
   let lastError = "";
 
@@ -388,6 +390,13 @@ async function resolvePrice(
     // 2. Resolve excluded combinations the API reports but we couldn't see locally.
     const groups = parseExcludedGroups(lastError);
     if (groups.length) {
+      // Remember every value the API just rejected so we never retry it.
+      for (const pairs of groups) {
+        for (const pair of pairs) {
+          if (!triedValues.has(pair.property)) triedValues.set(pair.property, new Set());
+          triedValues.get(pair.property)!.add(pair.value);
+        }
+      }
       // size/material are changed last, and never when the user chose them.
       const rank = (s: string) =>
         (s === "size" || s === "material") && protectedKeys.has(s)
@@ -416,7 +425,10 @@ async function resolvePrice(
             if (!prop) continue;
             // Never change a value the user explicitly chose.
             if (protectedKeys.has(pair.property)) continue;
-            const forbidden = pairs.filter((p) => p.property === pair.property).map((p) => p.value);
+            const forbidden = [
+              ...pairs.filter((p) => p.property === pair.property).map((p) => p.value),
+              ...(triedValues.get(pair.property) ?? []),
+            ];
             const alt = realOptionValue(prop, [...forbidden, options[pair.property]]);
             if (alt !== undefined && alt !== options[pair.property]) {
               // Skip alternatives that lead to an already-tried state.
