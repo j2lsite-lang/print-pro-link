@@ -321,6 +321,10 @@ async function resolvePrice(
     if (v !== undefined) prefilled[prop.slug] = v;
   }
 
+  // Propriétés explicitement demandées par l'API (missing / option not found /
+  // switch d'exclusion) : resolveLocally ne doit jamais les modifier ni les
+  // retirer, sinon il recrée l'erreur que l'API vient de signaler.
+  const pinnedKeys = new Set<string>();
   let { options, copies } = resolveLocally(props, copiesProp, prefilled, copies0, excludes, protectedKeys);
   const seen = new Set<string>();
   const triedSupplier = new Set<string>();
@@ -358,12 +362,13 @@ async function resolvePrice(
         const v = realOptionValue(findProp(slug));
         if (v !== undefined && options[slug] !== v) {
           options[slug] = v;
+          pinnedKeys.add(slug);
           added = true;
           console.log(`[price] added missing required '${slug}' = '${v}' (real Print.com value)`);
         }
       }
       if (added) {
-        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys));
+        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys, pinnedKeys));
         continue;
       }
     }
@@ -381,12 +386,13 @@ async function resolvePrice(
         const v = nullable ? String(nullable.slug) : realOptionValue(prop);
         if (v !== undefined && options[slug] !== v) {
           options[slug] = v;
+          pinnedKeys.add(slug);
           added = true;
           console.log(`[price] sending explicit '${slug}' = '${v}' (real Print.com value)`);
         }
       }
       if (added) {
-        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys));
+        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys, pinnedKeys));
         continue;
       }
     }
