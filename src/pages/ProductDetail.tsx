@@ -333,10 +333,30 @@ async function resolvePrice(
   let supplierBase: Record<string, any> | null = null;
   let lastError = "";
 
-  for (let attempt = 0; attempt < 30; attempt++) {
+  for (let attempt = 0; attempt < 60; attempt++) {
     const body = { ...options, copies };
     const stateKey = JSON.stringify(body);
-    if (seen.has(stateKey)) break;
+    if (seen.has(stateKey)) {
+      // État déjà tenté : au lieu d'abandonner, forcer l'exploration en
+      // changeant une propriété non protégée vers une valeur jamais rejetée
+      // par l'API (ex. folders : seul offset + 170gr + 500 ex. est tarifable).
+      let forced = false;
+      for (const prop of props) {
+        const s = prop.slug;
+        if (s === "copies" || s === "size" || protectedKeys.has(s)) continue;
+        const rejected = triedValues.get(s);
+        const alt = realOptionValue(prop, [options[s], ...(rejected ?? [])]);
+        if (alt !== undefined && alt !== options[s]) {
+          console.log(`[price] état déjà tenté, exploration forcée '${s}' -> '${alt}'`);
+          options[s] = alt;
+          pinnedKeys.add(s);
+          forced = true;
+          break;
+        }
+      }
+      if (!forced) break;
+      continue;
+    }
     seen.add(stateKey);
 
     console.log(`[price] attempt ${attempt + 1} payload:`, body);
