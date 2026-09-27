@@ -388,15 +388,24 @@ async function resolvePrice(
     // 2. Resolve excluded combinations the API reports but we couldn't see locally.
     const groups = parseExcludedGroups(lastError);
     if (groups.length) {
+      // size/material are changed last, and never when the user chose them.
       const rank = (s: string) =>
-        s === "size" || s === "material" ? 4 : s === "copies" ? 3 : protectedKeys.has(s) ? 2 : 1;
+        (s === "size" || s === "material") && protectedKeys.has(s)
+          ? 4
+          : s === "size" || s === "material"
+            ? 2.5
+            : s === "copies"
+              ? 3
+              : protectedKeys.has(s)
+                ? 2
+                : 1;
       let changed = false;
       for (const pairs of groups) {
         const ordered = [...pairs].sort((a, b) => rank(a.property) - rank(b.property));
         for (const pair of ordered) {
           if (pair.property === "copies") {
             for (const cc of copiesCandidates(copiesProp, options.printingmethod)) {
-              if (cc !== String(copies)) {
+              if (cc !== String(copies) && !seen.has(JSON.stringify({ ...options, copies: Number(cc) }))) {
                 copies = Number(cc);
                 changed = true;
                 break;
@@ -405,9 +414,13 @@ async function resolvePrice(
           } else {
             const prop = findProp(pair.property);
             if (!prop) continue;
+            // Never change a value the user explicitly chose.
+            if (protectedKeys.has(pair.property)) continue;
             const forbidden = pairs.filter((p) => p.property === pair.property).map((p) => p.value);
             const alt = realOptionValue(prop, [...forbidden, options[pair.property]]);
             if (alt !== undefined && alt !== options[pair.property]) {
+              // Skip alternatives that lead to an already-tried state.
+              if (seen.has(JSON.stringify({ ...options, [pair.property]: alt, copies }))) continue;
               console.log(`[price] excluded combo, switching '${pair.property}' -> '${alt}'`);
               options[pair.property] = alt;
               changed = true;
