@@ -197,6 +197,7 @@ function resolveLocally(
   copies: number,
   excludes: ExcludeGroup[],
   protectedKeys: Set<string>,
+  pinnedKeys: Set<string> = new Set(),
 ): { options: Record<string, any>; copies: number } {
   const find = (s: string) => props.find((p) => p.slug === s);
   const rank = (s: string) =>
@@ -237,6 +238,9 @@ function resolveLocally(
         } else {
           const prop = find(c.property);
           if (!prop) continue;
+          // Une propriété épinglée a été explicitement demandée par l'API :
+          // ne jamais la modifier ni la retirer localement.
+          if (pinnedKeys.has(c.property)) continue;
           const cands = (prop.options || [])
             .filter((o) => !o.nullable && o.slug != null)
             .map((o) => String(o.slug));
@@ -255,6 +259,8 @@ function resolveLocally(
     }
     if (!acted) {
       // Last resort: drop an extras property whose every value is excluded.
+      // Never drop a REQUIRED property — Print.com needs it for pricing
+      // (e.g. folders "printingmethod"); dropping it loops forever.
       const sel2 = implicit({ ...options, copies: String(copies) });
       let dropped = false;
       for (const g of excludes) {
@@ -265,7 +271,10 @@ function resolveLocally(
         if (!violated) continue;
         const cand = [...g]
           .sort((a, b) => rank(a.property) - rank(b.property))
-          .find((c) => rank(c.property) === 1 && options[c.property] !== undefined);
+          .find((c) => {
+            const p = find(c.property);
+            return rank(c.property) === 1 && options[c.property] !== undefined && !p?.required && !pinnedKeys.has(c.property);
+          });
         if (cand) {
           console.log(`[price] dropping fully-excluded extras prop '${cand.property}' (Print.com auto-fills it)`);
           delete options[cand.property];
@@ -312,16 +321,42 @@ async function resolvePrice(
     if (v !== undefined) prefilled[prop.slug] = v;
   }
 
+  // Propriétés explicitement demandées par l'API (missing / option not found /
+  // switch d'exclusion) : resolveLocally ne doit jamais les modifier ni les
+  // retirer, sinon il recrée l'erreur que l'API vient de signaler.
+  const pinnedKeys = new Set<string>();
   let { options, copies } = resolveLocally(props, copiesProp, prefilled, copies0, excludes, protectedKeys);
   const seen = new Set<string>();
   const triedSupplier = new Set<string>();
+  // Values the API has already rejected per property — never retry them.
+  const triedValues = new Map<string, Set<string>>();
   let supplierBase: Record<string, any> | null = null;
   let lastError = "";
 
-  for (let attempt = 0; attempt < 30; attempt++) {
+  for (let attempt = 0; attempt < 60; attempt++) {
     const body = { ...options, copies };
     const stateKey = JSON.stringify(body);
-    if (seen.has(stateKey)) break;
+    if (seen.has(stateKey)) {
+      // État déjà tenté : au lieu d'abandonner, forcer l'exploration en
+      // changeant une propriété non protégée vers une valeur jamais rejetée
+      // par l'API (ex. folders : seul offset + 170gr + 500 ex. est tarifable).
+      let forced = false;
+      for (const prop of props) {
+        const s = prop.slug;
+        if (s === "copies" || s === "size" || protectedKeys.has(s)) continue;
+        const rejected = triedValues.get(s);
+        const alt = realOptionValue(prop, [options[s], ...(rejected ?? [])]);
+        if (alt !== undefined && alt !== options[s]) {
+          console.log(`[price] état déjà tenté, exploration forcée '${s}' -> '${alt}'`);
+          options[s] = alt;
+          pinnedKeys.add(s);
+          forced = true;
+          break;
+        }
+      }
+      if (!forced) break;
+      continue;
+    }
     seen.add(stateKey);
 
     console.log(`[price] attempt ${attempt + 1} payload:`, body);
@@ -347,12 +382,13 @@ async function resolvePrice(
         const v = realOptionValue(findProp(slug));
         if (v !== undefined && options[slug] !== v) {
           options[slug] = v;
+          pinnedKeys.add(slug);
           added = true;
           console.log(`[price] added missing required '${slug}' = '${v}' (real Print.com value)`);
         }
       }
       if (added) {
-        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys));
+        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys, pinnedKeys));
         continue;
       }
     }
@@ -370,12 +406,29 @@ async function resolvePrice(
         const v = nullable ? String(nullable.slug) : realOptionValue(prop);
         if (v !== undefined && options[slug] !== v) {
           options[slug] = v;
+          pinnedKeys.add(slug);
           added = true;
           console.log(`[price] sending explicit '${slug}' = '${v}' (real Print.com value)`);
         }
       }
       if (added) {
-        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys));
+        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys, pinnedKeys));
+        continue;
+      }
+    }
+
+    // 1c. "copies does not match any range set": the quantity is not offered
+    // for the current printing method (e.g. folders offset starts at 500).
+    // Snap to the nearest real Print.com rangeset value — never invented.
+    if (/copies does not match any range set/i.test(lastError)) {
+      const cands = copiesCandidates(copiesProp, options.printingmethod)
+        .map(Number)
+        .filter((n) => !Number.isNaN(n))
+        .sort((a, b) => a - b);
+      const nextQty = cands.find((n) => n >= copies) ?? cands[cands.length - 1];
+      if (nextQty !== undefined && nextQty !== copies) {
+        console.log(`[price] copies ${copies} not in range set, snapping to real value ${nextQty}`);
+        copies = nextQty;
         continue;
       }
     }
@@ -383,15 +436,31 @@ async function resolvePrice(
     // 2. Resolve excluded combinations the API reports but we couldn't see locally.
     const groups = parseExcludedGroups(lastError);
     if (groups.length) {
+      // Remember every value the API just rejected so we never retry it.
+      for (const pairs of groups) {
+        for (const pair of pairs) {
+          if (!triedValues.has(pair.property)) triedValues.set(pair.property, new Set());
+          triedValues.get(pair.property)!.add(pair.value);
+        }
+      }
+      // size/material are changed last, and never when the user chose them.
       const rank = (s: string) =>
-        s === "size" || s === "material" ? 4 : s === "copies" ? 3 : protectedKeys.has(s) ? 2 : 1;
+        (s === "size" || s === "material") && protectedKeys.has(s)
+          ? 4
+          : s === "size" || s === "material"
+            ? 2.5
+            : s === "copies"
+              ? 3
+              : protectedKeys.has(s)
+                ? 2
+                : 1;
       let changed = false;
       for (const pairs of groups) {
         const ordered = [...pairs].sort((a, b) => rank(a.property) - rank(b.property));
         for (const pair of ordered) {
           if (pair.property === "copies") {
             for (const cc of copiesCandidates(copiesProp, options.printingmethod)) {
-              if (cc !== String(copies)) {
+              if (cc !== String(copies) && !seen.has(JSON.stringify({ ...options, copies: Number(cc) }))) {
                 copies = Number(cc);
                 changed = true;
                 break;
@@ -400,11 +469,19 @@ async function resolvePrice(
           } else {
             const prop = findProp(pair.property);
             if (!prop) continue;
-            const forbidden = pairs.filter((p) => p.property === pair.property).map((p) => p.value);
+            // Never change a value the user explicitly chose.
+            if (protectedKeys.has(pair.property)) continue;
+            const forbidden = [
+              ...pairs.filter((p) => p.property === pair.property).map((p) => p.value),
+              ...(triedValues.get(pair.property) ?? []),
+            ];
             const alt = realOptionValue(prop, [...forbidden, options[pair.property]]);
             if (alt !== undefined && alt !== options[pair.property]) {
+              // Skip alternatives that lead to an already-tried state.
+              if (seen.has(JSON.stringify({ ...options, [pair.property]: alt, copies }))) continue;
               console.log(`[price] excluded combo, switching '${pair.property}' -> '${alt}'`);
               options[pair.property] = alt;
+              pinnedKeys.add(pair.property);
               changed = true;
             }
           }
@@ -413,7 +490,12 @@ async function resolvePrice(
         if (changed) break;
       }
       if (changed) {
-        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys));
+        // Ne PAS repasser par resolveLocally ici : il ne connaît que les
+        // exclusions locales et retirerait la valeur que l'API vient de
+        // demander (ex. folders "pallet_delivery"), recréant la même erreur
+        // en boucle. L'API est la source de vérité : si la nouvelle
+        // combinaison viole une exclusion locale, elle le signalera au
+        // prochain essai et l'étape 2 la traitera.
         continue;
       }
     }
