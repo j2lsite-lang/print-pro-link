@@ -357,6 +357,29 @@ async function resolvePrice(
       }
     }
 
+    // 1b. "option not found for property X": Print.com needs the property
+    // sent explicitly — fill it with its real default value (nullable option
+    // first, e.g. cover_material "none_cover").
+    const notFound = parseOptionNotFound(lastError);
+    if (notFound.length) {
+      let added = false;
+      for (const slug of notFound) {
+        const prop = findProp(slug);
+        if (!prop) continue;
+        const nullable = (prop.options || []).find((o) => o.nullable && o.slug != null);
+        const v = nullable ? String(nullable.slug) : realOptionValue(prop);
+        if (v !== undefined && options[slug] !== v) {
+          options[slug] = v;
+          added = true;
+          console.log(`[price] sending explicit '${slug}' = '${v}' (real Print.com value)`);
+        }
+      }
+      if (added) {
+        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys));
+        continue;
+      }
+    }
+
     // 2. Resolve excluded combinations the API reports but we couldn't see locally.
     const groups = parseExcludedGroups(lastError);
     if (groups.length) {
