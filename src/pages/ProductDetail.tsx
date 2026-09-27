@@ -197,6 +197,7 @@ function resolveLocally(
   copies: number,
   excludes: ExcludeGroup[],
   protectedKeys: Set<string>,
+  pinnedKeys: Set<string> = new Set(),
 ): { options: Record<string, any>; copies: number } {
   const find = (s: string) => props.find((p) => p.slug === s);
   const rank = (s: string) =>
@@ -237,6 +238,9 @@ function resolveLocally(
         } else {
           const prop = find(c.property);
           if (!prop) continue;
+          // Une propriété épinglée a été explicitement demandée par l'API :
+          // ne jamais la modifier ni la retirer localement.
+          if (pinnedKeys.has(c.property)) continue;
           const cands = (prop.options || [])
             .filter((o) => !o.nullable && o.slug != null)
             .map((o) => String(o.slug));
