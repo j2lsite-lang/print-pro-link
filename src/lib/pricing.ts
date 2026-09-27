@@ -23,7 +23,7 @@ export const FLAT_SHIPPING_HT = 11.9;
  * Round a price up to the nearest 0.10 € for clean display
  */
 function roundUp10(value: number): number {
-  return Math.ceil(value * 10) / 10;
+  return Math.ceil(value * 10 - 1e-9) / 10;
 }
 
 /**
