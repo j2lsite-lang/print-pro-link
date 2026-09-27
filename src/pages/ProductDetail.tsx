@@ -148,6 +148,19 @@ function parseExcludedGroups(message: string): Array<{ property: string; value: 
   return groups;
 }
 
+/**
+ * Parse "option not found for property X" errors: Print.com requires the
+ * property to be sent explicitly (its implicit nullable value is not applied
+ * for pricing). The resolver then fills it with a real Print.com option.
+ */
+function parseOptionNotFound(message: string): string[] {
+  const out: string[] = [];
+  const re = /option not found for property\s+([a-zA-Z0-9_.-]+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(message))) if (!out.includes(m[1])) out.push(m[1]);
+  return out;
+}
+
 /** Real, allowed copies values provided by Print.com for the current method. */
 function copiesCandidates(cp: ConfigurableProperty | undefined, method: string | undefined): string[] {
   if (!cp) return [];
@@ -336,6 +349,29 @@ async function resolvePrice(
           options[slug] = v;
           added = true;
           console.log(`[price] added missing required '${slug}' = '${v}' (real Print.com value)`);
+        }
+      }
+      if (added) {
+        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys));
+        continue;
+      }
+    }
+
+    // 1b. "option not found for property X": Print.com needs the property
+    // sent explicitly — fill it with its real default value (nullable option
+    // first, e.g. cover_material "none_cover").
+    const notFound = parseOptionNotFound(lastError);
+    if (notFound.length) {
+      let added = false;
+      for (const slug of notFound) {
+        const prop = findProp(slug);
+        if (!prop) continue;
+        const nullable = (prop.options || []).find((o) => o.nullable && o.slug != null);
+        const v = nullable ? String(nullable.slug) : realOptionValue(prop);
+        if (v !== undefined && options[slug] !== v) {
+          options[slug] = v;
+          added = true;
+          console.log(`[price] sending explicit '${slug}' = '${v}' (real Print.com value)`);
         }
       }
       if (added) {
