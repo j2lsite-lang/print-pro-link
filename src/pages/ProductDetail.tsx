@@ -687,6 +687,19 @@ export default function ProductDetail() {
           }
         }
         const defaults = buildValidDefaults(allProps, data.excludes, hiddenSlugs);
+        // folders (dépliants) : Print.com ne tarife ce produit qu'en offset,
+        // papier 170 g minimum, 500 ex. minimum. Préremplir ces vraies valeurs
+        // Print.com — le client les voit et peut les modifier ensuite.
+        if (sku === "folders") {
+          const pm = allProps.find((p) => p.slug === "printingmethod");
+          if (pm?.options?.some((o) => String(o.slug) === "offset")) {
+            defaults.printingmethod = "offset";
+          }
+          const mat = allProps.find((p) => p.slug === "material");
+          if (mat?.options?.some((o) => String(o.slug) === "170gr_gesatineerd_mc")) {
+            defaults.material = "170gr_gesatineerd_mc";
+          }
+        }
         setSelectedOptions(defaults);
       })
       .catch((err) => setError(err.message))
