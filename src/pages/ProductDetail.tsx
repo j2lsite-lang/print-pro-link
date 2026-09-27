@@ -461,6 +461,7 @@ async function resolvePrice(
               if (seen.has(JSON.stringify({ ...options, [pair.property]: alt, copies }))) continue;
               console.log(`[price] excluded combo, switching '${pair.property}' -> '${alt}'`);
               options[pair.property] = alt;
+              pinnedKeys.add(pair.property);
               changed = true;
             }
           }
