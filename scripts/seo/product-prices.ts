@@ -31,6 +31,10 @@ export interface ProductPrice {
   supplier?: number;
   /** Default quantity (copies) used to compute the price. */
   copies: number;
+  /** Real Print.com minimum quantity (first offered value), never invented. */
+  minQty?: number;
+  /** True when the default quantity had to be raised to a tarifable one. */
+  qtyCorrected?: boolean;
   /** Real Print.com colour name of the priced default configuration, if any. */
   color?: string;
 }
@@ -382,7 +386,8 @@ async function computePrice(sb: string, anon: string, sku: string): Promise<Prod
     if (opt?.name) { color = String(opt.name).trim(); break; }
   }
   const supplier = getSupplierPrice(resolved.data);
-  return color ? { sku, price, supplier, copies: resolved.copies, color } : { sku, price, supplier, copies: resolved.copies };
+  const base: ProductPrice = { sku, price, supplier, copies: resolved.copies, minQty: copies, qtyCorrected: resolved.copies !== copies };
+  return color ? { ...base, color } : base;
 }
 
 /* --------------------------------------------------------------------------
