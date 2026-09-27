@@ -5,7 +5,7 @@ import { Loader2, ChevronRight, CheckCircle } from "lucide-react";
 import { getProductSEOData } from "@/lib/product-seo";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { getProduct, getPrice, getShippingPossibilities } from "@/lib/printcom";
+import { getCmsCatalog, getProduct, getPrice, getShippingPossibilities } from "@/lib/printcom";
 import { supabase } from "@/integrations/supabase/client";
 import { getResalePrice, DESIGN_FEE_BASE } from "@/lib/pricing";
 import { useCart } from "@/hooks/useCart";
@@ -705,16 +705,44 @@ export default function ProductDetail() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 
-    supabase
-      .from("product_images")
-      .select("image_url")
-      .eq("sku", sku)
-      .order("sort_order", { ascending: true })
-      .then(({ data: imgs }) => {
-        if (imgs && imgs.length > 0) {
-          setProductImages(imgs.map((i) => i.image_url));
-        }
-      });
+    if (sku === "folders") {
+      // The synced row only contains Print.com's SVG icon for this SKU.
+      // Read its real photo and icon directly from the Print.com CMS source.
+      getCmsCatalog().then((cms) => {
+        const assets = cms?.asset as Record<string, { file?: string }> | undefined;
+        const cmsProducts = cms?.product as Record<string, {
+          sku?: string;
+          icon?: { id?: string };
+          image?: { id?: string };
+          images?: Array<{ id?: string }>;
+        }> | undefined;
+        const cmsProduct = Object.values(cmsProducts || {}).find((item) => item?.sku === "folders");
+        if (!cmsProduct || !assets) return;
+
+        const assetUrl = (id?: string) => {
+          const file = id ? assets[id]?.file : undefined;
+          return file ? `https:${file}` : null;
+        };
+        const urls = [
+          assetUrl(cmsProduct.icon?.id),
+          assetUrl(cmsProduct.image?.id),
+          ...(cmsProduct.images || []).map((image) => assetUrl(image.id)),
+        ].filter((url): url is string => Boolean(url));
+        const uniqueUrls = Array.from(new Set(urls));
+        if (uniqueUrls.length > 0) setProductImages(uniqueUrls);
+      }).catch(() => undefined);
+    } else {
+      supabase
+        .from("product_images")
+        .select("image_url")
+        .eq("sku", sku)
+        .order("sort_order", { ascending: true })
+        .then(({ data: imgs }) => {
+          if (imgs && imgs.length > 0) {
+            setProductImages(imgs.map((i) => i.image_url));
+          }
+        });
+    }
 
     supabase
       .from("product_category_mappings")
