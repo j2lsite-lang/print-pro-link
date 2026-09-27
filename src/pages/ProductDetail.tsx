@@ -937,6 +937,9 @@ export default function ProductDetail() {
         if (v !== undefined && String(v) !== selectedOptions[prop.slug]) sync[prop.slug] = String(v);
       }
       if (Object.keys(sync).length) setSelectedOptions((prev) => ({ ...prev, ...sync }));
+      // Never display a price for a quantity other than the one priced: if
+      // Print.com required a higher minimum, show that real quantity.
+      if (resolvedCopies !== copies) setQuantity(String(resolvedCopies));
       setPriceResult(data);
       // Fetch shipping estimate for France with the resolved config.
       fetchShipping(resolvedCopies);
@@ -1000,6 +1003,13 @@ export default function ProductDetail() {
         .map((o) => ({ slug: String(o.slug), name: o.name || String(o.slug) }));
     }
 
+    // Keep a quantity the resolver snapped to (first real Print.com tarifable
+    // quantity) visible, as long as it is a real rangeset value.
+    if (quantity && !qtyOpts.some((o) => o.slug === quantity)
+      && copiesCandidates(copiesProp, selectedMethod).includes(quantity)) {
+      qtyOpts = [...qtyOpts, { slug: quantity, name: quantity }]
+        .sort((a, b) => Number(a.slug) - Number(b.slug));
+    }
     setQuantityOptions(qtyOpts);
     if (qtyOpts.length > 0 && !qtyOpts.some((o) => o.slug === quantity)) {
       setQuantity(qtyOpts[0].slug);
