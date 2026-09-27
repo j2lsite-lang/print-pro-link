@@ -29,6 +29,8 @@ export interface ProductPrice {
   price: number;
   /** Default quantity (copies) used to compute the price. */
   copies: number;
+  /** Real Print.com colour name of the priced default configuration, if any. */
+  color?: string;
 }
 
 const PRICES_PATH = resolve("src/seo/generated/product-prices.json");
@@ -238,7 +240,7 @@ async function callPrice(sb: string, anon: string, sku: string, body: Record<str
 async function resolvePrice(
   sb: string, anon: string, sku: string, product: any, baseOptions: Record<string, any>,
   copies0: number, copiesProp: Prop | undefined,
-): Promise<{ data: any; copies: number } | null> {
+): Promise<{ data: any; copies: number; options: Record<string, any> } | null> {
   const props: Prop[] = product.properties || product.configurableProperties || [];
   const excludes: ExcludeGroup[] = product.excludes || [];
   const findProp = (slug: string) => props.find((p) => p.slug === slug);
@@ -246,15 +248,17 @@ async function resolvePrice(
   let { options, copies } = resolveLocally(props, copiesProp, { ...baseOptions }, copies0, excludes, protectedKeys);
   const seen = new Set<string>();
   let lastError = "";
+  const triedSupplier = new Set<string>();
+  let supplierBase: Record<string, any> | null = null;
 
-  for (let attempt = 0; attempt < 14; attempt++) {
+  for (let attempt = 0; attempt < 40; attempt++) {
     const body = { ...options, copies };
     const stateKey = JSON.stringify(body);
     if (seen.has(stateKey)) break;
     seen.add(stateKey);
 
     const data = await callPrice(sb, anon, sku, body);
-    if (data && !data.error && !data.errorMessage) return { data, copies };
+    if (data && !data.error && !data.errorMessage) return { data, copies, options };
     lastError = data?.errorMessage || data?.error || "";
 
     const missing = parseMissingProps(lastError);
@@ -265,6 +269,45 @@ async function resolvePrice(
         if (v !== undefined && options[slug] !== v) { options[slug] = v; added = true; }
       }
       if (added) { ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys)); continue; }
+    }
+
+    // Same rules as the on-site configurator (ProductDetail.tsx resolvePrice).
+    const notFound: string[] = [];
+    { const re = /option not found for property\s+([a-zA-Z0-9_.-]+)/g; let m: RegExpExecArray | null;
+      while ((m = re.exec(lastError))) if (!notFound.includes(m[1])) notFound.push(m[1]); }
+    if (notFound.length) {
+      let added = false;
+      for (const slug of notFound) {
+        const prop = findProp(slug);
+        if (!prop) continue;
+        const nullable = (prop.options || []).find((o) => o.nullable && o.slug != null);
+        const v = nullable ? String(nullable.slug) : realOptionValue(prop);
+        if (v !== undefined && options[slug] !== v) { options[slug] = v; added = true; }
+      }
+      if (added) continue;
+    }
+    if (/copies does not match any range set/i.test(lastError)) {
+      const cands = copiesCandidates(copiesProp, options.printingmethod).map(Number).filter((n) => !Number.isNaN(n)).sort((a, b) => a - b);
+      const nextQty = cands.find((n) => n >= copies) ?? cands[cands.length - 1];
+      if (nextQty !== undefined && nextQty !== copies) { copies = nextQty; continue; }
+    }
+    if (/no supplier prices/i.test(lastError)) {
+      if (!supplierBase) supplierBase = { ...options };
+      let changed = false;
+      for (const prop of props) {
+        const slug = prop.slug;
+        if (slug === "copies" || slug === "size" || slug === "material") continue;
+        if (options[slug] === undefined || triedSupplier.has(slug)) continue;
+        const cands = (prop.options || []).filter((o) => !o.nullable && o.slug != null).map((o) => String(o.slug)).filter((c) => c !== String(options[slug]));
+        for (const cand of cands) {
+          const r = resolveLocally(props, copiesProp, { ...options, [slug]: cand }, copies, excludes, protectedKeys);
+          if (seen.has(JSON.stringify({ ...r.options, copies: r.copies }))) continue;
+          ({ options, copies } = r); changed = true; break;
+        }
+        if (!changed) { triedSupplier.add(slug); if (supplierBase[slug] !== undefined) options[slug] = supplierBase[slug]; }
+        if (changed) break;
+      }
+      if (changed) continue;
     }
 
     const groups = parseExcludedGroups(lastError);
@@ -312,6 +355,13 @@ async function computePrice(sb: string, anon: string, sku: string): Promise<Prod
     if (v !== undefined) hiddenRequired[prop.slug] = v;
   }
 
+  // folders: same real Print.com prefill as the configurator (offset, 170 g).
+  if (sku === "folders") {
+    const pm = allProps.find((p) => p.slug === "printingmethod");
+    if (pm?.options?.some((o) => String(o.slug) === "offset")) cleanOptions.printingmethod = "offset";
+    const mat = allProps.find((p) => p.slug === "material");
+    if (mat?.options?.some((o) => String(o.slug) === "170gr_gesatineerd_mc")) cleanOptions.material = "170gr_gesatineerd_mc";
+  }
   const baseOptions = { ...hiddenRequired, ...cleanOptions };
   const copiesProp = allProps.find((p) => p.slug === "copies");
   const resolved = await resolvePrice(sb, anon, sku, product, baseOptions, copies, copiesProp);
@@ -319,7 +369,17 @@ async function computePrice(sb: string, anon: string, sku: string): Promise<Prod
 
   const price = getResalePrice(resolved.data);
   if (!Number.isFinite(price) || price <= 0) return null;
-  return { sku, price, copies: resolved.copies };
+  // Real colour of the priced default configuration (never invented):
+  // only product-colour properties (e.g. color_textile), never print colours.
+  let color: string | undefined;
+  for (const prop of allProps) {
+    if (!/(^|_)colou?r(_textile|_product|_item)?$/.test(prop.slug) || /print|summary|ink/.test(prop.slug)) continue;
+    const val = resolved.options[prop.slug];
+    if (val === undefined) continue;
+    const opt = (prop.options || []).find((o) => String(o.slug) === String(val) && !o.nullable);
+    if (opt?.name) { color = String(opt.name).trim(); break; }
+  }
+  return color ? { sku, price, copies: resolved.copies, color } : { sku, price, copies: resolved.copies };
 }
 
 /* --------------------------------------------------------------------------
