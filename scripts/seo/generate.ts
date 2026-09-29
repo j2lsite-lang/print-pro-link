@@ -226,6 +226,41 @@ async function main() {
   write("local-regions.xml", byScope("region"), "0.5", "monthly");
   writeFileSync(resolve("public/sitemap.xml"), index(files));
 
+  // 2b. Google Merchant Center feed — built from the SAME Product/Offer JSON-LD
+  //     as the product pages (price = displayed price). Products without a real
+  //     price are excluded (never 0 €, never invented).
+  const esc = (s: string) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const items: string[] = [];
+  for (const p of productPages) {
+    const lds = (Array.isArray((p as any).jsonLd) ? (p as any).jsonLd : [(p as any).jsonLd]).filter(Boolean);
+    const ld = lds.find((x: any) => x["@type"] === "Product");
+    const price = ld?.offers?.price;
+    if (!ld || !price || price <= 0 || !ld.image) continue;
+    const type = (p.breadcrumb || []).slice(2, -1).map((b) => b.name).join(" > ");
+    items.push([
+      "    <item>",
+      `      <g:id>${esc(ld.sku)}</g:id>`,
+      `      <g:title>${esc(String(ld.name).slice(0, 150))}</g:title>`,
+      `      <g:description>${esc(String(ld.description || p.description).slice(0, 5000))}</g:description>`,
+      `      <g:link>${esc(ld.url)}</g:link>`,
+      `      <g:image_link>${esc(ld.image)}</g:image_link>`,
+      `      <g:price>${Number(price).toFixed(2)} EUR</g:price>`,
+      `      <g:availability>in_stock</g:availability>`,
+      `      <g:condition>new</g:condition>`,
+      `      <g:brand>J2L Print</g:brand>`,
+      `      <g:mpn>${esc(ld.sku)}</g:mpn>`,
+      `      <g:identifier_exists>no</g:identifier_exists>`,
+      ld.color ? `      <g:color>${esc(ld.color)}</g:color>` : "",
+      type ? `      <g:product_type>${esc(type)}</g:product_type>` : "",
+      "    </item>",
+    ].filter(Boolean).join("\n"));
+  }
+  writeFileSync(
+    resolve("public/google-merchant.xml"),
+    `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n  <channel>\n    <title>J2L Print</title>\n    <link>${BASE_URL}</link>\n    <description>Catalogue J2L Print — impression en ligne</description>\n${items.join("\n")}\n  </channel>\n</rss>\n`,
+  );
+  console.log(`Merchant feed: ${items.length} products`);
+
   // 3. keep the Cloudflare worker geographic + product + theme arrays in sync
   syncWorker(productSlugs, themeSlugs, localOfferSlugs);
   console.log(`Local pages: ${localPages.length} (offers=${localOfferSlugs.length})`);
