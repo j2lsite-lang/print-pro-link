@@ -13,7 +13,6 @@ import { loadGeo, CITY_SLUG_REDIRECTS, REMOVED_GEO_PATHS } from "./geo-data";
 import type { SeoPage } from "../../src/seo/types";
 
 const BASE_URL = "https://j2lprint.fr";
-const BUILD_DATE = new Date().toISOString().slice(0, 10);
 
 // Service pages that already exist as real, published React routes.
 const SERVICE_PATHS = [
@@ -25,11 +24,16 @@ const SERVICE_PATHS = [
 
 interface Entry { path: string; priority: string; changefreq: string; lastmod?: string }
 
-function urlset(entries: Entry[]): string {
+// <lastmod> only from a real, page-specific modification date — never the build date.
+const fileLastmod = new Map<string, string>();
+
+function urlset(entries: Entry[], file?: string): string {
+  const real = entries.map((e) => e.lastmod).filter(Boolean) as string[];
+  if (file && real.length) fileLastmod.set(file, real.sort().at(-1)!);
   const urls = entries.map((e) => [
     "  <url>",
     `    <loc>${BASE_URL}${e.path}</loc>`,
-    `    <lastmod>${e.lastmod || BUILD_DATE}</lastmod>`,
+    ...(e.lastmod ? [`    <lastmod>${e.lastmod}</lastmod>`] : []),
     `    <changefreq>${e.changefreq}</changefreq>`,
     `    <priority>${e.priority}</priority>`,
     "  </url>",
@@ -41,7 +45,7 @@ function index(files: string[]): string {
   const items = files.map((f) => [
     "  <sitemap>",
     `    <loc>${BASE_URL}/sitemaps/${f}</loc>`,
-    `    <lastmod>${BUILD_DATE}</lastmod>`,
+    ...(fileLastmod.has(f) ? [`    <lastmod>${fileLastmod.get(f)}</lastmod>`] : []),
     "  </sitemap>",
   ].join("\n")).join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</sitemapindex>\n`;
@@ -197,7 +201,7 @@ async function main() {
   const g = group(pages);
   const files: string[] = [];
   // Real per-page modification dates when the source provides one
-  // (product `updatedAt`); otherwise the sitemap falls back to the build date.
+  // (product `updatedAt`); otherwise <lastmod> is omitted.
   const lastmodByPath = new Map<string, string>();
   for (const p of [...pages, ...productPages, ...themePages]) {
     if (p.lastmod) lastmodByPath.set(p.path, p.lastmod);
@@ -206,7 +210,7 @@ async function main() {
     if (!paths.length) return;
     writeFileSync(
       resolve(dir, name),
-      urlset(paths.map((path) => ({ path, priority, changefreq: freq, lastmod: lastmodByPath.get(path) }))),
+      urlset(paths.map((path) => ({ path, priority, changefreq: freq, lastmod: lastmodByPath.get(path) })), name),
     );
     files.push(name);
   };
