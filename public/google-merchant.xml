@@ -223,7 +223,7 @@
     <item>
       <g:id>all-over-printed-envelopes</g:id>
       <g:title>Enveloppes entièrement imprimées</g:title>
-      <g:description>Enveloppes entièrement imprimées, référence de notre univers impression papier, se personnalise et se commande en ligne. Options réellement disponibles pour cette référence : formats 229 x 162 mm, 220 x 110 mm, 146 x 146 mm, support papier couché et impression recto ou recto verso.</g:description>
+      <g:description>Enveloppes entièrement imprimées, référence de notre univers impression papier, se personnalise et se commande en ligne. Options réellement disponibles pour cette référence : formats 229 x 162 mm, DL, 146 x 146 mm, support papier couché et impression recto ou recto verso.</g:description>
       <g:link>https://j2lprint.fr/products/all-over-printed-envelopes</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/6EhF8wpIYq4uqL0NXQ3NKL/d9af2089fbe51e4e3c1ec3a05a992822/All_over_printed_envelopes_collage_1.jpg</g:image_link>
       <g:price>17.80 EUR</g:price>
@@ -328,7 +328,7 @@
       <g:description>Besoin de mugs personnalisés ? Gobelet Americano® medio 350ml se configure en ligne et s'adresse à associations, tourisme et entreprises, avec une fabrication soignée et un prix affiché en ligne.</g:description>
       <g:link>https://j2lprint.fr/products/americano-medio</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/4RK6yDOJkrNmaXb8q9DK1O/02101270b836417d2f75fdba570f6898/Bottle_Americano_red_medio.jpg</g:image_link>
-      <g:price>658.40 EUR</g:price>
+      <g:price>666.30 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -1113,7 +1113,7 @@
       <g:description>Marque-page, référence de notre univers impression papier, se personnalise et se commande en ligne.</g:description>
       <g:link>https://j2lprint.fr/products/bookmarks</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/5UWuc2irJUTQyUCxiyKvrb/03e371b3ab8ade19b14875f0ebf8a475/Bookmark_Book.jpg</g:image_link>
-      <g:price>81.70 EUR</g:price>
+      <g:price>76.70 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -1326,7 +1326,7 @@
     <item>
       <g:id>business-stationery</g:id>
       <g:title>Papeterie d'entreprise</g:title>
-      <g:description>Papeterie d'entreprise fait partie de notre gamme impression papier et se configure directement en ligne. Options réellement disponibles pour cette référence : formats 220 x 110 mm, 220 x 156 mm, 220 x 312 mm, support papier couché, impression recto ou recto verso et finitions œillets.</g:description>
+      <g:description>Papeterie d'entreprise fait partie de notre gamme impression papier et se configure directement en ligne. Options réellement disponibles pour cette référence : formats DL, 220 x 156 mm, 220 x 312 mm, support papier couché, impression recto ou recto verso et finitions œillets.</g:description>
       <g:link>https://j2lprint.fr/products/business-stationery</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/7hYGdo3TxlExfAX0k8JUdO/4564ec65b1c546ba8900e83414304cd4/Stationary.jpg</g:image_link>
       <g:price>80.30 EUR</g:price>
@@ -1399,7 +1399,7 @@
       <g:description>Besoin de gourdes et bouteilles personnalisées ? Gourde isolante Camelbak se configure en ligne et s'adresse à sport, entreprises et événements, avec une fabrication soignée et un prix affiché en ligne.</g:description>
       <g:link>https://j2lprint.fr/products/camelbak-chute-mag</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/5YqIjDHEITzfop9eVXDy0y/dc445e7dabdd3692fd18859f026c6b9a/Bottle_new_camelback_chute_white_2.jpg</g:image_link>
-      <g:price>611.00 EUR</g:price>
+      <g:price>618.40 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -1414,7 +1414,7 @@
       <g:description>Tasse Camelbak fait partie de notre offre de mugs personnalisés. Pensé pour cadeaux de fin d'année, il se personnalise (format, sublimation panoramique, quantité) directement en ligne.</g:description>
       <g:link>https://j2lprint.fr/products/camelbak-hot-cap</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/1nNMbJ0BFmcRoNx4e4NXcn/bfffd756aa2ca4c54aa10a8120a103c6/Bottle_new_camelback_hot_cap_white_2.jpg</g:image_link>
-      <g:price>43.60 EUR</g:price>
+      <g:price>44.10 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -2404,7 +2404,6 @@
       <g:brand>J2L Print</g:brand>
       <g:mpn>cotton-bags-drawstring</g:mpn>
       <g:identifier_exists>no</g:identifier_exists>
-      <g:color>Ecru</g:color>
       <g:product_type>Emballages &amp; Sacs &gt; Emballages cadeaux</g:product_type>
     </item>
     <item>
@@ -2809,7 +2808,7 @@
       <g:description>Commandez petit présentoir en cube en ligne, dans notre univers publicité intérieure : options et prix s'affichent immédiatement. Options réellement disponibles pour cette référence : formats 20 x 20 cm, 30 x 30 cm, 40 x 40 cm, support carton et impression recto.</g:description>
       <g:link>https://j2lprint.fr/products/display-cube</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/4BwKvxUbnNvaVYIAfm43v7/a75832181466dc2fe4e97fdf2ec52537/Display_Products1753.jpg</g:image_link>
-      <g:price>6.30 EUR</g:price>
+      <g:price>7.30 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -2894,7 +2893,7 @@
       <g:description>Accroche-porte fait partie de notre gamme impression papier et se configure directement en ligne.</g:description>
       <g:link>https://j2lprint.fr/products/door-hangers</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/54TIuM4XaJQAGWnhKEYtd8/3973faecec10711a61c00d878427bbb2/Doorhangers.jpg</g:image_link>
-      <g:price>59.30 EUR</g:price>
+      <g:price>55.70 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -3491,7 +3490,7 @@
       <g:description>Commandez set d'application flexxs en ligne, dans notre univers publicité intérieure : options et prix s'affichent immédiatement. prix affiché en ligne et livraison en France.</g:description>
       <g:link>https://j2lprint.fr/products/flexxs-application-set</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/5FPaey7cCaMEXqWwXcGmg5/e644b5a2e845ec707b63a5cf03833496/Flexxs_application_set_1.jpg</g:image_link>
-      <g:price>54.50 EUR</g:price>
+      <g:price>50.90 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -3505,7 +3504,7 @@
       <g:description>Produit nettoyant Flexxs fait partie de notre gamme publicité intérieure et se configure directement en ligne. prix affiché en ligne et livraison en France.</g:description>
       <g:link>https://j2lprint.fr/products/flexxs-cleaner</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/4rywy4PJwP6FBB5qJyeDIK/a37193754ab064a1352a3a6fdbcbace9/Flexxs-cleaner.jpg</g:image_link>
-      <g:price>26.70 EUR</g:price>
+      <g:price>23.70 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -3519,7 +3518,7 @@
       <g:description>Configurez feutre flexxs en ligne parmi notre offre publicité intérieure et obtenez un prix immédiat. prix affiché en ligne et livraison en France.</g:description>
       <g:link>https://j2lprint.fr/products/flexxs-felt</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/1JyDFtbvqBRDjzJp4IlKKY/4e327d8a020d2a4db384981ad45ec610/Flexxs-felt.jpg</g:image_link>
-      <g:price>53.30 EUR</g:price>
+      <g:price>54.80 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -3533,7 +3532,7 @@
       <g:description>Configurez colle flexxs en ligne parmi notre offre publicité intérieure et obtenez un prix immédiat. prix affiché en ligne et livraison en France.</g:description>
       <g:link>https://j2lprint.fr/products/flexxs-glue</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/3yfKT4rQMwspvONKfIAM4r/120bad94d395a4b36a7510a451495fe1/Flexx-glue-family.jpg</g:image_link>
-      <g:price>28.60 EUR</g:price>
+      <g:price>25.80 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -3547,7 +3546,7 @@
       <g:description>Commandez colle en spray flexxs en ligne, dans notre univers publicité intérieure : options et prix s'affichent immédiatement. prix affiché en ligne et livraison en France.</g:description>
       <g:link>https://j2lprint.fr/products/flexxs-glue-heavy-spray</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/3hTyYw9npDj5MCZMTvOpeb/6659d07ef07726a95fb575980e4347ef/Flexxs-contact-spray.jpg</g:image_link>
-      <g:price>27.20 EUR</g:price>
+      <g:price>35.30 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -3561,7 +3560,7 @@
       <g:description>Commandez primaire d'accrochage flexxs en ligne, dans notre univers publicité intérieure : options et prix s'affichent immédiatement. prix affiché en ligne et livraison en France.</g:description>
       <g:link>https://j2lprint.fr/products/flexxs-primer</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/3hOxyVnYrycG8TQVQRTc26/6695c2abcc80dbd6243d86352332e0a6/Flexxs-primer-family.jpg</g:image_link>
-      <g:price>28.80 EUR</g:price>
+      <g:price>25.70 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -3575,7 +3574,7 @@
       <g:description>Enduit scellant Flexxs fait partie de notre gamme publicité intérieure et se configure directement en ligne. prix affiché en ligne et livraison en France.</g:description>
       <g:link>https://j2lprint.fr/products/flexxs-sealer</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/5DpZtveKMa2ouzFnUirkih/7ee4205990b1b39363bf144822a83ea9/Flexxs-Sealer.jpg</g:image_link>
-      <g:price>118.10 EUR</g:price>
+      <g:price>123.10 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -3589,7 +3588,7 @@
       <g:description>Configurez raclette de coin flexxs en ligne parmi notre offre publicité intérieure et obtenez un prix immédiat. prix affiché en ligne et livraison en France.</g:description>
       <g:link>https://j2lprint.fr/products/flexxs-squeegee-straight-edge</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/57YsT5z3tFmDJ4VtXLN0sl/3c0fa1dc49b2f821913ef823432a34a8/Flexxs-squeegee.jpg</g:image_link>
-      <g:price>9.30 EUR</g:price>
+      <g:price>6.20 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -3603,7 +3602,7 @@
       <g:description>Commandez enduit de finition murals flexxs en ligne, dans notre univers publicité intérieure : options et prix s'affichent immédiatement. prix affiché en ligne et livraison en France.</g:description>
       <g:link>https://j2lprint.fr/products/flexxs-wallfinish</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/2BKLgX7YY5vSY4ZKqxysKG/4597200c5a6815432b51cd578fe39688/Flexxs-wall-finish-family.jpg</g:image_link>
-      <g:price>51.90 EUR</g:price>
+      <g:price>48.70 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -4916,7 +4915,7 @@
       <g:description>Configurez grattoir à glace avec gant en ligne parmi notre offre objets publicitaires &amp; cadeaux et obtenez un prix immédiat. Options réellement disponibles pour cette référence : format 26.5 x 1.5 cm et impression recto. Quantités proposées par le configurateur : de 250 à 5000 exemplaires.</g:description>
       <g:link>https://j2lprint.fr/products/ice-scraper-glove</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/33QrDTqg37rTLSq47a3OIc/f5a4725d480cd0849a1e8f34263be91b/ijskrabbers_handschoen_zwart-bewerkt_720.jpg</g:image_link>
-      <g:price>434.80 EUR</g:price>
+      <g:price>373.10 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -5872,7 +5871,7 @@
       <g:description>Gourde Mepal Ellipse : gourdes et bouteilles personnalisées à configurer en ligne chez J2L Print. Idéal pour cadeaux d'entreprise et fidélisation, ce support se commande sur mesure et se livre en France.</g:description>
       <g:link>https://j2lprint.fr/products/mepal-drinking-bottle</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/5EijcVwTSHBUkOo9zb4H4E/93e08203efc5b5bb44b5d62e190dd316/Drinkbottles_Mepal_screen_printing_-_blue.jpg</g:image_link>
-      <g:price>255.70 EUR</g:price>
+      <g:price>258.80 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -6825,7 +6824,7 @@
       <g:description>Isolation acoustique en PET fait partie de notre gamme publicité intérieure et se configure directement en ligne. Options réellement disponibles pour cette référence : format 100 x 100 cm et impression recto. Quantités proposées par le configurateur : de 1 à 100 exemplaires.</g:description>
       <g:link>https://j2lprint.fr/products/pet-felt</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/3fatIne8luB8iur1u8O0h9/60ea02abaf7f3004e9f17c1aab35e8c7/Pet-vilt-printed-close-up.jpg</g:image_link>
-      <g:price>84.10 EUR</g:price>
+      <g:price>77.20 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -6839,7 +6838,7 @@
       <g:description>Lettre en isolation acoustique PET fait partie de notre gamme publicité intérieure et se configure directement en ligne. Options réellement disponibles pour cette référence : format 100 x 100 cm. Quantités proposées par le configurateur : de 1 à 100 exemplaires.</g:description>
       <g:link>https://j2lprint.fr/products/pet-felt-letters</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/5jJkLbia47JzoBnRvnO2e/abd665dc6a36f5d445bc81905dd9f4ad/Pet_Felt_Total_Letters.jpg</g:image_link>
-      <g:price>95.80 EUR</g:price>
+      <g:price>88.00 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -6895,7 +6894,7 @@
       <g:description>Optez pour panneaux rigides personnalisés avec panneau mural acoustique PET-felt : un support adapté à collectivités, artisans et agences immobilières. Choisissez vos options en ligne et obtenez un prix immédiat.</g:description>
       <g:link>https://j2lprint.fr/products/pet-felt-wall-panels</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/1Ut0PZ9VNNi6WI5bl5PaRS/e92419c10e2f7f3a9a35169103d622da/Pet-Vilt-collage.jpg</g:image_link>
-      <g:price>309.70 EUR</g:price>
+      <g:price>284.30 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -7286,6 +7285,36 @@
       <g:mpn>polo-basic-5</g:mpn>
       <g:identifier_exists>no</g:identifier_exists>
       <g:color>Noir</g:color>
+      <g:product_type>Textiles &amp; Accessoires &gt; Vêtements</g:product_type>
+    </item>
+    <item>
+      <g:id>polo-basic-6</g:id>
+      <g:title>Polo Russell Classic Polycotton</g:title>
+      <g:description>Optez pour t-shirts et textiles personnalisés avec polo Russell Classic Polycotton : un support adapté à entreprises, sport et événements. Choisissez vos options en ligne et obtenez un prix immédiat.</g:description>
+      <g:link>https://j2lprint.fr/products/polo-basic-6</g:link>
+      <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/5DwRqQ6WTP4hUY0AUl3Kdr/b7ff5a2e7f02cd31866194492322461b/Rus-Men-sClassicPolycottonPolo53900frenchnavy4520.jpg</g:image_link>
+      <g:price>165.20 EUR</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:condition>new</g:condition>
+      <g:brand>J2L Print</g:brand>
+      <g:mpn>polo-basic-6</g:mpn>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:color>Noir</g:color>
+      <g:product_type>Textiles &amp; Accessoires &gt; Vêtements</g:product_type>
+    </item>
+    <item>
+      <g:id>polo-basic-7</g:id>
+      <g:title>Polo Russell Fitted Stretch</g:title>
+      <g:description>Polo Russell Fitted Stretch fait partie de notre offre de t-shirts et textiles personnalisés. Pensé pour merchandising et boutiques, il se personnalise (format, sérigraphie, quantité) directement en ligne.</g:description>
+      <g:link>https://j2lprint.fr/products/polo-basic-7</g:link>
+      <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/135INPkJ8sGITdpKoTXpyI/3ac5b51bad82d279afde68ad53102f6a/Rus-Men-sFittedStretchPolo56700azure15000.jpg</g:image_link>
+      <g:price>193.60 EUR</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:condition>new</g:condition>
+      <g:brand>J2L Print</g:brand>
+      <g:mpn>polo-basic-7</g:mpn>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:color>Bleu azur</g:color>
       <g:product_type>Textiles &amp; Accessoires &gt; Vêtements</g:product_type>
     </item>
     <item>
@@ -7870,7 +7899,7 @@
     <item>
       <g:id>printed-envelopes</g:id>
       <g:title>Enveloppe</g:title>
-      <g:description>Commandez enveloppe en ligne, dans notre univers impression papier : options et prix s'affichent immédiatement. Options réellement disponibles pour cette référence : formats 220 x 110 mm, 220 x 156 mm, 220 x 312 mm, support papier couché et impression recto.</g:description>
+      <g:description>Commandez enveloppe en ligne, dans notre univers impression papier : options et prix s'affichent immédiatement. Options réellement disponibles pour cette référence : formats DL, 220 x 156 mm, 220 x 312 mm, support papier couché et impression recto. prix affiché en ligne et livraison en France.</g:description>
       <g:link>https://j2lprint.fr/products/printed-envelopes</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/4A8eTXtcgSJZTzelH1363r/9ebeae68dc7e2de2d1333ec12d85c13d/envelopes-catalog_720.jpg</g:image_link>
       <g:price>125.20 EUR</g:price>
@@ -11527,7 +11556,7 @@
       <g:description>Configurez collerette en ligne parmi notre offre emballages &amp; sacs et obtenez un prix immédiat.</g:description>
       <g:link>https://j2lprint.fr/products/wine-hang-tags</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/5Ba46WF3C7berlvAVTkc5y/84efb17d91b4fe35b43b276c9dd218f5/Wine_Hangtags_small_C.jpg</g:image_link>
-      <g:price>59.00 EUR</g:price>
+      <g:price>55.60 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
@@ -11597,7 +11626,7 @@
       <g:description>Commandez coffret à vin en pet-felt en ligne, dans notre univers emballages &amp; sacs : options et prix s'affichent immédiatement. Options réellement disponibles pour cette référence : format 215 x 110 mm et impression recto. Quantités proposées par le configurateur : de 1 à 100 exemplaires.</g:description>
       <g:link>https://j2lprint.fr/products/wineboxes-pet-felt</g:link>
       <g:image_link>https://images.ctfassets.net/ez9mp376cw6o/26wZVMQTbcDBauBhoPoZqW/d555536dd61b640f5b8338950eb61dce/Winebox-Felt-Total.jpg</g:image_link>
-      <g:price>354.60 EUR</g:price>
+      <g:price>325.50 EUR</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>new</g:condition>
       <g:brand>J2L Print</g:brand>
