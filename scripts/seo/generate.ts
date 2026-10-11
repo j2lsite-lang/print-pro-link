@@ -9,6 +9,7 @@ import { resolve } from "path";
 import { buildAllPages, buildProductPages, buildThemePages } from "./build-pages";
 import { buildLocalPages, LOCAL_OFFERS } from "./build-local";
 import { rmSync } from "fs";
+import { applyPriorityLinks } from "./priority-links";
 import { loadGeo, CITY_SLUG_REDIRECTS, REMOVED_GEO_PATHS } from "./geo-data";
 import type { SeoPage } from "../../src/seo/types";
 
@@ -119,6 +120,11 @@ async function main() {
   mkdirSync(genDir, { recursive: true });
   const byPath: Record<string, SeoPage> = {};
   for (const p of pages) byPath[p.path] = slim(p);
+  // productsByPath is needed for breadcrumbs of priority product targets.
+  const __prodForLinks: Record<string, SeoPage> = {};
+  for (const p of await buildProductPages()) __prodForLinks[p.path] = p;
+  const pl = applyPriorityLinks(byPath, __prodForLinks);
+  console.log(`Priority links: ${pl.added} added on ${pl.sources.length} pages: ${pl.sources.join(", ")}`);
   writeFileSync(resolve(genDir, "pages.json"), JSON.stringify(byPath, null, 0));
 
   // 1b. product pages — prerendered separately (products.json) so the runtime
