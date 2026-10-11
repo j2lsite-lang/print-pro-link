@@ -349,6 +349,127 @@ function seoOriginPathname(pathname) {
     : `${pathname}/index.html`;
 }
 
+/** Maillage Search Console (20 liens) : injecté côté HTML uniquement si la page
+ *  servie ne contient pas déjà le bloc « Pages recherchées » (aucun doublon). */
+const PRIORITY_LINKS = {
+ "/catalogue": [
+  [
+   "imprimerie en ligne J2L Print",
+   "/"
+  ]
+ ],
+ "/categorie/impression-papier": [
+  [
+   "affiche magnétique personnalisée",
+   "/products/magnet-posters"
+  ],
+  [
+   "papeterie d'entreprise personnalisée",
+   "/products/business-stationery"
+  ],
+  [
+   "bague sandwich personnalisée",
+   "/products/food-wrappers"
+  ]
+ ],
+ "/categorie/impression-papier/papeterie": [
+  [
+   "papeterie d'entreprise personnalisée",
+   "/products/business-stationery"
+  ]
+ ],
+ "/categorie/impression-papier/catering-restaurants": [
+  [
+   "bague sandwich personnalisée",
+   "/products/food-wrappers"
+  ]
+ ],
+ "/categorie/impression-papier/flyers-depliants-affiches": [
+  [
+   "affiche magnétique personnalisée",
+   "/products/magnet-posters"
+  ]
+ ],
+ "/categorie/publicite-interieure": [
+  [
+   "cadre textile tendu personnalisé",
+   "/products/textile-stretcher-frames"
+  ],
+  [
+   "toile photo Decotex personnalisée",
+   "/products/photo-decotex"
+  ]
+ ],
+ "/categorie/publicite-interieure/toiles-textiles-deco-interieure": [
+  [
+   "cadre textile tendu personnalisé",
+   "/products/textile-stretcher-frames"
+  ],
+  [
+   "toile photo Decotex personnalisée",
+   "/products/photo-decotex"
+  ]
+ ],
+ "/categorie/objets-publicitaires-cadeaux": [
+  [
+   "boîte clic clac publicitaire",
+   "/products/click-clack-can"
+  ]
+ ],
+ "/categorie/objets-publicitaires-cadeaux/nourriture-boissons": [
+  [
+   "boîte clic clac publicitaire",
+   "/products/click-clack-can"
+  ]
+ ],
+ "/imprimerie": [
+  [
+   "imprimerie en ligne J2L Print",
+   "/"
+  ]
+ ],
+ "/region/auvergne-rhone-alpes": [
+  [
+   "impression à Roanne",
+   "/ville/roanne"
+  ]
+ ],
+ "/region/grand-est": [
+  [
+   "imprimerie à Saint-Louis",
+   "/ville/saint-louis"
+  ],
+  [
+   "imprimerie à Thionville",
+   "/ville/thionville"
+  ],
+  [
+   "imprimerie à Troyes",
+   "/ville/troyes"
+  ],
+  [
+   "imprimerie à Reims",
+   "/ville/reims"
+  ]
+ ],
+ "/region/nouvelle-aquitaine": [
+  [
+   "imprimerie à Pau",
+   "/ville/pau"
+  ]
+ ]
+};
+
+function injectPriorityLinks(pathname, text) {
+  const key = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  const links = PRIORITY_LINKS[key];
+  if (!links || text.includes("Pages recherchées")) return text;
+  const esc = (v) => v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const html = `<section class="seo-links"><h2>Pages recherchées</h2><ul>${links.map(([l, h]) => `<li><a href="${h}">${esc(l)}</a></li>`).join("")}</ul></section>`;
+  if (text.includes("</main>")) return text.replace("</main>", `${html}</main>`);
+  return text.replace("</body>", `${html}</body>`);
+}
+
 /** Réécrit le domaine dorigine vers le domaine canonique dans le HTML. */
 function rewriteHtmlDomain(text) {
   return text
@@ -545,6 +666,7 @@ export default {
     if (ct.includes("text/html")) {
       let body = await response.text();
       body = rewriteHtmlDomain(body);
+      if (response.status === 200) body = injectPriorityLinks(p, body);
       const h = new Headers(response.headers);
       h.delete("Content-Length");
       const cacheable = isCacheableHtml(p) && response.status === 200;
