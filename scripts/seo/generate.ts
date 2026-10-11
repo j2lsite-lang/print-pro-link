@@ -120,11 +120,6 @@ async function main() {
   mkdirSync(genDir, { recursive: true });
   const byPath: Record<string, SeoPage> = {};
   for (const p of pages) byPath[p.path] = slim(p);
-  // productsByPath is needed for breadcrumbs of priority product targets.
-  const __prodForLinks: Record<string, SeoPage> = {};
-  for (const p of await buildProductPages()) __prodForLinks[p.path] = p;
-  const pl = applyPriorityLinks(byPath, __prodForLinks);
-  console.log(`Priority links: ${pl.added} added on ${pl.sources.length} pages: ${pl.sources.join(", ")}`);
   writeFileSync(resolve(genDir, "pages.json"), JSON.stringify(byPath, null, 0));
 
   // 1b. product pages — prerendered separately (products.json) so the runtime
@@ -134,6 +129,9 @@ async function main() {
   const productsByPath: Record<string, SeoPage> = {};
   for (const p of productPages) productsByPath[p.path] = slim(p);
   writeFileSync(resolve(genDir, "products.json"), JSON.stringify(productsByPath, null, 0));
+  const pl = applyPriorityLinks(byPath, productsByPath);
+  console.log(`Priority links: ${pl.added} added on ${pl.sources.length} pages: ${pl.sources.join(", ")}`);
+  writeFileSync(resolve(genDir, "pages.json"), JSON.stringify(byPath, null, 0));
   const productSlugs = productPages.map((p) => p.path.replace(/^\/products\//, ""));
 
   // 1b-ter. product-meta.json — sku → displayed name + image, read by the
