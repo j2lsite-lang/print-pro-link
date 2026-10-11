@@ -9,6 +9,7 @@ import { resolve } from "path";
 import { buildAllPages, buildProductPages, buildThemePages } from "./build-pages";
 import { buildLocalPages, LOCAL_OFFERS } from "./build-local";
 import { rmSync } from "fs";
+import { applyPriorityLinks } from "./priority-links";
 import { loadGeo, CITY_SLUG_REDIRECTS, REMOVED_GEO_PATHS } from "./geo-data";
 import type { SeoPage } from "../../src/seo/types";
 
@@ -128,6 +129,9 @@ async function main() {
   const productsByPath: Record<string, SeoPage> = {};
   for (const p of productPages) productsByPath[p.path] = slim(p);
   writeFileSync(resolve(genDir, "products.json"), JSON.stringify(productsByPath, null, 0));
+  const pl = applyPriorityLinks(byPath, productsByPath);
+  console.log(`Priority links: ${pl.added} added on ${pl.sources.length} pages: ${pl.sources.join(", ")}`);
+  writeFileSync(resolve(genDir, "pages.json"), JSON.stringify(byPath, null, 0));
   const productSlugs = productPages.map((p) => p.path.replace(/^\/products\//, ""));
 
   // 1b-ter. product-meta.json — sku → displayed name + image, read by the
