@@ -82,7 +82,7 @@ export const GSC_PAGES: Record<string, Opt> = {
     links: [["supports publicitaires PLV à Bordeaux", L("bordeaux", "publicite-interieure-plv")], ["roll-up à Bordeaux", L("bordeaux", "roll-up")], ["flyers à Bordeaux", L("bordeaux", "flyers")]],
   },
   "/departement/bas-rhin": {
-    title: "Imprimerie en ligne Bas-Rhin (67) | J2L Print",
+    title: "Imprimerie en ligne dans le Bas-Rhin (67) | J2L Print",
     description: "Imprimerie en ligne dans le Bas-Rhin (67) : flyers, cartes de visite, bâches, roll-up et textiles pour Strasbourg, Haguenau, Sélestat. Prix immédiat.",
     h1: "Imprimerie en ligne dans le Bas-Rhin (67)",
     intro: "Imprimerie en ligne pour le Bas-Rhin : configurez flyers, cartes de visite, bâches, roll-up ou textiles personnalisés, le prix s'affiche immédiatement et la livraison couvre Strasbourg, Haguenau, Sélestat et tout le département.",
