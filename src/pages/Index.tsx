@@ -76,7 +76,7 @@ export default function Index() {
 
   useSEO({
     title: "Imprimerie en ligne & impression personnalisée | J2L Print",
-    description: "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. Devis gratuit, nous livrons partout.",
+    description: "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. Devis gratuit, nous livrons en France.",
     canonical: "https://j2lprint.fr/",
   });
 
@@ -229,7 +229,7 @@ export default function Index() {
                   Offset & numérique
                 </span>
                 <span className="rounded-2xl border border-border bg-foreground/5 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Livraison partout
+                  Livraison en France
                 </span>
                 <span className="rounded-2xl border border-border bg-foreground/5 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   Sur mesure
@@ -252,7 +252,7 @@ export default function Index() {
               {/* Subtext */}
               <p className="mb-10 max-w-xl text-lg leading-relaxed text-muted-foreground">
                 Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires.{" "}
-                <span className="text-foreground/90">Commandez en ligne, nous livrons partout.</span> Devis gratuit et sans engagement.
+                <span className="text-foreground/90">Commandez en ligne, nous livrons en France.</span> Devis gratuit et sans engagement.
               </p>
 
               {/* CTA */}

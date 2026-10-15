@@ -443,7 +443,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     // prerendered head/H1 is identical to what React renders — no divergence.
     title: "Imprimerie en ligne & impression personnalisée | J2L Print",
     description:
-      "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. prix affiché en ligne, nous livrons partout.",
+      "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. prix affiché en ligne, nous livrons en France.",
     h1: "J2L Print — Votre imprimerie en ligne",
     intro: [
       "J2L Print imprime tous vos supports de communication et vous livre en France. Configurez votre produit en ligne, validez votre fichier, recevez votre commande.",
