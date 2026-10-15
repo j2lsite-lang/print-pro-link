@@ -50,7 +50,7 @@ let cache: GeoData | null = null;
  * Régions/départements exclus du périmètre commercial J2L Print (DOM-TOM).
  * Leurs pages villes / départements / régions ne sont plus générées ni
  * référencées ; les anciennes URL sont redirigées en 301 vers /catalogue
- * par le Worker (REMOVED_GEO_PATHS). La Guadeloupe est conservée.
+ * par le Worker (REMOVED_GEO_PATHS), Guadeloupe comprise.
  */
 export const EXCLUDED_REGION_SLUGS = new Set([
   "guyane",
