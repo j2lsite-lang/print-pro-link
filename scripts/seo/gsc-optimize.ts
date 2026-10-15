@@ -19,7 +19,7 @@ const L = (city: string, slug: string) => `/ville/${city}/${slug}`;
 
 export const GSC_PAGES: Record<string, Opt> = {
   "/ville/rennes": {
-    title: "Imprimerie à Rennes : impression livrée en France | J2L Print",
+    title: "Imprimerie à Rennes : impression professionnelle | J2L Print",
     description: "Imprimerie pour Rennes (35) : flyers, cartes de visite, affiches, bâches et roll-up. Configuration simple, prix affiché immédiatement, livraison en France.",
     h1: "Imprimerie à Rennes : vos impressions professionnelles en ligne",
     intro: "Vous cherchez une imprimerie à Rennes ? Configurez vos flyers, cartes de visite, affiches ou bâches en ligne : le prix s'affiche immédiatement et la commande est livrée à Rennes et en Ille-et-Vilaine.",
