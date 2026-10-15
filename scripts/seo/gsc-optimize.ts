@@ -54,14 +54,14 @@ export const GSC_PAGES: Record<string, Opt> = {
     links: [["impression flyer à Troyes", L("troyes", "flyers")], ["dépliants à Troyes", L("troyes", "depliants")], ["cartes de visite à Troyes", L("troyes", "cartes-de-visite")]],
   },
   "/ville/epinal": {
-    title: "Imprimerie à Épinal : textiles personnalisés et print | J2L Print",
+    title: "Imprimerie à Épinal : textiles et impression | J2L Print",
     description: "Imprimerie à Épinal (88) : textiles personnalisés, flyers, cartes de visite, bâches et objets publicitaires. Prix affiché, livraison en France.",
     h1: "Imprimerie à Épinal : textiles personnalisés et impressions pros",
     intro: "À Épinal, personnalisez t-shirts, polos et sweats à votre logo, ou commandez flyers, cartes de visite et bâches : tout se configure en ligne avec un prix affiché immédiatement.",
     links: [["textiles personnalisés à Épinal", L("epinal", "textiles-personnalises")], ["flyers à Épinal", L("epinal", "flyers")], ["objets publicitaires à Épinal", L("epinal", "objets-publicitaires")]],
   },
   "/ville/colmar": {
-    title: "Imprimerie à Colmar : textiles personnalisés et print | J2L Print",
+    title: "Imprimerie à Colmar : textiles et impression | J2L Print",
     description: "Imprimerie à Colmar (68) : textiles personnalisés, flyers, affiches, bâches et objets publicitaires. Prix affiché en ligne et livraison en France.",
     h1: "Imprimerie à Colmar : textiles personnalisés et impressions pros",
     intro: "À Colmar, faites marquer vos textiles à votre logo ou imprimez flyers, affiches et bâches : configuration en ligne, prix affiché immédiatement, livraison dans le Haut-Rhin.",
@@ -82,7 +82,7 @@ export const GSC_PAGES: Record<string, Opt> = {
     links: [["supports publicitaires PLV à Bordeaux", L("bordeaux", "publicite-interieure-plv")], ["roll-up à Bordeaux", L("bordeaux", "roll-up")], ["flyers à Bordeaux", L("bordeaux", "flyers")]],
   },
   "/departement/bas-rhin": {
-    title: "Imprimerie en ligne Bas-Rhin (67) | J2L Print",
+    title: "Imprimerie en ligne dans le Bas-Rhin (67) | J2L Print",
     description: "Imprimerie en ligne dans le Bas-Rhin (67) : flyers, cartes de visite, bâches, roll-up et textiles pour Strasbourg, Haguenau, Sélestat. Prix immédiat.",
     h1: "Imprimerie en ligne dans le Bas-Rhin (67)",
     intro: "Imprimerie en ligne pour le Bas-Rhin : configurez flyers, cartes de visite, bâches, roll-up ou textiles personnalisés, le prix s'affiche immédiatement et la livraison couvre Strasbourg, Haguenau, Sélestat et tout le département.",
@@ -108,7 +108,7 @@ export const GSC_PAGES: Record<string, Opt> = {
     intro: "",
   },
   "/categorie/textiles-accessoires": {
-    title: "Textiles personnalisés avec logo : t-shirts, polos | J2L Print",
+    title: "Textiles personnalisés avec logo, t-shirts | J2L Print",
     description: "Textiles personnalisés avec logo : t-shirts, polos, sweats et casquettes en sérigraphie, broderie ou transfert. Prix affiché, livraison en France.",
     h1: "Textiles personnalisés avec logo pour entreprises et équipes",
     intro: "T-shirts, polos, sweats, casquettes : choisissez le modèle, la couleur, les tailles et les zones de marquage de votre logo, le prix se calcule directement en ligne.",
