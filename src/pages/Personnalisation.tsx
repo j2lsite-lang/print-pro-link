@@ -9,8 +9,8 @@ import { catalogVisuals } from "@/seo/data/catalog-visuals";
 
 export default function Personnalisation() {
   useSEO({
-    title: "Personnalisation textile & objets publicitaires – T-shirts, mugs, goodies | J2L Print",
-    description: "Personnalisation textile et objets publicitaires : t-shirts, polos, sweats, mugs, stylos, clés USB, goodies. Marquage sérigraphie, broderie, transfert. Livraison France.",
+    title: "Personnalisation textile et objets avec logo | J2L Print",
+    description: "Personnalisation textile et objets publicitaires avec logo : t-shirts, polos, sweats, mugs, stylos, tote bags. Sérigraphie, broderie, transfert. Livraison en France.",
     ogType: "website",
   });
 

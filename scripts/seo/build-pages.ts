@@ -1563,7 +1563,7 @@ function productMetaDescription(name: string, attrs: ProductAttributes | undefin
   if (!bits.length) return "";
   bits.splice(3);
   const verb = intent === "print" ? "à imprimer" : "à personnaliser avec votre logo";
-  return `${name} ${verb} : ${bits.join(", ")}. Prix affiché en ligne, prix affiché en ligne et livraison en France.`;
+  return `${name} ${verb} : ${bits.join(", ")}. Prix affiché en ligne, configuration en ligne et livraison en France.`;
 }
 
 /** Meta sous-catégorie : produits API réels rattachés (nombre + exemples). */
@@ -1579,7 +1579,7 @@ function subMetaDescription(subName: string, catName: string, skus: string[]): s
 
 /** Meta catégorie : description éditoriale + sous-rubriques réelles si place. */
 function catMetaDescription(catName: string, desc: string, subs: string[]): string {
-  const withSubs = `${catName} : ${subs.slice(0, 3).join(", ").toLowerCase()} et plus. Prix affiché en ligne, prix affiché en ligne, livraison en France.`;
+  const withSubs = `${catName} : ${subs.slice(0, 3).join(", ").toLowerCase()} et plus. Prix affiché en ligne, configuration en ligne, livraison en France.`;
   if (subs.length && withSubs.length <= 158) return withSubs;
   return truncate(desc, 158);
 }
