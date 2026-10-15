@@ -19,7 +19,7 @@
  *   - 96 départements (DOM, dont Guadeloupe, retirés)
  *   - 13 régions (DOM, dont Guadeloupe, retirées)
  *   - 4 services
- *   - 8 catégories / 47 sous-catégories
+ *   - 8 catégories / 48 sous-catégories
  *   - 14 thèmes
  *   - 947 fiches produits clientes (lookbooks/nuanciers/échantillons exclus)
  * ============================================================================
@@ -145,6 +145,10 @@ const KNOWN_SITEMAPS = [
   "/sitemaps/cities.xml",
   "/sitemaps/departments.xml",
   "/sitemaps/regions.xml",
+  "/sitemaps/local-villes-1.xml",
+  "/sitemaps/local-villes-2.xml",
+  "/sitemaps/local-departements.xml",
+  "/sitemaps/local-regions.xml",
 ];
 
 /* Pages locales : (ville | département | région) × univers / produit phare.
