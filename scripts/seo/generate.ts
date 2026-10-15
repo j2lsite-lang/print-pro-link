@@ -10,6 +10,7 @@ import { buildAllPages, buildProductPages, buildThemePages } from "./build-pages
 import { buildLocalPages, LOCAL_OFFERS } from "./build-local";
 import { rmSync } from "fs";
 import { applyPriorityLinks } from "./priority-links";
+import { applyGscOptimizations } from "./gsc-optimize";
 import { loadGeo, CITY_SLUG_REDIRECTS, REMOVED_GEO_PATHS } from "./geo-data";
 import type { SeoPage } from "../../src/seo/types";
 
@@ -129,6 +130,8 @@ async function main() {
   const productsByPath: Record<string, SeoPage> = {};
   for (const p of productPages) productsByPath[p.path] = slim(p);
   writeFileSync(resolve(genDir, "products.json"), JSON.stringify(productsByPath, null, 0));
+  const gsc = applyGscOptimizations(byPath);
+  console.log(`GSC optimisations: ${gsc.touched.length} pages, ${gsc.links} liens`);
   const pl = applyPriorityLinks(byPath, productsByPath);
   console.log(`Priority links: ${pl.added} added on ${pl.sources.length} pages: ${pl.sources.join(", ")}`);
   writeFileSync(resolve(genDir, "pages.json"), JSON.stringify(byPath, null, 0));
