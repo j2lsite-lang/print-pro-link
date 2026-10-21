@@ -7,6 +7,7 @@ import { FLAT_SHIPPING_HT } from "@/lib/pricing";
 export default function Cart() {
   const { items, removeItem, total, clearCart } = useCart();
   const grandTotal = total + FLAT_SHIPPING_HT;
+  const fullyPriced = items.every((item) => item.unitPrice != null && item.unitPrice > 0);
 
   if (items.length === 0) {
     return (
@@ -109,7 +110,7 @@ export default function Cart() {
             <div className="border-t border-border pt-3">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Sous-total HT</span>
-                <span className="font-medium text-foreground">{total.toFixed(2)} €</span>
+                <span className="font-medium text-foreground">{fullyPriced ? `${total.toFixed(2)} €` : "À confirmer sur devis"}</span>
               </div>
             </div>
             <div className="flex justify-between items-center text-sm">
@@ -122,9 +123,10 @@ export default function Cart() {
           <div className="mt-4 border-t border-border pt-4">
             <div className="flex justify-between text-lg font-bold font-display">
               <span>Total estimatif HT</span>
-              <span>{grandTotal.toFixed(2)} €</span>
+               <span>{fullyPriced ? `${grandTotal.toFixed(2)} €` : "Sur devis"}</span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">Forfait livraison de {FLAT_SHIPPING_HT.toFixed(2)} € HT inclus</p>
+            {!fullyPriced && <p className="text-xs text-muted-foreground mt-2">Certains tarifs enregistrés doivent être recalculés. Reconfigurez les produits ou demandez leur chiffrage.</p>}
           </div>
           <Button asChild className="mt-6 w-full" size="lg">
             <Link to="/checkout">

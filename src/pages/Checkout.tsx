@@ -32,6 +32,7 @@ export default function Checkout() {
   const productsTotalHt = total;
   const shippingHt = FLAT_SHIPPING_HT;
   const grandTotal = productsTotalHt + shippingHt;
+  const fullyPriced = items.every((item) => item.unitPrice != null && item.unitPrice > 0);
 
   const handleFileUpload = async (itemId: string, file: File) => {
     // Upload only into this request's folder: quotes/<requestId>/...
@@ -61,6 +62,7 @@ export default function Checkout() {
         quantity: i.quantity,
         copies: i.copies,
         options: i.options,
+        configuration: i.configuration || null,
         unit_price: i.unitPrice,
         line_total: i.unitPrice != null ? i.unitPrice * i.quantity : null,
         currency: i.currency,
@@ -79,10 +81,10 @@ export default function Checkout() {
         city: address.city || null,
         message: address.message || null,
         items: JSON.parse(JSON.stringify(quoteItems)),
-        products_total_ht: productsTotalHt,
+        products_total_ht: fullyPriced ? productsTotalHt : null,
         shipping_amount_ht: shippingHt,
-        estimated_total_ht: grandTotal,
-        estimated_total: grandTotal,
+        estimated_total_ht: fullyPriced ? grandTotal : null,
+        estimated_total: fullyPriced ? grandTotal : null,
         shipping_cost: shippingHt,
         currency: "EUR",
       });
@@ -117,9 +119,9 @@ export default function Checkout() {
               fileName: i.file_name,
               fileUrl: i.file_url,
             })),
-            productsTotalHt,
+            productsTotalHt: fullyPriced ? productsTotalHt : null,
             shippingHt,
-            estimatedTotalHt: grandTotal,
+            estimatedTotalHt: fullyPriced ? grandTotal : null,
           },
         });
         if (mailError) console.error("Notification devis non envoyée:", mailError);
@@ -221,7 +223,7 @@ export default function Checkout() {
         <div className="space-y-2 mb-4">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Sous-total produits HT</span>
-            <span className="text-foreground">{productsTotalHt.toFixed(2)} €</span>
+            <span className="text-foreground">{fullyPriced ? `${productsTotalHt.toFixed(2)} €` : "À confirmer sur devis"}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Forfait livraison HT</span>
@@ -230,7 +232,7 @@ export default function Checkout() {
           <div className="border-t border-border pt-2 flex justify-between">
             <span className="text-sm font-medium text-foreground">Total estimatif HT</span>
             <span className="text-2xl font-bold text-foreground font-display">
-              {grandTotal.toFixed(2)} €
+              {fullyPriced ? `${grandTotal.toFixed(2)} €` : "Sur devis"}
             </span>
           </div>
         </div>
