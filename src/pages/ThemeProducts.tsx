@@ -6,6 +6,7 @@ import { getCatalogProducts, type CatalogProduct } from "@/lib/printcom";
 import { supabase } from "@/integrations/supabase/client";
 import { useThemeBySlug, useSkusForTheme } from "@/hooks/useThemes";
 import { useSEO } from "@/hooks/useSEO";
+import PricingNotice from "@/components/product/PricingNotice";
 
 interface Product extends CatalogProduct {}
 
@@ -120,6 +121,7 @@ export default function ThemeProducts() {
 
       <h1 className="font-display text-3xl font-bold text-foreground">{theme.name}</h1>
       {theme.description && <p className="mt-2 max-w-3xl text-muted-foreground">{theme.description}</p>}
+      <div className="mt-4"><PricingNotice /></div>
 
       <div className="mt-8">
         <div className="relative max-w-md">
@@ -178,6 +180,7 @@ export default function ThemeProducts() {
                   <span>Réf. {product.sku}</span>
                   <span>Configurer</span>
                 </div>
+                <p className="mt-2 text-xs text-muted-foreground">Prix selon configuration</p>
               </Link>
             ))}
           </div>

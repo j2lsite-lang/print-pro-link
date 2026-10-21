@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCategoryBySlug, useCategories, useSkusForCategory } from "@/hooks/useCategories";
 import { useSEO } from "@/hooks/useSEO";
 import { fetchAllProductCategoryMappings } from "@/lib/catalog-mappings";
+import PricingNotice from "@/components/product/PricingNotice";
 
 interface Product extends CatalogProduct {}
 
@@ -162,6 +163,7 @@ export default function CategoryProducts() {
 
       <h1 className="font-display text-3xl font-bold text-foreground">{category.name}</h1>
       {category.description && <p className="mt-2 max-w-3xl text-muted-foreground">{category.description}</p>}
+      <div className="mt-4"><PricingNotice /></div>
 
       {subCategories.length > 0 && (
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -250,6 +252,7 @@ export default function CategoryProducts() {
                   <span>Réf. {product.sku}</span>
                   <span>Configurer</span>
                 </div>
+                <p className="mt-2 text-xs text-muted-foreground">Prix selon configuration</p>
               </Link>
             ))}
           </div>

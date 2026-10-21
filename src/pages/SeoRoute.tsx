@@ -121,6 +121,7 @@ export default function SeoRoute() {
         </header>
       )}
 
+      <section className="container max-w-5xl pt-4"><PricingNotice /></section>
       {page.visual && (
         <section className="container max-w-5xl pt-6">
           <div className="overflow-hidden rounded-2xl border border-border bg-card/60 shadow-card">
