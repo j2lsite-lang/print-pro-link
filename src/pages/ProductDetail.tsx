@@ -894,15 +894,9 @@ export default function ProductDetail() {
       }
     }
 
-    // Don't fetch if current combination (including copies) is excluded
-    const checkSelection = { ...selectedOptions, copies: String(quantity) };
-    if (isExcludedCombination(checkSelection, product.excludes)) {
-      setPriceResult(null);
-      setPriceError(
-        "Cette combinaison (options + quantité) n'est pas disponible. Modifiez la quantité ou une option."
-      );
-      return;
-    }
+    // Les combinaisons exclues sont résolues par resolvePrice (ajustement
+    // local des options/quantité avec les vraies valeurs Print.com) — ne pas
+    // bloquer ici, sinon des produits tarifables (ex. t-shirts) restent sans prix.
 
     setPriceLoading(true);
     setPriceError(null);
