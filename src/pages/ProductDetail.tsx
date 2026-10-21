@@ -997,12 +997,13 @@ export default function ProductDetail() {
     const cp = props.find(p => p.slug === "copies");
     const suggestions = [...(cp?.options ?? []).map(o => Number(o.slug)), ...(cp?.rangeSets ?? [])
       .filter(set => !set.printingmethod || set.printingmethod === method).flatMap(set => set.summary ?? []),
-      ...(cp?.optionsInSummary ?? []), allowed[0]];
+      ...(cp?.optionsInSummary ?? [])];
     const picks = [...new Set(suggestions)].filter(value => allowed.includes(value)).sort((a,b) => a-b);
+    if (!picks.length && allowed.length) picks.push(allowed[0]);
     setQuantityOptions(picks.map(value => ({ slug: String(value), name: String(value) })));
     if (!customQuantityRef.current && (!quantity || !allowed.includes(Number(quantity)))) {
       invalidatePrice();
-      setQuantity(allowed.length ? String(allowed[0]) : "");
+      setQuantity(picks.length ? String(picks[0]) : "");
     }
   }, [product, selectedOptions, quantity, invalidatePrice]);
 
