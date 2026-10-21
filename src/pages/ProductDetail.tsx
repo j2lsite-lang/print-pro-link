@@ -499,6 +499,26 @@ async function resolvePrice(
         // prochain essai et l'étape 2 la traitera.
         continue;
       }
+      // Aucune alternative disponible : si une propriété OPTIONNELLE du groupe
+      // exclu est valorisée (ex. positions_front sur les t-shirts), la retirer
+      // pour que Print.com la dérive automatiquement. Jamais une propriété
+      // requise, épinglée ou choisie par l'utilisateur.
+      for (const pairs of groups) {
+        const ordered = [...pairs].sort((a, b) => rank(a.property) - rank(b.property));
+        for (const pair of ordered) {
+          if (pair.property === "copies") continue;
+          const prop = findProp(pair.property);
+          if (!prop || prop.required) continue;
+          if (protectedKeys.has(pair.property) || pinnedKeys.has(pair.property)) continue;
+          if (options[pair.property] === undefined) continue;
+          console.log(`[price] excluded combo, dropping optional '${pair.property}' (Print.com auto-fills it)`);
+          delete options[pair.property];
+          changed = true;
+          break;
+        }
+        if (changed) break;
+      }
+      if (changed) continue;
     }
 
     // 3. "no supplier prices found": the combination is valid but not produced.
