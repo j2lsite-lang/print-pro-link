@@ -491,14 +491,40 @@ async function resolvePrice(
         if (changed) break;
       }
       if (changed) {
-        // Ne PAS repasser par resolveLocally ici : il ne connaît que les
-        // exclusions locales et retirerait la valeur que l'API vient de
-        // demander (ex. folders "pallet_delivery"), recréant la même erreur
-        // en boucle. L'API est la source de vérité : si la nouvelle
-        // combinaison viole une exclusion locale, elle le signalera au
-        // prochain essai et l'étape 2 la traitera.
+        // Repasser par resolveLocally en protégeant les clés épinglées :
+        // il peut retirer une propriété optionnelle devenue entièrement
+        // exclue (ex. positions_front sur les t-shirts) sans toucher aux
+        // valeurs explicitement demandées par l'API (pinnedKeys).
+        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys, pinnedKeys));
         continue;
       }
+      // Aucune alternative disponible : si une propriété du groupe exclu est
+      // valorisée et que TOUTES ses valeurs ont été rejetées par l'API (ex.
+      // positions_front sur les t-shirts : tous les marquages sont exclus en
+      // petite quantité), la retirer pour que Print.com la dérive
+      // automatiquement. Jamais une propriété épinglée ou choisie par
+      // l'utilisateur ; une propriété requise n'est retirée que si toutes ses
+      // options sont épuisées.
+      for (const pairs of groups) {
+        const ordered = [...pairs].sort((a, b) => rank(a.property) - rank(b.property));
+        for (const pair of ordered) {
+          if (pair.property === "copies") continue;
+          const prop = findProp(pair.property);
+          if (!prop) continue;
+          if (protectedKeys.has(pair.property) || pinnedKeys.has(pair.property)) continue;
+          if (options[pair.property] === undefined) continue;
+          const allValues = (prop.options || []).filter((o) => !o.nullable && o.slug != null).map((o) => String(o.slug));
+          const rejected = triedValues.get(pair.property) ?? new Set<string>();
+          const exhausted = allValues.length > 0 && allValues.every((v) => rejected.has(v) || v === String(options[pair.property]));
+          if (prop.required && !exhausted) continue;
+          console.log(`[price] excluded combo, dropping '${pair.property}' (all values excluded, Print.com auto-fills it)`);
+          delete options[pair.property];
+          changed = true;
+          break;
+        }
+        if (changed) break;
+      }
+      if (changed) continue;
     }
 
     // 3. "no supplier prices found": the combination is valid but not produced.
@@ -894,15 +920,9 @@ export default function ProductDetail() {
       }
     }
 
-    // Don't fetch if current combination (including copies) is excluded
-    const checkSelection = { ...selectedOptions, copies: String(quantity) };
-    if (isExcludedCombination(checkSelection, product.excludes)) {
-      setPriceResult(null);
-      setPriceError(
-        "Cette combinaison (options + quantité) n'est pas disponible. Modifiez la quantité ou une option."
-      );
-      return;
-    }
+    // Les combinaisons exclues sont résolues par resolvePrice (ajustement
+    // local des options/quantité avec les vraies valeurs Print.com) — ne pas
+    // bloquer ici, sinon des produits tarifables (ex. t-shirts) restent sans prix.
 
     setPriceLoading(true);
     setPriceError(null);
