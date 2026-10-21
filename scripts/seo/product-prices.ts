@@ -388,7 +388,7 @@ function saveCache(map: Record<string, ProductPrice>) {
 
 /**
  * Returns a SKU→price map for the given SKUs. Refreshes from the live API
- * (concurrency-limited) and keeps previously cached values when a fetch fails.
+ * (concurrency-limited) and removes unverified offers when a fetch fails.
  */
 export async function loadProductPrices(
   skus: string[], sb: string | undefined, anon: string | undefined,
@@ -402,6 +402,7 @@ export async function loadProductPrices(
         const sku = skus[i++];
         const pp = await computePrice(sb, anon, sku);
         if (pp) { cache[sku] = pp; refreshed++; }
+        else delete cache[sku];
       }
     };
     await Promise.all(Array.from({ length: conc }, worker));

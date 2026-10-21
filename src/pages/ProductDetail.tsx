@@ -897,8 +897,8 @@ export default function ProductDetail() {
     setPriceError(null);
 
     try {
-      const copies = parseInt(quantity, 10);
-      if (!Number.isFinite(copies) || copies <= 0) {
+      const copies = Number(quantity);
+      if (!Number.isSafeInteger(copies) || copies <= 0) {
         setPriceResult(null);
         setPriceError("Sélectionnez une quantité valide.");
         return;
