@@ -2,10 +2,14 @@ import { describe, expect, it } from "vitest";
 import { supplierQuantities, isSupplierExcluded } from "./supplier-quantities";
 
 describe("supplier-only quantities", () => {
-  it("uses calendar explicit options instead of inconsistent 1 and 25 summaries", () => {
+  it("respects the calendar range confirmed by supplier pricing, not just suggested options", () => {
     const property = { slug: "copies", options: [10, 20, 30, 40, 50, 75, 100, 250, 500].map(slug => ({ slug, type: "digital" })),
       rangeSets: [{ printingmethod: "digital", summary: [1, 10, 25], options: [{ min: 1, max: 1500, steps: 1 }] }] };
-    expect(supplierQuantities(property, { printingmethod: "digital" })).toEqual([10, 20, 30, 40, 50, 75, 100, 250, 500]);
+    const allowed = supplierQuantities(property, { printingmethod: "digital" });
+    expect(allowed).toHaveLength(1500);
+    expect(allowed).toContain(1);
+    expect(allowed).toContain(25);
+    expect(allowed).not.toContain(1501);
   });
   it("respects real minimums, steps and method changes across all range segments", () => {
     const property = { slug: "copies", rangeSets: [{ printingmethod: "offset", summary: [1, 25], options: [{ min: 500, max: 1500, steps: 500 }, { min: 4000, max: 5000, steps: 1000 }] },
