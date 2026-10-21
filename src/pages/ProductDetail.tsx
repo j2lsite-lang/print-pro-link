@@ -491,12 +491,11 @@ async function resolvePrice(
         if (changed) break;
       }
       if (changed) {
-        // Ne PAS repasser par resolveLocally ici : il ne connaît que les
-        // exclusions locales et retirerait la valeur que l'API vient de
-        // demander (ex. folders "pallet_delivery"), recréant la même erreur
-        // en boucle. L'API est la source de vérité : si la nouvelle
-        // combinaison viole une exclusion locale, elle le signalera au
-        // prochain essai et l'étape 2 la traitera.
+        // Repasser par resolveLocally en protégeant les clés épinglées :
+        // il peut retirer une propriété optionnelle devenue entièrement
+        // exclue (ex. positions_front sur les t-shirts) sans toucher aux
+        // valeurs explicitement demandées par l'API (pinnedKeys).
+        ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys, pinnedKeys));
         continue;
       }
       // Aucune alternative disponible : si une propriété OPTIONNELLE du groupe
