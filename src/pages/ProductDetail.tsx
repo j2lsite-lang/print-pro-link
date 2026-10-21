@@ -5,10 +5,12 @@ import { Loader2, ChevronRight, CheckCircle } from "lucide-react";
 import { getProductSEOData } from "@/lib/product-seo";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { getCmsCatalog, getProduct, getPrice, getShippingPossibilities } from "@/lib/printcom";
 import { supabase } from "@/integrations/supabase/client";
 import { getResalePrice, getSupplierPrice, hasSupplierPrice, DESIGN_FEE_BASE } from "@/lib/pricing";
 import PricingNotice from "@/components/product/PricingNotice";
+import { supplierQuantities, supplierSelection, isSupplierExcluded } from "@/lib/supplier-quantities";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
 import OptionSelector from "@/components/product/OptionSelector";
@@ -38,11 +40,11 @@ interface ConfigurableProperty {
   optionsInSummary?: number[];
   rangeSets?: Array<{ options: Array<{ min: number; max: number; steps: number }>; printingmethod?: string; summary?: number[] }>;
   type?: string;
-  copiesInSummary?: Record<string, number[]>;
+  copiesInSummary?: Record<string, number>;
   copyLimit?: Record<string, number>;
 }
 
-type ExcludeGroup = Array<{ property: string; options: string[] }>;
+type ExcludeGroup = Array<{ property: string; options: Array<string | number> }>;
 
 interface PrintComProduct {
   sku: string;
@@ -81,13 +83,7 @@ function isExcludedCombination(
   selected: Record<string, string>,
   excludes: ExcludeGroup[] | undefined,
 ): boolean {
-  if (!excludes?.length) return false;
-  return excludes.some((group) =>
-    group.every((constraint) => {
-      const val = selected[constraint.property];
-      return val !== undefined && constraint.options.includes(val);
-    })
-  );
+  return isSupplierExcluded(selected, excludes);
 }
 
 /**
@@ -163,25 +159,8 @@ function parseOptionNotFound(message: string): string[] {
 }
 
 /** Real, allowed copies values provided by Print.com for the current method. */
-function copiesCandidates(cp: ConfigurableProperty | undefined, method: string | undefined): string[] {
-  if (!cp) return [];
-  if (cp.rangeSets?.length) {
-    const set = cp.rangeSets.find((r) => r.printingmethod === method) || cp.rangeSets[0];
-    if (set.summary?.length) return set.summary.map(String);
-    if (set.options?.length) {
-      const out: string[] = [];
-      for (const r of set.options) {
-        for (let i = r.min || 1; i <= (r.max || 1); i += r.steps || 1) {
-          out.push(String(i));
-          if (out.length > 40) break;
-        }
-      }
-      return out;
-    }
-  }
-  if (cp.optionsInSummary?.length) return cp.optionsInSummary.map(String);
-  if (cp.options?.length) return cp.options.filter((o) => o.slug != null).map((o) => String(o.slug));
-  return [];
+function copiesCandidates(cp: ConfigurableProperty | undefined, method: string | undefined, selection: Record<string, unknown> = {}, excludes: ExcludeGroup[] = []): string[] {
+  return supplierQuantities(cp, { ...selection, printingmethod: method }, excludes).map(String);
 }
 
 /**
@@ -223,13 +202,13 @@ function resolveLocally(
     for (const g of excludes) {
       const violated = g.every((c) => {
         const v = sel[c.property];
-        return v !== undefined && c.options.includes(v);
+        return v !== undefined && c.options.some(value => String(value) === String(v));
       });
       if (!violated) continue;
       const ordered = [...g].sort((a, b) => rank(a.property) - rank(b.property));
       for (const c of ordered) {
         if (c.property === "copies") {
-          for (const cc of copiesCandidates(copiesProp, options.printingmethod)) {
+          for (const cc of copiesCandidates(copiesProp, options.printingmethod, options, excludes)) {
             if (!isExcl({ ...options, copies: cc })) {
               copies = Number(cc);
               acted = true;
@@ -267,7 +246,7 @@ function resolveLocally(
       for (const g of excludes) {
         const violated = g.every((c) => {
           const v = sel2[c.property];
-          return v !== undefined && c.options.includes(v);
+          return v !== undefined && c.options.some(value => String(value) === String(v));
         });
         if (!violated) continue;
         const cand = [...g]
@@ -422,7 +401,7 @@ async function resolvePrice(
     // for the current printing method (e.g. folders offset starts at 500).
     // Snap to the nearest real Print.com rangeset value — never invented.
     if (/copies does not match any range set/i.test(lastError)) {
-      const cands = copiesCandidates(copiesProp, options.printingmethod)
+      const cands = copiesCandidates(copiesProp, options.printingmethod, options, excludes)
         .map(Number)
         .filter((n) => !Number.isNaN(n))
         .sort((a, b) => a - b);
@@ -441,7 +420,7 @@ async function resolvePrice(
       for (const pairs of groups) {
         for (const pair of pairs) {
           if (!triedValues.has(pair.property)) triedValues.set(pair.property, new Set());
-          triedValues.get(pair.property)!.add(pair.value);
+          triedValues.get(pair.property)?.add(pair.value);
         }
       }
       // size/material are changed last, and never when the user chose them.
@@ -460,7 +439,7 @@ async function resolvePrice(
         const ordered = [...pairs].sort((a, b) => rank(a.property) - rank(b.property));
         for (const pair of ordered) {
           if (pair.property === "copies") {
-            for (const cc of copiesCandidates(copiesProp, options.printingmethod)) {
+            for (const cc of copiesCandidates(copiesProp, options.printingmethod, options, excludes)) {
               if (cc !== String(copies) && !seen.has(JSON.stringify({ ...options, copies: Number(cc) }))) {
                 copies = Number(cc);
                 changed = true;
@@ -671,6 +650,7 @@ export default function ProductDetail() {
 
   // Tracks options the user explicitly changed (so the price resolver keeps
   // their choices and only auto-adjusts hidden/auto properties when needed).
+  const customQuantityRef = useRef(false);
   const touchedKeysRef = useRef<Set<string>>(new Set());
   // Last fully-resolved machine options (incl. hidden required props) used for
   // the successful price call — reused for shipping so payloads stay consistent.
@@ -708,6 +688,7 @@ export default function ProductDetail() {
     setProduct(null);
     setSelectedOptions({});
     setQuantity("");
+    setQuantityOptions([]);
     setPriceResult(null);
     setPriceError(null);
     setProductImages([]);
@@ -728,19 +709,6 @@ export default function ProductDetail() {
           }
         }
         const defaults = buildValidDefaults(allProps, data.excludes, hiddenSlugs);
-        // folders (dépliants) : Print.com ne tarife ce produit qu'en offset,
-        // papier 170 g minimum, 500 ex. minimum. Préremplir ces vraies valeurs
-        // Print.com — le client les voit et peut les modifier ensuite.
-        if (sku === "folders") {
-          const pm = allProps.find((p) => p.slug === "printingmethod");
-          if (pm?.options?.some((o) => String(o.slug) === "offset")) {
-            defaults.printingmethod = "offset";
-          }
-          const mat = allProps.find((p) => p.slug === "material");
-          if (mat?.options?.some((o) => String(o.slug) === "170gr_gesatineerd_mc")) {
-            defaults.material = "170gr_gesatineerd_mc";
-          }
-        }
         setSelectedOptions(defaults);
       })
       .catch((err) => setError(err.message))
@@ -813,6 +781,7 @@ export default function ProductDetail() {
   // Handle option change with exclude validation
   const handleOptionChange = useCallback((propSlug: string, value: string) => {
     invalidatePrice();
+    customQuantityRef.current = false;
     touchedKeysRef.current.add(propSlug);
     setSelectedOptions((prev) => {
       const next = { ...prev, [propSlug]: value };
@@ -824,7 +793,7 @@ export default function ProductDetail() {
           // Check if this group is now violated
           const allMatch = group.every((c) => {
             const v = next[c.property];
-            return v !== undefined && c.options.includes(v);
+            return v !== undefined && c.options.some(value => String(value) === String(v));
           });
           if (!allMatch) continue;
 
@@ -834,7 +803,7 @@ export default function ProductDetail() {
             const prop = allProps.find((p) => p.slug === constraint.property);
             if (!prop) continue;
             const nonNullable = prop.options.filter((o) => !o.nullable);
-            const alternative = nonNullable.find((o) => !constraint.options.includes(String(o.slug)));
+            const alternative = nonNullable.find((o) => !constraint.options.some(value => String(value) === String(o.slug)));
             if (alternative) {
               next[constraint.property] = String(alternative.slug);
               break;
@@ -928,8 +897,8 @@ export default function ProductDetail() {
     setPriceError(null);
 
     try {
-      const copies = parseInt(quantity, 10);
-      if (!Number.isFinite(copies) || copies <= 0) {
+      const copies = Number(quantity);
+      if (!Number.isSafeInteger(copies) || copies <= 0) {
         setPriceResult(null);
         setPriceError("Sélectionnez une quantité valide.");
         return;
@@ -954,6 +923,8 @@ export default function ProductDetail() {
       }
 
       const baseOptions = { ...hiddenRequired, ...cleanOptions };
+      const authorized = supplierQuantities(allProps.find(p => p.slug === "copies"), supplierSelection(product, baseOptions), product.excludes);
+      if (!authorized.includes(copies)) throw new Error("excluded quantity");
 
       console.log("[price] request context:", {
         sku,
@@ -982,6 +953,9 @@ export default function ProductDetail() {
         }
       }
       if (!hasSupplierPrice(data)) throw new Error("No valid supplier price");
+      if (!supplierQuantities(copiesProp, supplierSelection(product, options), product.excludes).includes(resolvedCopies)) {
+        throw new Error("excluded quantity");
+      }
       resolvedOptionsRef.current = options;
       // Keep the visible selection identical to what was actually priced.
       const sync: Record<string, string> = {};
@@ -1013,64 +987,25 @@ export default function ProductDetail() {
     }
   }, [sku, product, selectedOptions, quantity]);
 
-  // Build quantity options reactively based on selected printingmethod
   useEffect(() => {
     if (!product) return;
-    const allProps = product.properties || product.configurableProperties || [];
-    const copiesProp = allProps.find((p) => p.slug === "copies");
-    if (!copiesProp) return;
-
-    // printingmethod is usually a hidden required prop, so it lives in the
-    // resolved options (not selectedOptions). Use whichever is available, then
-    // fall back to the real default value Print.com would pick.
-    const printingMethodProp = allProps.find((p) => p.slug === "printingmethod");
-    const selectedMethod =
-      selectedOptions["printingmethod"] ||
-      resolvedOptionsRef.current["printingmethod"] ||
-      realOptionValue(printingMethodProp) ||
-      "";
-    let qtyOpts: { slug: string; name: string }[] = [];
-
-    if (copiesProp.rangeSets?.length) {
-      const matchingSet = copiesProp.rangeSets.find((rs) => rs.printingmethod === selectedMethod)
-        || copiesProp.rangeSets[0];
-      if (matchingSet.summary?.length) {
-        qtyOpts = matchingSet.summary.map((n: number) => ({
-          slug: String(n),
-          name: String(n),
-        }));
-      } else if (matchingSet.options?.length) {
-        const r = matchingSet.options[0];
-        const step = r.steps || 1;
-        const min = r.min || 1;
-        const max = r.max || min;
-        for (let i = min; i <= max && qtyOpts.length < 40; i += step) {
-          qtyOpts.push({ slug: String(i), name: String(i) });
-        }
-      }
-    } else if (copiesProp.optionsInSummary?.length) {
-      qtyOpts = copiesProp.optionsInSummary.map((n: number) => ({
-        slug: String(n),
-        name: String(n),
-      }));
-    } else if (copiesProp.options?.length) {
-      qtyOpts = copiesProp.options
-        .filter((o) => o.slug != null)
-        .map((o) => ({ slug: String(o.slug), name: o.name || String(o.slug) }));
+    const props = product.properties || product.configurableProperties || [];
+    const method = selectedOptions.printingmethod || resolvedOptionsRef.current.printingmethod
+      || realOptionValue(props.find(p => p.slug === "printingmethod"));
+    const selection = supplierSelection(product, { ...selectedOptions, printingmethod: method });
+    const allowed = supplierQuantities(props.find(p => p.slug === "copies"), selection, product.excludes);
+    const cp = props.find(p => p.slug === "copies");
+    const suggestions = [...(cp?.options ?? []).map(o => Number(o.slug)), ...(cp?.rangeSets ?? [])
+      .filter(set => !set.printingmethod || set.printingmethod === method).flatMap(set => set.summary ?? []),
+      ...(cp?.optionsInSummary ?? [])];
+    const picks = [...new Set(suggestions)].filter(value => allowed.includes(value)).sort((a,b) => a-b);
+    if (!picks.length && allowed.length) picks.push(allowed[0]);
+    setQuantityOptions(picks.map(value => ({ slug: String(value), name: String(value) })));
+    if (!customQuantityRef.current && (!quantity || !allowed.includes(Number(quantity)))) {
+      invalidatePrice();
+      setQuantity(picks.length ? String(picks[0]) : "");
     }
-
-    // Keep a quantity the resolver snapped to (first real Print.com tarifable
-    // quantity) visible, as long as it is a real rangeset value.
-    if (quantity && !qtyOpts.some((o) => o.slug === quantity)
-      && copiesCandidates(copiesProp, selectedMethod).includes(quantity)) {
-      qtyOpts = [...qtyOpts, { slug: quantity, name: quantity }]
-        .sort((a, b) => Number(a.slug) - Number(b.slug));
-    }
-    setQuantityOptions(qtyOpts);
-    if (qtyOpts.length > 0 && !qtyOpts.some((o) => o.slug === quantity)) {
-      setQuantity(qtyOpts[0].slug);
-    }
-  }, [product, selectedOptions, quantity]);
+  }, [product, selectedOptions, quantity, invalidatePrice]);
 
   useEffect(() => {
     if (!sku || !product) return;
@@ -1154,7 +1089,9 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     if (!sku || !product || priceLoading || !hasSupplierPrice(priceResult)) return;
-    const copies = parseInt(quantity) || 1;
+    const copies = Number(quantity);
+    const props = product.properties || product.configurableProperties || [];
+    if (!supplierQuantities(props.find(p => p.slug === "copies"), supplierSelection(product, resolvedOptionsRef.current), product.excludes).includes(copies)) return;
 
     // Build human-readable options for display in cart
     const readableOptions: Record<string, string> = {};
@@ -1298,20 +1235,17 @@ export default function ProductDetail() {
                 slug="copies"
                 options={quantityOptions}
                 selectedValue={quantity}
-                onSelect={(value) => { invalidatePrice(); setQuantity(value); }}
+                onSelect={(value) => { customQuantityRef.current = false; invalidatePrice(); setQuantity(value); }}
                 required
                 inputType="select"
               />
             ) : (
-              <OptionSelector
-                title="Quantité (exemplaires)"
-                slug="copies"
-                options={[]}
-                selectedValue={quantity}
-                onSelect={(value) => { invalidatePrice(); setQuantity(value); }}
-                required
-                inputType="float"
-              />
+              <p className="text-sm text-destructive">Aucune quantité fournisseur disponible pour cette configuration.</p>
+            )}
+
+            {quantityOptions.length > 0 && (
+              <Input aria-label="Quantité personnalisée" type="number" value={quantity}
+                onChange={event => { customQuantityRef.current = true; invalidatePrice(); setQuantity(event.target.value); }} />
             )}
 
             <div className="space-y-5">

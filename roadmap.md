@@ -3,3 +3,7 @@
 - [x] Audit configuration dependencies and prevent stale price use.
 - [x] Align 895 cached SEO/Merchant prices with real supplier costs without changing unrelated SEO or Worker.
 - [x] Run pricing tests and verify live flyers configuration, rapid quantity changes, optional design fee and legacy cart through the quote form without submitting or publishing.
+- [x] Replace quantity fallbacks globally with supplier-authorized ranges and exclusions.
+- [x] Revalidate configurations and quantities in the customer form before submitting quote requests.
+- [x] Test bureau-calendar and multiple families; preserve SEO and Worker without publishing.
+- [ ] Enforce supplier validation against direct quote API submissions server-side: blocked by the instruction not to deploy or alter the live backend.
