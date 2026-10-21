@@ -61,7 +61,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items, persist]);
 
   const updateItem = useCallback((id: string, updates: Partial<CartItem>) => {
-    persist(items.map(i => i.id === id ? { ...i, ...updates } : i));
+    persist(items.map(i => {
+      if (i.id !== id) return i;
+      const updated = { ...i, ...updates };
+      return { ...updated, unitPrice: currentCartPrice(updated) };
+    }));
   }, [items, persist]);
 
   const clearCart = useCallback(() => persist([]), [persist]);
