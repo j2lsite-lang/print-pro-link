@@ -52,6 +52,7 @@ export function VisualCategoryCard({
       </div>
       <div className="p-4 flex flex-col gap-2 flex-1">
         {description && <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{description}</p>}
+        <p className="text-xs text-muted-foreground">Prix selon configuration</p>
         <span className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-primary">
           Découvrir <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
         </span>
