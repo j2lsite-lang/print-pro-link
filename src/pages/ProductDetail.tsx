@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { getCmsCatalog, getProduct, getPrice, getShippingPossibilities } from "@/lib/printcom";
 import { supabase } from "@/integrations/supabase/client";
-import { getResalePrice, DESIGN_FEE_BASE } from "@/lib/pricing";
+import { getResalePrice, getSupplierPrice, hasSupplierPrice, DESIGN_FEE_BASE } from "@/lib/pricing";
+import PricingNotice from "@/components/product/PricingNotice";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
 import OptionSelector from "@/components/product/OptionSelector";
@@ -648,6 +649,18 @@ export default function ProductDetail() {
   // Last fully-resolved machine options (incl. hidden required props) used for
   // the successful price call — reused for shipping so payloads stay consistent.
   const resolvedOptionsRef = useRef<Record<string, any>>({});
+  const priceRequestRef = useRef(0);
+  const shippingRequestRef = useRef(0);
+  const invalidatePrice = useCallback(() => {
+    priceRequestRef.current += 1;
+    shippingRequestRef.current += 1;
+    resolvedOptionsRef.current = {};
+    setPriceResult(null);
+    setPriceLoading(false);
+    setPriceError(null);
+    setShippingOptions([]);
+    setShippingLoading(false);
+  }, []);
 
   // Displayed name: identical to the prerendered (Googlebot) name.
   const productName =
@@ -674,6 +687,8 @@ export default function ProductDetail() {
     setProductImages([]);
     touchedKeysRef.current = new Set();
     resolvedOptionsRef.current = {};
+    invalidatePrice();
+    setIncludeDesignFee(false);
 
     getProduct(sku)
       .then((data: PrintComProduct) => {
@@ -771,6 +786,7 @@ export default function ProductDetail() {
 
   // Handle option change with exclude validation
   const handleOptionChange = useCallback((propSlug: string, value: string) => {
+    invalidatePrice();
     touchedKeysRef.current.add(propSlug);
     setSelectedOptions((prev) => {
       const next = { ...prev, [propSlug]: value };
@@ -788,7 +804,7 @@ export default function ProductDetail() {
 
           // Find the other constraint (not the one we just changed) and switch it
           for (const constraint of group) {
-            if (constraint.property === propSlug) continue;
+            if (constraint.property === propSlug || touchedKeysRef.current.has(constraint.property)) continue;
             const prop = allProps.find((p) => p.slug === constraint.property);
             if (!prop) continue;
             const nonNullable = prop.options.filter((o) => !o.nullable);
@@ -808,6 +824,7 @@ export default function ProductDetail() {
   // Fetch shipping estimate
   const fetchShipping = useCallback(async (copies: number) => {
     if (!sku) return;
+    const request = ++shippingRequestRef.current;
     setShippingLoading(true);
     try {
       // Reuse the exact machine options that produced a valid price (includes
@@ -827,12 +844,13 @@ export default function ProductDetail() {
         item: { sku, options: { ...cleanOptions, copies } },
       };
       const data = await getShippingPossibilities(body);
+      if (request !== shippingRequestRef.current) return;
       const options = Array.isArray(data) ? data : data?.shippingOptions || data?.options || [];
       setShippingOptions(options);
     } catch {
-      setShippingOptions([]);
+      if (request === shippingRequestRef.current) setShippingOptions([]);
     } finally {
-      setShippingLoading(false);
+      if (request === shippingRequestRef.current) setShippingLoading(false);
     }
   }, [sku, selectedOptions]);
 
@@ -840,6 +858,8 @@ export default function ProductDetail() {
   // Fetch price
   const fetchPrice = useCallback(async () => {
     if (!sku || !product) return;
+    const request = ++priceRequestRef.current;
+    setPriceResult(null);
 
     const allProps = product.properties || product.configurableProperties || [];
 
@@ -859,7 +879,13 @@ export default function ProductDetail() {
       if (prop.slug === "copies") continue;
       if (hiddenSlugs.has(prop.slug)) continue;
       if (!prop.required) continue;
-      if (!prop.options?.length) continue;
+      if (!prop.options?.length) {
+        if ((prop.type === "float" || prop.type === "text") && !selectedOptions[prop.slug]) {
+          setPriceError(`Veuillez sélectionner « ${prop.title} ».`);
+          return;
+        }
+        continue;
+      }
       const hasNonNullable = prop.options.some((o) => !o.nullable);
       if (hasNonNullable && !selectedOptions[prop.slug]) {
         setPriceResult(null);
@@ -919,15 +945,23 @@ export default function ProductDetail() {
       });
 
       const copiesProp = allProps.find((p) => p.slug === "copies");
+      const protectedSelection = new Set(touchedKeysRef.current);
       const { data, options, copies: resolvedCopies } = await resolvePrice(
         sku,
         product,
         baseOptions,
         copies,
-        touchedKeysRef.current,
+        protectedSelection,
         copiesProp,
       );
 
+      if (request !== priceRequestRef.current) return;
+      for (const key of protectedSelection) {
+        if (String(options[key] ?? "") !== String(selectedOptions[key] ?? "")) {
+          throw new Error("excluded user selection");
+        }
+      }
+      if (!hasSupplierPrice(data)) throw new Error("No valid supplier price");
       resolvedOptionsRef.current = options;
       // Keep the visible selection identical to what was actually priced.
       const sync: Record<string, string> = {};
@@ -944,6 +978,7 @@ export default function ProductDetail() {
       // Fetch shipping estimate for France with the resolved config.
       fetchShipping(resolvedCopies);
     } catch (err: any) {
+      if (request !== priceRequestRef.current) return;
       console.error("[price] error:", err?.message || err);
       setPriceResult(null);
       resolvedOptionsRef.current = {};
@@ -954,7 +989,7 @@ export default function ProductDetail() {
         setPriceError("Impossible de calculer le prix pour le moment.");
       }
     } finally {
-      setPriceLoading(false);
+      if (request === priceRequestRef.current) setPriceLoading(false);
     }
   }, [sku, product, selectedOptions, quantity]);
 
@@ -987,8 +1022,9 @@ export default function ProductDetail() {
       } else if (matchingSet.options?.length) {
         const r = matchingSet.options[0];
         const step = r.steps || 1;
-        const max = Math.min(r.max || 10, 20);
-        for (let i = r.min || 1; i <= max; i += step) {
+        const min = r.min || 1;
+        const max = r.max || min;
+        for (let i = min; i <= max && qtyOpts.length < 40; i += step) {
           qtyOpts.push({ slug: String(i), name: String(i) });
         }
       }
@@ -1018,8 +1054,13 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (!sku || !product) return;
+    invalidatePrice();
     const timer = setTimeout(fetchPrice, 800);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      priceRequestRef.current += 1;
+      shippingRequestRef.current += 1;
+    };
   }, [fetchPrice]);
 
   // Signale la barre d'action mobile pour décaler les boutons flottants
@@ -1047,7 +1088,7 @@ export default function ProductDetail() {
       .filter((prop) => prop.slug !== "summary_image")
       .filter((prop) => {
         if (prop.slug === "copies") return true;
-        if (!prop.options?.length) return false;
+        if (!prop.options?.length) return prop.type === "float" || prop.type === "text";
         const nonNullable = prop.options.filter((o) => !o.nullable);
         return nonNullable.length > 0;
       })
@@ -1060,7 +1101,7 @@ export default function ProductDetail() {
 
         // Filter out options that would create excluded combinations
         const filteredOptions = prop.options
-          .filter((o) => !o.nullable)
+          .filter((o) => o.slug != null)
           .filter((o) => !wouldBeExcluded(prop.slug, String(o.slug), selectedOptions, product?.excludes));
 
         return {
@@ -1070,11 +1111,11 @@ export default function ProductDetail() {
           locked: prop.locked || false,
           isQuantity: prop.slug === "copies" || prop.slug === "quantity",
           isBoolean: isBooleanToggle,
-          inputType: filteredOptions.length > 0 ? "select" : "text",
+          inputType: filteredOptions.length > 0 ? "select" : prop.type || "text",
           options: filteredOptions.map((o) => ({ slug: String(o.slug), name: o.name })),
         };
       })
-      .filter((p) => p.options.length > 0);
+      .filter((p) => p.options.length > 0 || p.inputType === "float" || p.inputType === "text");
   }, [product, selectedOptions]);
 
   // Règle globale : seuls les choix indispensables au prix restent visibles.
@@ -1085,19 +1126,19 @@ export default function ProductDetail() {
     const key = `${p.slug} ${p.title}`;
     return ESSENTIAL_RE.test(key) && !EXCLUDE_RE.test(key);
   };
-  const choiceProps = configurableProps.filter((p) => !p.isQuantity && p.options.length > 1);
+  const choiceProps = configurableProps.filter((p) => !p.isQuantity && (p.options.length > 1 || p.inputType === "float" || p.inputType === "text"));
   const mainProps = choiceProps.filter((p) => !p.isBoolean && isEssential(p));
   const advancedSelectProps = choiceProps.filter((p) => !p.isBoolean && !isEssential(p));
   const booleanProps = choiceProps.filter((p) => p.isBoolean);
   const advancedCount = advancedSelectProps.length + booleanProps.length;
 
   const handleAddToCart = () => {
-    if (!sku || !product) return;
+    if (!sku || !product || priceLoading || !hasSupplierPrice(priceResult)) return;
     const copies = parseInt(quantity) || 1;
 
     // Build human-readable options for display in cart
     const readableOptions: Record<string, string> = {};
-    for (const [key, value] of Object.entries(selectedOptions)) {
+    for (const [key, value] of Object.entries(resolvedOptionsRef.current)) {
       const prop = configurableProps.find((p) => p.slug === key);
       if (prop) {
         const opt = prop.options.find((o) => o.slug === value);
@@ -1115,6 +1156,9 @@ export default function ProductDetail() {
       quantity: 1,
       copies,
       unitPrice: priceResult ? getResalePrice(priceResult) + (includeDesignFee ? DESIGN_FEE_BASE : 0) : null,
+      supplierPriceHT: getSupplierPrice(priceResult),
+      includeDesignFee,
+      configuration: { ...resolvedOptionsRef.current, copies },
       currency: "EUR",
       fileUrl: null,
       originalFileName: null,
@@ -1213,7 +1257,7 @@ export default function ProductDetail() {
 
             <div className="flex flex-wrap gap-3 text-xs text-muted-foreground pt-1">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
-                <CheckCircle className="h-3.5 w-3.5 text-primary" /> Livraison 3-5 jours
+                <CheckCircle className="h-3.5 w-3.5 text-primary" /> Délai selon configuration
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
                 <CheckCircle className="h-3.5 w-3.5 text-primary" /> Vérification fichiers
@@ -1222,6 +1266,7 @@ export default function ProductDetail() {
                 <CheckCircle className="h-3.5 w-3.5 text-primary" /> prix affiché en ligne
               </span>
             </div>
+            <PricingNotice />
           </div>
 
           {/* Configurateur — sous la description, à droite de la photo */}
@@ -1233,7 +1278,7 @@ export default function ProductDetail() {
                 slug="copies"
                 options={quantityOptions}
                 selectedValue={quantity}
-                onSelect={setQuantity}
+                onSelect={(value) => { invalidatePrice(); setQuantity(value); }}
                 required
                 inputType="select"
               />
@@ -1243,7 +1288,7 @@ export default function ProductDetail() {
                 slug="copies"
                 options={[]}
                 selectedValue={quantity}
-                onSelect={setQuantity}
+                onSelect={(value) => { invalidatePrice(); setQuantity(value); }}
                 required
                 inputType="float"
               />
@@ -1313,13 +1358,14 @@ export default function ProductDetail() {
               priceError={priceError}
               onAddToCart={handleAddToCart}
               onRetryPrice={fetchPrice}
-              disabled={!priceResult}
+              disabled={priceLoading || !hasSupplierPrice(priceResult)}
               selectedOptions={selectedOptions}
               configurableProps={configurableProps}
               includeDesignFee={includeDesignFee}
               onToggleDesignFee={setIncludeDesignFee}
               shippingOptions={shippingOptions}
               shippingLoading={shippingLoading}
+              copies={quantity}
             />
           </div>
         </div>
@@ -1347,14 +1393,14 @@ export default function ProductDetail() {
             ) : priceError ? (
               <p className="text-sm text-destructive">Erreur prix</p>
             ) : priceResult ? (
-              <p className="text-xl font-bold text-foreground font-display">
-                {(getResalePrice(priceResult) + (includeDesignFee ? DESIGN_FEE_BASE : 0)).toFixed(2)} € HT
-              </p>
+              <div><p className="text-xs text-muted-foreground">Estimation HT · hors livraison</p><p className="text-xl font-bold text-foreground font-display">
+                {(getResalePrice(priceResult) + (includeDesignFee ? DESIGN_FEE_BASE : 0)).toFixed(2).replace(".", ",")} € HT
+              </p></div>
             ) : (
               <p className="text-sm text-muted-foreground">Configurez les options</p>
             )}
           </div>
-          <Button onClick={handleAddToCart} disabled={!priceResult} size="lg">
+          <Button onClick={handleAddToCart} disabled={priceLoading || !hasSupplierPrice(priceResult)} size="lg">
             Ajouter au devis
           </Button>
         </div>

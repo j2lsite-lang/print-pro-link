@@ -9,7 +9,7 @@
 //   3. inject hidden REQUIRED properties (e.g. printingmethod) with their real
 //      Print.com value,
 //   4. call get-price with the same self-correcting resolver as the UI,
-//   5. apply the SAME resale pricing (getResalePrice → ×1.3, arrondi 0,10 €).
+//   5. apply the SAME resale pricing (getResalePrice → ×1.8, arrondi 0,10 €).
 //
 // The number we cache is therefore byte-for-byte the HT price shown in the
 // configurator for the default configuration. We NEVER invent a price: if the
@@ -21,7 +21,7 @@
 // ============================================================================
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { resolve } from "path";
-import { getResalePrice, getSupplierPrice } from "../../src/lib/pricing";
+import { getResalePrice, getSupplierPrice, resaleFromSupplierHT } from "../../src/lib/pricing";
 
 export interface ProductPrice {
   sku: string;
@@ -395,7 +395,15 @@ async function computePrice(sb: string, anon: string, sku: string): Promise<Prod
  * ------------------------------------------------------------------------ */
 function loadCache(): Record<string, ProductPrice> {
   if (!existsSync(PRICES_PATH)) return {};
-  try { return JSON.parse(readFileSync(PRICES_PATH, "utf8")); } catch { return {}; }
+  try {
+    const stored: Record<string, ProductPrice> = JSON.parse(readFileSync(PRICES_PATH, "utf8"));
+    const valid: Record<string, ProductPrice> = {};
+    for (const [sku, entry] of Object.entries(stored)) {
+      if (typeof entry.supplier !== "number" || !Number.isFinite(entry.supplier) || entry.supplier <= 0) continue;
+      valid[sku] = { ...entry, price: resaleFromSupplierHT(entry.supplier) };
+    }
+    return valid;
+  } catch { return {}; }
 }
 
 function saveCache(map: Record<string, ProductPrice>) {

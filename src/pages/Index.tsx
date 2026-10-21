@@ -21,6 +21,7 @@ import imgLivraison from "@/assets/services/livraison-express.jpg";
 import imgPdf from "@/assets/services/verification-pdf.jpg";
 import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
 import { categoryVisuals, catalogVisuals, cdnImage } from "@/seo/data/catalog-visuals";
+import PricingNotice from "@/components/product/PricingNotice";
 
 /* ─── Univers catalogue (visuels produits réels) ─── */
 const heroTiles = [
@@ -467,6 +468,7 @@ export default function Index() {
           <p className="text-center text-muted-foreground text-sm mb-8">
             Plus de 900 produits imprimés et personnalisables, configurables en ligne.
           </p>
+          <div className="mb-6"><PricingNotice /></div>
           <div className="grid gap-5 grid-cols-2 lg:grid-cols-4">
             {homeUniverses.map((u) => {
               const visual = categoryVisuals[u.slug];

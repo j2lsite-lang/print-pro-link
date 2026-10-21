@@ -10,6 +10,7 @@ import type { SeoPage } from "@/seo/types";
 import NotFound from "@/pages/NotFound";
 import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
 import { visualForPath } from "@/seo/data/catalog-visuals";
+import PricingNotice from "@/components/product/PricingNotice";
 
 const PAGES = pages as unknown as Record<string, SeoPage>;
 
@@ -121,6 +122,7 @@ export default function SeoRoute() {
         </header>
       )}
 
+      <section className="container max-w-5xl pt-4"><PricingNotice /></section>
       {page.visual && (
         <section className="container max-w-5xl pt-6">
           <div className="overflow-hidden rounded-2xl border border-border bg-card/60 shadow-card">

@@ -1,7 +1,7 @@
 import { Loader2, ShoppingCart, RefreshCw, Palette, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getResalePrice, DESIGN_FEE_BASE } from "@/lib/pricing";
+import { getResalePrice, DESIGN_FEE_BASE, FLAT_SHIPPING_HT, PRICING_NOTICE } from "@/lib/pricing";
 
 interface OptionItem {
   slug: string | number | null;
@@ -28,6 +28,7 @@ interface PriceSummaryProps {
   onToggleDesignFee: (checked: boolean) => void;
   shippingOptions?: any[];
   shippingLoading?: boolean;
+  copies?: string;
 }
 
 function getOptionLabel(prop: ConfigurableProp, selectedSlug: string): string {
@@ -47,18 +48,16 @@ export default function PriceSummary({
   configurableProps,
   includeDesignFee,
   onToggleDesignFee,
-  shippingOptions = [],
-  shippingLoading = false,
+  copies,
 }: PriceSummaryProps) {
-  const summaryItems = configurableProps
-    .filter((p) => selectedOptions[p.slug])
-    .slice(0, 10);
+  const summaryItems = configurableProps.filter((p) => selectedOptions[p.slug]);
 
   const designFee = includeDesignFee ? DESIGN_FEE_BASE : 0;
 
   return (
     <div className="rounded-xl border border-border bg-card/90 backdrop-blur-sm p-5 lg:p-6 space-y-5">
       <h3 className="font-display text-lg font-bold text-foreground">Récapitulatif</h3>
+      {copies && <p className="text-sm text-muted-foreground">Quantité : {copies} exemplaires</p>}
 
       {/* Options list — one line per option, label left, full value right */}
       {summaryItems.length > 0 && (
@@ -117,8 +116,8 @@ export default function PriceSummary({
           <div className="space-y-3">
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Impression</span>
-                <span className="text-foreground font-medium">{getResalePrice(priceResult).toFixed(2)} €</span>
+                <span className="text-muted-foreground">Impression HT · lot configuré</span>
+                <span className="text-foreground font-medium">{getResalePrice(priceResult).toFixed(2).replace(".", ",")} €</span>
               </div>
               {priceResult?.deliveryDays && (
                 <p className="text-xs text-muted-foreground">
@@ -135,52 +134,28 @@ export default function PriceSummary({
               )}
 
               {/* Shipping */}
-              {shippingLoading ? (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  <span className="text-xs">Calcul livraison…</span>
-                </div>
-              ) : shippingOptions.length > 0 ? (
-                <div className="space-y-1">
-                  {shippingOptions.slice(0, 3).map((opt: any, i: number) => {
-                    const price = opt?.price?.totalPrice ?? opt?.price ?? opt?.totalPrice;
-                    const name = opt?.name || opt?.carrier || opt?.description || `Option ${i + 1}`;
-                    const days = opt?.deliveryDays || opt?.estimatedDeliveryDays || opt?.days;
-                    return (
-                      <div key={i} className="flex justify-between text-sm">
-                        <span className="text-muted-foreground flex items-center gap-1 truncate">
-                          <Truck className="h-3 w-3 flex-shrink-0" /> {name}
-                          {days && <span className="text-xs">({days}j)</span>}
-                        </span>
-                        <span className="text-foreground font-medium">
-                          {price != null ? `${Number(price).toFixed(2)} €` : "—"}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : priceResult ? (
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Truck className="h-3 w-3" /> Frais de livraison calculés au checkout
-                </p>
-              ) : null}
+              <p className="text-xs text-muted-foreground flex items-start gap-1">
+                <Truck className="h-3 w-3 shrink-0" /> Livraison : {FLAT_SHIPPING_HT.toFixed(2).replace(".", ",")} € HT, ajoutée une seule fois au devis.
+              </p>
             </div>
 
             {/* Total */}
             <div className="border-t border-border pt-3 space-y-1">
               <p className="text-xs text-muted-foreground">Prix estimatif HT</p>
               <p className="text-3xl lg:text-4xl font-bold text-foreground font-display">
-                {(getResalePrice(priceResult) + designFee).toFixed(2)} €
+                {(getResalePrice(priceResult) + designFee).toFixed(2).replace(".", ",")} €
               </p>
               <p className="text-xs text-muted-foreground">Hors livraison</p>
             </div>
           </div>
         ) : (
           <p className="text-sm text-muted-foreground py-2">
-            Sélectionnez toutes les options pour voir le prix
+            Prix selon configuration
           </p>
         )}
       </div>
+
+      <p className="text-xs text-muted-foreground">{PRICING_NOTICE} TVA et montant TTC précisés sur le devis.</p>
 
       <Button
         onClick={onAddToCart}

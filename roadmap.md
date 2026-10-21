@@ -1,0 +1,5 @@
+- [x] Centralize ×1.8 pricing and invalidate old resale-only cart values.
+- [x] Make catalog, search, product and quote price displays transparent.
+- [x] Audit configuration dependencies and prevent stale price use.
+- [x] Align 895 cached SEO/Merchant prices with real supplier costs without changing unrelated SEO or Worker.
+- [x] Run pricing tests and verify live flyers configuration, rapid quantity changes, optional design fee and legacy cart through the quote form without submitting or publishing.

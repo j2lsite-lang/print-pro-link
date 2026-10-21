@@ -5,7 +5,8 @@
  * MARGIN_COEFFICIENT: multiplier applied to the supplier price
  * to calculate the resale price for the customer.
  */
-export const MARGIN_COEFFICIENT = 1.3;
+export const MARGIN_COEFFICIENT = 1.8;
+export const PRICING_NOTICE = "Le tarif définitif dépend des caractéristiques et des quantités sélectionnées.";
 
 /**
  * Design/mockup fees (conception de maquette)
@@ -47,12 +48,22 @@ export function getSupplierPrice(priceResult: any): number {
   return parseFloat(priceResult.price) || 0;
 }
 
+export function hasSupplierPrice(priceResult: unknown): boolean {
+  const price = getSupplierPrice(priceResult);
+  return Number.isFinite(price) && price > 0;
+}
+
+/** Only raw supplier HT inputs are accepted here — never a resale amount. */
+export function resaleFromSupplierHT(supplier: number): number {
+  return Number.isFinite(supplier) && supplier > 0 ? roundUp10(supplier * MARGIN_COEFFICIENT) : 0;
+}
+
 /**
  * Calculate the resale price (customer-facing)
  */
 export function getResalePrice(priceResult: any): number {
   const supplier = getSupplierPrice(priceResult);
-  return roundUp10(supplier * MARGIN_COEFFICIENT);
+  return resaleFromSupplierHT(supplier);
 }
 
 /**

@@ -13,6 +13,7 @@ import { fetchAllProductThemeMappings } from "@/lib/theme-mappings";
 import { NOUVEAUTES_SKUS, BESTSELLER_SKUS } from "@/lib/catalog-sections";
 import { searchProducts } from "@/lib/search";
 import { isExcludedSku } from "@/config/excluded-products";
+import PricingNotice from "@/components/product/PricingNotice";
 
 interface Product extends CatalogProduct {}
 
@@ -137,6 +138,7 @@ export default function Products() {
     <div className="container py-10">
       <p className="text-sm font-medium text-primary tracking-wide uppercase">Catalogue</p>
       <h1 className="mt-2 font-display text-4xl font-bold text-foreground">Catégories</h1>
+      <div className="mt-4"><PricingNotice /></div>
 
       {catLoading && (
         <div className="flex items-center justify-center py-20">
@@ -311,6 +313,7 @@ export default function Products() {
                     <span>Réf. {product.sku}</span>
                     <span>Configurer</span>
                   </div>
+                  <p className="mt-2 text-xs text-muted-foreground">Prix selon configuration</p>
                 </Link>
               ))}
               {filtered.length === 0 && <p className="col-span-full py-10 text-center text-muted-foreground">Aucun produit trouvé.</p>}
@@ -372,6 +375,7 @@ function ProductSection({
               <h3 className="mt-1 truncate font-display text-sm font-semibold text-card-foreground transition-colors group-hover:text-primary">
                 {product.name}
               </h3>
+              <p className="mt-2 text-xs text-muted-foreground">Prix selon configuration</p>
             </div>
           </Link>
           );

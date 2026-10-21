@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
 import FloatingContact from "./FloatingContact";
+import PricingNotice from "@/components/product/PricingNotice";
 
 export default function AppLayout() {
   const location = useLocation();
@@ -29,6 +30,9 @@ export default function AppLayout() {
       <Header />
       <main className="flex-1">
         <Outlet />
+        <section className="container py-6 border-t border-border" aria-label="Informations tarifaires">
+          <PricingNotice />
+        </section>
       </main>
       <Footer />
       <FloatingContact />

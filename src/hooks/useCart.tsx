@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import { currentCartPrice } from "@/lib/cart-pricing";
 
 export interface CartItem {
   id: string;
@@ -8,6 +9,9 @@ export interface CartItem {
   quantity: number;
   copies: number;
   unitPrice: number | null;
+  supplierPriceHT?: number;
+  includeDesignFee?: boolean;
+  configuration?: Record<string, unknown>;
   currency: string;
   fileUrl: string | null;
   originalFileName: string | null;
@@ -37,7 +41,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
       const stored = localStorage.getItem("j2l-cart");
-      return stored ? JSON.parse(stored) : [];
+      const parsed = stored ? JSON.parse(stored) : [];
+      return Array.isArray(parsed) ? parsed.map((item: CartItem) => ({ ...item, unitPrice: currentCartPrice(item) })) : [];
     } catch { return []; }
   });
 
@@ -47,7 +52,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addItem = useCallback((item: Omit<CartItem, "id">) => {
-    const newItem: CartItem = { ...item, id: crypto.randomUUID() };
+    const newItem: CartItem = { ...item, unitPrice: currentCartPrice(item), id: crypto.randomUUID() };
     persist([...items, newItem]);
   }, [items, persist]);
 
@@ -56,7 +61,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items, persist]);
 
   const updateItem = useCallback((id: string, updates: Partial<CartItem>) => {
-    persist(items.map(i => i.id === id ? { ...i, ...updates } : i));
+    persist(items.map(i => {
+      if (i.id !== id) return i;
+      const updated = { ...i, ...updates };
+      return { ...updated, unitPrice: currentCartPrice(updated) };
+    }));
   }, [items, persist]);
 
   const clearCart = useCallback(() => persist([]), [persist]);
