@@ -879,7 +879,13 @@ export default function ProductDetail() {
       if (prop.slug === "copies") continue;
       if (hiddenSlugs.has(prop.slug)) continue;
       if (!prop.required) continue;
-      if (!prop.options?.length) continue;
+      if (!prop.options?.length) {
+        if ((prop.type === "float" || prop.type === "text") && !selectedOptions[prop.slug]) {
+          setPriceError(`Veuillez sélectionner « ${prop.title} ».`);
+          return;
+        }
+        continue;
+      }
       const hasNonNullable = prop.options.some((o) => !o.nullable);
       if (hasNonNullable && !selectedOptions[prop.slug]) {
         setPriceResult(null);
@@ -1010,8 +1016,9 @@ export default function ProductDetail() {
       } else if (matchingSet.options?.length) {
         const r = matchingSet.options[0];
         const step = r.steps || 1;
-        const max = Math.min(r.max || 10, 20);
-        for (let i = r.min || 1; i <= max; i += step) {
+        const min = r.min || 1;
+        const max = r.max || min;
+        for (let i = min; i <= max && qtyOpts.length < 40; i += step) {
           qtyOpts.push({ slug: String(i), name: String(i) });
         }
       }
