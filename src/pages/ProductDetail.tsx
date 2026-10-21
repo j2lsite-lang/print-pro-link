@@ -498,19 +498,26 @@ async function resolvePrice(
         ({ options, copies } = resolveLocally(props, copiesProp, options, copies, excludes, protectedKeys, pinnedKeys));
         continue;
       }
-      // Aucune alternative disponible : si une propriété OPTIONNELLE du groupe
-      // exclu est valorisée (ex. positions_front sur les t-shirts), la retirer
-      // pour que Print.com la dérive automatiquement. Jamais une propriété
-      // requise, épinglée ou choisie par l'utilisateur.
+      // Aucune alternative disponible : si une propriété du groupe exclu est
+      // valorisée et que TOUTES ses valeurs ont été rejetées par l'API (ex.
+      // positions_front sur les t-shirts : tous les marquages sont exclus en
+      // petite quantité), la retirer pour que Print.com la dérive
+      // automatiquement. Jamais une propriété épinglée ou choisie par
+      // l'utilisateur ; une propriété requise n'est retirée que si toutes ses
+      // options sont épuisées.
       for (const pairs of groups) {
         const ordered = [...pairs].sort((a, b) => rank(a.property) - rank(b.property));
         for (const pair of ordered) {
           if (pair.property === "copies") continue;
           const prop = findProp(pair.property);
-          if (!prop || prop.required) continue;
+          if (!prop) continue;
           if (protectedKeys.has(pair.property) || pinnedKeys.has(pair.property)) continue;
           if (options[pair.property] === undefined) continue;
-          console.log(`[price] excluded combo, dropping optional '${pair.property}' (Print.com auto-fills it)`);
+          const allValues = (prop.options || []).filter((o) => !o.nullable && o.slug != null).map((o) => String(o.slug));
+          const rejected = triedValues.get(pair.property) ?? new Set<string>();
+          const exhausted = allValues.length > 0 && allValues.every((v) => rejected.has(v) || v === String(options[pair.property]));
+          if (prop.required && !exhausted) continue;
+          console.log(`[price] excluded combo, dropping '${pair.property}' (all values excluded, Print.com auto-fills it)`);
           delete options[pair.property];
           changed = true;
           break;
