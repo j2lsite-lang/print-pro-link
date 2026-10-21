@@ -5,6 +5,7 @@ import { Loader2, ChevronRight, CheckCircle } from "lucide-react";
 import { getProductSEOData } from "@/lib/product-seo";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { getCmsCatalog, getProduct, getPrice, getShippingPossibilities } from "@/lib/printcom";
 import { supabase } from "@/integrations/supabase/client";
 import { getResalePrice, getSupplierPrice, hasSupplierPrice, DESIGN_FEE_BASE } from "@/lib/pricing";
@@ -39,7 +40,7 @@ interface ConfigurableProperty {
   optionsInSummary?: number[];
   rangeSets?: Array<{ options: Array<{ min: number; max: number; steps: number }>; printingmethod?: string; summary?: number[] }>;
   type?: string;
-  copiesInSummary?: Record<string, number[]>;
+  copiesInSummary?: Record<string, number>;
   copyLimit?: Record<string, number>;
 }
 
@@ -419,7 +420,7 @@ async function resolvePrice(
       for (const pairs of groups) {
         for (const pair of pairs) {
           if (!triedValues.has(pair.property)) triedValues.set(pair.property, new Set());
-          triedValues.get(pair.property)!.add(pair.value);
+          triedValues.get(pair.property)?.add(pair.value);
         }
       }
       // size/material are changed last, and never when the user chose them.
@@ -649,6 +650,7 @@ export default function ProductDetail() {
 
   // Tracks options the user explicitly changed (so the price resolver keeps
   // their choices and only auto-adjusts hidden/auto properties when needed).
+  const customQuantityRef = useRef(false);
   const touchedKeysRef = useRef<Set<string>>(new Set());
   // Last fully-resolved machine options (incl. hidden required props) used for
   // the successful price call — reused for shipping so payloads stay consistent.
@@ -779,6 +781,7 @@ export default function ProductDetail() {
   // Handle option change with exclude validation
   const handleOptionChange = useCallback((propSlug: string, value: string) => {
     invalidatePrice();
+    customQuantityRef.current = false;
     touchedKeysRef.current.add(propSlug);
     setSelectedOptions((prev) => {
       const next = { ...prev, [propSlug]: value };
@@ -991,8 +994,13 @@ export default function ProductDetail() {
       || realOptionValue(props.find(p => p.slug === "printingmethod"));
     const selection = supplierSelection(product, { ...selectedOptions, printingmethod: method });
     const allowed = supplierQuantities(props.find(p => p.slug === "copies"), selection, product.excludes);
-    setQuantityOptions(allowed.map(value => ({ slug: String(value), name: String(value) })));
-    if (!allowed.includes(Number(quantity))) {
+    const cp = props.find(p => p.slug === "copies");
+    const suggestions = [...(cp?.options ?? []).map(o => Number(o.slug)), ...(cp?.rangeSets ?? [])
+      .filter(set => !set.printingmethod || set.printingmethod === method).flatMap(set => set.summary ?? []),
+      ...(cp?.optionsInSummary ?? []), allowed[0]];
+    const picks = [...new Set(suggestions)].filter(value => allowed.includes(value)).sort((a,b) => a-b);
+    setQuantityOptions(picks.map(value => ({ slug: String(value), name: String(value) })));
+    if (!customQuantityRef.current && (!quantity || !allowed.includes(Number(quantity)))) {
       invalidatePrice();
       setQuantity(allowed.length ? String(allowed[0]) : "");
     }
@@ -1226,12 +1234,17 @@ export default function ProductDetail() {
                 slug="copies"
                 options={quantityOptions}
                 selectedValue={quantity}
-                onSelect={(value) => { invalidatePrice(); setQuantity(value); }}
+                onSelect={(value) => { customQuantityRef.current = false; invalidatePrice(); setQuantity(value); }}
                 required
                 inputType="select"
               />
             ) : (
               <p className="text-sm text-destructive">Aucune quantité fournisseur disponible pour cette configuration.</p>
+            )}
+
+            {quantityOptions.length > 0 && (
+              <Input aria-label="Quantité personnalisée" type="number" value={quantity}
+                onChange={event => { customQuantityRef.current = true; invalidatePrice(); setQuantity(event.target.value); }} />
             )}
 
             <div className="space-y-5">

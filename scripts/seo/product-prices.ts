@@ -22,6 +22,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { resolve } from "path";
 import { getResalePrice, getSupplierPrice, resaleFromSupplierHT } from "../../src/lib/pricing";
+import { supplierQuantities, isSupplierExcluded, supplierSelection, type QuantityProperty } from "../../src/lib/supplier-quantities";
 
 export interface ProductPrice {
   sku: string;
@@ -45,7 +46,7 @@ const PRICES_PATH = resolve("src/seo/generated/product-prices.json");
  * Pure helpers — faithfully ported from src/pages/ProductDetail.tsx so the
  * build-time default config is identical to the runtime one.
  * ------------------------------------------------------------------------ */
-type Opt = { slug?: string | number | null; name?: string; nullable?: boolean };
+type Opt = { slug: string | number | null; name?: string; nullable?: boolean; type?: string };
 type Prop = {
   slug: string;
   title?: string;
@@ -53,19 +54,13 @@ type Prop = {
   locked?: boolean;
   options?: Opt[];
   optionsInSummary?: (string | number)[];
-  rangeSets?: { printingmethod?: string; summary?: number[]; options?: { min?: number; max?: number; steps?: number }[] }[];
+  rangeSets?: { printingmethod?: string; summary?: number[]; options?: { min: number; max: number; steps: number }[] }[];
 };
-type ExcludeConstraint = { property: string; options: string[] };
+type ExcludeConstraint = { property: string; options: Array<string | number> };
 type ExcludeGroup = ExcludeConstraint[];
 
 function isExcludedCombination(selected: Record<string, string>, excludes: ExcludeGroup[] | undefined): boolean {
-  if (!excludes?.length) return false;
-  return excludes.some((group) =>
-    group.every((c) => {
-      const val = selected[c.property];
-      return val !== undefined && c.options.includes(val);
-    }),
-  );
+  return isSupplierExcluded(selected, excludes);
 }
 
 function realOptionValue(prop: Prop | undefined, exclude: (string | undefined)[] = []): string | undefined {
@@ -103,22 +98,8 @@ function buildValidDefaults(allProps: Prop[], excludes: ExcludeGroup[] | undefin
   return defaults;
 }
 
-function copiesCandidates(cp: Prop | undefined, method: string | undefined): string[] {
-  if (!cp) return [];
-  if (cp.rangeSets?.length) {
-    const set = cp.rangeSets.find((r) => r.printingmethod === method) || cp.rangeSets[0];
-    if (set.summary?.length) return set.summary.map(String);
-    if (set.options?.length) {
-      const out: string[] = [];
-      for (const r of set.options) {
-        for (let i = r.min || 1; i <= (r.max || 1); i += r.steps || 1) { out.push(String(i)); if (out.length > 40) break; }
-      }
-      return out;
-    }
-  }
-  if (cp.optionsInSummary?.length) return cp.optionsInSummary.map(String);
-  if (cp.options?.length) return cp.options.filter((o) => o.slug != null).map((o) => String(o.slug));
-  return [];
+function copiesCandidates(cp: Prop | undefined, method: string | undefined, selection: Record<string, unknown> = {}, excludes: ExcludeGroup[] = []): string[] {
+  return supplierQuantities(cp as QuantityProperty | undefined, { ...selection, printingmethod: method }, excludes).map(String);
 }
 
 /** Default quantity the configurator selects (first offered for default method). */
@@ -145,12 +126,12 @@ function resolveLocally(
     if (!isExcludedCombination(sel, excludes)) break;
     let acted = false;
     for (const g of excludes) {
-      const violated = g.every((c) => { const v = sel[c.property]; return v !== undefined && c.options.includes(v); });
+      const violated = g.every((c) => { const v = sel[c.property]; return v !== undefined && c.options.some(value => String(value) === String(v)); });
       if (!violated) continue;
       const ordered = [...g].sort((a, b) => rank(a.property) - rank(b.property));
       for (const c of ordered) {
         if (c.property === "copies") {
-          for (const cc of copiesCandidates(copiesProp, options.printingmethod)) {
+          for (const cc of copiesCandidates(copiesProp, options.printingmethod, options, excludes)) {
             if (!isExcludedCombination({ ...options, copies: cc }, excludes)) { copies = Number(cc); acted = true; break; }
           }
         } else {
@@ -172,7 +153,7 @@ function resolveLocally(
       const sel2 = { ...options, copies: String(copies) };
       let dropped = false;
       for (const g of excludes) {
-        const violated = g.every((c) => { const v = sel2[c.property]; return v !== undefined && c.options.includes(v); });
+        const violated = g.every((c) => { const v = sel2[c.property]; return v !== undefined && c.options.some(value => String(value) === String(v)); });
         if (!violated) continue;
         const cand = [...g].sort((a, b) => rank(a.property) - rank(b.property)).find((c) => rank(c.property) === 1 && options[c.property] !== undefined);
         if (cand) { delete options[cand.property]; dropped = true; break; }
@@ -293,7 +274,7 @@ async function resolvePrice(
       if (added) continue;
     }
     if (/copies does not match any range set/i.test(lastError)) {
-      const cands = copiesCandidates(copiesProp, options.printingmethod).map(Number).filter((n) => !Number.isNaN(n)).sort((a, b) => a - b);
+      const cands = copiesCandidates(copiesProp, options.printingmethod, options, excludes).map(Number).filter((n) => !Number.isNaN(n)).sort((a, b) => a - b);
       const nextQty = cands.find((n) => n >= copies) ?? cands[cands.length - 1];
       if (nextQty !== undefined && nextQty !== copies) { copies = nextQty; continue; }
     }
@@ -361,17 +342,11 @@ async function computePrice(sb: string, anon: string, sku: string): Promise<Prod
     if (v !== undefined) hiddenRequired[prop.slug] = v;
   }
 
-  // folders: same real Print.com prefill as the configurator (offset, 170 g).
-  if (sku === "folders") {
-    const pm = allProps.find((p) => p.slug === "printingmethod");
-    if (pm?.options?.some((o) => String(o.slug) === "offset")) cleanOptions.printingmethod = "offset";
-    const mat = allProps.find((p) => p.slug === "material");
-    if (mat?.options?.some((o) => String(o.slug) === "170gr_gesatineerd_mc")) cleanOptions.material = "170gr_gesatineerd_mc";
-  }
   const baseOptions = { ...hiddenRequired, ...cleanOptions };
   const copiesProp = allProps.find((p) => p.slug === "copies");
   const resolved = await resolvePrice(sb, anon, sku, product, baseOptions, copies, copiesProp);
   if (!resolved?.data) return null;
+  if (!supplierQuantities(copiesProp as QuantityProperty | undefined, supplierSelection(product, resolved.options), product.excludes).includes(resolved.copies)) return null;
 
   const price = getResalePrice(resolved.data);
   if (!Number.isFinite(price) || price <= 0) return null;
