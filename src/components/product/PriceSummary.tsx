@@ -28,6 +28,7 @@ interface PriceSummaryProps {
   onToggleDesignFee: (checked: boolean) => void;
   shippingOptions?: any[];
   shippingLoading?: boolean;
+  copies?: string;
 }
 
 function getOptionLabel(prop: ConfigurableProp, selectedSlug: string): string {
@@ -47,8 +48,7 @@ export default function PriceSummary({
   configurableProps,
   includeDesignFee,
   onToggleDesignFee,
-  shippingOptions = [],
-  shippingLoading = false,
+  copies,
 }: PriceSummaryProps) {
   const summaryItems = configurableProps.filter((p) => selectedOptions[p.slug]);
 
@@ -57,6 +57,7 @@ export default function PriceSummary({
   return (
     <div className="rounded-xl border border-border bg-card/90 backdrop-blur-sm p-5 lg:p-6 space-y-5">
       <h3 className="font-display text-lg font-bold text-foreground">Récapitulatif</h3>
+      {copies && <p className="text-sm text-muted-foreground">Quantité : {copies} exemplaires</p>}
 
       {/* Options list — one line per option, label left, full value right */}
       {summaryItems.length > 0 && (

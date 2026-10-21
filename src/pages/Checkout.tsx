@@ -211,7 +211,7 @@ export default function Checkout() {
           </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="text-sm text-foreground">Forfait livraison HT</span>
-            <span className="text-sm font-semibold text-foreground">{shippingHt.toFixed(2)} €</span>
+            <span className="text-sm font-semibold text-foreground">{shippingHt.toFixed(2).replace(".", ",")} €</span>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
             Forfait de livraison fixe appliqué une seule fois par commande.
@@ -223,16 +223,16 @@ export default function Checkout() {
         <div className="space-y-2 mb-4">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Sous-total produits HT</span>
-            <span className="text-foreground">{fullyPriced ? `${productsTotalHt.toFixed(2)} €` : "À confirmer sur devis"}</span>
+            <span className="text-foreground">{fullyPriced ? `${productsTotalHt.toFixed(2).replace(".", ",")} €` : "À confirmer sur devis"}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Forfait livraison HT</span>
-            <span className="text-foreground">{shippingHt.toFixed(2)} €</span>
+            <span className="text-foreground">{shippingHt.toFixed(2).replace(".", ",")} €</span>
           </div>
           <div className="border-t border-border pt-2 flex justify-between">
             <span className="text-sm font-medium text-foreground">Total estimatif HT</span>
             <span className="text-2xl font-bold text-foreground font-display">
-              {fullyPriced ? `${grandTotal.toFixed(2)} €` : "Sur devis"}
+              {fullyPriced ? `${grandTotal.toFixed(2).replace(".", ",")} €` : "Sur devis"}
             </span>
           </div>
         </div>

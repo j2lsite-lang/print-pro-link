@@ -945,16 +945,22 @@ export default function ProductDetail() {
       });
 
       const copiesProp = allProps.find((p) => p.slug === "copies");
+      const protectedSelection = new Set(touchedKeysRef.current);
       const { data, options, copies: resolvedCopies } = await resolvePrice(
         sku,
         product,
         baseOptions,
         copies,
-        touchedKeysRef.current,
+        protectedSelection,
         copiesProp,
       );
 
       if (request !== priceRequestRef.current) return;
+      for (const key of protectedSelection) {
+        if (String(options[key] ?? "") !== String(selectedOptions[key] ?? "")) {
+          throw new Error("excluded user selection");
+        }
+      }
       if (!hasSupplierPrice(data)) throw new Error("No valid supplier price");
       resolvedOptionsRef.current = options;
       // Keep the visible selection identical to what was actually priced.
@@ -1359,6 +1365,7 @@ export default function ProductDetail() {
               onToggleDesignFee={setIncludeDesignFee}
               shippingOptions={shippingOptions}
               shippingLoading={shippingLoading}
+              copies={quantity}
             />
           </div>
         </div>
