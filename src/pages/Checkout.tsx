@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/hooks/useCart";
 import { supabase } from "@/integrations/supabase/client";
-import { FLAT_SHIPPING_HT } from "@/lib/pricing";
+import { FLAT_SHIPPING_HT, getSupplierPrice, hasSupplierPrice } from "@/lib/pricing";
+import { getProduct, getPrice } from "@/lib/printcom";
+import { supplierQuantities, supplierSelection } from "@/lib/supplier-quantities";
 import { toast } from "sonner";
 import { trackGenerateLead } from "@/lib/analytics";
 
@@ -54,6 +56,24 @@ export default function Checkout() {
     setSubmitting(true);
 
     try {
+      // Revalidate exact stored configurations against live supplier data. Fail closed.
+      for (const item of items) {
+        if (!item.configuration || !Number.isSafeInteger(item.copies) || item.copies <= 0
+          || Number(item.configuration.copies) !== item.copies) {
+          throw new Error(`Reconfigurez « ${item.productName} » avant de demander un devis.`);
+        }
+        const product = await getProduct(item.sku);
+        const props = product.properties || product.configurableProperties || [];
+        const allowed = supplierQuantities(props.find((p: { slug: string }) => p.slug === "copies"), supplierSelection(product, item.configuration), product.excludes);
+        if (!allowed.includes(item.copies)) throw new Error(`Quantité indisponible pour « ${item.productName} ». Reconfigurez ce produit.`);
+        const price = await getPrice(item.sku, item.configuration);
+        if (price?.error || price?.errorMessage || !hasSupplierPrice(price)) {
+          throw new Error(`Configuration indisponible pour « ${item.productName} ». Aucun devis envoyé.`);
+        }
+        if (Math.abs(getSupplierPrice(price) - (item.supplierPriceHT ?? 0)) > 0.00001) {
+          throw new Error(`Le tarif de « ${item.productName} » a changé. Reconfigurez ce produit avant de demander un devis.`);
+        }
+      }
       const fullAddress = [address.houseNumber, address.street].filter(Boolean).join(" ");
 
       const quoteItems = items.map(i => ({
