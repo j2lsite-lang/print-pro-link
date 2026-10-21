@@ -30,7 +30,7 @@ export function supplierQuantities(property: QuantityProperty | undefined, selec
   } else if (explicit.length) candidates = explicit.map(option => Number(option.slug));
   return [...new Set(candidates)].filter(value => Number.isSafeInteger(value) && value > 0
     && (typeof limit !== "number" || value <= limit)
-    && !isSupplierExcluded({ ...selection, copies: value }, excludes)).sort((a, b) => a - b);
+    && !isSupplierExcluded({ ...selection, copies: value }, excludes.filter(group => group.some(rule => rule.property === "copies")))).sort((a, b) => a - b);
 }
 
 export function supplierSelection(product: { properties?: Array<{ slug: string; options?: Array<{ slug: string | number | null; nullable?: boolean }> }>; configurableProperties?: Array<{ slug: string; options?: Array<{ slug: string | number | null; nullable?: boolean }> }> }, selection: Record<string, unknown>): Record<string, unknown> {

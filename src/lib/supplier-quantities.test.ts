@@ -24,6 +24,7 @@ describe("supplier-only quantities", () => {
     expect(supplierQuantities(property, { material: "thick" }, excludes)).toEqual([20, 30]);
     expect(supplierQuantities(property, { material: "thin" }, excludes)).toEqual([10, 20, 30]);
     expect(isSupplierExcluded({ copies: "10", material: "thick" }, excludes)).toBe(true);
+    expect(supplierQuantities(property, { material: "thick" }, [[{ property: "material", options: ["thick"] }]])).toEqual([10, 20, 30]);
   });
   it("never invents a one-copy fallback when data is missing or malformed", () => {
     expect(supplierQuantities(undefined, {})).toEqual([]);
