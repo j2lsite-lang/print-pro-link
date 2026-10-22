@@ -740,7 +740,8 @@ export default function ProductDetail() {
             if (valid && copiesOk && !isSupplierExcluded({ ...cfg!.options, copies: cfg!.copies }, data.excludes)) {
               for (const prop of allProps) delete seeded[prop.slug];
               pricedConfigRef.current = cfg!.options!;
-              Object.assign(seeded, cfg!.options);
+              // Only visible properties become the shopper's selection.
+              for (const [k, v] of Object.entries(cfg!.options!)) if (!hiddenSlugs.has(k)) seeded[k] = v;
               setQuantity(String(cfg!.copies));
             }
             setSelectedOptions(seeded);
@@ -954,8 +955,12 @@ export default function ProductDetail() {
       const hiddenRequired: Record<string, any> = {};
       for (const prop of allProps) {
         if (!hiddenSlugs.has(prop.slug)) continue;
+        // Hidden values of the priced reference configuration (not shown, so
+        // they never restrict the visible choices).
+        const priced = pricedConfigRef.current?.[prop.slug];
+        if (priced !== undefined) { hiddenRequired[prop.slug] = priced; continue; }
         if (!prop.required) continue;
-        if (pricedConfigRef.current && !(prop.slug in pricedConfigRef.current)) continue;
+        if (pricedConfigRef.current) continue;
         const v = realOptionValue(prop);
         if (v !== undefined) hiddenRequired[prop.slug] = v;
       }
