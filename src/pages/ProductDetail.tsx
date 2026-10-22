@@ -983,9 +983,9 @@ export default function ProductDetail() {
       resolvedOptionsRef.current = {};
       const msg = err?.message || "";
       if (msg.includes("validate") || msg.includes("required") || msg.includes("excluded")) {
-        setPriceError("Configuration invalide pour ce produit. Modifiez vos options.");
+        setPriceError("Combinaison non proposée par le fournisseur. Modifiez vos options.");
       } else {
-        setPriceError("Impossible de calculer le prix pour le moment.");
+        setPriceError("Tarif sur devis : le prix fournisseur n'est pas disponible pour le moment.");
       }
     } finally {
       if (request === priceRequestRef.current) setPriceLoading(false);
