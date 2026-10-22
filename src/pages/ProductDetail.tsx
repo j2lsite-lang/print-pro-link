@@ -284,6 +284,7 @@ async function resolvePrice(
   copies0: number,
   protectedKeys: Set<string>,
   copiesProp: ConfigurableProperty | undefined,
+  pricedConfig: Record<string, string> | null = null,
 ): Promise<{ data: any; options: Record<string, any>; copies: number }> {
   const props = product.properties || product.configurableProperties || [];
   const excludes = product.excludes || [];
@@ -296,6 +297,7 @@ async function resolvePrice(
   for (const prop of props) {
     if (!prop.required) continue;
     if (prop.slug === "copies") continue;
+    if (pricedConfig && !(prop.slug in pricedConfig)) continue;
     if (prefilled[prop.slug] !== undefined && prefilled[prop.slug] !== "") continue;
     const v = realOptionValue(prop);
     if (v !== undefined) prefilled[prop.slug] = v;
@@ -657,6 +659,8 @@ export default function ProductDetail() {
   // their choices and only auto-adjusts hidden/auto properties when needed).
   const customQuantityRef = useRef(false);
   const touchedKeysRef = useRef<Set<string>>(new Set());
+  // Exact supplier configuration behind the catalogue/Merchant price, if any.
+  const pricedConfigRef = useRef<Record<string, string> | null>(null);
   // Last fully-resolved machine options (incl. hidden required props) used for
   // the successful price call — reused for shipping so payloads stay consistent.
   const resolvedOptionsRef = useRef<Record<string, any>>({});
@@ -699,6 +703,7 @@ export default function ProductDetail() {
     setProductImages([]);
     touchedKeysRef.current = new Set();
     resolvedOptionsRef.current = {};
+    pricedConfigRef.current = null;
     invalidatePrice();
     setIncludeDesignFee(false);
 
@@ -714,7 +719,25 @@ export default function ProductDetail() {
           }
         }
         const defaults = buildValidDefaults(allProps, data.excludes, hiddenSlugs);
-        setSelectedOptions(defaults);
+        // Start from the exact configuration priced for the catalogue/Merchant
+        // feed when it is still valid for the live product definition.
+        return fetch(`/price-configs/${encodeURIComponent(sku)}.json`)
+          .then((r) => (r.ok ? r.json() : null))
+          .catch(() => null)
+          .then((cfg: { options?: Record<string, string>; copies?: number } | null) => {
+            const seeded = { ...defaults };
+            const valid = cfg?.options && Object.entries(cfg.options).every(([k, v]) =>
+              allProps.find((p) => p.slug === k)?.options?.some((o) => String(o.slug) === String(v)));
+            const copiesOk = valid && typeof cfg?.copies === "number" && supplierQuantities(
+              allProps.find((p) => p.slug === "copies"), supplierSelection(data, cfg!.options!), data.excludes).includes(cfg!.copies!);
+            if (valid && copiesOk && !isSupplierExcluded({ ...cfg!.options, copies: cfg!.copies }, data.excludes)) {
+              for (const prop of allProps) delete seeded[prop.slug];
+              pricedConfigRef.current = cfg!.options!;
+              Object.assign(seeded, cfg!.options);
+              setQuantity(String(cfg!.copies));
+            }
+            setSelectedOptions(seeded);
+          });
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -879,6 +902,8 @@ export default function ProductDetail() {
       if (prop.slug === "copies") continue;
       if (hiddenSlugs.has(prop.slug)) continue;
       if (!prop.required) continue;
+      // Print.com priced the reference configuration without this property.
+      if (pricedConfigRef.current && !(prop.slug in pricedConfigRef.current)) continue;
       if (!prop.options?.length) {
         if ((prop.type === "float" || prop.type === "text") && !selectedOptions[prop.slug]) {
           setPriceError(`Veuillez sélectionner « ${prop.title} ».`);
@@ -923,6 +948,7 @@ export default function ProductDetail() {
       for (const prop of allProps) {
         if (!hiddenSlugs.has(prop.slug)) continue;
         if (!prop.required) continue;
+        if (pricedConfigRef.current && !(prop.slug in pricedConfigRef.current)) continue;
         const v = realOptionValue(prop);
         if (v !== undefined) hiddenRequired[prop.slug] = v;
       }
@@ -949,6 +975,7 @@ export default function ProductDetail() {
         copies,
         protectedSelection,
         copiesProp,
+        pricedConfigRef.current,
       );
 
       if (request !== priceRequestRef.current) return;
@@ -1005,6 +1032,10 @@ export default function ProductDetail() {
       ...(cp?.optionsInSummary ?? [])];
     const picks = [...new Set(suggestions)].filter(value => allowed.includes(value)).sort((a,b) => a-b);
     if (!picks.length && allowed.length) picks.push(allowed[0]);
+    if (quantity && allowed.includes(Number(quantity)) && !picks.includes(Number(quantity))) {
+      picks.push(Number(quantity));
+      picks.sort((a, b) => a - b);
+    }
     setQuantityOptions(picks.map(value => ({ slug: String(value), name: String(value) })));
     if (!customQuantityRef.current && (!quantity || !allowed.includes(Number(quantity)))) {
       invalidatePrice();
