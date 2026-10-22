@@ -5,14 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/hooks/useCart";
 import { supabase } from "@/integrations/supabase/client";
-import { FLAT_SHIPPING_HT, getSupplierPrice, hasSupplierPrice } from "@/lib/pricing";
+import { getSupplierPrice, hasSupplierPrice } from "@/lib/pricing";
 import { getProduct, getPrice } from "@/lib/printcom";
 import { supplierQuantities, supplierSelection } from "@/lib/supplier-quantities";
 import { toast } from "sonner";
 import { trackGenerateLead } from "@/lib/analytics";
+import { useShipping } from "@/hooks/useShipping";
+import { ShippingFields } from "@/components/cart/ShippingFields";
+import { QuoteTotals } from "@/components/cart/QuoteTotals";
 
 export default function Checkout() {
-  const { items, total, clearCart } = useCart();
+  const { items, total, clearCart, deliveryAddress, setDeliveryAddress, shippingMethod, setShippingMethod } = useCart();
+  const shipping = useShipping(items, deliveryAddress, shippingMethod);
   const navigate = useNavigate();
 
   // Unique request id generated up-front so uploads land in this request's folder.
@@ -20,8 +24,8 @@ export default function Checkout() {
   const requestId = requestIdRef.current;
 
   const [address, setAddress] = useState({
-    firstName: "", lastName: "", company: "", street: "", houseNumber: "",
-    city: "", postalCode: "", country: "FR", phone: "", email: "", message: "",
+    firstName: "", lastName: "", company: "", street: deliveryAddress.street || "", houseNumber: deliveryAddress.houseNumber || "",
+    city: deliveryAddress.city || "", postalCode: deliveryAddress.postalCode || "", country: deliveryAddress.country, phone: "", email: "", message: "",
   });
 
   const [fileUploads, setFileUploads] = useState<Record<string, { url: string; name: string; path: string }>>({});
@@ -30,10 +34,7 @@ export default function Checkout() {
   // une deuxième demande et donc un deuxième e-mail interne.
   const submittingRef = useRef(false);
 
-  // Forfait de livraison fixe : 11,90 € HT, ajouté une seule fois par demande de devis.
   const productsTotalHt = total;
-  const shippingHt = FLAT_SHIPPING_HT;
-  const grandTotal = productsTotalHt + shippingHt;
   const fullyPriced = items.every((item) => item.unitPrice != null && item.unitPrice > 0);
 
   const handleFileUpload = async (itemId: string, file: File) => {
@@ -74,7 +75,7 @@ export default function Checkout() {
           throw new Error(`Le tarif de « ${item.productName} » a changé. Reconfigurez ce produit avant de demander un devis.`);
         }
       }
-      const fullAddress = [address.houseNumber, address.street].filter(Boolean).join(" ");
+      const fullAddress = [deliveryAddress.houseNumber, deliveryAddress.street].filter(Boolean).join(" ");
 
       const quoteItems = items.map(i => ({
         product_name: i.productName,
@@ -95,13 +96,15 @@ export default function Checkout() {
       const { data: saved, error } = await supabase.functions.invoke("submit-quote", {
         body: {
           reference,
+          deliveryAddress,
+          shippingMethod: shipping.selectedMethod || undefined,
           name: `${address.firstName} ${address.lastName}`.trim(),
           company: address.company || null,
           email: address.email,
           phone: address.phone || null,
           address: fullAddress || null,
-          postal_code: address.postalCode || null,
-          city: address.city || null,
+          postal_code: deliveryAddress.postalCode || null,
+          city: deliveryAddress.city || null,
           message: address.message || null,
           items: items.map((i) => ({
             productName: i.productName,
@@ -136,8 +139,8 @@ export default function Checkout() {
             email: address.email,
             phone: address.phone || null,
             address: fullAddress || null,
-            postalCode: address.postalCode || null,
-            city: address.city || null,
+            postalCode: deliveryAddress.postalCode || null,
+            city: deliveryAddress.city || null,
             message: address.message || null,
             pageUrl: window.location.href,
             items: (saved.items as typeof quoteItems).map((i) => ({
@@ -152,6 +155,8 @@ export default function Checkout() {
             })),
             productsTotalHt: saved.productsTotalHt,
             shippingHt: saved.shippingHt,
+            vatAmount: saved.vatAmount,
+            estimatedTotalTtc: saved.estimatedTotalTtc,
             estimatedTotalHt: saved.estimatedTotalHt,
           },
         });
@@ -191,10 +196,6 @@ export default function Checkout() {
           <Input placeholder="Nom *" value={address.lastName} onChange={e => setAddress(p => ({ ...p, lastName: e.target.value }))} />
           <Input placeholder="Email *" type="email" value={address.email} onChange={e => setAddress(p => ({ ...p, email: e.target.value }))} className="sm:col-span-2" />
           <Input placeholder="Société (optionnel)" value={address.company} onChange={e => setAddress(p => ({ ...p, company: e.target.value }))} className="sm:col-span-2" />
-          <Input placeholder="Rue" value={address.street} onChange={e => setAddress(p => ({ ...p, street: e.target.value }))} />
-          <Input placeholder="N°" value={address.houseNumber} onChange={e => setAddress(p => ({ ...p, houseNumber: e.target.value }))} />
-          <Input placeholder="Code postal *" value={address.postalCode} onChange={e => setAddress(p => ({ ...p, postalCode: e.target.value }))} />
-          <Input placeholder="Ville" value={address.city} onChange={e => setAddress(p => ({ ...p, city: e.target.value }))} />
           <Input placeholder="Téléphone" value={address.phone} onChange={e => setAddress(p => ({ ...p, phone: e.target.value }))} className="sm:col-span-2" />
           <textarea
             placeholder="Votre message (optionnel)"
@@ -233,40 +234,12 @@ export default function Checkout() {
         </div>
       </section>
 
-      {/* Livraison : forfait fixe */}
-      <section className="mt-10">
-        <div className="rounded-lg border border-border bg-card p-6">
-          <div className="flex items-center gap-3">
-            <Truck className="h-5 w-5 text-primary shrink-0" />
-            <h2 className="font-display text-lg font-semibold text-foreground">Livraison</h2>
-          </div>
-          <div className="mt-4 flex items-center justify-between">
-            <span className="text-sm text-foreground">Forfait livraison HT</span>
-            <span className="text-sm font-semibold text-foreground">{shippingHt.toFixed(2).replace(".", ",")} €</span>
-          </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Forfait de livraison fixe appliqué une seule fois par commande.
-          </p>
-        </div>
+      <section className="mt-10 space-y-4">
+        <h2 className="font-display text-xl font-semibold flex items-center gap-3"><Truck className="h-5 w-5 text-primary" />Adresse de livraison</h2>
+        <ShippingFields address={deliveryAddress} onChange={setDeliveryAddress} method={shippingMethod} onMethod={setShippingMethod} choices={shipping.choices} loading={shipping.loading} />
       </section>
-
       <div className="mt-10 rounded-xl border border-border bg-card p-6">
-        <div className="space-y-2 mb-4">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Sous-total produits HT</span>
-            <span className="text-foreground">{fullyPriced ? `${productsTotalHt.toFixed(2).replace(".", ",")} €` : "À confirmer sur devis"}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Forfait livraison HT</span>
-            <span className="text-foreground">{shippingHt.toFixed(2).replace(".", ",")} €</span>
-          </div>
-          <div className="border-t border-border pt-2 flex justify-between">
-            <span className="text-sm font-medium text-foreground">Total estimatif HT</span>
-            <span className="text-2xl font-bold text-foreground font-display">
-              {fullyPriced ? `${grandTotal.toFixed(2).replace(".", ",")} €` : "Sur devis"}
-            </span>
-          </div>
-        </div>
+        <div className="mb-4"><QuoteTotals productsHt={productsTotalHt} shippingHt={shipping.shippingHt} fullyPriced={fullyPriced} country={deliveryAddress.country} postalCode={deliveryAddress.postalCode} /></div>
         <Button size="lg" className="w-full" onClick={handleSubmitQuote} disabled={submitting}>
           {submitting ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
