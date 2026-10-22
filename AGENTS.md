@@ -4,3 +4,4 @@
 - Configurator prices and shipping are guarded by request versions; cart lines preserve the exact resolved machine configuration so estimates cannot refer to an earlier selection.
 - Use the shared supplier quantity resolver for configurator, SEO pricing and quote validation; supplier ranges override suggestions, quantity-linked exclusions filter quantities, and full configuration validation remains the supplier pricing endpoint's responsibility.
 - Remove cached SEO offers when a live supplier price refresh fails so unavailable configurations cannot retain stale advertised prices.
+- The configurator starts from public/price-configs/<sku>.json (written by scripts/seo/product-prices.ts) so page, JSON-LD and Merchant prices refer to the same supplier configuration.
