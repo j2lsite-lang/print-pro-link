@@ -22,7 +22,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } from "fs";
 import { resolve } from "path";
 import { getResalePrice, getSupplierPrice, resaleFromSupplierHT } from "../../src/lib/pricing";
-import { supplierQuantities, isSupplierExcluded, supplierSelection, type QuantityProperty } from "../../src/lib/supplier-quantities";
+import { supplierQuantities, isSupplierExcluded, supplierSelection, nextSuggestedQuantity, type QuantityProperty } from "../../src/lib/supplier-quantities";
 
 export interface ProductPrice {
   sku: string;
@@ -250,6 +250,12 @@ async function resolvePrice(
     if (data && !data.error && !data.errorMessage) return { data, copies, options };
     lastError = data?.errorMessage || data?.error || "";
 
+    // Range authorises the quantity but Print.com has no tariff for it: move to
+    // the next supplier-suggested quantity instead of changing the product.
+    if (/no supplier prices found/i.test(lastError)) {
+      const next = nextSuggestedQuantity(copiesProp as any, supplierSelection(product, options), excludes as any, copies);
+      if (next) { copies = next; continue; }
+    }
     const missing = parseMissingProps(lastError);
     if (missing.length) {
       let added = false;

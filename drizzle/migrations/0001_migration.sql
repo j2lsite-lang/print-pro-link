@@ -1,0 +1,1 @@
+DELETE FROM public.quote_requests WHERE reference = 'DEVIS-AAAAAAA2' AND email = 'test-interne@j2lprint.fr';

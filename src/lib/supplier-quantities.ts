@@ -42,3 +42,17 @@ export function supplierSelection(product: { properties?: Array<{ slug: string; 
   }
   return result;
 }
+/**
+ * Next supplier-suggested quantity above `current` (explicit options and range
+ * summaries), used when Print.com has no price for a quantity its range allows.
+ */
+export function nextSuggestedQuantity(property: QuantityProperty | undefined, selection: Record<string, unknown>, excludes: SupplierExclusions = [], current = 0): number | null {
+  if (!property) return null;
+  const method = String(selection.printingmethod ?? "");
+  const allowed = new Set(supplierQuantities(property, selection, excludes));
+  const suggested = [
+    ...(property.options ?? []).filter(o => !o.type || o.type === method).map(o => Number(o.slug)),
+    ...(property.rangeSets ?? []).filter(s => !s.printingmethod || s.printingmethod === method).flatMap(s => s.summary ?? []),
+  ].filter(v => Number.isSafeInteger(v) && v > current && allowed.has(v)).sort((a, b) => a - b);
+  return suggested[0] ?? null;
+}

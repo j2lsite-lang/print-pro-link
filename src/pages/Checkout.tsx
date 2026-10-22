@@ -90,29 +90,40 @@ export default function Checkout() {
         file_name: fileUploads[i.id]?.name || i.originalFileName || null,
       }));
 
-      const { error } = await supabase.from("quote_requests").insert({
-        reference: `DEVIS-${requestId.slice(0, 8).toUpperCase()}`,
-        name: `${address.firstName} ${address.lastName}`.trim(),
-        company: address.company || null,
-        email: address.email,
-        phone: address.phone || null,
-        address: fullAddress || null,
-        postal_code: address.postalCode || null,
-        city: address.city || null,
-        message: address.message || null,
-        items: JSON.parse(JSON.stringify(quoteItems)),
-        products_total_ht: fullyPriced ? productsTotalHt : null,
-        shipping_amount_ht: shippingHt,
-        estimated_total_ht: fullyPriced ? grandTotal : null,
-        estimated_total: fullyPriced ? grandTotal : null,
-        shipping_cost: shippingHt,
-        currency: "EUR",
+      // Server re-prices every line from live Print.com data and records the quote.
+      const reference = `DEVIS-${requestId.slice(0, 8).toUpperCase()}`;
+      const { data: saved, error } = await supabase.functions.invoke("submit-quote", {
+        body: {
+          reference,
+          name: `${address.firstName} ${address.lastName}`.trim(),
+          company: address.company || null,
+          email: address.email,
+          phone: address.phone || null,
+          address: fullAddress || null,
+          postal_code: address.postalCode || null,
+          city: address.city || null,
+          message: address.message || null,
+          items: items.map((i) => ({
+            productName: i.productName,
+            sku: i.sku,
+            quantity: i.quantity,
+            copies: i.copies,
+            configuration: i.configuration,
+            options: i.options,
+            includeDesignFee: !!i.includeDesignFee,
+            fileUrl: fileUploads[i.id]?.url || i.fileUrl || null,
+            fileName: fileUploads[i.id]?.name || i.originalFileName || null,
+          })),
+        },
       });
-
-      if (error) throw error;
+      if (error) {
+        let detail = "";
+        try { detail = (await (error as any).context?.json())?.error ?? ""; } catch { /* ignore */ }
+        throw new Error(detail || "Demande de devis refusée : configuration à vérifier.");
+      }
+      if (!saved?.reference) throw new Error("Demande de devis non enregistrée.");
 
       // Email de notification envoyé UNIQUEMENT après un enregistrement réussi du devis.
-      const reference = `DEVIS-${requestId.slice(0, 8).toUpperCase()}`;
       try {
         const { error: mailError } = await supabase.functions.invoke("send-quote-smtp", {
           body: {
@@ -129,7 +140,7 @@ export default function Checkout() {
             city: address.city || null,
             message: address.message || null,
             pageUrl: window.location.href,
-            items: quoteItems.map((i) => ({
+            items: (saved.items as typeof quoteItems).map((i) => ({
               productName: i.product_name,
               sku: i.sku,
               quantity: i.quantity,
@@ -139,9 +150,9 @@ export default function Checkout() {
               fileName: i.file_name,
               fileUrl: i.file_url,
             })),
-            productsTotalHt: fullyPriced ? productsTotalHt : null,
-            shippingHt,
-            estimatedTotalHt: fullyPriced ? grandTotal : null,
+            productsTotalHt: saved.productsTotalHt,
+            shippingHt: saved.shippingHt,
+            estimatedTotalHt: saved.estimatedTotalHt,
           },
         });
         if (mailError) console.error("Notification devis non envoyée:", mailError);

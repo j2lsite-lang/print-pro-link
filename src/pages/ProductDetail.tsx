@@ -10,7 +10,7 @@ import { getCmsCatalog, getProduct, getPrice, getShippingPossibilities } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { getResalePrice, getSupplierPrice, hasSupplierPrice, DESIGN_FEE_BASE } from "@/lib/pricing";
 import PricingNotice from "@/components/product/PricingNotice";
-import { supplierQuantities, supplierSelection, isSupplierExcluded } from "@/lib/supplier-quantities";
+import { supplierQuantities, supplierSelection, nextSuggestedQuantity, isSupplierExcluded } from "@/lib/supplier-quantities";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
 import OptionSelector from "@/components/product/OptionSelector";
@@ -362,6 +362,12 @@ async function resolvePrice(
     console.log(`[price] attempt ${attempt + 1} error:`, lastError);
 
     // 1. Add any missing required properties using real Print.com values.
+    // Range authorises the quantity but Print.com has no tariff for it: move to
+    // the next supplier-suggested quantity instead of changing the product.
+    if (/no supplier prices found/i.test(lastError)) {
+      const next = nextSuggestedQuantity(copiesProp as any, supplierSelection(product, options), excludes as any, copies);
+      if (next) { copies = next; continue; }
+    }
     const missing = parseMissingProps(lastError);
     if (missing.length) {
       let added = false;
