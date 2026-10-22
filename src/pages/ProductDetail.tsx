@@ -285,6 +285,7 @@ async function resolvePrice(
   protectedKeys: Set<string>,
   copiesProp: ConfigurableProperty | undefined,
   pricedConfig: Record<string, string> | null = null,
+  allowQuantityBump = false,
 ): Promise<{ data: any; options: Record<string, any>; copies: number }> {
   const props = product.properties || product.configurableProperties || [];
   const excludes = product.excludes || [];
@@ -364,7 +365,7 @@ async function resolvePrice(
     // 1. Add any missing required properties using real Print.com values.
     // Range authorises the quantity but Print.com has no tariff for it: move to
     // the next supplier-suggested quantity instead of changing the product.
-    if (/no supplier prices found/i.test(lastError)) {
+    if (allowQuantityBump && /no supplier prices found/i.test(lastError)) {
       const next = nextSuggestedQuantity(copiesProp as any, supplierSelection(product, options), excludes as any, copies);
       if (next) { copies = next; continue; }
     }
@@ -974,15 +975,11 @@ export default function ProductDetail() {
 
       const copiesProp = allProps.find((p) => p.slug === "copies");
       const protectedSelection = new Set(touchedKeysRef.current);
-      const { data, options, copies: resolvedCopies } = await resolvePrice(
-        sku,
-        product,
-        baseOptions,
-        copies,
-        protectedSelection,
-        copiesProp,
-        pricedConfigRef.current,
-      );
+      // Pass 1 keeps the quantity; pass 2 (only if no tariff exists at all)
+      // moves to the next quantity Print.com suggests.
+      const run = (bump: boolean) => resolvePrice(sku, product, baseOptions, copies, protectedSelection,
+        copiesProp, pricedConfigRef.current, bump);
+      const { data, options, copies: resolvedCopies } = await run(false).catch(() => run(true));
 
       if (request !== priceRequestRef.current) return;
       for (const key of protectedSelection) {

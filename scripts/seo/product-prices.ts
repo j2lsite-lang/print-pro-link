@@ -228,7 +228,7 @@ async function callPrice(sb: string, anon: string, sku: string, body: Record<str
 /** Self-correcting price call, mirroring resolvePrice() in the UI. */
 async function resolvePrice(
   sb: string, anon: string, sku: string, product: any, baseOptions: Record<string, any>,
-  copies0: number, copiesProp: Prop | undefined,
+  copies0: number, copiesProp: Prop | undefined, allowQuantityBump = false,
 ): Promise<{ data: any; copies: number; options: Record<string, any> } | null> {
   const props: Prop[] = product.properties || product.configurableProperties || [];
   const excludes: ExcludeGroup[] = product.excludes || [];
@@ -252,7 +252,7 @@ async function resolvePrice(
 
     // Range authorises the quantity but Print.com has no tariff for it: move to
     // the next supplier-suggested quantity instead of changing the product.
-    if (/no supplier prices found/i.test(lastError)) {
+    if (allowQuantityBump && /no supplier prices found/i.test(lastError)) {
       const next = nextSuggestedQuantity(copiesProp as any, supplierSelection(product, options), excludes as any, copies);
       if (next) { copies = next; continue; }
     }
@@ -352,7 +352,8 @@ async function computePrice(sb: string, anon: string, sku: string): Promise<Prod
 
   const baseOptions = { ...hiddenRequired, ...cleanOptions };
   const copiesProp = allProps.find((p) => p.slug === "copies");
-  const resolved = await resolvePrice(sb, anon, sku, product, baseOptions, copies, copiesProp);
+  const resolved = (await resolvePrice(sb, anon, sku, product, baseOptions, copies, copiesProp))
+    ?? (await resolvePrice(sb, anon, sku, product, baseOptions, copies, copiesProp, true));
   if (!resolved?.data) return null;
   if (!supplierQuantities(copiesProp as QuantityProperty | undefined, supplierSelection(product, resolved.options), product.excludes).includes(resolved.copies)) return null;
 
