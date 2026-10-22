@@ -1,0 +1,3 @@
+ALTER TABLE public.quote_requests ADD COLUMN IF NOT EXISTS supplier_shipping_ht numeric, ADD COLUMN IF NOT EXISTS shipping_status text, ADD COLUMN IF NOT EXISTS shipping_method text, ADD COLUMN IF NOT EXISTS delivery_address jsonb, ADD COLUMN IF NOT EXISTS vat_rate numeric, ADD COLUMN IF NOT EXISTS vat_amount numeric, ADD COLUMN IF NOT EXISTS estimated_total_ttc numeric;
+COMMENT ON COLUMN public.quote_requests.shipping_amount_ht IS 'DEPRECATED: legacy fixed fee; new quotes use nullable supplier_shipping_ht and shipping_status.';
+GRANT ALL ON public.quote_requests TO service_role;

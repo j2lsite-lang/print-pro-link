@@ -2,11 +2,13 @@ import { Link } from "react-router-dom";
 import { Trash2, ShoppingBag, ArrowRight, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
-import { FLAT_SHIPPING_HT } from "@/lib/pricing";
+import { useShipping } from "@/hooks/useShipping";
+import { ShippingFields } from "@/components/cart/ShippingFields";
+import { QuoteTotals } from "@/components/cart/QuoteTotals";
 
 export default function Cart() {
-  const { items, removeItem, total, clearCart } = useCart();
-  const grandTotal = total + FLAT_SHIPPING_HT;
+  const { items, removeItem, total, clearCart, deliveryAddress, setDeliveryAddress, shippingMethod, setShippingMethod } = useCart();
+  const shipping = useShipping(items, deliveryAddress, shippingMethod);
   const fullyPriced = items.every((item) => item.unitPrice != null && item.unitPrice > 0);
 
   if (items.length === 0) {
@@ -98,35 +100,12 @@ export default function Cart() {
         {/* Summary */}
         <div className="rounded-xl border border-border bg-card p-6 shadow-card h-fit sticky top-24">
           <h3 className="font-display text-lg font-semibold text-card-foreground">Résumé</h3>
-          <div className="mt-4 space-y-3 text-sm">
-            {items.map((item) => (
-              <div key={item.id} className="flex justify-between gap-2">
-                <span className="text-muted-foreground truncate">{item.productName}</span>
-                <span className="font-medium text-foreground shrink-0">
-                  {item.unitPrice ? `${(item.unitPrice * item.quantity).toFixed(2).replace(".", ",")} €` : "Sur devis"}
-                </span>
-              </div>
-            ))}
-            <div className="border-t border-border pt-3">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Sous-total HT</span>
-                <span className="font-medium text-foreground">{fullyPriced ? `${total.toFixed(2).replace(".", ",")} €` : "À confirmer sur devis"}</span>
-              </div>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-muted-foreground flex items-center gap-1">
-                <Truck className="h-3.5 w-3.5" /> Forfait livraison HT
-              </span>
-              <span className="font-medium text-foreground">{FLAT_SHIPPING_HT.toFixed(2).replace(".", ",")} €</span>
-            </div>
-          </div>
-          <div className="mt-4 border-t border-border pt-4">
-            <div className="flex justify-between text-lg font-bold font-display">
-              <span>Total estimatif HT</span>
-               <span>{fullyPriced ? `${grandTotal.toFixed(2).replace(".", ",")} €` : "Sur devis"}</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">Forfait livraison de {FLAT_SHIPPING_HT.toFixed(2)} € HT inclus</p>
-            {!fullyPriced && <p className="text-xs text-muted-foreground mt-2">Certains tarifs enregistrés doivent être recalculés. Reconfigurez les produits ou demandez leur chiffrage.</p>}
+          <section className="mt-4 space-y-3">
+            <h4 className="font-medium flex items-center gap-2"><Truck className="h-4 w-4" />Livraison</h4>
+            <ShippingFields address={deliveryAddress} onChange={setDeliveryAddress} method={shippingMethod} onMethod={setShippingMethod} choices={shipping.choices} loading={shipping.loading} />
+          </section>
+          <div className="mt-5 border-t border-border pt-4">
+            <QuoteTotals productsHt={total} shippingHt={shipping.shippingHt} fullyPriced={fullyPriced} country={deliveryAddress.country} postalCode={deliveryAddress.postalCode} />
           </div>
           <Button asChild className="mt-6 w-full" size="lg">
             <Link to="/checkout">

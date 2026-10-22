@@ -3,17 +3,13 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { supplierQuantities, supplierSelection } from "../_shared/supplier-quantities.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { calculateShipping, quoteTotals } from "../_shared/shipping.ts";
+import { ShippingAddressSchema } from "../_shared/shipping-schema.ts";
 
 // Must match src/lib/pricing.ts
 const MARGIN_COEFFICIENT = 1.8;
 const DESIGN_FEE_BASE = 65;
-const FLAT_SHIPPING_HT = 11.9;
 const roundUp10 = (v: number) => Math.ceil(v * 10 - 1e-9) / 10;
 
 function supplierPrice(r: any): number {
@@ -40,6 +36,8 @@ const Item = z.object({
 });
 const Body = z.object({
   reference: z.string().regex(/^DEVIS-[A-F0-9]{8}$/),
+  deliveryAddress: ShippingAddressSchema.optional(),
+  shippingMethod: s(100).optional(),
   name: s(200).min(1),
   company: s(200).nullable().optional(),
   email: z.string().trim().email().max(255),
@@ -84,6 +82,7 @@ Deno.serve(async (req) => {
     const product = await printcom("GET", `/products/${item.sku}?view=reseller`);
     if (!product.ok || !product.data) return json({ error: `Produit indisponible : « ${item.productName} ».` }, 422);
     const props = product.data.properties || product.data.configurableProperties || [];
+    if (Number(item.configuration.copies) !== item.copies) return json({ error: "Quantité incohérente." }, 422);
     const { copies: _c, ...config } = item.configuration;
     const allowed = supplierQuantities(props.find((p: any) => p.slug === "copies"),
       supplierSelection(product.data, config), product.data.excludes);
@@ -118,29 +117,43 @@ Deno.serve(async (req) => {
   }
 
   const productsTotal = Math.round(validated.reduce((t, i) => t + i.line_total, 0) * 100) / 100;
-  const total = Math.round((productsTotal + FLAT_SHIPPING_HT) * 100) / 100;
-  const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+  const destination = body.deliveryAddress || { country: "FR", postalCode: body.postal_code || undefined, city: body.city || undefined, street: body.address || undefined };
+  const shipping = await calculateShipping(validated.map(i => ({ sku: i.sku, quantity: i.quantity, copies: i.copies, configuration: i.configuration })), destination, printcom, body.shippingMethod);
+  const totals = quoteTotals(productsTotal, shipping.shippingHt, /^(97|98)/.test(destination.postalCode || "") ? "overseas" : destination.country);
+  const backendUrl = Deno.env.get("SUPABASE_URL");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!backendUrl || !serviceKey) return json({ error: "Enregistrement indisponible." }, 503);
+  const admin = createClient(backendUrl, serviceKey);
   const { error } = await admin.from("quote_requests").insert({
     reference: body.reference,
     name: body.name,
     company: body.company ?? null,
     email: body.email,
     phone: body.phone ?? null,
-    address: body.address ?? null,
-    postal_code: body.postal_code ?? null,
-    city: body.city ?? null,
+    address: [destination.houseNumber, destination.street].filter(Boolean).join(" ") || body.address || null,
+    postal_code: destination.postalCode || null,
+    city: destination.city || null,
     message: body.message ?? null,
     items: validated,
     products_total_ht: productsTotal,
-    shipping_amount_ht: FLAT_SHIPPING_HT,
-    shipping_cost: FLAT_SHIPPING_HT,
-    estimated_total_ht: total,
-    estimated_total: total,
+    // Legacy nonnullable field uses 0 only as a deprecated storage sentinel;
+    // customer-facing amounts use supplier_shipping_ht + shipping_status.
+    shipping_amount_ht: shipping.shippingHt ?? 0,
+    supplier_shipping_ht: shipping.shippingHt,
+    shipping_status: shipping.status,
+    shipping_method: shipping.selectedMethod,
+    delivery_address: destination,
+    shipping_cost: shipping.shippingHt,
+    estimated_total_ht: totals.estimatedTotalHt,
+    estimated_total: totals.estimatedTotalHt,
+    vat_rate: totals.vatRate,
+    vat_amount: totals.vatAmount,
+    estimated_total_ttc: totals.estimatedTotalTtc,
     currency: "EUR",
   });
   if (error) {
     console.error("[submit-quote] insert failed", error.message);
     return json({ error: "Enregistrement du devis impossible." }, 500);
   }
-  return json({ reference: body.reference, items: validated, productsTotalHt: productsTotal, shippingHt: FLAT_SHIPPING_HT, estimatedTotalHt: total });
+  return json({ reference: body.reference, items: validated, ...totals, shippingStatus: shipping.status, shippingMethod: shipping.selectedMethod });
 });

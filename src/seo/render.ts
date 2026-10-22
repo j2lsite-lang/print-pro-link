@@ -4,7 +4,7 @@
 // crawler-readable HTML present in "view source" without executing JS.
 
 import type { SeoPage, LinkGroup } from "./types";
-import { PRICING_NOTICE, FLAT_SHIPPING_HT, DESIGN_FEE_BASE } from "../lib/pricing";
+import { PRICING_NOTICE, DESIGN_FEE_BASE } from "../lib/pricing";
 
 export const SITE_URL = "https://j2lprint.fr";
 export const SITE_NAME = "J2L Print";
@@ -183,7 +183,7 @@ export function renderBody(page: SeoPage): string {
     header,
     renderVisual(page),
     `  <div class="seo-intro">${intro}</div>`,
-    `<section aria-label="Informations tarifaires"><p>Prix selon configuration</p><p>${esc(PRICING_NOTICE)}</p><p>Montants HT. Livraison : ${FLAT_SHIPPING_HT.toFixed(2).replace(".", ",")} € HT par devis. Conception de maquette en option à partir de ${DESIGN_FEE_BASE} € HT. TVA et montant TTC précisés sur le devis.</p></section>`,
+    `<section aria-label="Informations tarifaires"><p>Prix selon configuration</p><p>${esc(PRICING_NOTICE)}</p><p>Montants HT. Transport réel selon le panier et l’adresse, sinon livraison calculée sur devis. Conception de maquette en option à partir de ${DESIGN_FEE_BASE} € HT. TVA et montant TTC précisés sur le devis.</p></section>`,
     sections,
     renderProductGrid(page),
     renderCta(page),

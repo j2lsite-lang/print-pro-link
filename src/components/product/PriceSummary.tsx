@@ -1,7 +1,7 @@
 import { Loader2, ShoppingCart, RefreshCw, Palette, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getResalePrice, DESIGN_FEE_BASE, FLAT_SHIPPING_HT, PRICING_NOTICE } from "@/lib/pricing";
+import { getResalePrice, DESIGN_FEE_BASE, PRICING_NOTICE } from "@/lib/pricing";
 
 interface OptionItem {
   slug: string | number | null;
@@ -48,6 +48,8 @@ export default function PriceSummary({
   configurableProps,
   includeDesignFee,
   onToggleDesignFee,
+  shippingOptions = [],
+  shippingLoading,
   copies,
 }: PriceSummaryProps) {
   const summaryItems = configurableProps.filter((p) => selectedOptions[p.slug]);
@@ -135,7 +137,7 @@ export default function PriceSummary({
 
               {/* Shipping */}
               <p className="text-xs text-muted-foreground flex items-start gap-1">
-                <Truck className="h-3 w-3 shrink-0" /> Livraison : {FLAT_SHIPPING_HT.toFixed(2).replace(".", ",")} € HT, ajoutée une seule fois au devis.
+                <Truck className="h-3 w-3 shrink-0" /> {shippingLoading ? "Calcul de la livraison…" : shippingOptions.length ? `Livraison estimée France dès ${shippingOptions[0].cost.toFixed(2).replace(".", ",")} € HT · recalculée selon le panier et l’adresse.` : "Livraison calculée sur devis"}
               </p>
             </div>
 

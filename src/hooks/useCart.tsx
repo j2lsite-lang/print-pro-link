@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useCallback } from "react";
 import { currentCartPrice } from "@/lib/cart-pricing";
+import type { ShippingAddress } from "@/lib/shipping";
 
 export interface CartItem {
   id: string;
@@ -25,6 +26,10 @@ interface CartCtx {
   updateItem: (id: string, updates: Partial<CartItem>) => void;
   clearCart: () => void;
   total: number;
+  deliveryAddress: ShippingAddress;
+  setDeliveryAddress: (address: ShippingAddress) => void;
+  shippingMethod: string;
+  setShippingMethod: (method: string) => void;
 }
 
 const CartContext = createContext<CartCtx>({
@@ -35,9 +40,28 @@ const CartContext = createContext<CartCtx>({
   updateItem: () => {},
   clearCart: () => {},
   total: 0,
+  deliveryAddress: { country: "FR" },
+  setDeliveryAddress: () => {},
+  shippingMethod: "",
+  setShippingMethod: () => {},
 });
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const [deliveryAddress, setAddress] = useState<ShippingAddress>(() => {
+    try { return JSON.parse(sessionStorage.getItem("j2l-delivery-address") || '{"country":"FR"}'); }
+    catch { return { country: "FR" }; }
+  });
+  const [shippingMethod, setMethod] = useState(() => sessionStorage.getItem("j2l-shipping-method") || "");
+  const setDeliveryAddress = (address: ShippingAddress) => {
+    setAddress(address);
+    setMethod("");
+    sessionStorage.removeItem("j2l-shipping-method");
+    sessionStorage.setItem("j2l-delivery-address", JSON.stringify(address));
+  };
+  const setShippingMethod = (method: string) => {
+    setMethod(method);
+    sessionStorage.setItem("j2l-shipping-method", method);
+  };
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
       const stored = localStorage.getItem("j2l-cart");
@@ -74,7 +98,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ items, itemCount, addItem, removeItem, updateItem, clearCart, total }}>
+    <CartContext.Provider value={{ items, itemCount, addItem, removeItem, updateItem, clearCart, total, deliveryAddress, setDeliveryAddress, shippingMethod, setShippingMethod }}>
       {children}
     </CartContext.Provider>
   );

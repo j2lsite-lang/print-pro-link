@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getCmsCatalog, getProduct, getPrice, getShippingPossibilities } from "@/lib/printcom";
+import { shippingChoices } from "@/lib/shipping";
 import { supabase } from "@/integrations/supabase/client";
 import { getResalePrice, getSupplierPrice, hasSupplierPrice, DESIGN_FEE_BASE } from "@/lib/pricing";
 import PricingNotice from "@/components/product/PricingNotice";
@@ -876,7 +877,7 @@ export default function ProductDetail() {
       };
       const data = await getShippingPossibilities(body);
       if (request !== shippingRequestRef.current) return;
-      const options = Array.isArray(data) ? data : data?.shippingOptions || data?.options || [];
+      const options = shippingChoices(data);
       setShippingOptions(options);
     } catch {
       if (request === shippingRequestRef.current) setShippingOptions([]);
