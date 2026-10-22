@@ -643,9 +643,11 @@ export type Database = {
           company: string | null
           created_at: string
           currency: string
+          delivery_address: Json | null
           email: string
           estimated_total: number | null
           estimated_total_ht: number | null
+          estimated_total_ttc: number | null
           id: string
           items: Json
           message: string | null
@@ -656,7 +658,12 @@ export type Database = {
           reference: string
           shipping_amount_ht: number
           shipping_cost: number | null
+          shipping_method: string | null
+          shipping_status: string | null
           status: string
+          supplier_shipping_ht: number | null
+          vat_amount: number | null
+          vat_rate: number | null
         }
         Insert: {
           address?: string | null
@@ -664,9 +671,11 @@ export type Database = {
           company?: string | null
           created_at?: string
           currency?: string
+          delivery_address?: Json | null
           email: string
           estimated_total?: number | null
           estimated_total_ht?: number | null
+          estimated_total_ttc?: number | null
           id?: string
           items?: Json
           message?: string | null
@@ -677,7 +686,12 @@ export type Database = {
           reference: string
           shipping_amount_ht?: number
           shipping_cost?: number | null
+          shipping_method?: string | null
+          shipping_status?: string | null
           status?: string
+          supplier_shipping_ht?: number | null
+          vat_amount?: number | null
+          vat_rate?: number | null
         }
         Update: {
           address?: string | null
@@ -685,9 +699,11 @@ export type Database = {
           company?: string | null
           created_at?: string
           currency?: string
+          delivery_address?: Json | null
           email?: string
           estimated_total?: number | null
           estimated_total_ht?: number | null
+          estimated_total_ttc?: number | null
           id?: string
           items?: Json
           message?: string | null
@@ -698,7 +714,12 @@ export type Database = {
           reference?: string
           shipping_amount_ht?: number
           shipping_cost?: number | null
+          shipping_method?: string | null
+          shipping_status?: string | null
           status?: string
+          supplier_shipping_ht?: number | null
+          vat_amount?: number | null
+          vat_rate?: number | null
         }
         Relationships: []
       }
