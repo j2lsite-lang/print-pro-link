@@ -6,4 +6,7 @@
 - [x] Replace quantity fallbacks globally with supplier-authorized ranges and exclusions.
 - [x] Revalidate configurations and quantities in the customer form before submitting quote requests.
 - [x] Test bureau-calendar and multiple families; preserve SEO and Worker without publishing.
-- [ ] Enforce supplier validation against direct quote API submissions server-side: blocked by the instruction not to deploy or alter the live backend.
+- [x] Enforce supplier validation against direct quote API submissions server-side.
+- [ ] Replace fixed shipping with unmarked-up real supplier shipping, with safe combined-cart handling and address/service changes.
+- [ ] Revalidate transport server-side and display HT, VAT and TTC consistently in cart and quote.
+- [ ] Test single/multiple-product orders and unavailable transport without sending customer emails or publishing.
