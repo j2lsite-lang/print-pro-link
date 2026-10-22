@@ -341,7 +341,12 @@ async function resolvePrice(
 
     console.log(`[price] attempt ${attempt + 1} payload:`, body);
 
-    try {
+    // Never send a configuration the supplier's own exclude rules forbid:
+    // reuse the same correction path as an API exclusion, without a 400.
+    const localGroup = excludes.find((g: any[]) => g.length > 0 && isSupplierExcluded(body, [g]));
+    if (localGroup) {
+      lastError = `excluded configuration was provided: ${localGroup.map((r: any) => `${r.property}:${body[r.property]}`).join(",")},`;
+    } else try {
       const data = await getPrice(sku, body);
       if (data?.error || data?.errorMessage) {
         lastError = data.errorMessage || data.error;
