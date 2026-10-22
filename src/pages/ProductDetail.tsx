@@ -1098,10 +1098,14 @@ export default function ProductDetail() {
           prop.options.some((o) => ["non", "no", "sans"].includes(String(o.name ?? o.slug ?? "").toLowerCase())) &&
           prop.options.some((o) => ["oui", "yes", "avec"].includes(String(o.name ?? o.slug ?? "").toLowerCase()));
 
-        // Filter out options that would create excluded combinations
+        // Hide only options excluded by the shopper's own choices; automatic
+        // defaults adapt instead (handleOptionChange + resolver), so the
+        // starting configuration never locks the other formats/papers.
+        const userChoices = Object.fromEntries(Object.entries(selectedOptions)
+          .filter(([k]) => touchedKeysRef.current.has(k)));
         const filteredOptions = prop.options
           .filter((o) => o.slug != null)
-          .filter((o) => !wouldBeExcluded(prop.slug, String(o.slug), selectedOptions, product?.excludes));
+          .filter((o) => !wouldBeExcluded(prop.slug, String(o.slug), userChoices, product?.excludes));
 
         return {
           slug: prop.slug,
