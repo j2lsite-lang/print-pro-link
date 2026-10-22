@@ -17,7 +17,7 @@ export function ShippingFields({ address, onChange, method, onMethod, choices, l
     {loading && <p className="text-sm text-muted-foreground">Calcul de la livraison…</p>}
     {choices.length > 0 && <Select value={method || choices[0]?.method} onValueChange={onMethod}>
       <SelectTrigger aria-label="Mode de livraison"><SelectValue placeholder="Mode de livraison" /></SelectTrigger>
-      <SelectContent>{choices.map(c => <SelectItem key={c.method} value={c.method}>{c.carrier} · {c.method.replaceAll("_", " ")} · {c.cost.toFixed(2).replace(".", ",")} € HT</SelectItem>)}</SelectContent>
+      <SelectContent>{choices.map(c => <SelectItem key={c.method} value={c.method}>{c.carrier} · {c.method.replace(/_/g, " ")} · {c.cost.toFixed(2).replace(".", ",")} € HT</SelectItem>)}</SelectContent>
     </Select>}
   </div>;
 }

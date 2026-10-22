@@ -39,8 +39,10 @@ interface QuoteNotificationProps {
   message?: string | null
   items?: QuoteItem[]
   productsTotalHt?: number
-  shippingHt?: number
-  estimatedTotalHt?: number
+  shippingHt?: number | null
+  estimatedTotalHt?: number | null
+  vatAmount?: number | null
+  estimatedTotalTtc?: number | null
 }
 
 const fmt = (n?: number | null) =>
@@ -58,8 +60,10 @@ const Email = ({
   message = null,
   items = [],
   productsTotalHt = 0,
-  shippingHt = 11.9,
-  estimatedTotalHt = 0,
+  shippingHt = null,
+  estimatedTotalHt = null,
+  vatAmount = null,
+  estimatedTotalTtc = null,
 }: QuoteNotificationProps) => {
   const fullAddress = [address, [postalCode, city].filter(Boolean).join(' ')]
     .filter(Boolean)
@@ -120,9 +124,11 @@ const Email = ({
               <Column align="right"><Text style={value}>{fmt(productsTotalHt)}</Text></Column>
             </Row>
             <Row style={totalRow}>
-              <Column><Text style={label}>Forfait livraison HT</Text></Column>
-              <Column align="right"><Text style={value}>{fmt(shippingHt)}</Text></Column>
+              <Column><Text style={label}>Livraison HT</Text></Column>
+              <Column align="right"><Text style={value}>{shippingHt == null ? 'Livraison calculée sur devis' : fmt(shippingHt)}</Text></Column>
             </Row>
+            <Field label="TVA" value={vatAmount == null ? 'À confirmer sur devis' : fmt(vatAmount)} />
+            <Field label="Total estimatif TTC" value={estimatedTotalTtc == null ? 'À confirmer sur devis' : fmt(estimatedTotalTtc)} />
             <Hr style={hr} />
             <Row style={totalRow}>
               <Column><Text style={totalLabel}>Total estimatif HT</Text></Column>
@@ -178,8 +184,10 @@ export const template = {
       },
     ],
     productsTotalHt: 89.9,
-    shippingHt: 11.9,
-    estimatedTotalHt: 101.8,
+    shippingHt: null,
+    estimatedTotalHt: null,
+    vatAmount: null,
+    estimatedTotalTtc: null,
   },
 } satisfies TemplateEntry
 

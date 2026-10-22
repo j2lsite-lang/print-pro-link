@@ -63,11 +63,13 @@ interface QuotePayload {
   subject?: string
   items?: QuoteItem[]
   productsTotalHt?: number
-  shippingHt?: number
-  estimatedTotalHt?: number
+  shippingHt?: number | null
+  vatAmount?: number | null
+  estimatedTotalTtc?: number | null
+  estimatedTotalHt?: number | null
 }
 
-const fmtMoney = (n?: number) =>
+const fmtMoney = (n?: number | null) =>
   typeof n === 'number' ? `${n.toFixed(2)} € HT` : ''
 
 const YELLOW = '#FFD100'
@@ -196,12 +198,12 @@ function buildNotificationHtml(p: QuotePayload, signed: Record<string, string>) 
   const productBlock = block('Produit demandé', productInner)
 
   const totalsBlock =
-    p.estimatedTotalHt != null
+    p.productsTotalHt != null
       ? block(
           'Estimation',
           row('Sous-total produits', fmtMoney(p.productsTotalHt) ? esc(fmtMoney(p.productsTotalHt)) : '') +
-            row('Forfait livraison', fmtMoney(p.shippingHt) ? esc(fmtMoney(p.shippingHt)) : '') +
-            row('Total estimatif', `<strong>${esc(fmtMoney(p.estimatedTotalHt))}</strong>`),
+            row('Livraison', esc(p.shippingHt == null ? 'Livraison calculée sur devis' : fmtMoney(p.shippingHt))) +
+            row('Total estimatif HT', esc(fmtMoney(p.estimatedTotalHt) || 'À confirmer sur devis')) + row('TVA', esc(p.vatAmount == null ? 'À confirmer sur devis' : `${p.vatAmount.toFixed(2)} €`)) + row('Total estimatif TTC', esc(p.estimatedTotalTtc == null ? 'À confirmer sur devis' : `${p.estimatedTotalTtc.toFixed(2)} € TTC`)),
         )
       : ''
 
@@ -313,11 +315,11 @@ function buildNotificationText(p: QuotePayload, signed: Record<string, string>) 
     else if (has(p.subject)) out.push(`Objet : ${p.subject}`)
     if (has(p.pageUrl)) out.push(`Page : ${p.pageUrl}`)
   }
-  if (p.estimatedTotalHt != null) {
+  if (p.productsTotalHt != null) {
     out.push('', 'ESTIMATION')
     if (p.productsTotalHt != null) out.push(`Sous-total produits : ${fmtMoney(p.productsTotalHt)}`)
-    if (p.shippingHt != null) out.push(`Forfait livraison : ${fmtMoney(p.shippingHt)}`)
-    out.push(`Total estimatif : ${fmtMoney(p.estimatedTotalHt)}`)
+    out.push(`Livraison : ${fmtMoney(p.shippingHt) || 'Livraison calculée sur devis'}`)
+    out.push(`Total estimatif HT : ${fmtMoney(p.estimatedTotalHt) || 'À confirmer sur devis'}`, `TVA : ${p.vatAmount == null ? 'À confirmer sur devis' : p.vatAmount.toFixed(2) + ' €'}`, `Total estimatif TTC : ${p.estimatedTotalTtc == null ? 'À confirmer sur devis' : p.estimatedTotalTtc.toFixed(2) + ' € TTC'}`)
   }
   if (has(p.message)) out.push('', 'MESSAGE DU CLIENT', String(p.message))
   return out.map((l) => l.replace(/[ \t]+$/g, '')).join('\n')
@@ -347,7 +349,7 @@ function buildConfirmationHtml(p: QuotePayload, firstName: string) {
     .map(String)
     .join(', ')
   const subtotal = fmtMoney(p.productsTotalHt)
-  const shipping = fmtMoney(p.shippingHt)
+  const shipping = fmtMoney(p.shippingHt) || (p.productsTotalHt != null ? 'Livraison calculée sur devis' : '')
   const total = fmtMoney(p.estimatedTotalHt)
   const hasFile = items.some((i) => has(i.fileName) || has(i.fileUrl))
 
@@ -356,7 +358,9 @@ function buildConfirmationHtml(p: QuotePayload, firstName: string) {
     clientRow('Quantité', quantities) +
     clientRow('Sous-total produits', subtotal) +
     clientRow('Livraison', shipping) +
-    clientTotalRow('Total estimatif', total) +
+    clientTotalRow('Total estimatif HT', total || (p.productsTotalHt != null ? 'À confirmer sur devis' : '')) +
+    clientRow('TVA', p.vatAmount == null ? (p.productsTotalHt != null ? 'À confirmer sur devis' : '') : `${p.vatAmount.toFixed(2)} €`) +
+    clientTotalRow('Total estimatif TTC', p.estimatedTotalTtc == null ? (p.productsTotalHt != null ? 'À confirmer sur devis' : '') : `${p.estimatedTotalTtc.toFixed(2)} € TTC`) +
     (hasFile ? clientRow('Fichier transmis', 'Oui') : '')
   const recapBlock = recapInner
     ? `<tr><td style="padding:0 24px 20px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:${DARK};border-radius:6px;border-left:4px solid ${YELLOW};"><tr><td style="padding:12px 16px 4px;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;letter-spacing:1px;color:${YELLOW};text-transform:uppercase;">Récapitulatif</td></tr><tr><td style="padding:6px 16px 14px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">${recapInner}</table></td></tr></table></td></tr>`
@@ -401,14 +405,14 @@ function confirmationText(p: QuotePayload, firstName: string) {
   out.push(has(firstName) ? `Bonjour ${firstName},` : 'Bonjour,')
   out.push('', 'Merci pour votre demande. Elle a bien été enregistrée par notre équipe.')
   const subtotal = fmtMoney(p.productsTotalHt)
-  const shipping = fmtMoney(p.shippingHt)
+  const shipping = fmtMoney(p.shippingHt) || (p.productsTotalHt != null ? 'Livraison calculée sur devis' : '')
   const total = fmtMoney(p.estimatedTotalHt)
   const recap: string[] = []
   if (has(productName)) recap.push(`* Produit : ${productName}`)
   if (has(quantities)) recap.push(`* Quantité : ${quantities}`)
   if (has(subtotal)) recap.push(`* Sous-total produits : ${subtotal}`)
   if (has(shipping)) recap.push(`* Livraison : ${shipping}`)
-  if (has(total)) recap.push(`* Total estimatif : ${total}`)
+  if (p.productsTotalHt != null) recap.push(`* Total estimatif HT : ${total || 'À confirmer sur devis'}`, `* TVA : ${p.vatAmount == null ? 'À confirmer sur devis' : p.vatAmount.toFixed(2) + ' €'}`, `* Total estimatif TTC : ${p.estimatedTotalTtc == null ? 'À confirmer sur devis' : p.estimatedTotalTtc.toFixed(2) + ' € TTC'}`)
   if (hasFile) recap.push('* Fichier transmis : Oui')
   if (recap.length) out.push('', 'Récapitulatif :', ...recap)
   out.push(
@@ -445,6 +449,20 @@ Deno.serve(async (req) => {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
+  }
+
+  if (payload.reference && payload.type === 'devis') {
+    const backendUrl = Deno.env.get('SUPABASE_URL')
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    if (!backendUrl || !serviceKey) return new Response(JSON.stringify({ error: 'Devis indisponible.' }), { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    const admin = createClient(backendUrl, serviceKey)
+    const { data: quote, error } = await admin.from('quote_requests').select('products_total_ht,supplier_shipping_ht,shipping_status,estimated_total_ht,vat_amount,estimated_total_ttc').eq('reference', payload.reference).eq('email', payload.email || '').maybeSingle()
+    if (error || !quote) return new Response(JSON.stringify({ error: 'Devis non enregistré.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    payload.productsTotalHt = quote.products_total_ht
+    payload.shippingHt = quote.shipping_status === 'calculated' ? quote.supplier_shipping_ht : null
+    payload.estimatedTotalHt = quote.estimated_total_ht
+    payload.vatAmount = quote.vat_amount
+    payload.estimatedTotalTtc = quote.estimated_total_ttc
   }
 
   // ── Generate signed download links for any attached files (private bucket) ──
