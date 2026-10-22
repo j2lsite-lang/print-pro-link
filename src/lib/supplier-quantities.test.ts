@@ -32,3 +32,12 @@ describe("supplier-only quantities", () => {
     expect(supplierQuantities({ slug: "copies", rangeSets: [{ options: [{ min: 0, max: 10, steps: 0 }] }] }, {})).toEqual([]);
   });
 });
+import { nextSuggestedQuantity } from "./supplier-quantities";
+describe("nextSuggestedQuantity", () => {
+  it("skips to the first supplier-suggested quantity above an untariffed one", () => {
+    const prop = { slug: "copies", options: [{ slug: 25 }, { slug: 50 }], rangeSets: [{ printingmethod: "digital", summary: [25, 50, 100], options: [{ min: 1, max: 15001, steps: 1 }] }] };
+    expect(nextSuggestedQuantity(prop, { printingmethod: "digital" }, [], 1)).toBe(25);
+    expect(nextSuggestedQuantity(prop, { printingmethod: "digital" }, [], 50)).toBe(100);
+    expect(nextSuggestedQuantity(prop, { printingmethod: "digital" }, [], 100)).toBeNull();
+  });
+});

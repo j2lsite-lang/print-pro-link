@@ -10,7 +10,7 @@ import { getCmsCatalog, getProduct, getPrice, getShippingPossibilities } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { getResalePrice, getSupplierPrice, hasSupplierPrice, DESIGN_FEE_BASE } from "@/lib/pricing";
 import PricingNotice from "@/components/product/PricingNotice";
-import { supplierQuantities, supplierSelection, isSupplierExcluded } from "@/lib/supplier-quantities";
+import { supplierQuantities, supplierSelection, nextSuggestedQuantity, isSupplierExcluded } from "@/lib/supplier-quantities";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
 import OptionSelector from "@/components/product/OptionSelector";
@@ -285,6 +285,7 @@ async function resolvePrice(
   protectedKeys: Set<string>,
   copiesProp: ConfigurableProperty | undefined,
   pricedConfig: Record<string, string> | null = null,
+  allowQuantityBump = false,
 ): Promise<{ data: any; options: Record<string, any>; copies: number }> {
   const props = product.properties || product.configurableProperties || [];
   const excludes = product.excludes || [];
@@ -362,6 +363,12 @@ async function resolvePrice(
     console.log(`[price] attempt ${attempt + 1} error:`, lastError);
 
     // 1. Add any missing required properties using real Print.com values.
+    // Range authorises the quantity but Print.com has no tariff for it: move to
+    // the next supplier-suggested quantity instead of changing the product.
+    if (allowQuantityBump && /no supplier prices found/i.test(lastError)) {
+      const next = nextSuggestedQuantity(copiesProp as any, supplierSelection(product, options), excludes as any, copies);
+      if (next) { copies = next; continue; }
+    }
     const missing = parseMissingProps(lastError);
     if (missing.length) {
       let added = false;
@@ -733,7 +740,8 @@ export default function ProductDetail() {
             if (valid && copiesOk && !isSupplierExcluded({ ...cfg!.options, copies: cfg!.copies }, data.excludes)) {
               for (const prop of allProps) delete seeded[prop.slug];
               pricedConfigRef.current = cfg!.options!;
-              Object.assign(seeded, cfg!.options);
+              // Only visible properties become the shopper's selection.
+              for (const [k, v] of Object.entries(cfg!.options!)) if (!hiddenSlugs.has(k)) seeded[k] = v;
               setQuantity(String(cfg!.copies));
             }
             setSelectedOptions(seeded);
@@ -947,8 +955,12 @@ export default function ProductDetail() {
       const hiddenRequired: Record<string, any> = {};
       for (const prop of allProps) {
         if (!hiddenSlugs.has(prop.slug)) continue;
+        // Hidden values of the priced reference configuration (not shown, so
+        // they never restrict the visible choices).
+        const priced = pricedConfigRef.current?.[prop.slug];
+        if (priced !== undefined) { hiddenRequired[prop.slug] = priced; continue; }
         if (!prop.required) continue;
-        if (pricedConfigRef.current && !(prop.slug in pricedConfigRef.current)) continue;
+        if (pricedConfigRef.current) continue;
         const v = realOptionValue(prop);
         if (v !== undefined) hiddenRequired[prop.slug] = v;
       }
@@ -968,15 +980,11 @@ export default function ProductDetail() {
 
       const copiesProp = allProps.find((p) => p.slug === "copies");
       const protectedSelection = new Set(touchedKeysRef.current);
-      const { data, options, copies: resolvedCopies } = await resolvePrice(
-        sku,
-        product,
-        baseOptions,
-        copies,
-        protectedSelection,
-        copiesProp,
-        pricedConfigRef.current,
-      );
+      // Pass 1 keeps the quantity; pass 2 (only if no tariff exists at all)
+      // moves to the next quantity Print.com suggests.
+      const run = (bump: boolean) => resolvePrice(sku, product, baseOptions, copies, protectedSelection,
+        copiesProp, pricedConfigRef.current, bump);
+      const { data, options, copies: resolvedCopies } = await run(false).catch(() => run(true));
 
       if (request !== priceRequestRef.current) return;
       for (const key of protectedSelection) {
@@ -1090,10 +1098,14 @@ export default function ProductDetail() {
           prop.options.some((o) => ["non", "no", "sans"].includes(String(o.name ?? o.slug ?? "").toLowerCase())) &&
           prop.options.some((o) => ["oui", "yes", "avec"].includes(String(o.name ?? o.slug ?? "").toLowerCase()));
 
-        // Filter out options that would create excluded combinations
+        // Hide only options excluded by the shopper's own choices; automatic
+        // defaults adapt instead (handleOptionChange + resolver), so the
+        // starting configuration never locks the other formats/papers.
+        const userChoices = Object.fromEntries(Object.entries(selectedOptions)
+          .filter(([k]) => touchedKeysRef.current.has(k)));
         const filteredOptions = prop.options
           .filter((o) => o.slug != null)
-          .filter((o) => !wouldBeExcluded(prop.slug, String(o.slug), selectedOptions, product?.excludes));
+          .filter((o) => !wouldBeExcluded(prop.slug, String(o.slug), userChoices, product?.excludes));
 
         return {
           slug: prop.slug,
