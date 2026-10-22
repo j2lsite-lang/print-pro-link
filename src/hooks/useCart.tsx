@@ -51,13 +51,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try { return JSON.parse(sessionStorage.getItem("j2l-delivery-address") || '{"country":"FR"}'); }
     catch { return { country: "FR" }; }
   });
-  const [shippingMethod, setMethod] = useState("");
+  const [shippingMethod, setMethod] = useState(() => sessionStorage.getItem("j2l-shipping-method") || "");
   const setDeliveryAddress = (address: ShippingAddress) => {
     setAddress(address);
     setMethod("");
+    sessionStorage.removeItem("j2l-shipping-method");
     sessionStorage.setItem("j2l-delivery-address", JSON.stringify(address));
   };
-  const setShippingMethod = (method: string) => setMethod(method);
+  const setShippingMethod = (method: string) => {
+    setMethod(method);
+    sessionStorage.setItem("j2l-shipping-method", method);
+  };
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
       const stored = localStorage.getItem("j2l-cart");

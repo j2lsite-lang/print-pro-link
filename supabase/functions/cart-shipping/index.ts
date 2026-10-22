@@ -24,6 +24,10 @@ Deno.serve(async req => {
       const props = p.data.properties || p.data.configurableProperties || [];
       const allowed = supplierQuantities(props.find((v: any) => v.slug === "copies"), supplierSelection(p.data, line.configuration), p.data.excludes);
       if (!allowed.includes(line.copies)) return json({ error: "Quantité indisponible" }, 422);
+      const { urgency, ...options } = line.configuration;
+      const price = await supplier("POST", `/products/${line.sku}/price`, { sku: line.sku, options: { ...options, copies: line.copies }, deliveryPromise: urgency === "express" ? 1 : 0 });
+      const amount = price.data?.prices?.salesPrice ?? price.data?.price?.totalPrice ?? price.data?.totalPrice;
+      if (!price.ok || typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0 || price.data?.error || price.data?.errorMessage) return json({ status: "on_quote", shippingHt: null, choices: [], selectedMethod: null });
     }
     return json(await calculateShipping(parsed.data.items, parsed.data.address, supplier, parsed.data.method));
   } catch { return json({ status: "on_quote", shippingHt: null, choices: [], selectedMethod: null }); }
