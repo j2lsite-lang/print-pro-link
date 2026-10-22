@@ -1,0 +1,1 @@
+DELETE FROM public.quote_requests WHERE email = 'test-interne@j2lprint.fr';
