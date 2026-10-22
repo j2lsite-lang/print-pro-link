@@ -7,6 +7,7 @@
 - [x] Revalidate configurations and quantities in the customer form before submitting quote requests.
 - [x] Test bureau-calendar and multiple families; preserve SEO and Worker without publishing.
 - [x] Enforce supplier validation against direct quote API submissions server-side.
-- [ ] Replace fixed shipping with unmarked-up real supplier shipping, with safe combined-cart handling and address/service changes.
-- [ ] Revalidate transport server-side and display HT, VAT and TTC consistently in cart and quote.
-- [ ] Test single/multiple-product orders and unavailable transport without sending customer emails or publishing.
+- [x] Replace fixed shipping with unmarked-up real supplier shipping, invalidate on address/service changes, and use manual quote when whole-cart transport is unverified.
+- [x] Revalidate transport server-side and display HT, VAT and TTC consistently in cart and quote.
+- [x] Test single/multiple-product quotes, manipulated prices and unavailable transport without sending customer emails or publishing; delete test records.
+- [ ] Automatic multi-product transport: blocked by Print.com combined-shipment "could not determine packing suggestion"; keep "Livraison calculée sur devis" until a successful grouping contract is provided.
