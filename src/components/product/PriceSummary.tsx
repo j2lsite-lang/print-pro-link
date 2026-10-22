@@ -141,16 +141,16 @@ export default function PriceSummary({
 
             {/* Total */}
             <div className="border-t border-border pt-3 space-y-1">
-              <p className="text-xs text-muted-foreground">Prix estimatif HT</p>
+              <p className="text-xs text-muted-foreground">Prix HT estimé pour cette configuration</p>
               <p className="text-3xl lg:text-4xl font-bold text-foreground font-display">
                 {(getResalePrice(priceResult) + designFee).toFixed(2).replace(".", ",")} €
               </p>
-              <p className="text-xs text-muted-foreground">Hors livraison</p>
+              <p className="text-xs text-muted-foreground">Hors livraison · estimation non contractuelle, confirmée sur devis</p>
             </div>
           </div>
         ) : (
           <p className="text-sm text-muted-foreground py-2">
-            Prix selon configuration
+            Tarif sur devis
           </p>
         )}
       </div>
