@@ -97,7 +97,7 @@ export default function Checkout() {
         body: {
           reference,
           deliveryAddress,
-          shippingMethod: shipping.selectedMethod || undefined,
+          shippingMethod: shippingMethod || shipping.selectedMethod || undefined,
           name: `${address.firstName} ${address.lastName}`.trim(),
           company: address.company || null,
           email: address.email,
@@ -240,7 +240,7 @@ export default function Checkout() {
       </section>
       <div className="mt-10 rounded-xl border border-border bg-card p-6">
         <div className="mb-4"><QuoteTotals productsHt={productsTotalHt} shippingHt={shipping.shippingHt} fullyPriced={fullyPriced} country={deliveryAddress.country} postalCode={deliveryAddress.postalCode} /></div>
-        <Button size="lg" className="w-full" onClick={handleSubmitQuote} disabled={submitting}>
+        <Button size="lg" className="w-full" onClick={handleSubmitQuote} disabled={submitting || shipping.loading}>
           {submitting ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
