@@ -19,7 +19,7 @@
 // flow or the visible prices. Results cached to
 // src/seo/generated/product-prices.json.
 // ============================================================================
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } from "fs";
 import { resolve } from "path";
 import { getResalePrice, getSupplierPrice, resaleFromSupplierHT } from "../../src/lib/pricing";
 import { supplierQuantities, isSupplierExcluded, supplierSelection, type QuantityProperty } from "../../src/lib/supplier-quantities";
@@ -38,6 +38,8 @@ export interface ProductPrice {
   qtyCorrected?: boolean;
   /** Real Print.com colour name of the priced default configuration, if any. */
   color?: string;
+  /** Exact Print.com configuration that produced `supplier` (copies excluded). */
+  options?: Record<string, string>;
 }
 
 const PRICES_PATH = resolve("src/seo/generated/product-prices.json");
@@ -361,7 +363,9 @@ async function computePrice(sb: string, anon: string, sku: string): Promise<Prod
     if (opt?.name) { color = String(opt.name).trim(); break; }
   }
   const supplier = getSupplierPrice(resolved.data);
-  const base: ProductPrice = { sku, price, supplier, copies: resolved.copies, minQty: copies, qtyCorrected: resolved.copies !== copies };
+  const options: Record<string, string> = {};
+  for (const [k, v] of Object.entries(resolved.options)) if (k !== "copies" && v !== undefined && v !== null && v !== "") options[k] = String(v);
+  const base: ProductPrice = { sku, price, supplier, copies: resolved.copies, minQty: copies, qtyCorrected: resolved.copies !== copies, options };
   return color ? { ...base, color } : base;
 }
 
@@ -383,7 +387,19 @@ function loadCache(): Record<string, ProductPrice> {
 
 function saveCache(map: Record<string, ProductPrice>) {
   mkdirSync(resolve("src/seo/generated"), { recursive: true });
-  writeFileSync(PRICES_PATH, JSON.stringify(map, null, 0));
+  // Options are published per SKU (below) so the main cache and bundle stay small.
+  const slim: Record<string, ProductPrice> = {};
+  for (const [sku, entry] of Object.entries(map)) { const { options: _o, ...rest } = entry; slim[sku] = rest; }
+  writeFileSync(PRICES_PATH, JSON.stringify(slim, null, 0));
+  // The configurator starts from exactly the configuration that was priced,
+  // so the page, JSON-LD and Merchant feed show the same supplier-backed price.
+  const dir = resolve("public/price-configs");
+  rmSync(dir, { recursive: true, force: true });
+  mkdirSync(dir, { recursive: true });
+  for (const [sku, entry] of Object.entries(map)) {
+    if (!entry.options || !/^[a-z0-9._-]+$/i.test(sku)) continue;
+    writeFileSync(resolve(dir, `${sku}.json`), JSON.stringify({ options: entry.options, copies: entry.copies, supplier: entry.supplier }));
+  }
 }
 
 /**
