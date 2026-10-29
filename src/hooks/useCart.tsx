@@ -6,6 +6,7 @@ export interface CartItem {
   id: string;
   sku: string;
   productName: string;
+  productUrl?: string;
   options: Record<string, unknown>;
   quantity: number;
   copies: number;

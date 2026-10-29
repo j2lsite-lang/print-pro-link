@@ -6,6 +6,7 @@ import { supplierQuantities, supplierSelection } from "../_shared/supplier-quant
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { calculateShipping, quoteTotals } from "../_shared/shipping.ts";
 import { ShippingAddressSchema } from "../_shared/shipping-schema.ts";
+import { productUrlFor } from "../_shared/quote-origin.ts";
 
 // Must match src/lib/pricing.ts
 const MARGIN_COEFFICIENT = 1.8;
@@ -25,6 +26,7 @@ function supplierPrice(r: any): number {
 const s = (max: number) => z.string().trim().max(max);
 const Item = z.object({
   productName: s(300),
+  productUrl: s(2000).optional(),
   sku: z.string().regex(/^[a-z0-9._-]{1,120}$/i),
   quantity: z.number().int().min(1).max(100),
   copies: z.number().int().min(1).max(10_000_000),
@@ -103,6 +105,7 @@ Deno.serve(async (req) => {
       product_name: item.productName,
       sku: item.sku,
       quantity: item.quantity,
+      product_url: productUrlFor(item.sku, item.productUrl),
       copies: item.copies,
       options: item.options ?? null,
       configuration: { ...config, copies: item.copies },

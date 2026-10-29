@@ -7,3 +7,4 @@
 - The configurator starts from public/price-configs/<sku>.json (written by scripts/seo/product-prices.ts) so page, JSON-LD and Merchant prices refer to the same supplier configuration.
 - Quote requests are recorded only by the submit-quote edge function, which re-validates quantities and re-prices every line from live Print.com data (client prices ignored); direct table inserts are revoked.
 - Cart and server quotes share the supplier transport parser and HT/VAT/TTC calculation; transport is unmarked-up and nullable when no verified whole-cart shipment is available, preventing invented or duplicated fees.
+- Preserve the last product and its full selection in session-scoped quote context; cart quotes store per-line product URLs and email rendering reads recorded lines so navigation cannot replace product origin with the form URL.

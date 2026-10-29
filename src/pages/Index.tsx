@@ -22,6 +22,7 @@ import imgPdf from "@/assets/services/verification-pdf.jpg";
 import { VisualCategoryCard } from "@/components/catalog/VisualCategoryCard";
 import { categoryVisuals, catalogVisuals, cdnImage } from "@/seo/data/catalog-visuals";
 import PricingNotice from "@/components/product/PricingNotice";
+import { readQuoteOrigin, originSummary } from "@/lib/quote-origin";
 
 /* ─── Univers catalogue (visuels produits réels) ─── */
 const heroTiles = [
@@ -94,13 +95,16 @@ export default function Index() {
     if (devisSendingRef.current) return;
     devisSendingRef.current = true;
     setDevisLoading(true);
-    const form = devisFormRef.current!;
+    const form = devisFormRef.current;
+    if (!form) { devisSendingRef.current = false; setDevisLoading(false); return; }
     const formData = new FormData(form);
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const phone = (formData.get("phone") as string) || null;
     const product = (formData.get("product") as string) || null;
     const message = (formData.get("message") as string) || null;
+    const origin = readQuoteOrigin();
+    const savedMessage = [message, originSummary(origin)].filter(Boolean).join("\n\n") || null;
     const { supabase } = await import("@/integrations/supabase/client");
 
     // Pièce jointe éventuelle : envoyée dans le bucket privé puis jointe à l'e-mail.
@@ -122,8 +126,8 @@ export default function Index() {
       name,
       email,
       phone,
-      product,
-      message,
+      product: product || origin?.productName || null,
+      message: savedMessage,
     });
     if (!error) {
       try {
@@ -136,7 +140,9 @@ export default function Index() {
             phone,
             product,
             message,
-            pageUrl: window.location.href,
+            pageUrl: origin?.productUrl || window.location.href,
+            productUrl: origin?.productUrl,
+            items: origin ? [origin] : undefined,
             fileUrl: filePath,
             fileName,
           },
@@ -162,20 +168,22 @@ export default function Index() {
     if (callbackSendingRef.current) return;
     callbackSendingRef.current = true;
     setCallbackLoading(true);
-    const form = callbackFormRef.current!;
+    const form = callbackFormRef.current;
+    if (!form) { callbackSendingRef.current = false; setCallbackLoading(false); return; }
     const formData = new FormData(form);
     const name = formData.get("cb_name") as string;
     const phone = formData.get("cb_phone") as string;
     const timeSlot = (formData.get("cb_slot") as string) || null;
     const subject = (formData.get("cb_subject") as string) || null;
     const message = (formData.get("cb_message") as string) || null;
+    const origin = readQuoteOrigin();
     const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase.from("callback_requests").insert({
       name,
       phone,
       time_slot: timeSlot,
-      subject,
-      message,
+      subject: subject || origin?.productName || null,
+      message: [message, originSummary(origin)].filter(Boolean).join("\n\n") || null,
     });
     if (!error) {
       try {
@@ -189,7 +197,9 @@ export default function Index() {
             subject,
             product: subject,
             message,
-            pageUrl: window.location.href,
+            pageUrl: origin?.productUrl || window.location.href,
+            productUrl: origin?.productUrl,
+            items: origin ? [origin] : undefined,
           },
         });
       } catch (mailErr) {
@@ -525,7 +535,7 @@ export default function Index() {
                 </div>
                 <div>
                   <Label>Produit souhaité</Label>
-                  <Input name="product" placeholder="Ex : 500 flyers A5" />
+                  <Input name="product" placeholder="Ex : 500 flyers A5" defaultValue={readQuoteOrigin()?.productName || ""} />
                 </div>
               </div>
               <div>
