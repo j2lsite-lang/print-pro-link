@@ -11,3 +11,4 @@
 - [x] Revalidate transport server-side and display HT, VAT and TTC consistently in cart and quote.
 - [x] Test single/multiple-product quotes, manipulated prices and unavailable transport without sending customer emails or publishing; delete test records.
 - [ ] Automatic multi-product transport: blocked by Print.com combined-shipment "could not determine packing suggestion"; keep "Livraison calculée sur devis" until a successful grouping contract is provided.
+- [ ] Preserve originating product URL and full selection across general forms and cart quotes; test actual email rendering without sending or publishing; check Worker impact.
