@@ -13,6 +13,7 @@ import { trackGenerateLead } from "@/lib/analytics";
 import { useShipping } from "@/hooks/useShipping";
 import { ShippingFields } from "@/components/cart/ShippingFields";
 import { QuoteTotals } from "@/components/cart/QuoteTotals";
+import { productUrlFor } from "@/lib/quote-origin";
 
 export default function Checkout() {
   const { items, total, clearCart, deliveryAddress, setDeliveryAddress, shippingMethod, setShippingMethod } = useCart();
@@ -80,6 +81,7 @@ export default function Checkout() {
       const quoteItems = items.map(i => ({
         product_name: i.productName,
         sku: i.sku,
+        product_url: productUrlFor(i.sku, i.productUrl),
         quantity: i.quantity,
         copies: i.copies,
         options: i.options,
@@ -109,6 +111,7 @@ export default function Checkout() {
           items: items.map((i) => ({
             productName: i.productName,
             sku: i.sku,
+            productUrl: productUrlFor(i.sku, i.productUrl),
             quantity: i.quantity,
             copies: i.copies,
             configuration: i.configuration,
@@ -142,10 +145,13 @@ export default function Checkout() {
             postalCode: deliveryAddress.postalCode || null,
             city: deliveryAddress.city || null,
             message: address.message || null,
-            pageUrl: window.location.href,
+            pageUrl: productUrlFor(items[0]?.sku, items[0]?.productUrl) || window.location.href,
             items: (saved.items as typeof quoteItems).map((i) => ({
               productName: i.product_name,
               sku: i.sku,
+              productUrl: i.product_url,
+              copies: i.copies,
+              configuration: i.configuration,
               quantity: i.quantity,
               dimensions:
                 (i.options && (i.options.format || i.options.dimensions || i.options.size)) || null,

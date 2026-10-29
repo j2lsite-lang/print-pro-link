@@ -20,6 +20,7 @@ import ProductGallery from "@/components/product/ProductGallery";
 import ProductSEOContent from "@/components/product/ProductSEOContent";
 import PRODUCT_META_RAW from "@/seo/generated/product-meta.json";
 import { useSEO } from "@/hooks/useSEO";
+import { saveQuoteOrigin, productUrlFor } from "@/lib/quote-origin";
 
 const PRODUCT_META = PRODUCT_META_RAW as Record<string, { name: string; image?: string; intro?: string; usage?: string }>;
 
@@ -689,6 +690,17 @@ export default function ProductDetail() {
   const productName =
     (sku && PRODUCT_META[sku]?.name) || product?.titleSingle || product?.name || sku || "Produit";
   const productMetaImage = sku ? PRODUCT_META[sku]?.image : undefined;
+  useEffect(() => {
+    if (!sku || !product) return;
+    const props = product.properties || product.configurableProperties || [];
+    const configuration = { ...resolvedOptionsRef.current, ...selectedOptions, ...(quantity ? { copies: quantity } : {}) };
+    const options: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(configuration)) {
+      const prop = props.find(p => p.slug === key);
+      options[prop?.title || key] = prop?.options?.find(o => o.slug === String(value))?.name || value;
+    }
+    saveQuoteOrigin({ sku, productName, productUrl: productUrlFor(sku, `https://j2lprint.fr${window.location.pathname}${window.location.search}`), quantity: 1, copies: quantity || undefined, options, configuration });
+  }, [sku, product, productName, selectedOptions, quantity, priceResult]);
   useSEO({
     title: `${productName} – Impression personnalisée`,
     description: product?.description
@@ -1157,7 +1169,8 @@ export default function ProductDetail() {
 
     addItem({
       sku,
-      productName: product.titleSingle || product.name || `Produit ${sku}`,
+      productName,
+      productUrl: productUrlFor(sku, `https://j2lprint.fr${window.location.pathname}${window.location.search}`),
       options: readableOptions,
       quantity: 1,
       copies,
