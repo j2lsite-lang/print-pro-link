@@ -153,7 +153,7 @@ const SECTOR_POOL = [
 // ── shared commercial pools ─────────────────────────────────────────────────
 const WHY_ARGS = [
   "Un configurateur en ligne pour composer chaque support (format, matière, finitions, quantité).",
-  "Un prix calculé en direct selon la configuration que vous choisissez.",
+  "Un devis personnalisé selon la configuration que vous choisissez.",
   "La vérification de vos fichiers avant impression (résolution, fonds perdus, CMJN).",
   "L'impression numérique et offset, selon le tirage et le rendu recherchés.",
   "Le grand format pour vos affiches, bâches, panneaux et PLV.",
@@ -265,7 +265,7 @@ export function cityCopy(c: GenCity): CityCopy {
       `${econ} Imprimeur en ligne, J2L Print livre vos supports à ${c.name} (${c.cp}) et ${reg.dans}, avec contrôle du fichier avant production.`,
     ],
     [
-      `J2L Print est l'imprimerie en ligne des entreprises, associations et collectivités ${de(c.name)}. Vous composez votre support, le prix s'affiche en direct, et votre commande est livrée à ${c.name} (${c.cp}).`,
+      `J2L Print est l'imprimerie en ligne des entreprises, associations et collectivités ${de(c.name)}. Vous composez votre support et demandez votre devis personnalisé, avec livraison à ${c.name} (${c.cp}).`,
       `${econ} De l'impression numérique à l'offset et au grand format, tout est centralisé en ligne et livré ${dep.dans}.`,
     ],
     [
@@ -343,7 +343,7 @@ export function cityCopy(c: GenCity): CityCopy {
     },
     {
       q: "Peut-on commander une petite quantité ?",
-      a: "Oui, du tirage unitaire à la grande série. Les tarifs sont dégressifs selon la quantité, calculés en direct dans le configurateur.",
+      a: "Les quantités disponibles dépendent du produit et de sa configuration. Configurez votre produit et demandez votre devis personnalisé.",
     },
     {
       q: `J2L Print possède-t-il une boutique à ${c.name} ?`,

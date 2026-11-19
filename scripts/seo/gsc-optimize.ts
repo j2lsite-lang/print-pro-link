@@ -29,7 +29,7 @@ export const GSC_PAGES: Record<string, Opt> = {
     title: "Imprimerie étiquettes à Sotteville-lès-Rouen | J2L Print",
     description: "Imprimerie à Sotteville-lès-Rouen (76) : étiquettes, stickers, flyers et supports publicitaires. Tarif sur devis et livraison en France.",
     h1: "Imprimerie à Sotteville-lès-Rouen : étiquettes, stickers et impressions",
-    intro: "Pour vos étiquettes produits, stickers et supports imprimés à Sotteville-lès-Rouen, choisissez format, matière et quantité en ligne : le prix s'affiche directement et la livraison se fait en Seine-Maritime.",
+    intro: "Pour vos étiquettes produits, stickers et supports imprimés à Sotteville-lès-Rouen, choisissez format, matière et quantité en ligne et demandez votre devis personnalisé, avec livraison en Seine-Maritime.",
     links: [["imprimerie étiquettes à Sotteville-lès-Rouen", L("sotteville-les-rouen", "etiquettes-stickers")], ["stickers personnalisés à Sotteville-lès-Rouen", L("sotteville-les-rouen", "stickers")], ["flyers à Sotteville-lès-Rouen", L("sotteville-les-rouen", "flyers")]],
   },
   "/ville/laon": {
@@ -43,7 +43,7 @@ export const GSC_PAGES: Record<string, Opt> = {
     title: "Imprimerie à Saint-Claude : grand format, flyers | J2L Print",
     description: "Impression grand format à Saint-Claude (39) : bâches, panneaux, roll-up et affiches. Configuration sur mesure, tarif sur devis et livraison en France.",
     h1: "Imprimerie à Saint-Claude : impression grand format et supports",
-    intro: "À Saint-Claude, commandez vos bâches, panneaux, roll-up et affiches en ligne : choisissez dimensions et finitions, le prix s'affiche aussitôt et la commande est livrée dans le Jura.",
+    intro: "À Saint-Claude, configurez vos bâches, panneaux, roll-up et affiches en ligne : choisissez dimensions et finitions et demandez votre devis personnalisé, avec livraison dans le Jura.",
     links: [["impression grand format à Saint-Claude", L("saint-claude", "panneaux-baches-grand-format")], ["bâches publicitaires à Saint-Claude", L("saint-claude", "baches-publicitaires")], ["affiches à Saint-Claude", L("saint-claude", "affiches")]],
   },
   "/ville/troyes": {
@@ -99,7 +99,7 @@ export const GSC_PAGES: Record<string, Opt> = {
     title: "Objets publicitaires personnalisés avec logo | J2L Print",
     description: "Objets publicitaires avec votre logo : stylos, mugs, gourdes, tote bags, goodies et cadeaux d'entreprise. Tarif sur devis, livraison en France.",
     h1: "Objets publicitaires personnalisés avec votre logo",
-    intro: "Stylos, mugs, gourdes, tote bags, carnets ou gadgets : choisissez votre objet publicitaire, sa technique de marquage et la quantité, et le prix unitaire s'affiche directement en ligne.",
+    intro: "Stylos, mugs, gourdes, tote bags, carnets ou gadgets : choisissez votre objet publicitaire, sa technique de marquage et la quantité, puis demandez votre devis personnalisé.",
   },
   "/impression-numerique": {
     title: "Impression numérique : flyers, cartes, affiches | J2L Print",
@@ -111,7 +111,7 @@ export const GSC_PAGES: Record<string, Opt> = {
     title: "Textiles personnalisés avec logo, t-shirts | J2L Print",
     description: "Textiles personnalisés avec logo : t-shirts, polos, sweats et casquettes en sérigraphie, broderie ou transfert. Tarif sur devis, livraison en France.",
     h1: "Textiles personnalisés avec logo pour entreprises et équipes",
-    intro: "T-shirts, polos, sweats, casquettes : choisissez le modèle, la couleur, les tailles et les zones de marquage de votre logo, le prix se calcule directement en ligne.",
+    intro: "T-shirts, polos, sweats, casquettes : choisissez le modèle, la couleur, les tailles et les zones de marquage de votre logo, puis demandez votre devis personnalisé.",
   },
   "/categorie/emballages-sacs": {
     title: "Emballages et sacs personnalisés avec logo | J2L Print",

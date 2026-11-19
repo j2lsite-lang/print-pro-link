@@ -40,7 +40,7 @@ function rotate<T>(pool: T[], seed: number, n: number, salt = 0): T[] {
 
 const WHY_ARGS = [
   "Un configurateur en ligne pour composer chaque support (format, matière, finitions, quantité).",
-  "Un prix calculé en direct selon la configuration que vous choisissez.",
+  "Un devis personnalisé selon la configuration que vous choisissez.",
   "La vérification de vos fichiers avant impression (résolution, fonds perdus, CMJN).",
   "L'impression numérique et offset, selon le tirage et le rendu recherchés.",
   "Le grand format pour vos affiches, bâches, panneaux et PLV.",

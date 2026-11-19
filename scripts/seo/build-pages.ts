@@ -419,7 +419,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
       "Configurez format, quantité et finitions en ligne.",
       "Options sur mesure et tarif sur devis.",
       "Personnalisation en ligne et livraison en France.",
-      "Choisissez vos options et obtenez votre tarif en direct.",
+      "Configurez votre produit et demandez votre devis personnalisé.",
     ];
     return skus.slice(0, limit).map((sku, i) => ({
       label: (catalogLite.get(sku)?.name || sku) as string,
@@ -1323,8 +1323,8 @@ function realIntro(name: string, attrs: ProductAttributes | undefined, universe:
   const s = Math.abs(seed);
   const heads = [
     `${name} fait partie de notre gamme${uni ? ` ${uni}` : ""} et se configure directement en ligne.`,
-    `Commandez ${name.toLowerCase()} en ligne${uni ? `, dans notre univers ${uni}` : ""} : options et prix s'affichent immédiatement.`,
-    `${name}${uni ? `, référence de notre univers ${uni},` : ""} se personnalise et se commande en ligne.`,
+    `Configurez ${name.toLowerCase()} en ligne${uni ? `, dans notre univers ${uni}` : ""} et demandez votre devis personnalisé.`,
+    `${name}${uni ? `, référence de notre univers ${uni},` : ""} se personnalise en ligne : demandez votre devis personnalisé.`,
     `Configurez ${name.toLowerCase()} en ligne${uni ? ` parmi notre offre ${uni}` : ""} et demandez votre devis.`,
   ];
   const spec = bits.length ? ` Options réellement disponibles pour cette référence : ${frList(bits)}.` : "";
@@ -1493,7 +1493,7 @@ function realProductFaq(
     if (fin.length) {
       out.push({
         q: `Quelles finitions sont possibles sur ${lower} ?`,
-        a: `Finitions réellement disponibles : ${fin.join(", ")}. Elles se sélectionnent dans le configurateur, le prix se met à jour immédiatement.`,
+        a: `Finitions réellement disponibles : ${fin.join(", ")}. Sélectionnez vos finitions dans le configurateur et demandez votre devis personnalisé.`,
       });
     }
     const qs = attrs.quantities || [];

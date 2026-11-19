@@ -15,3 +15,4 @@
 - [x] Correct existing Worker routing, legacy city redirects, initial catalog HTML and shared metadata without deployment.
 - [x] Check all sitemap routes against generated HTML/Worker inventories and analyze local-page similarity; preserve valid pages.
 - [x] Run SEO and quote regression checks on desktop/mobile; deliver updated Worker and production-order report without publishing.
+- [x] Remove remaining live-price promises from sources, generated cards and prerendered HTML; count replacements and run regression checks without publishing or deploying.
