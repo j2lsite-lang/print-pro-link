@@ -705,7 +705,7 @@ export default function ProductDetail() {
     title: `${productName} – Impression personnalisée`,
     description: product?.description
       ? product.description.slice(0, 155)
-      : `Commandez ${productName} en ligne chez J2L Print. Impression professionnelle, tarif sur devis et livraison en France.`,
+      : `Configurez ${productName} et demandez un devis chez J2L Print. Impression professionnelle, tarif sur devis et livraison en France.`,
     ogType: "product",
     ogImage: productMetaImage,
   });

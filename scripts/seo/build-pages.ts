@@ -766,7 +766,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         {
           heading: "Comment fonctionne la livraison",
           bullets: [
-            "Configuration et commande 100 % en ligne, sans déplacement.",
+            "Configuration et demande de devis en ligne, sans déplacement.",
             "Fabrication chez nos imprimeurs partenaires selon le support choisi.",
             "Livraison à l'adresse de votre choix en France métropolitaine.",
             "Délai indiqué pendant la configuration, avant validation de la commande.",
@@ -1830,13 +1830,13 @@ export async function buildProductPages(): Promise<SeoPage[]> {
           ]
         : adRelevant
         ? [
-            `Commandez ${lower} publicitaire personnalisé en ligne : formats, matières et finitions au choix. Tarif sur devis.`,
+            `Configurez ${lower} publicitaire personnalisé et demandez un devis : formats, matières et finitions au choix. Tarif sur devis.`,
             `${name} publicitaire à personnaliser selon vos besoins : configuration en ligne, tarif dégressif et livraison en France.`,
             `Besoin de ${lower} publicitaire ? Choisissez vos options en ligne : prix transparent, tarif sur devis et expédition soignée.`,
             `${name} publicitaire imprimé sur mesure par J2L Print. Sélectionnez vos options et demandez votre devis.`,
           ]
         : [
-            `Commandez ${lower} personnalisé en ligne : formats, matières et finitions au choix. Tarif sur devis et livraison en France.`,
+            `Configurez ${lower} personnalisé et demandez un devis : formats, matières et finitions au choix. Tarif sur devis et livraison en France.`,
             `${name} de qualité professionnelle à personnaliser selon vos besoins. Configuration en ligne, tarif dégressif, fichiers vérifiés et livraison en France.`,
             `Besoin de ${lower} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, tarif sur devis et expédition soignée en France.`,
             `${name} imprimé sur mesure par J2L Print. Choisissez vos options, demandez votre devis et profitez d'un accompagnement et d'une livraison France entière.`,

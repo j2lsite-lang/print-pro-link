@@ -161,14 +161,14 @@ const WHY_ARGS = [
   "La livraison en France, directement à votre adresse.",
   "Un interlocuteur professionnel pour vous accompagner sur vos projets.",
   "Une gamme complète centralisée : papeterie, signalétique, textile, objets et emballages.",
-  "Aucun déplacement nécessaire : tout se commande et se suit en ligne.",
+  "Aucun déplacement nécessaire : configurez votre produit et demandez votre devis personnalisé.",
 ];
 
 const CTA_LABELS = [
   "Voir le catalogue",
   "Configurer un produit",
   "Découvrir tous nos supports",
-  "Composer ma commande en ligne",
+  "Configurer mon produit et demander un devis",
   "Voir tous les produits",
   "Personnaliser un support",
 ];
@@ -224,9 +224,9 @@ export function cityCopy(c: GenCity): CityCopy {
   );
   const description = pick(
     [
-      `Impression professionnelle livrée à ${c.name} (${c.cp}) : flyers, cartes de visite, affiches, banderoles et PLV. Commande en ligne, livraison ${dep.dans}.`,
+      `Impression professionnelle livrée à ${c.name} (${c.cp}) : flyers, cartes de visite, affiches, banderoles et PLV. Demande de devis en ligne, livraison ${dep.dans}.`,
       `J2L Print, imprimeur en ligne livrant à ${c.name} : supports de communication, tarif sur devis et livraison ${dep.dans} sans déplacement.`,
-      `Commandez vos supports imprimés en ligne et faites-vous livrer à ${c.name} (${c.cp}) : impression, finitions et grand format livrés ${reg.dans}.`,
+      `Configurez vos supports imprimés et demandez votre devis et faites-vous livrer à ${c.name} (${c.cp}) : impression, finitions et grand format livrés ${reg.dans}.`,
     ],
     s,
     3,
@@ -250,7 +250,7 @@ export function cityCopy(c: GenCity): CityCopy {
     ],
     [
       `J2L Print accompagne les professionnels ${de(c.name)} avec une imprimerie en ligne complète : flyers, cartes de visite, affiches, banderoles, PLV et objets publicitaires, livrés directement à ${c.name} (${c.cp}).`,
-      `${econ} Tout se commande à distance — configuration, devis et suivi en ligne — pour une livraison ${dep.dans} et plus largement ${reg.dans}.`,
+      `${econ} Votre projet se prépare à distance — configuration et demande de devis en ligne — pour une livraison ${dep.dans} et plus largement ${reg.dans}.`,
     ],
     [
       `À ${c.name}, comme partout ${reg.dans}, J2L Print met l'impression professionnelle à portée de clic : choisissez votre format, vos finitions et votre quantité, et faites-vous livrer directement (${c.cp}).`,
@@ -261,7 +261,7 @@ export function cityCopy(c: GenCity): CityCopy {
       `${econ} Vos supports sont produits sur des presses professionnelles puis livrés à ${c.name} (${c.cp}) et ${dep.dans}, sans que vous ayez à vous déplacer.`,
     ],
     [
-      `${audiences} Avec J2L Print, ces professionnels ${de(c.name)} commandent leur impression en ligne : cartes de visite, flyers, affiches, signalétique, textiles et objets publicitaires.`,
+      `${audiences} Avec J2L Print, ces professionnels ${de(c.name)} demandent un devis pour leurs impressions : cartes de visite, flyers, affiches, signalétique, textiles et objets publicitaires.`,
       `${econ} Imprimeur en ligne, J2L Print livre vos supports à ${c.name} (${c.cp}) et ${reg.dans}, avec contrôle du fichier avant production.`,
     ],
     [
@@ -270,7 +270,7 @@ export function cityCopy(c: GenCity): CityCopy {
     ],
     [
       `Pour votre communication ${de(c.name)}, J2L Print imprime à la demande et livre sur place : flyers publicitaires, brochures, affiches, bâches, roll-up et goodies personnalisés.`,
-      `${econ} ${audiences} Commande, devis et suivi se font 100 % en ligne, avec livraison à ${c.name} (${c.cp}) et ${reg.dans}.`,
+      `${econ} ${audiences} Configuration et demande de devis se font en ligne, avec livraison à ${c.name} (${c.cp}) et ${reg.dans}.`,
     ],
     [
       `Impression professionnelle, prix transparents et livraison à ${c.name} : J2L Print accompagne votre communication visuelle sans déplacement, du fichier à la réception.`,
@@ -327,7 +327,7 @@ export function cityCopy(c: GenCity): CityCopy {
   const faqPool: FaqItem[] = [
     {
       q: `Quels supports peut-on commander en ligne à ${c.name} ?`,
-      a: `Flyers, cartes de visite, dépliants, brochures, affiches, panneaux, bâches, roll-up, étiquettes, adhésifs, textiles et objets publicitaires — tout se configure en ligne et se fait livrer à ${c.name} (${c.cp}).`,
+      a: `Flyers, cartes de visite, dépliants, brochures, affiches, panneaux, bâches, roll-up, étiquettes, adhésifs, textiles et objets publicitaires — les options disponibles se sélectionnent en ligne avant votre demande de devis et se fait livrer à ${c.name} (${c.cp}).`,
     },
     {
       q: `Comment obtenir un devis d'impression à ${c.name} ?`,
@@ -371,7 +371,7 @@ export function cityCopy(c: GenCity): CityCopy {
       `Du flyer à la bâche grand format, configurez vos supports en ligne et faites-vous livrer à ${c.name}. Cliquez sur une famille pour la personnaliser dans le catalogue.`,
       `Cartes de visite, affiches, roll-up ou textiles : retrouvez les supports les plus commandés ${de(c.name)} et personnalisez le vôtre en quelques clics.`,
       `Voici les familles de produits les plus utiles aux professionnels ${de(c.name)}. Chaque support se configure en ligne avec ses formats et finitions.`,
-      `Communication courante, événement ou opération commerciale à ${c.name} : choisissez le support adapté et lancez votre commande en ligne.`,
+      `Communication courante, événement ou opération commerciale à ${c.name} : choisissez le support adapté et demandez votre devis personnalisé.`,
       `Une gamme complète pour ${c.name}, de la papeterie d'entreprise au grand format. Sélectionnez une catégorie pour découvrir les options.`,
       `Pour vos campagnes ${de(c.name)}, sélectionnez vos supports imprimés parmi nos familles phares et personnalisez-les en ligne.`,
       `Tous vos supports de communication réunis pour ${c.name} : papier, signalétique, adhésifs, textiles et objets publicitaires.`,
@@ -461,7 +461,7 @@ export function deptCopy(d: GenDept): DeptCopy {
   const heroEyebrow = `Imprimerie en ligne · ${d.region}`;
   const heroTagline = pick(
     [
-      `Commandez vos supports en ligne et faites-vous livrer ${art.dans}, des grandes villes aux communes rurales.`,
+      `Configurez vos supports et demandez votre devis et faites-vous livrer ${art.dans}, des grandes villes aux communes rurales.`,
       `Une imprimerie en ligne complète pour les professionnels ${art.de}, avec livraison ${reg.dans}.`,
     ],
     s,

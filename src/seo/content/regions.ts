@@ -82,7 +82,7 @@ export function regionCopy(r: GenRegion): RegionCopy {
   );
   const description = pick(
     [
-      `J2L Print imprime et livre ${art.dans} : flyers, affiches, bâches, PLV, textiles et objets publicitaires. Commande en ligne, livraison dans tous les départements.`,
+      `J2L Print imprime et livre ${art.dans} : flyers, affiches, bâches, PLV, textiles et objets publicitaires. Demande de devis en ligne, livraison dans tous les départements.`,
       `Imprimerie en ligne livrant ${art.dans} et ses ${nbDep} départements : supports professionnels, tarif sur devis et livraison locale.`,
     ],
     s,
@@ -91,7 +91,7 @@ export function regionCopy(r: GenRegion): RegionCopy {
   const heroEyebrow = "Imprimerie en ligne · Région";
   const heroTagline = pick(
     [
-      `Commandez vos supports en ligne et faites-vous livrer ${art.dans}, dans chacun de ses départements.`,
+      `Configurez vos supports et demandez votre devis et faites-vous livrer ${art.dans}, dans chacun de ses départements.`,
       `Une imprimerie en ligne complète au service des professionnels ${art.de}.`,
     ],
     s,
@@ -100,7 +100,7 @@ export function regionCopy(r: GenRegion): RegionCopy {
 
   const intro = [
     `J2L Print accompagne les professionnels ${art.de} avec une imprimerie en ligne complète, livrée dans l'ensemble de la région et de ses ${nbDep} départements.`,
-    `Tout se commande à distance : vous configurez votre produit, validez votre fichier et recevez votre commande sans déplacement, partout ${art.dans}.`,
+    `Votre demande de devis se prépare à distance : vous configurez votre produit, validez votre fichier et recevez votre commande sans déplacement, partout ${art.dans}.`,
   ];
 
   const sections: ContentSection[] = [

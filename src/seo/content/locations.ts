@@ -27,7 +27,7 @@ function profileFor(c: CityData): CityProfile {
         "Professions libérales et services",
         "Collectivités et acteurs publics",
       ],
-      audiences: `Commerçants, artisans et associations ${de(c.name)} commandent leurs supports en ligne et sont livrés sur place.`,
+      audiences: `Commerçants, artisans et associations ${de(c.name)} demandent un devis pour leurs supports et sont livrés sur place.`,
       events: `Marchés, animations et événements locaux rythment l'année ${de(c.name)} et appellent affiches et banderoles.`,
       neighbors: [],
       hero: 1,

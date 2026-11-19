@@ -57,7 +57,7 @@ export const GSC_PAGES: Record<string, Opt> = {
     title: "Imprimerie à Épinal : textiles et impression | J2L Print",
     description: "Imprimerie à Épinal (88) : textiles personnalisés, flyers, cartes de visite, bâches et objets publicitaires. Tarif sur devis, livraison en France.",
     h1: "Imprimerie à Épinal : textiles personnalisés et impressions pros",
-    intro: "À Épinal, personnalisez t-shirts, polos et sweats à votre logo, ou commandez flyers, cartes de visite et bâches : tout se configure en ligne avec un tarif communiqué sur devis.",
+    intro: "À Épinal, personnalisez t-shirts, polos et sweats à votre logo, ou commandez flyers, cartes de visite et bâches : les options disponibles se sélectionnent en ligne avant votre demande de devis avec un tarif communiqué sur devis.",
     links: [["textiles personnalisés à Épinal", L("epinal", "textiles-personnalises")], ["flyers à Épinal", L("epinal", "flyers")], ["objets publicitaires à Épinal", L("epinal", "objets-publicitaires")]],
   },
   "/ville/colmar": {

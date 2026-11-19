@@ -32,7 +32,7 @@ export const CITY_PROFILES: Record<string, CityProfile> = {
       "Acteurs de la culture et de l'événementiel vosgien",
     ],
     audiences:
-      "Commerçants, artisans, associations et collectivités d'Épinal commandent en ligne flyers, affiches et PLV pour animer le centre-ville et leurs manifestations.",
+      "Commerçants, artisans, associations et collectivités d'Épinal demandent un devis pour des flyers, affiches et PLV pour animer le centre-ville et leurs manifestations.",
     events:
       "Marchés, festivals et temps forts vosgiens rythment l'année : autant d'occasions d'imprimer affiches, banderoles et programmes livrés sur place.",
     neighbors: ["remiremont", "saint-die-des-vosges", "neufchateau", "nancy", "luneville"],

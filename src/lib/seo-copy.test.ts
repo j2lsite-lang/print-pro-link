@@ -8,7 +8,7 @@ import { editorialPages } from "../../scripts/seo/editorial-pages";
 
 // Règle commerciale : J2L Print fonctionne sur demande de devis ; aucun texte SEO
 // ne doit promettre un prix immédiat ni une commande entièrement en ligne.
-const BANNED = /prix (affiché|immédiat|en direct)|s'affiche (immédiatement|en ligne)|voir le prix|se configurent en ligne|entièrement en ligne|commandez en ligne|(?:prix|tarifs?)[^.!?\n"`]{0,80}(?:en direct|immédiatement|aussitôt|directement|instantanément)|se personnalise et se commande en ligne/i;
+const BANNED = /prix (affiché|immédiat|en direct)|s'affiche (immédiatement|en ligne)|voir le prix|se configurent en ligne|entièrement en ligne|commandez en ligne|(?:prix|tarifs?)[^.!?\n"`]{0,80}(?:en direct|immédiatement|aussitôt|directement|instantanément)|se personnalise et se commande en ligne|commande 100 % en ligne|tout se commande|composer ma commande en ligne|lancez votre commande en ligne|commande en ligne, livraison|tout se configure en ligne/i;
 
 function files(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
@@ -27,7 +27,7 @@ describe("textes SEO conformes au fonctionnement sur devis", () => {
     expect(bad).toEqual([]);
   });
   it("sources et fichiers publics, y compris descriptions répétées des cartes", () => {
-    const bad = ["src", "scripts", "public"].flatMap((dir) => files(resolve(dir)))
+    const bad = ["src", "scripts", "public", "supabase"].flatMap((dir) => files(resolve(dir)))
       .filter((f) => BANNED.test(readFileSync(f, "utf8")));
     expect(bad).toEqual([]);
   });
