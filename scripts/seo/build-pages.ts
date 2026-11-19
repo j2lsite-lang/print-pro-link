@@ -131,7 +131,7 @@ function categorySemanticSections(entry: SemanticEntry, seed: number): ContentSe
     heading: "Guide de choix",
     paragraphs: [
       `Pour bien choisir, partez de votre usage (${usageHint}), puis du support le plus adapté (${supportHint}). ` +
-      `Configurez ensuite le format, la quantité et les finitions directement en ligne pour obtenir un prix immédiat, ou demandez un prix affiché en ligne pour un accompagnement personnalisé.`,
+      `Configurez ensuite le format, la quantité et les finitions directement en ligne puis demandez votre devis, puis demandez votre devis pour un tarif définitif.`,
     ],
   });
   return secs;
@@ -151,7 +151,7 @@ function subcategorySections(entry: SemanticEntry, name: string, seed: number): 
     heading: "Guide de choix",
     paragraphs: [
       `Pour « ${name} », identifiez d'abord votre usage (${usageHint}), puis sélectionnez format, support et finitions dans le configurateur en ligne. ` +
-      `Le prix s'affiche immédiatement et un prix affiché en ligne reste disponible pour les projets sur mesure.`,
+      `Le tarif définitif vous est communiqué sur devis, selon la configuration et la quantité.`,
     ],
   });
   return secs;
@@ -162,7 +162,7 @@ function subcategoryFaq(entry: SemanticEntry, name: string, seed: number): { q: 
   const specific = [
     {
       q: `Peut-on commander « ${name} » en ligne ?`,
-      a: `Oui. La gamme « ${name} » se configure entièrement en ligne — format, support, finitions et quantité — puis est livrée en France, avec un prix affiché en ligne sur demande.`,
+      a: `Oui. La gamme « ${name} » se prépare en ligne — format, support, finitions et quantité — puis est livrée en France, avec un tarif sur devis.`,
     },
   ];
   return mergeFaq([specific, pickN(entry.faq, seed, entry.faq.length)], 8);
@@ -249,7 +249,7 @@ const KAKEMONO_FAQ = [
   },
   {
     q: "Comment obtenir un devis pour plusieurs kakémonos ?",
-    a: "Configurez le produit en ligne pour un prix immédiat, ou envoyez votre demande via le formulaire de devis en précisant le format, la quantité et le type de structure : nous revenons vers vous avec un tarif dégressif.",
+    a: "Configurez le produit en ligne pour préparer votre demande de devis, ou envoyez votre demande via le formulaire de devis en précisant le format, la quantité et le type de structure : nous revenons vers vous avec un tarif dégressif.",
   },
 ];
 
@@ -272,7 +272,7 @@ function kakemonoPage(home: BreadcrumbItemLite): SeoPage {
     path: KAKEMONO_PATH,
     title: "Kakémono personnalisé : L-banner, X-banner, suspendu",
     description:
-      "Impression de kakémonos personnalisés : L-banner, X-banner, kakémono suspendu et enrouleur. Formats 60×160 à 100×200 cm, toile opaque, prix affiché en ligne et livraison en France.",
+      "Impression de kakémonos personnalisés : L-banner, X-banner, kakémono suspendu et enrouleur. Formats 60×160 à 100×200 cm, toile opaque, tarif sur devis et livraison en France.",
     h1: "Kakémono personnalisé : L-banner, X-banner et kakémono suspendu",
     intro: [
       "Le kakémono est le support d'affichage vertical le plus utilisé en intérieur : léger, transportable et visible de loin, il structure un stand de salon, un hall d'accueil ou une opération commerciale en point de vente. Chez J2L Print, il s'imprime sur toile ou film opaque, à l'échelle 1:1, avec la structure de votre choix.",
@@ -334,7 +334,7 @@ function kakemonoPage(home: BreadcrumbItemLite): SeoPage {
     ],
     productGrid: {
       heading: "Configurer votre kakémono en ligne",
-      intro: "Choisissez le format, le support et la quantité dans le catalogue : le prix s'affiche immédiatement.",
+      intro: "Choisissez le format, le support et la quantité dans le catalogue : le tarif définitif vous est communiqué sur devis.",
       cards: PRODUCT_CARDS,
     },
     cta: CATALOG_CTA,
@@ -417,7 +417,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
   const realProductCards = (skus: string[], limit: number, seed: number) => {
     const blurbs = [
       "Configurez format, quantité et finitions en ligne.",
-      "Prix immédiat, options sur mesure et prix affiché en ligne.",
+      "Options sur mesure et tarif sur devis.",
       "Personnalisation en ligne et livraison en France.",
       "Choisissez vos options et obtenez votre tarif en direct.",
     ];
@@ -443,7 +443,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
     // prerendered head/H1 is identical to what React renders — no divergence.
     title: "Imprimerie en ligne & impression personnalisée | J2L Print",
     description:
-      "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. prix affiché en ligne, nous livrons en France.",
+      "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. tarif sur devis, nous livrons en France.",
     h1: "J2L Print — Votre imprimerie en ligne",
     intro: [
       "J2L Print imprime tous vos supports de communication et vous livre en France. Configurez votre produit en ligne, validez votre fichier, recevez votre commande.",
@@ -557,7 +557,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
         return cards.length >= 3
           ? {
               heading: `Produits ${content.name.toLowerCase()} à configurer`,
-              intro: "Une sélection de produits réellement disponibles dans cet univers. Cliquez pour configurer le vôtre et obtenir un prix immédiat.",
+              intro: "Une sélection de produits réellement disponibles dans cet univers. Cliquez pour configurer le vôtre et demander votre devis.",
               cards,
             }
           : {
@@ -638,7 +638,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           return cards.length >= 1
             ? {
                 heading: `Produits disponibles dans « ${sub.name} »`,
-                intro: "Tous ces produits se configurent en ligne (format, quantité, finitions) avec un prix immédiat.",
+                intro: "Tous ces produits se préparent en ligne (format, quantité, finitions) avant votre demande de devis.",
                 cards,
               }
             : {
@@ -773,7 +773,7 @@ export async function buildAllPages(): Promise<SeoPage[]> {
           ],
         },
       ],
-      cta: { label: "Demander un prix affiché en ligne", path: "/#devis" },
+      cta: { label: "Demander un devis", path: "/#devis" },
       internalLinks: [
         { heading: "Nos univers", links: CATEGORY_SLUGS.map((s) => ({ label: CATEGORY_CONTENT[s].name, path: `/categorie/${s}` })) },
         ...regionGroups,
@@ -1325,13 +1325,13 @@ function realIntro(name: string, attrs: ProductAttributes | undefined, universe:
     `${name} fait partie de notre gamme${uni ? ` ${uni}` : ""} et se configure directement en ligne.`,
     `Commandez ${name.toLowerCase()} en ligne${uni ? `, dans notre univers ${uni}` : ""} : options et prix s'affichent immédiatement.`,
     `${name}${uni ? `, référence de notre univers ${uni},` : ""} se personnalise et se commande en ligne.`,
-    `Configurez ${name.toLowerCase()} en ligne${uni ? ` parmi notre offre ${uni}` : ""} et obtenez un prix immédiat.`,
+    `Configurez ${name.toLowerCase()} en ligne${uni ? ` parmi notre offre ${uni}` : ""} et demandez votre devis.`,
   ];
   const spec = bits.length ? ` Options réellement disponibles pour cette référence : ${frList(bits)}.` : "";
   const qty = attrs?.quantities?.length
     ? ` Quantités proposées par le configurateur : de ${attrs.quantities[0]} à ${attrs.quantities[attrs.quantities.length - 1]} exemplaires.`
     : "";
-  return `${heads[s % heads.length]}${spec}${qty} prix affiché en ligne et livraison en France.`;
+  return `${heads[s % heads.length]}${spec}${qty} tarif sur devis et livraison en France.`;
 }
 
 function realUseCases(name: string, attrs: ProductAttributes | undefined, universe: string, seed: number): string {
@@ -1457,7 +1457,7 @@ function realProductFaq(
     if (attrs.formats.length) {
       out.push({
         q: `Quels formats sont disponibles pour ${lower} ?`,
-        a: `Les formats proposés sont : ${attrs.formats.slice(0, 8).join(", ")}. Sélectionnez le vôtre en ligne, avec un prix affiché en ligne sur demande.`,
+        a: `Les formats proposés sont : ${attrs.formats.slice(0, 8).join(", ")}. Sélectionnez le vôtre en ligne, avec un tarif sur devis.`,
       });
     }
     if ((attrs.dimensions || []).length) {
@@ -1563,7 +1563,7 @@ function productMetaDescription(name: string, attrs: ProductAttributes | undefin
   if (!bits.length) return "";
   bits.splice(3);
   const verb = intent === "print" ? "à imprimer" : "à personnaliser avec votre logo";
-  return `${name} ${verb} : ${bits.join(", ")}. Prix affiché en ligne, configuration en ligne et livraison en France.`;
+  return `${name} ${verb} : ${bits.join(", ")}. Tarif sur devis, configuration en ligne et livraison en France.`;
 }
 
 /** Meta sous-catégorie : produits API réels rattachés (nombre + exemples). */
@@ -1573,13 +1573,13 @@ function subMetaDescription(subName: string, catName: string, skus: string[]): s
   const base = n
     ? `${subName} : ${n} produit${n > 1 ? "s" : ""} à configurer en ligne${names.length ? ` (${names.join(", ")})` : ""}.`
     : `${subName} : impression professionnelle en ligne (${catName.toLowerCase()}).`;
-  const full = `${base} Prix affiché, prix affiché en ligne, livraison en France.`;
-  return full.length <= 158 ? full : truncate(`${subName} : ${n} produit${n > 1 ? "s" : ""} à configurer en ligne. Prix affiché, prix affiché en ligne, livraison en France.`, 158);
+  const full = `${base} Tarif sur devis, livraison en France.`;
+  return full.length <= 158 ? full : truncate(`${subName} : ${n} produit${n > 1 ? "s" : ""} à configurer en ligne. Tarif sur devis, livraison en France.`, 158);
 }
 
 /** Meta catégorie : description éditoriale + sous-rubriques réelles si place. */
 function catMetaDescription(catName: string, desc: string, subs: string[]): string {
-  const withSubs = `${catName} : ${subs.slice(0, 3).join(", ").toLowerCase()} et plus. Prix affiché en ligne, configuration en ligne, livraison en France.`;
+  const withSubs = `${catName} : ${subs.slice(0, 3).join(", ").toLowerCase()} et plus. Tarif sur devis, configuration en ligne, livraison en France.`;
   if (subs.length && withSubs.length <= 158) return withSubs;
   return truncate(desc, 158);
 }
@@ -1788,14 +1788,14 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const titleVariants =
       intent === "goodie"
         ? [
-            `${name} personnalisé | prix affiché en ligne – J2L Print`,
+            `${name} personnalisé | tarif sur devis – J2L Print`,
             `${name} publicitaire à personnaliser | J2L Print`,
             `${name} avec logo – Objet publicitaire | J2L Print`,
             `${name} personnalisable en ligne | J2L Print`,
           ]
         : intent === "textile"
         ? [
-            `${name} personnalisé | prix affiché en ligne – J2L Print`,
+            `${name} personnalisé | tarif sur devis – J2L Print`,
             `${name} avec logo – Textile personnalisé | J2L Print`,
             `${name} personnalisable en ligne | J2L Print`,
             `${name} floqué ou brodé sur mesure | J2L Print`,
@@ -1808,7 +1808,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
             `Imprimer ${lower} publicitaire en ligne – J2L Print`,
           ]
         : [
-            `${name} personnalisé | prix affiché en ligne – J2L Print`,
+            `${name} personnalisé | tarif sur devis – J2L Print`,
             `${name} sur mesure – Impression en ligne | J2L Print`,
             `${name} pas cher à personnaliser | J2L Print`,
             `Imprimer ${lower} en ligne – J2L Print`,
@@ -1816,30 +1816,30 @@ export async function buildProductPages(): Promise<SeoPage[]> {
     const descVariants =
       intent === "goodie"
         ? [
-            `Commandez ${lower} personnalisé avec votre logo : coloris et options de marquage au choix. Prix immédiat, prix affiché en ligne et livraison en France.`,
+            `Commandez ${lower} personnalisé avec votre logo : coloris et options de marquage au choix. Tarif sur devis et livraison en France.`,
             `${name} publicitaire à personnaliser selon vos besoins : configuration en ligne, tarif dégressif et livraison en France.`,
-            `Besoin de ${lower} publicitaire ? Personnalisez-le en quelques clics : options sur mesure, prix transparent et prix affiché en ligne.`,
-            `${name} personnalisable avec votre logo par J2L Print. Choisissez vos options, obtenez un prix immédiat et un accompagnement dédié.`,
+            `Besoin de ${lower} publicitaire ? Personnalisez-le en quelques clics : options sur mesure, prix transparent et tarif sur devis.`,
+            `${name} personnalisable avec votre logo par J2L Print. Choisissez vos options, demandez votre devis et un accompagnement dédié.`,
           ]
         : intent === "textile"
         ? [
-            `Commandez ${lower} personnalisé avec votre logo : tailles, coloris et marquage au choix. Prix immédiat, prix affiché en ligne et livraison en France.`,
+            `Commandez ${lower} personnalisé avec votre logo : tailles, coloris et marquage au choix. Tarif sur devis et livraison en France.`,
             `${name} à personnaliser pour vos équipes ou vos événements : configuration en ligne, tarif dégressif et livraison en France.`,
-            `Besoin de ${lower} personnalisé ? Choisissez tailles, coloris et marquage en ligne, avec un prix transparent et un prix affiché en ligne.`,
-            `${name} personnalisé avec votre logo par J2L Print. Sélectionnez vos options, obtenez un prix immédiat et profitez d'un suivi dédié.`,
+            `Besoin de ${lower} personnalisé ? Choisissez tailles, coloris et marquage en ligne, avec un prix transparent et un tarif sur devis.`,
+            `${name} personnalisé avec votre logo par J2L Print. Sélectionnez vos options, demandez votre devis et profitez d'un suivi dédié.`,
           ]
         : adRelevant
         ? [
-            `Commandez ${lower} publicitaire personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat et prix affiché en ligne.`,
+            `Commandez ${lower} publicitaire personnalisé en ligne : formats, matières et finitions au choix. Tarif sur devis.`,
             `${name} publicitaire à personnaliser selon vos besoins : configuration en ligne, tarif dégressif et livraison en France.`,
-            `Besoin de ${lower} publicitaire ? Choisissez vos options en ligne : prix transparent, prix affiché en ligne et expédition soignée.`,
-            `${name} publicitaire imprimé sur mesure par J2L Print. Sélectionnez vos options et obtenez un prix immédiat.`,
+            `Besoin de ${lower} publicitaire ? Choisissez vos options en ligne : prix transparent, tarif sur devis et expédition soignée.`,
+            `${name} publicitaire imprimé sur mesure par J2L Print. Sélectionnez vos options et demandez votre devis.`,
           ]
         : [
-            `Commandez ${lower} personnalisé en ligne : formats, matières et finitions au choix. Prix immédiat, prix affiché en ligne et livraison en France.`,
+            `Commandez ${lower} personnalisé en ligne : formats, matières et finitions au choix. Tarif sur devis et livraison en France.`,
             `${name} de qualité professionnelle à personnaliser selon vos besoins. Configuration en ligne, tarif dégressif, fichiers vérifiés et livraison en France.`,
-            `Besoin de ${lower} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, prix affiché en ligne et expédition soignée en France.`,
-            `${name} imprimé sur mesure par J2L Print. Choisissez vos options, obtenez un prix immédiat et profitez d'un accompagnement et d'une livraison France entière.`,
+            `Besoin de ${lower} ? Créez le vôtre en quelques clics : options sur mesure, prix transparent, tarif sur devis et expédition soignée en France.`,
+            `${name} imprimé sur mesure par J2L Print. Choisissez vos options, demandez votre devis et profitez d'un accompagnement et d'une livraison France entière.`,
           ];
     // Règle globale : nom API exact en tête + spécification réelle (1er format
     // API) + intention d'achat. Plus de « pas cher » ni d'accord de genre faux.
@@ -1890,7 +1890,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
       if (attrs.pelliculage.length) bits.push(`pelliculage ${attrs.pelliculage.join(", ")}`);
       if (attrs.dorure) bits.push("dorure");
       if (attrs.exterieur) bits.push("usage extérieur résistant");
-      return bits.length ? `Options réellement disponibles : ${frList(bits)}. Configurez le tout en ligne pour un prix immédiat.` : "";
+      return bits.length ? `Options réellement disponibles : ${frList(bits)}. Configurez le tout en ligne pour préparer votre demande de devis.` : "";
     })() : "";
     const productIntro = specSentence ? [introText, specSentence] : [introText];
 
@@ -1916,7 +1916,7 @@ export async function buildProductPages(): Promise<SeoPage[]> {
       intro: productIntro,
       breadcrumb: crumb,
       sections,
-      cta: { label: "Demander un prix affiché en ligne", path: "/#devis" },
+      cta: { label: "Demander un devis", path: "/#devis" },
       faq: productFaq,
       internalLinks: [
         ...(related.length ? [{ heading: "Catégorie", links: related }] : []),
@@ -2038,7 +2038,7 @@ export async function buildThemePages(productLabels: Record<string, string> = {}
     const desc = t.description?.trim()
       ? truncate(t.description)
       : truncate(
-          `Thème « ${t.name} » : découvrez une sélection de produits d'impression personnalisée adaptés à ${t.name.toLowerCase()}. Configuration en ligne, prix affiché en ligne et livraison en France.`,
+          `Thème « ${t.name} » : découvrez une sélection de produits d'impression personnalisée adaptés à ${t.name.toLowerCase()}. Configuration en ligne, tarif sur devis et livraison en France.`,
         );
     const others = themeLinks.filter((l) => l.path !== path).slice(0, 8);
     const themeSkus = (skusByTheme.get(t.id) || []).slice().sort();
@@ -2052,7 +2052,7 @@ export async function buildThemePages(productLabels: Record<string, string> = {}
       },
       {
         q: "Comment commander un produit du thème ?",
-        a: "Choisissez un produit du thème, configurez-le en ligne dans le catalogue, puis demandez votre prix affiché en ligne.",
+        a: "Choisissez un produit du thème, configurez-le en ligne dans le catalogue, puis demandez votre devis.",
       },
     ];
     pages.push({

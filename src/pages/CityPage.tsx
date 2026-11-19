@@ -108,7 +108,7 @@ export default function CityPage() {
           <strong>J2L Print</strong> est votre <strong>imprimerie en ligne</strong> pour {city.name} et sa région ({city.region}). 
           Nous produisons et livrons à {city.name} : <strong>flyers</strong>, <strong>cartes de visite</strong>, <strong>affiches</strong>, 
           <strong>bâches publicitaires</strong>, <strong>adhésifs</strong>, <strong>roll-ups</strong>, 
-          <strong>objets publicitaires personnalisés</strong> et bien plus. Commandez en ligne, recevez chez vous ou 
+          <strong>objets publicitaires personnalisés</strong> et bien plus. Demandez votre devis en ligne, recevez chez vous ou 
           à votre entreprise à {city.name}.
         </p>
 

@@ -53,7 +53,7 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const trunc = (s: string, n: number) => (s.length <= n ? s : s.slice(0, n - 1).replace(/[\s,;:–-]+\S*$/, "") + "…");
 
 function specOf(p: SeoPage): string {
-  // "Flyer à imprimer : formats A5, A4…. Prix affiché…" -> "formats A5, A4…"
+  // "Flyer à imprimer : formats A5, A4…. Tarif sur devis…" -> "formats A5, A4…"
   const m = (p.description || "").match(/:\s*(.+?)\.\s*Prix/);
   return m ? m[1].trim() : "";
 }
@@ -160,8 +160,8 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
       }
 
       const openers = [
-        `Vous cherchez ${o.search} ${pl.where} ? J2L Print vous permet de configurer votre commande en ligne et de voir le prix immédiatement, avant l'envoi de vos fichiers.`,
-        `Pour ${o.possessive} ${pl.where}, J2L Print réunit sur une même page la configuration, le prix affiché et la vérification de vos fichiers par notre équipe.`,
+        `Vous cherchez ${o.search} ${pl.where} ? J2L Print vous permet de préparer votre configuration en ligne puis de demander votre devis, avant l'envoi de vos fichiers.`,
+        `Pour ${o.possessive} ${pl.where}, J2L Print réunit sur une même page la configuration, la demande de devis et la vérification de vos fichiers par notre équipe.`,
         `Commandez ${o.possessive} ${pl.from} : choisissez format, quantité et finitions, le tarif se met à jour à chaque option.`,
       ];
       const deliver = [
@@ -181,7 +181,7 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
         {
           heading: `Pourquoi commander ${o.possessive} en ligne ${pl.where}`,
           bullets: [
-            "Prix affiché en ligne dès la configuration",
+            "Tarif définitif communiqué sur devis",
             "Contrôle de vos fichiers avant impression",
             `Livraison ${pl.where}`,
             `Adapté aux ${pick(audiences, seed)}`,
@@ -210,7 +210,7 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
       const crumb = [...pl.crumb, { name: o.label, path }];
       const title = `${h1} – J2L Print`.length <= 60 ? `${h1} – J2L Print` : h1;
       const tail = o.kind === "cat" ? `${cards.length} produits réels à configurer.` : "Fichiers vérifiés avant impression.";
-      const description = trunc(`${o.label} ${pl.where}${pl.scope === "ville" && pl.cp ? ` (${pl.cp})` : ""} : configuration en ligne, prix affiché et livraison ${pl.where}. ${tail}`, 158);
+      const description = trunc(`${o.label} ${pl.where}${pl.scope === "ville" && pl.cp ? ` (${pl.cp})` : ""} : configuration en ligne, tarif sur devis et livraison ${pl.where}. ${tail}`, 158);
 
       out.push({
         path,
@@ -222,7 +222,7 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
           eyebrow: `Livraison ${pl.where}`,
           tagline: `${cap(o.noun)} ${o.configured} en ligne et ${o.delivered} ${pl.where}.`,
           ctas: [
-            { label: o.kind === "cat" ? "Voir les produits" : "Configurer et voir le prix", path: o.ref, variant: "primary" },
+            { label: o.kind === "cat" ? "Voir les produits" : "Configurer et demander un devis", path: o.ref, variant: "primary" },
             { label: "Demander un devis", path: "/#devis", variant: "secondary" },
           ],
         },
@@ -230,7 +230,7 @@ export function buildLocalPages(pages: Record<string, SeoPage>, products: Record
         breadcrumb: crumb,
         sections,
         productGrid: { heading: `${o.label} ${o.available} ${pl.where}`, cards },
-        cta: { label: o.kind === "cat" ? "Voir les produits" : "Configurer et voir le prix", path: o.ref },
+        cta: { label: o.kind === "cat" ? "Voir les produits" : "Configurer et demander un devis", path: o.ref },
         faq,
         internalLinks: [
           { heading: "Le catalogue", links: catLink },

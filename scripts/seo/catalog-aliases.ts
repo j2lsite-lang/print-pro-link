@@ -7,7 +7,7 @@ export function catalogAliases(pages: Record<string, SeoPage>): Record<string, S
   if (catalog) aliases["/products"] = {
     ...catalog, path: "/products", h1: "Catégories",
     title: "Catalogue produits – Impression en ligne",
-    description: "Parcourez notre catalogue d'impression : flyers, cartes de visite, affiches, bâches, adhésifs, textiles, objets publicitaires. Commandez en ligne, livraison en France.",
+    description: "Parcourez notre catalogue d'impression : flyers, cartes de visite, affiches, bâches, adhésifs, textiles, objets publicitaires. Demandez votre devis en ligne, livraison en France.",
     jsonLd: catalog.jsonLd.map((block) => JSON.parse(JSON.stringify(block).split("https://j2lprint.fr/catalogue").join("https://j2lprint.fr/products"))),
   };
   const categories = Object.values(pages).filter((p) => p.path.startsWith("/categorie/"));

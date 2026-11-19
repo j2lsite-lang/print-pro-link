@@ -83,7 +83,7 @@ export function regionCopy(r: GenRegion): RegionCopy {
   const description = pick(
     [
       `J2L Print imprime et livre ${art.dans} : flyers, affiches, bâches, PLV, textiles et objets publicitaires. Commande en ligne, livraison dans tous les départements.`,
-      `Imprimerie en ligne livrant ${art.dans} et ses ${nbDep} départements : supports professionnels, prix affiché en ligne et livraison locale.`,
+      `Imprimerie en ligne livrant ${art.dans} et ses ${nbDep} départements : supports professionnels, tarif sur devis et livraison locale.`,
     ],
     s,
     3,
@@ -146,7 +146,7 @@ export function regionCopy(r: GenRegion): RegionCopy {
     },
     {
       q: "Comment obtenir un devis ?",
-      a: "Configurez votre produit pour un prix immédiat, ou décrivez votre besoin dans le formulaire de devis : nous revenons vers vous avec une proposition personnalisée.",
+      a: "Configurez votre produit pour préparer votre demande de devis, ou décrivez votre besoin dans le formulaire de devis : nous revenons vers vous avec une proposition personnalisée.",
     },
     {
       q: "Les fichiers sont-ils vérifiés avant impression ?",

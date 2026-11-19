@@ -86,9 +86,9 @@ function buildIntro(name: string, fam: SemanticEntry, seed: number): string {
   const finition = pickOne(fam.finitions, seed + 2);
   const frames: string[] = [
     `${cap(name)} : ${fam.primaryKeyword} à configurer en ligne chez J2L Print. Idéal pour ${usage}, ce support se commande sur mesure et se livre en France.`,
-    `Optez pour ${fam.primaryKeyword} avec ${low(name)} : un support adapté à ${sector}. Choisissez vos options en ligne et obtenez un prix immédiat.`,
+    `Optez pour ${fam.primaryKeyword} avec ${low(name)} : un support adapté à ${sector}. Choisissez vos options en ligne et demandez votre devis.`,
     `${cap(name)} fait partie de notre offre de ${fam.primaryKeyword}. Pensé pour ${usage}, il se personnalise (format, ${finition}, quantité) directement en ligne.`,
-    `Besoin de ${fam.primaryKeyword.toLowerCase()} ? ${cap(name)} se configure en ligne et s'adresse à ${sector}, avec une fabrication soignée et un prix affiché en ligne.`,
+    `Besoin de ${fam.primaryKeyword.toLowerCase()} ? ${cap(name)} se configure en ligne et s'adresse à ${sector}, avec une fabrication soignée et un tarif sur devis.`,
   ];
   return pickOne(frames, seed);
 }
@@ -110,10 +110,10 @@ function buildQuality(fam: SemanticEntry, seed: number): string {
 /** "Pourquoi choisir" benefit bullets (seeded, family-aware). */
 function buildWhyChoose(fam: SemanticEntry, seed: number): string[] {
   const base = [
-    "Configuration en ligne et prix immédiat",
+    "Configuration en ligne et tarif sur devis",
     `${cap(fam.primaryKeyword)} sur mesure`,
     "Vérification de vos fichiers avant impression",
-    "prix affiché en ligne et livraison en France",
+    "tarif sur devis et livraison en France",
   ];
   const extra = `Finitions au choix : ${naturalList(pickN(fam.finitions, seed, 2))}`;
   return [...base.slice(0, 3), extra, base[3]];
@@ -127,7 +127,7 @@ function buildGenericData(productName: string): ProductSEOData {
   return {
     intro:
       `${name} fait partie du catalogue d'impression et de communication J2L Print. ` +
-      `Configurez votre produit (format, quantité, options) directement en ligne et obtenez un prix immédiat.`,
+      `Configurez votre produit (format, quantité, options) directement en ligne et demandez votre devis.`,
     useCases:
       `Utilisez ${lower} pour vos besoins de communication professionnelle. ` +
       `Sélectionnez vos options ci-dessus pour adapter le produit à votre projet, ou demandez un devis personnalisé.`,
@@ -142,7 +142,7 @@ function buildGenericData(productName: string): ProductSEOData {
     primaryKeyword: `${lower} personnalisé`,
     secondaryKeywords: [
       "impression personnalisée", "impression en ligne", `${lower} sur mesure`,
-      "avec logo", "prix affiché en ligne", "petite quantité", "grande quantité",
+      "avec logo", "tarif sur devis", "petite quantité", "grande quantité",
     ],
     longTail: [
       `imprimer ${lower} en ligne`,
@@ -150,10 +150,10 @@ function buildGenericData(productName: string): ProductSEOData {
       `${lower} avec logo`,
     ],
     whyChoose: [
-      "Configuration en ligne et prix immédiat",
+      "Configuration en ligne et tarif sur devis",
       "Impression professionnelle sur mesure",
       "Vérification de vos fichiers avant impression",
-      "prix affiché en ligne et livraison en France",
+      "tarif sur devis et livraison en France",
     ],
     usagesList: ["Communication professionnelle", "Événements et opérations commerciales", "Image de marque"],
     sectors: pickN(SECTORS_POOL, seed, 5),

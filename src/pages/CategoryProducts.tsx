@@ -100,7 +100,7 @@ export default function CategoryProducts() {
   useSEO({
     title: initialPage?.title || (category ? `${category.name} – Impression en ligne` : "Catégorie – J2L Print"),
     description: initialPage?.description || (category
-      ? `Découvrez notre gamme ${category.name} : impression professionnelle, prix affiché en ligne et livraison en France. J2L Print, votre imprimerie en ligne.`
+      ? `Découvrez notre gamme ${category.name} : impression professionnelle, tarif sur devis et livraison en France. J2L Print, votre imprimerie en ligne.`
       : "Catégorie de produits J2L Print."),
     canonical: initialPage ? `${BASE_URL}${initialPage.path}` : newPath ? `${BASE_URL}${newPath}` : undefined,
     noindex: !catLoading && !category,

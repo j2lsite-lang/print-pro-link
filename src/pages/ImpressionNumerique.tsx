@@ -11,7 +11,7 @@ import { catalogVisuals } from "@/seo/data/catalog-visuals";
 export default function ImpressionNumerique() {
   useSEO({
     title: "Impression numérique en ligne – Flyers, cartes de visite, affiches | J2L Print",
-    description: "Impression numérique professionnelle : flyers, cartes de visite, dépliants, affiches, brochures. Configuration en ligne, livraison en France. prix affiché en ligne.",
+    description: "Impression numérique professionnelle : flyers, cartes de visite, dépliants, affiches, brochures. Configuration en ligne, livraison en France. tarif sur devis.",
     ogType: "website",
   });
 
@@ -112,7 +112,7 @@ export default function ImpressionNumerique() {
               "Papiers certifiés FSC & PEFC",
               "Relecture de vos fichiers avant production",
               "Délai indiqué produit par produit",
-              "prix affiché en ligne et sans engagement",
+              "tarif sur devis et sans engagement",
               "Conception de maquettes dès 65 € HT",
             ].map((item) => (
               <li key={item} className="flex items-start gap-2">
@@ -139,7 +139,7 @@ export default function ImpressionNumerique() {
             </div>
           </div>
           <p className="text-sm text-muted-foreground">
-            Vous hésitez ? <Link to="/#devis" className="text-primary hover:underline">Demandez un prix affiché en ligne</Link> et 
+            Vous hésitez ? <Link to="/#devis" className="text-primary hover:underline">Demandez un tarif sur devis</Link> et 
             notre équipe vous conseillera le meilleur procédé pour votre projet.
           </p>
         </div>
@@ -150,7 +150,7 @@ export default function ImpressionNumerique() {
             <h3 className="font-display text-lg font-semibold text-foreground">
               Prêt à lancer votre impression ?
             </h3>
-            <p className="text-sm text-muted-foreground">Commandez en ligne ou demandez un devis personnalisé.</p>
+            <p className="text-sm text-muted-foreground">Configurez votre produit puis demandez un devis personnalisé.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button asChild className="rounded-full">

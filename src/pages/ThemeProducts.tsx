@@ -50,7 +50,7 @@ export default function ThemeProducts() {
   useSEO({
     title: theme ? `${theme.name} – Thème | J2L Print` : "Thème – J2L Print",
     description: theme
-      ? `Découvrez les produits du thème ${theme.name} : impression professionnelle, prix affiché en ligne et livraison en France avec J2L Print.`
+      ? `Découvrez les produits du thème ${theme.name} : impression professionnelle, tarif sur devis et livraison en France avec J2L Print.`
       : "Thème de produits J2L Print.",
     canonical: theme ? `${BASE_URL}/themes/${theme.slug}` : undefined,
     jsonLd: theme

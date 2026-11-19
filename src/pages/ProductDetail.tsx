@@ -705,7 +705,7 @@ export default function ProductDetail() {
     title: `${productName} – Impression personnalisée`,
     description: product?.description
       ? product.description.slice(0, 155)
-      : `Commandez ${productName} en ligne chez J2L Print. Impression professionnelle, prix affiché en ligne et livraison en France.`,
+      : `Commandez ${productName} en ligne chez J2L Print. Impression professionnelle, tarif sur devis et livraison en France.`,
     ogType: "product",
     ogImage: productMetaImage,
   });
@@ -1282,7 +1282,7 @@ export default function ProductDetail() {
                 <CheckCircle className="h-3.5 w-3.5 text-primary" /> Vérification fichiers
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
-                <CheckCircle className="h-3.5 w-3.5 text-primary" /> prix affiché en ligne
+                <CheckCircle className="h-3.5 w-3.5 text-primary" /> tarif sur devis
               </span>
             </div>
             <PricingNotice />

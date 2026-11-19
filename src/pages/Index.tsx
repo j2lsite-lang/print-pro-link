@@ -263,7 +263,7 @@ export default function Index() {
               {/* Subtext */}
               <p className="mb-10 max-w-xl text-lg leading-relaxed text-muted-foreground">
                 Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires.{" "}
-                <span className="text-foreground/90">Commandez en ligne, nous livrons en France.</span> Devis gratuit et sans engagement.
+                <span className="text-foreground/90">Demandez votre devis en ligne, nous livrons en France.</span> Devis gratuit et sans engagement.
               </p>
 
               {/* CTA */}

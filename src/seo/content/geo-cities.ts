@@ -225,7 +225,7 @@ export function cityCopy(c: GenCity): CityCopy {
   const description = pick(
     [
       `Impression professionnelle livrée à ${c.name} (${c.cp}) : flyers, cartes de visite, affiches, banderoles et PLV. Commande en ligne, livraison ${dep.dans}.`,
-      `J2L Print, imprimeur en ligne livrant à ${c.name} : supports de communication, prix affiché en ligne et livraison ${dep.dans} sans déplacement.`,
+      `J2L Print, imprimeur en ligne livrant à ${c.name} : supports de communication, tarif sur devis et livraison ${dep.dans} sans déplacement.`,
       `Commandez vos supports imprimés en ligne et faites-vous livrer à ${c.name} (${c.cp}) : impression, finitions et grand format livrés ${reg.dans}.`,
     ],
     s,
@@ -274,7 +274,7 @@ export function cityCopy(c: GenCity): CityCopy {
     ],
     [
       `Impression professionnelle, prix transparents et livraison à ${c.name} : J2L Print accompagne votre communication visuelle sans déplacement, du fichier à la réception.`,
-      `${econ} ${audiences} Vous commandez en ligne et recevez vos supports imprimés ${dep.dans}, dans le délai indiqué à la configuration.`,
+      `${econ} ${audiences} Vous demandez votre devis en ligne et recevez vos supports imprimés ${dep.dans}, dans le délai indiqué à la configuration.`,
     ],
   ];
   const intro = pick(introAngles, s, 6);
@@ -331,7 +331,7 @@ export function cityCopy(c: GenCity): CityCopy {
     },
     {
       q: `Comment obtenir un devis d'impression à ${c.name} ?`,
-      a: `Configurez votre produit pour voir le prix en direct, ou décrivez votre besoin dans le formulaire de devis : nous revenons vers vous avec une proposition personnalisée pour une livraison à ${c.name}.`,
+      a: `Configurez votre produit puis demandez votre devis, ou décrivez votre besoin dans le formulaire de devis : nous revenons vers vous avec une proposition personnalisée pour une livraison à ${c.name}.`,
     },
     {
       q: "Les fichiers sont-ils vérifiés avant production ?",
@@ -520,7 +520,7 @@ export function deptCopy(d: GenDept): DeptCopy {
     },
     {
       q: "Comment obtenir un devis ?",
-      a: "Configurez votre produit pour un prix immédiat, ou décrivez votre besoin dans le formulaire de devis : nous vous répondons avec une proposition personnalisée.",
+      a: "Configurez votre produit pour préparer votre demande de devis, ou décrivez votre besoin dans le formulaire de devis : nous vous répondons avec une proposition personnalisée.",
     },
     {
       q: `Quels délais de livraison ${art.dans} ?`,
@@ -528,7 +528,7 @@ export function deptCopy(d: GenDept): DeptCopy {
     },
     {
       q: "Peut-on imprimer du grand format et de la PLV ?",
-      a: "Oui : affiches, bâches, panneaux rigides, roll-up, kakémonos et totems se configurent en ligne, avec un rendu fidèle à votre fichier.",
+      a: "Oui : affiches, bâches, panneaux rigides, roll-up, kakémonos et totems se préparent en ligne, avec un rendu fidèle à votre fichier.",
     },
   ];
   const faq = rotate(faqPool, s, 5, 5);
