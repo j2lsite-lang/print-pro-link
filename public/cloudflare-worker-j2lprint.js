@@ -31,6 +31,9 @@
 const CANONICAL_HOST  = "j2lprint.fr";
 const CANONICAL_ORIGIN = "https://j2lprint.fr";
 const ORIGIN_HOST = "print-pro-link.lovable.app";
+const WORKER_VERSION = "j2lprint-seo/4.6.3";
+// Synced from generated SEO pages; preserves existing browsing canonicals.
+const CATALOG_CATEGORY_PATHS = {"/products/category/impression-papier":"/categorie/impression-papier","/products/category/cartes-visite-enveloppes":"/categorie/impression-papier/cartes-visite-enveloppes","/products/category/papeterie":"/categorie/impression-papier/papeterie","/products/category/catering-restaurants":"/categorie/impression-papier/catering-restaurants","/products/category/brochures-magazines":"/categorie/impression-papier/brochures-magazines","/products/category/flyers-depliants-affiches":"/categorie/impression-papier/flyers-depliants-affiches","/products/category/calendriers":"/categorie/impression-papier/calendriers","/products/category/courriers-creatifs":"/categorie/impression-papier/courriers-creatifs","/products/category/publicite-exterieure":"/categorie/publicite-exterieure","/products/category/stop-trottoirs-panneaux":"/categorie/publicite-exterieure/stop-trottoirs-panneaux","/products/category/panneaux-accessoires-ext":"/categorie/publicite-exterieure/panneaux-accessoires-ext","/products/category/tonnelles-mobilier-exterieur":"/categorie/publicite-exterieure/tonnelles-mobilier-exterieur","/products/category/drapeaux-beachflags-accessoires":"/categorie/publicite-exterieure/drapeaux-beachflags-accessoires","/products/category/bannieres-structures-fixation":"/categorie/publicite-exterieure/bannieres-structures-fixation","/products/category/publicite-interieure":"/categorie/publicite-interieure","/products/category/toiles-textiles-deco-interieure":"/categorie/publicite-interieure/toiles-textiles-deco-interieure","/products/category/presentoirs-materiel-plv":"/categorie/publicite-interieure/presentoirs-materiel-plv","/products/category/stands-materiel-expo":"/categorie/publicite-interieure/stands-materiel-expo","/products/category/mobilier-interieur":"/categorie/publicite-interieure/mobilier-interieur","/products/category/panneaux-accessoires-int":"/categorie/publicite-interieure/panneaux-accessoires-int","/products/category/roll-ups":"/categorie/publicite-interieure/roll-ups","/products/category/etiquettes-stickers":"/categorie/etiquettes-stickers","/products/category/accessoires-autocollants":"/categorie/etiquettes-stickers/accessoires-autocollants","/products/category/autocollants-grand-format":"/categorie/etiquettes-stickers/autocollants-grand-format","/products/category/rubans-adhesifs":"/categorie/etiquettes-stickers/rubans-adhesifs","/products/category/films-adhesifs-type":"/categorie/etiquettes-stickers/films-adhesifs-type","/products/category/autocollants-rouleaux":"/categorie/etiquettes-stickers/autocollants-rouleaux","/products/category/petits-autocollants":"/categorie/etiquettes-stickers/petits-autocollants","/products/category/emballages-sacs":"/categorie/emballages-sacs","/products/category/sacs-tote-bags":"/categorie/emballages-sacs/sacs-tote-bags","/products/category/emballages-alimentaires":"/categorie/emballages-sacs/emballages-alimentaires","/products/category/emballages-expedition":"/categorie/emballages-sacs/emballages-expedition","/products/category/emballages-cadeaux":"/categorie/emballages-sacs/emballages-cadeaux","/products/category/objets-publicitaires-cadeaux":"/categorie/objets-publicitaires-cadeaux","/products/category/gadgets":"/categorie/objets-publicitaires-cadeaux/gadgets","/products/category/bien-etre":"/categorie/objets-publicitaires-cadeaux/bien-etre","/products/category/saisonnalite":"/categorie/objets-publicitaires-cadeaux/saisonnalite","/products/category/nourriture-boissons":"/categorie/objets-publicitaires-cadeaux/nourriture-boissons","/products/category/articles-papeterie":"/categorie/objets-publicitaires-cadeaux/articles-papeterie","/products/category/verrerie-vaisselle-gourdes":"/categorie/objets-publicitaires-cadeaux/verrerie-vaisselle-gourdes","/products/category/general":"/categorie/objets-publicitaires-cadeaux/general","/products/category/textiles-accessoires":"/categorie/textiles-accessoires","/products/category/marquage-transferts-textiles":"/categorie/textiles-accessoires/marquage-transferts-textiles","/products/category/accessoires":"/categorie/textiles-accessoires/accessoires","/products/category/vetements":"/categorie/textiles-accessoires/vetements","/products/category/produits-bebes":"/categorie/textiles-accessoires/produits-bebes","/products/category/textiles-sport":"/categorie/textiles-accessoires/textiles-sport","/products/category/textiles-bain":"/categorie/textiles-accessoires/textiles-bain","/products/category/cuisine-sejour":"/categorie/textiles-accessoires/cuisine-sejour","/products/category/panneaux-baches-vinyles-toiles":"/categorie/panneaux-baches-vinyles-toiles","/products/category/toiles-textiles":"/categorie/panneaux-baches-vinyles-toiles/toiles-textiles","/products/category/films-adhesifs":"/categorie/panneaux-baches-vinyles-toiles/films-adhesifs","/products/category/lookbooks":"/categorie/panneaux-baches-vinyles-toiles/lookbooks","/products/category/panneaux-accessoires":"/categorie/panneaux-baches-vinyles-toiles/panneaux-accessoires","/products/category/baches-banderoles":"/categorie/panneaux-baches-vinyles-toiles/baches-banderoles","/products/category/kakemono":"/categorie/publicite-interieure/kakemono"};
  const PAGE_REDIRECTS = {
    "/devis": "/#devis",
    "/contact": "/#devis",
@@ -176,7 +179,6 @@ const MANAGED_SEO_PATHS = new Set([
   "/themes",
   ...THEMES.map((s) => `/themes/${s}`),
   ...CITIES.map((s) => `/ville/${s}`),
-  ...CITIES.map((s) => `/imprimerie/${s}`),
   ...DEPARTMENTS.map((s) => `/departement/${s}`),
   ...REGIONS.map((s) => `/region/${s}`),
   ...CATEGORIES.map((s) => `/categorie/${s}`),
@@ -200,8 +202,6 @@ function isProductDetail(pathname) {
 function isNoCachePath(pathname) {
   if (isProductDetail(pathname)) return false;
   return (
-    pathname === "/products" ||
-    pathname.startsWith("/products/") ||
     pathname === "/cart" ||
     pathname === "/checkout" ||
     pathname === "/payment-success" ||
@@ -255,6 +255,11 @@ function computeLegacyRedirect(pathname) {
   const parts = pathname.split("/").filter(Boolean);
   if (parts.length === 0) return null;
 
+  if (parts[0] === "imprimerie" && parts.length === 2) {
+    const slug = CITY_SLUG_REDIRECTS[parts[1]] || parts[1];
+    if (CITY_SET.has(slug)) return `/ville/${slug}`;
+  }
+
   // Pages géographiques supprimées (DOM-TOM) -> 301 /catalogue.
   if (REMOVED_GEO_SET.has(pathname)) return "/catalogue";
 
@@ -299,18 +304,9 @@ function isUnknownSeoNamespacePath(pathname) {
   if (isManagedSeoPath(pathname)) return false;
   const parts = pathname.split("/").filter(Boolean);
   if (!parts.length) return false;
-  if (/\.[a-z0-9]+$/i.test(pathname)) return false;
-  const [root] = parts;
-  if (root === "products") {
-    // /products (catalogue dynamique) et /products/category/:slug restent SPA.
-    if (parts.length === 1) return false;
-    if (parts[1] === "category") return false;
-    return true;
-  }
-  if (["categorie", "ville", "departement", "region", "imprimerie", "themes"].includes(root)) {
-    return true;
-  }
-  return false;
+  if (pathname === "/__worker" || isNoCachePath(pathname)) return false;
+  if (/\.[a-z0-9]+$/i.test(pathname) || pathname.startsWith("/assets/")) return false;
+  return true;
 }
 
 const NOT_FOUND_HTML = `<!doctype html><html lang="fr"><head><meta charset="utf-8">
@@ -334,6 +330,8 @@ function isCacheableHtml(pathname) {
 function isManagedSeoPath(pathname) {
   return (
     MANAGED_SEO_PATHS.has(pathname) ||
+    pathname === "/products" ||
+    Object.hasOwn(CATALOG_CATEGORY_PATHS, pathname) ||
     isLocalOfferPath(pathname) ||
     isManagedCategoryPath(pathname) ||
     isProductDetail(pathname)
@@ -488,7 +486,7 @@ function applySecurityHeaders(headers) {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  headers.set("X-Worker", "j2lprint-seo/4.6.2");
+  headers.set("X-Worker", WORKER_VERSION);
 }
 
 /** Fetch origine : on joint directement l'hôte Lovable publié. */
@@ -505,8 +503,8 @@ function fetchOrigin(originRequest) {
  * statique prérendu /…/index.html. Toutes ces pages sont prérendues au build :
  *   - si le fichier existe   -> 200 + vrai HTML (title/canonical/H1 propres) ;
  *   - si le fichier manque   -> 404 réel (jamais le shell SPA / la home).
- * Les chemins NON gérés (catalogue dynamique /products, /cart, /themes hors
- * liste, etc.) passent par leur URL propre et conservent le rendu SPA normal.
+ * /products et ses catégories connues utilisent aussi leur HTML prérendu.
+ * Le panier, le devis et les routes techniques conservent leur rendu normal.
  */
 
 
@@ -559,7 +557,7 @@ export default {
         "X-Robots-Tag": "noindex, follow",
       });
       applySecurityHeaders(h);
-      return new Response(NOT_FOUND_HTML, { status: 404, headers: h });
+      return new Response(method === "HEAD" ? null : NOT_FOUND_HTML, { status: 404, headers: h });
     }
 
 
@@ -576,7 +574,8 @@ export default {
       applySecurityHeaders(h);
       return new Response(JSON.stringify({
         ok: true,
-        worker: "j2lprint-seo/4.6.2",
+        worker: WORKER_VERSION,
+        name: "j2lprint-router",
         host: url.hostname,
         origin: ORIGIN_HOST,
         products: PRODUCTS.length,
@@ -598,7 +597,7 @@ export default {
     //        On joint directement print-pro-link.lovable.app afin d'éviter
     //        l'erreur « Project not found » causée par le DNS défaillant de
     //        origin.j2lprint.fr.
-    const seoPathname = seoOriginPathname(p);
+    const seoPathname = seoOriginPathname(normalizedPath);
     const originUrl = new URL(request.url);
     originUrl.protocol = "https:";
     originUrl.hostname = ORIGIN_HOST;
@@ -607,9 +606,15 @@ export default {
     //        Le Host est celui de l'application Lovable publiée. On conserve
     //        le domaine canonique dans X-Forwarded-Host pour la cohérence.
     const originRequest = new Request(originUrl.toString(), request);
+    const fetchRequest = isRead && seoPathname && method === "HEAD"
+      ? new Request(originRequest, { method: "GET" }) : originRequest;
     originRequest.headers.set("Host", ORIGIN_HOST);
     originRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
     originRequest.headers.set("X-Forwarded-Proto", "https");
+    if (fetchRequest !== originRequest) {
+      fetchRequest.headers.set("X-Forwarded-Host", CANONICAL_HOST);
+      fetchRequest.headers.set("X-Forwarded-Proto", "https");
+    }
 
 
     // 7.3 — Détecte une session connectée (jamais de cache pour ces requêtes)
@@ -620,8 +625,8 @@ export default {
       );
 
     const isHead = method === "HEAD";
-    const bypassCache = !isRead || isHead || hasSession || isNoCachePath(p);
-    if (bypassCache) {
+    const bypassCache = !isRead || isHead || hasSession || isNoCachePath(normalizedPath);
+    if (bypassCache && !isManagedSeoPath(normalizedPath)) {
       const resp = await fetchOrigin(originRequest);
       const out = new Response(resp.body, resp);
       out.headers.set("Cache-Control", "no-store");
@@ -631,15 +636,17 @@ export default {
 
     // 7.4 — Cache edge
     const cache = caches.default;
-    const cacheKey = new Request(url.toString(), { method: "GET" });
-    const cached = await cache.match(cacheKey);
+    const cacheUrl = new URL(url);
+    cacheUrl.searchParams.set("__seo_version", WORKER_VERSION);
+    const cacheKey = new Request(cacheUrl.toString(), { method: "GET" });
+    const cached = bypassCache ? null : await cache.match(cacheKey);
     if (cached) {
       const hit = new Response(cached.body, cached);
       hit.headers.set("X-Cache", "HIT");
       return hit;
     }
 
-    const response = await fetchOrigin(originRequest);
+    const response = await fetchOrigin(fetchRequest);
     const ct = response.headers.get("Content-Type") || "";
 
     // 7.5 — Sitemaps & robots.txt
@@ -652,7 +659,7 @@ export default {
       h.set("X-Cache", "MISS");
       applySecurityHeaders(h);
       const out = new Response(body, { status: response.status, headers: h });
-      if (response.status === 200) ctx.waitUntil(cache.put(cacheKey, out.clone()));
+      if (!bypassCache && response.status === 200) ctx.waitUntil(cache.put(cacheKey, out.clone()));
       return out;
     }
 
@@ -662,7 +669,7 @@ export default {
       h.set("Cache-Control", `public, max-age=${ASSET_TTL}, immutable`);
       h.set("X-Cache", "MISS");
       const out = new Response(response.body, { status: response.status, headers: h });
-      if (response.status === 200) ctx.waitUntil(cache.put(cacheKey, out.clone()));
+      if (!bypassCache && response.status === 200) ctx.waitUntil(cache.put(cacheKey, out.clone()));
       return out;
     }
 
@@ -670,16 +677,32 @@ export default {
     if (ct.includes("text/html")) {
       let body = await response.text();
       body = rewriteHtmlDomain(body);
+      // Refuse a hosting fallback that falsely claims a managed page is home.
+      const expectedCanonical = `${CANONICAL_ORIGIN}${CATALOG_CATEGORY_PATHS[normalizedPath] || normalizedPath}`;
+      const canonicalTags = body.match(/<link\b(?=[^>]*\brel=["']canonical["'])[^>]*>/gi) || [];
+      const matchesCanonical = canonicalTags.some((tag) => {
+        const href = tag.match(/\bhref=["']([^"']+)["']/i)?.[1];
+        return href === expectedCanonical;
+      });
+      if (isManagedSeoPath(normalizedPath) && response.status === 200 && !matchesCanonical) {
+        const h = new Headers({ "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "Retry-After": "300" });
+        applySecurityHeaders(h);
+        return new Response(isHead ? null : "<!doctype html><html lang=\"fr\"><head><title>Page temporairement indisponible | J2L Print</title></head><body><h1>Page temporairement indisponible</h1><p>Veuillez réessayer dans quelques instants.</p></body></html>", { status: 503, headers: h });
+      }
+      if (matchesCanonical) {
+        body = body.replace(/<link\b(?=[^>]*\brel=["']canonical["'])[^>]*>/gi, "")
+          .replace(/<\/head>/i, `<link rel="canonical" href="${expectedCanonical}"></head>`);
+      }
       if (response.status === 200) body = injectPriorityLinks(p, body);
       const h = new Headers(response.headers);
       h.delete("Content-Length");
-      const cacheable = isCacheableHtml(p) && response.status === 200;
+      const cacheable = !bypassCache && isCacheableHtml(normalizedPath) && response.status === 200;
       if (cacheable) h.set("Cache-Control", `public, max-age=${HTML_TTL}`);
       else h.set("Cache-Control", "no-store");
-      h.set("X-SEO-Managed", isManagedSeoPath(p) ? "1" : "0");
+      h.set("X-SEO-Managed", isManagedSeoPath(normalizedPath) ? "1" : "0");
       h.set("X-Cache", "MISS");
       applySecurityHeaders(h);
-      const out = new Response(body, { status: response.status, headers: h });
+      const out = new Response(isHead ? null : body, { status: response.status, headers: h });
       if (cacheable) ctx.waitUntil(cache.put(cacheKey, out.clone()));
       return out;
     }

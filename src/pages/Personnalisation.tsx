@@ -163,7 +163,7 @@ export default function Personnalisation() {
           <h3 className="font-display text-sm font-semibold text-foreground mb-3">Personnalisation par ville</h3>
           <div className="grid gap-1.5 sm:grid-cols-4 text-xs text-muted-foreground">
             {["epinal", "nancy", "metz", "strasbourg", "paris", "lyon", "nice", "bordeaux"].map((slug) => (
-              <Link key={slug} to={`/imprimerie/${slug}`} className="hover:text-primary transition-colors flex items-center gap-1">
+              <Link key={slug} to={`/ville/${slug}`} className="hover:text-primary transition-colors flex items-center gap-1">
                 <MapPin className="h-3 w-3 text-primary" /> Imprimerie {slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, " ")}
               </Link>
             ))}

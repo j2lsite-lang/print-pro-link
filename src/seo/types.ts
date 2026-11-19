@@ -75,6 +75,8 @@ export interface SeoPage {
   /** canonical path, e.g. "/categorie/impression-papier" */
   path: string;
   title: string;
+  /** Existing canonical destination for a catalog browsing alias. */
+  canonicalPath?: string;
   description: string;
   h1: string;
   /** main introduction (1-3 paragraphs) */

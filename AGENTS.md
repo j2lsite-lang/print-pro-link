@@ -8,3 +8,7 @@
 - Quote requests are recorded only by the submit-quote edge function, which re-validates quantities and re-prices every line from live Print.com data (client prices ignored); direct table inserts are revoked.
 - Cart and server quotes share the supplier transport parser and HT/VAT/TTC calculation; transport is unmarked-up and nullable when no verified whole-cart shipment is available, preventing invented or duplicated fees.
 - Preserve the last product and its full selection in session-scoped quote context; cart quotes store per-line product URLs and email rendering reads recorded lines so navigation cannot replace product origin with the form URL.
+- Use one shared DOM head owner for all React SEO pages; reuse and deduplicate prerendered tags to prevent competing canonicals after navigation.
+- Generate catalog browsing aliases from the same SEO page inventory, preserving existing category canonicals; prerender failures must stop publication to prevent homepage fallbacks.
+- Keep j2lprint-router as the existing Worker; synchronize category aliases during SEO generation and version HTML cache keys when routing changes so stale home responses cannot survive updates.
+- Prerender editorial and legal routes from their existing source content, without inventing facts or changing commercial policy; keep their runtime metadata aligned.

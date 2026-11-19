@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { uniqueHeadElement } from "@/lib/seo-head";
 
 interface SEOProps {
   title: string;
@@ -8,6 +9,7 @@ interface SEOProps {
   ogDescription?: string;
   ogType?: string;
   ogImage?: string;
+  noindex?: boolean;
   jsonLd?: Record<string, any> | Record<string, any>[];
 }
 
@@ -25,51 +27,46 @@ const JSON_LD_ID = "page-json-ld";
  * - Open Graph tags
  * - Optional JSON-LD structured data
  */
-export function useSEO({ title, description, canonical, ogTitle, ogDescription, ogType, ogImage, jsonLd }: SEOProps) {
+export function useSEO({ title, description, canonical, ogTitle, ogDescription, ogType, ogImage, noindex = false, jsonLd }: SEOProps) {
   useEffect(() => {
     // Title
     const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
     document.title = fullTitle;
 
     // Meta description
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute("content", description);
+    const metaDesc = uniqueHeadElement('meta[name="description"]', () => {
+      const el = document.createElement("meta");
+      el.name = "description";
+      return el;
+    });
+    metaDesc.setAttribute("content", description);
 
     // Canonical
     const canonicalUrl = canonical || `${BASE_URL}${window.location.pathname}`;
-    let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    if (link) {
-      link.href = canonicalUrl;
-    } else {
-      link = document.createElement("link");
-      link.rel = "canonical";
-      link.href = canonicalUrl;
-      document.head.appendChild(link);
-    }
+    const link = uniqueHeadElement('link[rel="canonical"]', () => {
+      const el = document.createElement("link");
+      el.rel = "canonical";
+      return el;
+    });
+    link.href = canonicalUrl;
 
     // OG tags
     const setMeta = (property: string, content: string) => {
-      let el = document.querySelector(`meta[property="${property}"]`);
-      if (el) {
-        el.setAttribute("content", content);
-      } else {
-        el = document.createElement("meta");
+      const el = uniqueHeadElement(`meta[property="${property}"]`, () => {
+        const el = document.createElement("meta");
         el.setAttribute("property", property);
-        el.setAttribute("content", content);
-        document.head.appendChild(el);
-      }
+        return el;
+      });
+      el.setAttribute("content", content);
     };
 
     const setNamedMeta = (name: string, content: string) => {
-      let el = document.querySelector(`meta[name="${name}"]`);
-      if (el) {
-        el.setAttribute("content", content);
-      } else {
-        el = document.createElement("meta");
+      const el = uniqueHeadElement(`meta[name="${name}"]`, () => {
+        const el = document.createElement("meta");
         el.setAttribute("name", name);
-        el.setAttribute("content", content);
-        document.head.appendChild(el);
-      }
+        return el;
+      });
+      el.setAttribute("content", content);
     };
 
     setMeta("og:title", ogTitle || fullTitle);
@@ -78,13 +75,16 @@ export function useSEO({ title, description, canonical, ogTitle, ogDescription, 
     setMeta("og:image", ogImage || DEFAULT_OG_IMAGE);
     setMeta("og:site_name", SITE_NAME);
     setMeta("og:locale", "fr_FR");
-    if (ogType) setMeta("og:type", ogType);
+    setMeta("og:type", ogType || "website");
+    setNamedMeta("robots", noindex ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1");
+    setNamedMeta("twitter:card", "summary_large_image");
 
     setNamedMeta("twitter:title", ogTitle || fullTitle);
     setNamedMeta("twitter:description", ogDescription || description);
     setNamedMeta("twitter:image", ogImage || DEFAULT_OG_IMAGE);
 
     // JSON-LD (page-specific)
+    document.querySelectorAll('script[data-prerendered-ldjson]').forEach((el) => el.remove());
     let jsonLdEl = document.getElementById(JSON_LD_ID) as HTMLScriptElement | null;
     if (jsonLd) {
       if (!jsonLdEl) {
@@ -100,11 +100,8 @@ export function useSEO({ title, description, canonical, ogTitle, ogDescription, 
 
     // Cleanup: restore defaults on unmount
     return () => {
-      document.title = `Imprimerie en ligne & impression personnalisée | ${SITE_NAME}`;
-      if (metaDesc) metaDesc.setAttribute("content", "J2L Print, votre imprimerie en ligne. Impression numérique, flyers, cartes de visite, affiches, bâches, adhésifs, objets publicitaires. Devis gratuit, nous livrons en France.");
-      if (link) link.href = `${BASE_URL}/`;
       const existing = document.getElementById(JSON_LD_ID);
       if (existing) existing.remove();
     };
-  }, [title, description, canonical, ogTitle, ogDescription, ogType, ogImage, jsonLd]);
+  }, [title, description, canonical, ogTitle, ogDescription, ogType, ogImage, noindex, jsonLd]);
 }

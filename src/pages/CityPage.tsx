@@ -278,7 +278,7 @@ export default function CityPage() {
             {otherCities.map((c) => (
               <Link
                 key={c.slug}
-                to={`/imprimerie/${c.slug}`}
+                to={`/ville/${c.slug}`}
                 className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
               >
                 <MapPin className="h-3 w-3" /> Imprimerie {c.name}

@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { useSEO } from "@/hooks/useSEO";
 
 export default function CGV() {
+  useSEO({ title: "Conditions Générales de Vente", description: "Conditions Générales de Vente J2L Publicité pour les demandes de devis, commandes, validation du BAT et produits personnalisés J2L Print." });
   return (
     <section className="py-12">
       <div className="container max-w-3xl">

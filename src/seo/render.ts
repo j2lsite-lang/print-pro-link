@@ -26,7 +26,7 @@ function fullTitle(title: string): string {
 export function renderHead(page: SeoPage): string {
   const t = esc(fullTitle(page.title));
   const d = esc(page.description);
-  const canonical = `${SITE_URL}${page.path}`;
+  const canonical = `${SITE_URL}${page.canonicalPath || page.path}`;
   const img = page.ogImage && /^https?:\/\//.test(page.ogImage) ? page.ogImage : OG_IMAGE;
   const robots = page.noindex
     ? "noindex, follow"
@@ -200,12 +200,10 @@ export function injectIntoShell(shell: string, page: SeoPage): string {
   // Strip the shell's overridable, page-specific head tags so the
   // per-route values are the only ones present (no duplicate og:*/canonical).
   html = html
-    .replace(/<title>[\s\S]*?<\/title>/i, "")
-    .replace(/<meta\s+name="description"[^>]*>/i, "")
-    .replace(/<meta\s+name="robots"[^>]*>/i, "")
-    .replace(/<link\s+rel="canonical"[^>]*>/i, "")
-    .replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, "")
-    .replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, "");
+    .replace(/<title\b[^>]*>[\s\S]*?<\/title>/gi, "")
+    .replace(/<meta\b(?=[^>]*\bname=["'](?:description|robots|twitter:[^"']*)["'])[^>]*>/gi, "")
+    .replace(/<link\b(?=[^>]*\brel=["']canonical["'])[^>]*>/gi, "")
+    .replace(/<meta\b(?=[^>]*\bproperty=["']og:[^"']*["'])[^>]*>/gi, "");
   // Remove the static <noscript> fallback: prerendered pages now carry real
   // crawlable content inside #root, so the fallback would duplicate the H1.
   html = html.replace(/<noscript>[\s\S]*?<\/noscript>/i, "");

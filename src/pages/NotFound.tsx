@@ -1,32 +1,18 @@
 import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useSEO } from "@/hooks/useSEO";
 
 const NotFound = () => {
   const location = useLocation();
 
-  useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-    // Mark page as noindex for crawlers (avoids soft-404 reports in Search Console)
-    let robots = document.querySelector('meta[name="robots"]');
-    if (!robots) {
-      robots = document.createElement("meta");
-      robots.setAttribute("name", "robots");
-      document.head.appendChild(robots);
-    }
-    robots.setAttribute("content", "noindex, follow");
-    document.title = "Page introuvable (404) | J2L Print";
-    return () => {
-      if (robots) robots.setAttribute("content", "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1");
-    };
-  }, [location.pathname]);
+  useSEO({ title: "Page introuvable (404)", description: "Cette page n'existe pas ou n'est plus disponible.", canonical: `https://j2lprint.fr${location.pathname}`, noindex: true });
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted">
       <div className="text-center">
         <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
+        <p className="mb-4 text-xl text-muted-foreground">Page introuvable</p>
         <a href="/" className="text-primary underline hover:text-primary/90">
-          Return to Home
+          Retour à l’accueil
         </a>
       </div>
     </div>

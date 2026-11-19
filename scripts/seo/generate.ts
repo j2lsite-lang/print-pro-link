@@ -13,6 +13,7 @@ import { applyPriorityLinks } from "./priority-links";
 import { applyGscOptimizations } from "./gsc-optimize";
 import { loadGeo, CITY_SLUG_REDIRECTS, REMOVED_GEO_PATHS } from "./geo-data";
 import type { SeoPage } from "../../src/seo/types";
+import { catalogAliases } from "./catalog-aliases";
 
 const BASE_URL = "https://j2lprint.fr";
 
@@ -71,7 +72,7 @@ function group(pages: SeoPage[]) {
  *  worker so its SEO-managed set matches EXACTLY the prerendered pages (no
  *  product served via the SPA fallback). Leaves all worker logic untouched —
  *  only the data lines are replaced. */
-function syncWorker(productSlugs: string[], themeSlugs: string[], localOffers: string[] = []) {
+function syncWorker(productSlugs: string[], themeSlugs: string[], localOffers: string[] = [], pages: Record<string, SeoPage> = {}) {
   const wp = resolve("public/cloudflare-worker-j2lprint.js");
   if (!existsSync(wp)) return;
   const geo = loadGeo();
@@ -84,6 +85,7 @@ function syncWorker(productSlugs: string[], themeSlugs: string[], localOffers: s
   let src = readFileSync(wp, "utf8");
   const cityRedirects = JSON.stringify(CITY_SLUG_REDIRECTS, null, 2);
   src = src
+    .replace(/const CATALOG_CATEGORY_PATHS\s*=\s*\{[\s\S]*?\};/, `const CATALOG_CATEGORY_PATHS = ${JSON.stringify(Object.fromEntries(Object.values(catalogAliases(pages)).filter((p) => p.canonicalPath).map((p) => [p.path, p.canonicalPath])))};`)
     .replace(/const CITIES\s*=\s*\[[\s\S]*?\];/, `const CITIES = ${cities};`)
     .replace(/const DEPARTMENTS\s*=\s*\[[\s\S]*?\];/, `const DEPARTMENTS = ${departments};`)
     .replace(/const REGIONS\s*=\s*\[[\s\S]*?\];/, `const REGIONS = ${regions};`)
@@ -273,7 +275,7 @@ async function main() {
   console.log(`Merchant feed: ${items.length} products`);
 
   // 3. keep the Cloudflare worker geographic + product + theme arrays in sync
-  syncWorker(productSlugs, themeSlugs, localOfferSlugs);
+  syncWorker(productSlugs, themeSlugs, localOfferSlugs, byPath);
   console.log(`Local pages: ${localPages.length} (offers=${localOfferSlugs.length})`);
 
   console.log(`SEO build: ${pages.length} pages + ${productPages.length} products + ${themePages.length} themes`);

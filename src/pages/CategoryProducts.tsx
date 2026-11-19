@@ -8,6 +8,8 @@ import { useCategoryBySlug, useCategories, useSkusForCategory } from "@/hooks/us
 import { useSEO } from "@/hooks/useSEO";
 import { fetchAllProductCategoryMappings } from "@/lib/catalog-mappings";
 import PricingNotice from "@/components/product/PricingNotice";
+import seoPages from "@/seo/generated/pages.json";
+import type { SeoPage } from "@/seo/types";
 
 interface Product extends CatalogProduct {}
 
@@ -91,12 +93,17 @@ export default function CategoryProducts() {
       : `/categorie/${category.slug}`
     : null;
 
+  // Resolve the already established canonical before asynchronous catalog data.
+  const initialPage = Object.values(seoPages as unknown as Record<string, SeoPage>)
+    .find((page) => page.path.startsWith("/categorie/") && page.path.split("/").at(-1) === slug);
+
   useSEO({
-    title: category ? `${category.name} – Impression en ligne` : "Catégorie – J2L Print",
-    description: category
+    title: initialPage?.title || (category ? `${category.name} – Impression en ligne` : "Catégorie – J2L Print"),
+    description: initialPage?.description || (category
       ? `Découvrez notre gamme ${category.name} : impression professionnelle, prix affiché en ligne et livraison en France. J2L Print, votre imprimerie en ligne.`
-      : "Catégorie de produits J2L Print.",
-    canonical: newPath ? `${BASE_URL}${newPath}` : undefined,
+      : "Catégorie de produits J2L Print."),
+    canonical: initialPage ? `${BASE_URL}${initialPage.path}` : newPath ? `${BASE_URL}${newPath}` : undefined,
+    noindex: !catLoading && !category,
     jsonLd: category && newPath
       ? [
           {

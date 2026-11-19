@@ -1,4 +1,7 @@
+import { useSEO } from "@/hooks/useSEO";
+
 export default function MentionsLegales() {
+  useSEO({ title: "Mentions légales", description: "Mentions légales du site J2L Print, marque exploitée par J2L Publicité : éditeur, hébergement et informations légales." });
   return (
     <section className="py-12">
       <div className="container max-w-3xl">

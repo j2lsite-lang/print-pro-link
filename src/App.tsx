@@ -30,7 +30,7 @@ const PolitiqueRetours = lazy(() => import("./pages/PolitiqueRetours"));
 const PolitiqueConfidentialite = lazy(() => import("./pages/PolitiqueConfidentialite"));
 const Livraison = lazy(() => import("./pages/Livraison"));
 const Blog = lazy(() => import("./pages/Blog"));
-const CityPage = lazy(() => import("./pages/CityPage"));
+const LegacyCityRedirect = lazy(() => import("./pages/LegacyCityRedirect"));
 const CitiesIndex = lazy(() => import("./pages/CitiesIndex"));
 const ImpressionNumerique = lazy(() => import("./pages/ImpressionNumerique"));
 const GrandFormat = lazy(() => import("./pages/GrandFormat"));
@@ -79,7 +79,7 @@ const App = () => (
                   <Route path="/supports-publicitaires" element={<SupportsPublicitaires />} />
                   <Route path="/personnalisation" element={<Personnalisation />} />
                   <Route path="/imprimerie" element={<SeoRoute />} />
-                  <Route path="/imprimerie/:slug" element={<CityPage />} />
+                  <Route path="/imprimerie/:slug" element={<LegacyCityRedirect />} />
                   {/* New SEO routes (prerendered content, shared model) */}
                   <Route path="/catalogue" element={<SeoRoute />} />
                   <Route path="/categorie/:slug" element={<SeoRoute />} />

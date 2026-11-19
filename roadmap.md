@@ -12,3 +12,6 @@
 - [x] Test single/multiple-product quotes, manipulated prices and unavailable transport without sending customer emails or publishing; delete test records.
 - [ ] Automatic multi-product transport: blocked by Print.com combined-shipment "could not determine packing suggestion"; keep "Livraison calculée sur devis" until a successful grouping contract is provided.
 - [x] Preserve originating product URL and full selection across general forms and cart quotes; browser flow and actual email renderer verified without sending or publishing; Worker unchanged. Server changes prepared, not deployed pending publication approval.
+- [x] Correct existing Worker routing, legacy city redirects, initial catalog HTML and shared metadata without deployment.
+- [x] Check all sitemap routes against generated HTML/Worker inventories and analyze local-page similarity; preserve valid pages.
+- [x] Run SEO and quote regression checks on desktop/mobile; deliver updated Worker and production-order report without publishing.

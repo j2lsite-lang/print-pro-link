@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { Helmet } from "react-helmet-async";
+import { useSEO } from "@/hooks/useSEO";
 
 export const SITE_URL = "https://j2lprint.fr";
 export const SITE_NAME = "J2L Print";
@@ -33,51 +32,7 @@ export default function Seo({
   noindex = false,
   jsonLd,
 }: SeoProps) {
-  const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
   const canonical = `${SITE_URL}${path}`;
-  const blocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
-
-  // Le HTML prérendu contient déjà les mêmes blocs JSON-LD. Helmet réinjecte
-  // les siens côté client : on retire les blocs prérendus pour garantir UNE
-  // seule occurrence de chaque schéma (WebPage, BreadcrumbList, FAQPage…).
-  useEffect(() => {
-    document
-      .querySelectorAll('script[type="application/ld+json"][data-prerendered-ldjson]')
-      .forEach((el) => el.remove());
-  }, [path]);
-
-  return (
-    <Helmet>
-      <title>{fullTitle}</title>
-      <meta name="description" content={description} />
-      <link rel="canonical" href={canonical} />
-      <meta
-        name="robots"
-        content={
-          noindex
-            ? "noindex, follow"
-            : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
-        }
-      />
-
-      <meta property="og:title" content={fullTitle} />
-      <meta property="og:description" content={description} />
-      <meta property="og:url" content={canonical} />
-      <meta property="og:type" content={ogType} />
-      <meta property="og:image" content={ogImage} />
-      <meta property="og:site_name" content={SITE_NAME} />
-      <meta property="og:locale" content="fr_FR" />
-
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={fullTitle} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={ogImage} />
-
-      {blocks.map((block, i) => (
-        <script key={i} type="application/ld+json">
-          {JSON.stringify(block)}
-        </script>
-      ))}
-    </Helmet>
-  );
+  useSEO({ title, description, canonical, ogType, ogImage, noindex, jsonLd });
+  return null;
 }

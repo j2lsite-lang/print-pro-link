@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { useSEO } from "@/hooks/useSEO";
 
 export default function PolitiqueConfidentialite() {
+  useSEO({ title: "Politique de confidentialité", description: "Politique de confidentialité J2L Print : données personnelles, demandes de devis et droits des utilisateurs." });
   return (
     <section className="py-12">
       <div className="container max-w-3xl">

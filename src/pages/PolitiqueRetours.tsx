@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { useSEO } from "@/hooks/useSEO";
 
 export default function PolitiqueRetours() {
+  useSEO({ title: "Retours et remboursements", description: "Conditions de retour, de réclamation et de remboursement des produits personnalisés J2L Print." });
   return (
     <section className="py-12">
       <div className="container max-w-3xl">
